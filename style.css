@@ -200,7 +200,7 @@ header .icons #menu-bars{
 
 .action .content h3{
     font-size: 1.7rem;
-    color: #ffffff;
+    color: #fffcfc;
     text-transform: uppercase;
     text-align: center;
 }
@@ -375,7 +375,63 @@ header .icons #menu-bars{
 
 
 
-
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Matches dark theme in the image */
+    color: white;
+  }
+  
+  /* Card Container */
+  .swiper action-slider {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 9px;
+    padding: 9px;
+    border-radius: 9px;
+  }
+  
+  /* Individual Card */
+  .swiper-slide {
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+  
+  .swiper-slide:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Card Image */
+  .box-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  /* Card Info */
+  .box-info {
+    padding: 8px;
+  }
+  
+  
+  
+  .card-info .title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 4px 0;
+  }
+  
+  /* Responsiveness */
+  @media (max-width: 768px) {
+    .swiper action-slider{
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+  }
+  
 
 
 
