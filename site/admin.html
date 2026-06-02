@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinx Anime | Premium Admin Dashboard</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #ff0055;
+            --primary-dark: #cc0044;
+            --secondary: #00a8ff;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            --dark: #0f0f1a;
+            --darker: #080811;
+            --dark-card: #1a1a2e;
+            --light-text: #ffffff;
+            --gray-text: #b0b0c0;
+            --gray-border: #2a2a3a;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gradient: linear-gradient(135deg, #ff0055 0%, #9c27b0 50%, #00a8ff 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 62.5%;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--darker);
+            color: var(--light-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ====== HEADER ====== */
+        header {
+            height: 70px;
+            background: var(--dark);
+            border-bottom: 1px solid var(--gray-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .logo i {
+            color: var(--primary);
+            margin-right: 8px;
+            font-size: 2.6rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--gray-border);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* ====== LAYOUT ====== */
+        .admin-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+
+        /* ====== SIDEBAR ====== */
+        .sidebar {
+            background: var(--dark-card);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            padding: 25px 20px;
+            height: fit-content;
+        }
+
+        .sidebar-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            font-family: 'Outfit', sans-serif;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--gray-text);
+            text-decoration: none;
+            font-size: 1.4rem;
+            font-weight: 600;
+            padding: 12px 15px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            color: white;
+            background: rgba(255, 0, 85, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* ====== MAIN CONTENT ====== */
+        .content-panel {
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        .panel-header {
+            margin-bottom: 30px;
+        }
+
+        .panel-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .panel-desc {
+            font-size: 1.4rem;
+            color: var(--gray-text);
+        }
+
+        /* ====== CARD / FORM STYLES ====== */
+        .card {
+            background: var(--dark-card);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--gray-text);
+        }
+
+        input,
+        select,
+        textarea {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            color: white;
+            font-size: 1.4rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-submit {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 14px 28px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: fit-content;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4);
+        }
+
+        /* ====== FILE UPLOAD ====== */
+        .file-upload-wrapper {
+            position: relative;
+            border: 2px dashed var(--gray-border);
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: var(--primary);
+            background: rgba(255, 0, 85, 0.02);
+        }
+
+        .file-upload-wrapper i {
+            font-size: 4rem;
+            color: var(--gray-text);
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .file-upload-wrapper:hover i {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* ====== PROGRESS ====== */
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .progress-track {
+            background: var(--gray-border);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: var(--gradient);
+            width: 0%;
+            height: 100%;
+            transition: width 0.1s ease;
+        }
+
+        /* ====== STATUS BADGES ====== */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-badge.pending {
+            background: rgba(241, 196, 15, 0.15);
+            color: var(--warning);
+        }
+
+        .status-badge.processing {
+            background: rgba(0, 168, 255, 0.15);
+            color: var(--secondary);
+        }
+
+        .status-badge.completed {
+            background: rgba(46, 204, 113, 0.15);
+            color: var(--success);
+        }
+
+        .status-badge.failed {
+            background: rgba(231, 76, 60, 0.15);
+            color: var(--danger);
+        }
+
+        /* ====== TASK TABLE ====== */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-border);
+            font-size: 1.3rem;
+        }
+
+        th {
+            font-weight: 700;
+            color: var(--gray-text);
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        /* ====== RESPONSIVE ====== */
+        @media (max-width: 992px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ====== ANIMATED STRIPES FOR TRANSCODING ====== */
+        @keyframes progress-stripe {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 40px 0;
+            }
+        }
+
+        .progress-bar-animated {
+            background-size: 40px 40px !important;
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent) !important;
+            animation: progress-stripe 1.5s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ====== HEADER ====== -->
+    <header>
+        <a href="/index.html" class="logo"><i class="fas fa-infinity"></i>Infinx Admin</a>
+        <div class="header-actions">
+            <a href="/index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Site</a>
+        </div>
+    </header>
+
+    <!-- ====== LAYOUT ====== -->
+    <div class="admin-container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h3 class="sidebar-title">Navigation</h3>
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-target="createShowPanel"><i class="fas fa-tv"></i> Add New Anime</li>
+                <li class="menu-item" data-target="uploadEpisodePanel"><i class="fas fa-cloud-upload-alt"></i> Add
+                    Episode</li>
+                <li class="menu-item" data-target="managePanel" onclick="fetchManageShows()"><i
+                        class="fas fa-tasks"></i> Manage Anime</li>
+                <li class="menu-item" data-target="taskPanel" onclick="fetchTasks()"><i class="fas fa-cogs"></i>
+                    Transcoding Tasks</li>
+                <li class="menu-item" data-target="bannerPanel" onclick="loadBannerCustomizer()"><i
+                        class="fas fa-images"></i> Customize Banner</li>
+                <li class="menu-item" data-target="usersPanel" onclick="fetchUsers()"><i class="fas fa-users"></i>
+                    Manage Users</li>
+            </ul>
+        </aside>
+
+        <!-- MAIN PANEL CONTENT -->
+        <main class="main-content">
+
+            <!-- LIVE STATISTICS HUD OVERVIEW -->
+            <div class="stats-grid"
+                style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px;">
+                <div class="card stat-card"
+                    style="padding: 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 0; background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(15, 15, 26, 0.9) 100%); border-left: 4px solid var(--primary); box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);">
+                    <div style="font-size: 3rem; color: var(--primary);"><i class="fas fa-tv"></i></div>
+                    <div>
+                        <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Total Shows
+                        </h4>
+                        <p id="statTotalShows" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
+                            Loading...</p>
+                    </div>
+                </div>
+                <div class="card stat-card"
+                    style="padding: 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 0; background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(15, 15, 26, 0.9) 100%); border-left: 4px solid var(--secondary); box-shadow: 0 0 15px rgba(0, 168, 255, 0.2);">
+                    <div style="font-size: 3rem; color: var(--secondary);"><i class="fas fa-video"></i></div>
+                    <div>
+                        <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Episodes</h4>
+                        <p id="statTotalEpisodes" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
+                            Loading...</p>
+                    </div>
+                </div>
+                <div class="card stat-card"
+                    style="padding: 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 0; background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(15, 15, 26, 0.9) 100%); border-left: 4px solid var(--warning); box-shadow: 0 0 15px rgba(241, 196, 15, 0.2);">
+                    <div style="font-size: 3rem; color: var(--warning);"><i class="fas fa-cogs"></i></div>
+                    <div>
+                        <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Active Tasks
+                        </h4>
+                        <p id="statActiveTasks" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
+                            Loading...</p>
+                    </div>
+                </div>
+                <div class="card stat-card"
+                    style="padding: 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 0; background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(15, 15, 26, 0.9) 100%); border-left: 4px solid var(--success); box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);">
+                    <div style="font-size: 3rem; color: var(--success);"><i class="fas fa-server"></i></div>
+                    <div>
+                        <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">DB Link</h4>
+                        <p style="font-size: 1.8rem; font-weight: 800; color: var(--success); font-family: 'Outfit';">
+                            ONLINE</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL: CREATE SHOW -->
+            <div id="createShowPanel" class="content-panel active">
+                <div class="panel-header">
+                    <h2 class="panel-title">Add New Anime / Show</h2>
+                    <p class="panel-desc">Register a new media listing, define categories, and upload its banner poster
+                    </p>
+                </div>
+
+                <div class="card">
+                    <form id="createShowForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="showTitle">Show Title</label>
+                                <input type="text" id="showTitle" placeholder="e.g. Demon Slayer: Mugen Train" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="showCategories">Categories (Hold Ctrl / Command to select multiple)</label>
+                                <select id="showCategories" multiple required style="height: 110px;">
+                                    <!-- Loaded dynamically -->
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="showRating">Rating (1 - 10)</label>
+                                <input type="number" id="showRating" min="1" max="10" step="0.1" value="8.5" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="showBadge">Badge (HD, 4K, NEW, etc.)</label>
+                                <input type="text" id="showBadge" placeholder="e.g. HD" value="HD" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="showYear">Release Year</label>
+                                <input type="text" id="showYear" placeholder="e.g. 2025" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="showRuntime">Runtime / Total Episodes text</label>
+                                <input type="text" id="showRuntime" placeholder="e.g. 12 Ep / 2h 15m" required>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="showDesc">Show Description</label>
+                                <textarea id="showDesc" placeholder="Enter long synopsis of the anime here..."
+                                    required></textarea>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Upload Poster Image (Saved directly to AWS S3)</label>
+                                <div class="file-upload-wrapper">
+                                    <i class="fas fa-image"></i>
+                                    <p id="posterLabel">Drag & drop poster image or click to select</p>
+                                    <input type="file" id="showPosterFile" accept="image/*" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-width"
+                                style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 10px;">
+                                <input type="checkbox" id="showIsFeatured"
+                                    style="width: 20px; height: 20px; cursor: pointer;">
+                                <label for="showIsFeatured"
+                                    style="font-size: 1.4rem; font-weight: 600; cursor: pointer; color: var(--primary);">Feature
+                                    this show on the Homepage Banner Carousel</label>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Upload Banner Image (Large Landscape Image for Homepage Carousel -
+                                    Optional)</label>
+                                <div class="file-upload-wrapper">
+                                    <i class="fas fa-image"></i>
+                                    <p id="bannerLabel">Drag & drop banner image or click to select</p>
+                                    <input type="file" id="showBannerFile" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> Create Anime</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- PANEL: UPLOAD EPISODE -->
+            <div id="uploadEpisodePanel" class="content-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Upload Raw Episode Video</h2>
+                    <p class="panel-desc">Upload raw MKV/MP4 files for HLS transcoding, audio extraction, and S3 hosting
+                    </p>
+                </div>
+
+                <div class="card">
+                    <form id="uploadEpisodeForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="episodeShow">Parent Anime / Show</label>
+                                <select id="episodeShow" required>
+                                    <option value="">-- Choose Anime --</option>
+                                    <!-- Loaded dynamically -->
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="episodeNumber">Episode Number</label>
+                                <input type="number" id="episodeNumber" min="1" placeholder="e.g. 1" required>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="episodeTitle">Episode Title</label>
+                                <input type="text" id="episodeTitle" placeholder="e.g. The Portal of Destiny" required>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Select Video File (MKV, MP4)</label>
+                                <div class="file-upload-wrapper">
+                                    <i class="fas fa-video"></i>
+                                    <p id="videoLabel">Select high quality MKV/MP4 stream file</p>
+                                    <input type="file" id="episodeVideoFile" accept=".mkv,.mp4" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar Container -->
+                        <div class="progress-container" id="uploadProgressContainer">
+                            <div class="progress-info">
+                                <span id="progressText">Uploading raw file...</span>
+                                <span id="progressPercent">0%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" id="uploadProgressBar"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="btnUploadSubmit"><i
+                                class="fas fa-cloud-upload-alt"></i> Upload & Start Transcode</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- PANEL: TRANSCODING TASKS -->
+            <div id="taskPanel" class="content-panel">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 class="panel-title">HLS Transcoding Logs & Pipeline</h2>
+                        <p class="panel-desc">Monitor background workers parsing audio tracks and uploading HLS master
+                            playlists to AWS S3</p>
+                    </div>
+                    <button class="btn-back" onclick="fetchTasks()" style="cursor: pointer;"><i class="fas fa-sync"></i>
+                        Refresh Tasks</button>
+                </div>
+
+                <div class="card">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Show / Episode</th>
+                                    <th>Status</th>
+                                    <th>Worker Stage</th>
+                                    <th>Output Master URL</th>
+                                    <th>Updated At</th>
+                                </tr>
+                            </thead>
+                            <tbody id="taskTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--gray-text);">Loading workers
+                                        pipeline logs...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL: MANAGE CATALOG -->
+            <div id="managePanel" class="content-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Manage Anime & Catalog</h2>
+                    <p class="panel-desc">View existing database shows, review and manage their episodes, or delete
+                        media listings</p>
+                </div>
+                <div class="card" style="padding: 20px;">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Show Poster</th>
+                                    <th>Show Title</th>
+                                    <th>Year / Rating</th>
+                                    <th>Episodes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--gray-text);">Loading media
+                                        catalog...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL: CUSTOMIZE BANNER -->
+            <div id="bannerPanel" class="content-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Customize Homepage Banner Slideshow</h2>
+                    <p class="panel-desc">Manage featured homepage slider entries, customize layout backdrops, and write
+                        synapse overrides</p>
+                </div>
+
+                <div class="card" style="margin-bottom: 30px; padding: 25px;">
+                    <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--primary);"><i
+                            class="fas fa-edit"></i> Feature & Override Anime Show</h3>
+                    <form id="customizeBannerForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="bannerShowSelect">Select Anime / Show</label>
+                                <select id="bannerShowSelect" required>
+                                    <option value="">-- Choose Anime --</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bannerTitleOverride">Custom Title Override (Optional)</label>
+                                <input type="text" id="bannerTitleOverride"
+                                    placeholder="Leave blank to use original title">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="bannerDescOverride">Custom Synopsis / Description Override
+                                    (Optional)</label>
+                                <textarea id="bannerDescOverride"
+                                    placeholder="Enter brief synopsis overlay that renders beautifully on the banner slide..."
+                                    style="height: 100px;"></textarea>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Upload Custom Banner Backdrop (Large Landscape Image - Stored to S3)</label>
+                                <div class="file-upload-wrapper">
+                                    <i class="fas fa-image"></i>
+                                    <p id="bannerCustomLabel">Drag & drop landscape backdrop image or click to select
+                                    </p>
+                                    <input type="file" id="bannerCustomFile" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="btnFeatureSubmit" style="margin-top: 15px;"><i
+                                class="fas fa-save"></i> Save & Feature Show</button>
+                    </form>
+                </div>
+
+                <div class="card" style="padding: 25px;">
+                    <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--secondary);"><i
+                            class="fas fa-images"></i> Active Homepage Carousel Slides</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Show Title</th>
+                                    <th>Rating / Year</th>
+                                    <th>Poster Backdrop</th>
+                                    <th>Banner Backdrop</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="featuredBannerList">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--gray-text);">No active
+                                        banner slideshow entries. Use the form above to feature shows!</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL: MANAGE USERS -->
+            <div id="usersPanel" class="content-panel">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 class="panel-title">Manage Registered Users</h2>
+                        <p class="panel-desc">Monitor accounts, edit roles, assign administrator privileges, or
+                            ban/delete users</p>
+                    </div>
+                    <button class="btn-submit" onclick="openAddUserModal()"
+                        style="margin-top: 0; padding: 10px 20px;"><i class="fas fa-user-plus"></i> Add New
+                        User</button>
+                </div>
+
+                <div class="card" style="padding: 20px;">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Email Address</th>
+                                    <th>Access Role</th>
+                                    <th>Account Status</th>
+                                    <th>Registration Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--gray-text);">Loading users
+                                        database...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ====== SCRIPTS ====== -->
+    <script>
+        const API_BASE = '/api';
+
+        // Authorization & Guards
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = localStorage.getItem('infinx_token');
+            const role = localStorage.getItem('infinx_user_role');
+
+            if (!token || role !== 'ADMIN') {
+                alert('Access Denied: Admin privileges required.');
+                window.location.href = '/index.html';
+                return;
+            }
+
+            // Tab toggling logic
+            const menuItems = document.querySelectorAll('.menu-item');
+            const panels = document.querySelectorAll('.content-panel');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    panels.forEach(p => p.classList.remove('active'));
+
+                    this.classList.add('active');
+                    const targetPanel = this.dataset.target;
+                    document.getElementById(targetPanel).classList.add('active');
+                });
+            });
+
+            // Periodically refresh active lists for real-time progress updates
+            setInterval(() => {
+                loadDashboardStats();
+                const activePanel = document.querySelector('.content-panel.active');
+                if (activePanel) {
+                    if (activePanel.id === 'taskPanel') {
+                        fetchTasks();
+                    } else if (activePanel.id === 'managePanel') {
+                        fetchManageShows();
+                        const modal = document.getElementById('episodeManagerModal');
+                        if (modal && modal.style.display === 'flex' && currentActiveShowId) {
+                            fetchShowEpisodesList(currentActiveShowId);
+                        }
+                    } else if (activePanel.id === 'bannerPanel') {
+                        loadBannerCustomizer();
+                    } else if (activePanel.id === 'usersPanel') {
+                        fetchUsers();
+                    }
+                }
+            }, 4000);
+
+            // File selection label mapping
+            document.getElementById('showPosterFile').addEventListener('change', function () {
+                const label = document.getElementById('posterLabel');
+                label.textContent = this.files[0] ? `Selected: ${this.files[0].name}` : 'Drag & drop poster image or click to select';
+            });
+
+            document.getElementById('episodeVideoFile').addEventListener('change', function () {
+                const label = document.getElementById('videoLabel');
+                label.textContent = this.files[0] ? `Selected: ${this.files[0].name}` : 'Select high quality MKV/MP4 stream file';
+            });
+
+            document.getElementById('showBannerFile').addEventListener('change', function () {
+                const label = document.getElementById('bannerLabel');
+                label.textContent = this.files[0] ? `Selected: ${this.files[0].name}` : 'Drag & drop banner image or click to select';
+            });
+
+            document.getElementById('bannerCustomFile').addEventListener('change', function () {
+                const label = document.getElementById('bannerCustomLabel');
+                label.textContent = this.files[0] ? `Selected: ${this.files[0].name}` : 'Drag & drop landscape backdrop image or click to select';
+            });
+
+            // Form Submissions
+            document.getElementById('createShowForm').addEventListener('submit', handleCreateShow);
+            document.getElementById('uploadEpisodeForm').addEventListener('submit', handleUploadEpisode);
+            document.getElementById('customizeBannerForm').addEventListener('submit', handleCustomizeBanner);
+
+            // Populate forms initial data
+            loadCategoriesList();
+            loadShowsList();
+            loadDashboardStats();
+        });
+
+        // Fetch categories to populate show creation selector
+        async function loadCategoriesList() {
+            try {
+                const res = await fetch(`${API_BASE}/shows/categories`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const categoriesSelect = document.getElementById('showCategories');
+                    categoriesSelect.innerHTML = data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Fetch shows to populate episode parent selector
+        async function loadShowsList() {
+            try {
+                const res = await fetch(`${API_BASE}/shows/categories`);
+                if (res.ok) {
+                    const categories = await res.json();
+                    const episodeShowSelect = document.getElementById('episodeShow');
+
+                    // Flatten shows
+                    let showsList = [];
+                    categories.forEach(cat => {
+                        cat.shows.forEach(show => {
+                            if (!showsList.find(s => s.id === show.id)) {
+                                showsList.push(show);
+                            }
+                        });
+                    });
+
+                    episodeShowSelect.innerHTML = `<option value="">-- Choose Anime --</option>` +
+                        showsList.map(s => `<option value="${s.id}">${s.title}</option>`).join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Fetch real-time dashboard analytics counters
+        async function loadDashboardStats() {
+            try {
+                const token = localStorage.getItem('infinx_token');
+                const res = await fetch(`${API_BASE}/admin/shows`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const shows = await res.json();
+                    document.getElementById('statTotalShows').textContent = shows.length;
+
+                    let epCount = 0;
+                    shows.forEach(s => {
+                        if (s.episodes) epCount += s.episodes.length;
+                    });
+                    document.getElementById('statTotalEpisodes').textContent = epCount;
+                }
+
+                // Fetch active transcode tasks
+                const tasksRes = await fetch(`${API_BASE}/admin/tasks`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (tasksRes.ok) {
+                    const tasks = await tasksRes.json();
+                    const pendingOrProcessing = tasks.filter(t => t.transcodeStatus === 'PENDING' || t.transcodeStatus === 'PROCESSING').length;
+                    document.getElementById('statActiveTasks').textContent = pendingOrProcessing;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Handle show creations with AWS poster S3 upload
+        async function handleCreateShow(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalHtml = btn.innerHTML;
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Show...';
+            btn.disabled = true;
+
+            const title = document.getElementById('showTitle').value;
+            const rating = parseFloat(document.getElementById('showRating').value);
+            const badge = document.getElementById('showBadge').value;
+            const year = document.getElementById('showYear').value;
+            const runtime = document.getElementById('showRuntime').value;
+            const description = document.getElementById('showDesc').value;
+            const posterFile = document.getElementById('showPosterFile').files[0];
+
+            const isFeatured = document.getElementById('showIsFeatured').checked;
+            const bannerFile = document.getElementById('showBannerFile').files[0];
+
+            // Collect multi selected categories
+            const selectedOptions = Array.from(document.getElementById('showCategories').selectedOptions);
+            const categoryIds = selectedOptions.map(opt => parseInt(opt.value));
+
+            // Create multi-part form data
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('rating', rating);
+            formData.append('badge', badge);
+            formData.append('year', year);
+            formData.append('runtime', runtime);
+            formData.append('description', description);
+            formData.append('type', 'series');
+            formData.append('poster', posterFile);
+            formData.append('isFeatured', isFeatured);
+            if (bannerFile) {
+                formData.append('banner', bannerFile);
+            }
+            formData.append('categoryIds', JSON.stringify(categoryIds));
+
+            try {
+                const token = localStorage.getItem('infinx_token');
+                const res = await fetch(`${API_BASE}/admin/shows`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('Anime created successfully! Poster stored in AWS S3.');
+                    document.getElementById('createShowForm').reset();
+                    document.getElementById('posterLabel').textContent = 'Drag & drop poster image or click to select';
+                    document.getElementById('bannerLabel').textContent = 'Drag & drop banner image or click to select';
+                    loadShowsList();
+                } else {
+                    const errorData = await res.json();
+                    alert(`Creation failed: ${errorData.error}`);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error. Please try again.');
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // Handle raw episode uploads with XMLHttpRequest to track upload progress bar
+        function handleUploadEpisode(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btnUploadSubmit');
+            const container = document.getElementById('uploadProgressContainer');
+            const textEl = document.getElementById('progressText');
+            const percentEl = document.getElementById('progressPercent');
+            const fillEl = document.getElementById('uploadProgressBar');
+
+            btn.disabled = true;
+            container.style.display = 'block';
+
+            const showId = document.getElementById('episodeShow').value;
+            const episodeNumber = parseInt(document.getElementById('episodeNumber').value);
+            const title = document.getElementById('episodeTitle').value;
+            const videoFile = document.getElementById('episodeVideoFile').files[0];
+
+            const formData = new FormData();
+            formData.append('showId', showId);
+            formData.append('episodeNumber', episodeNumber);
+            formData.append('title', title);
+            formData.append('video', videoFile);
+
+            const xhr = new XMLHttpRequest();
+            const token = localStorage.getItem('infinx_token');
+
+            xhr.open('POST', `${API_BASE}/admin/upload-episode-video`, true);
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+            // Update upload progress
+            xhr.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    percentEl.textContent = `${percent}%`;
+                    fillEl.style.width = `${percent}%`;
+
+                    if (percent === 100) {
+                        textEl.textContent = 'Upload complete. Launching transcoding workers pipeline...';
+                    } else {
+                        textEl.textContent = `Uploading video: ${Math.round(e.loaded / 1024 / 1024)}MB / ${Math.round(e.total / 1024 / 1024)}MB`;
+                    }
+                }
+            };
+
+            xhr.onload = function () {
+                btn.disabled = false;
+                if (xhr.status === 200 || xhr.status === 201) {
+                    alert('Episode video uploaded successfully! Background transcoding worker has been dispatched.');
+                    document.getElementById('uploadEpisodeForm').reset();
+                    document.getElementById('videoLabel').textContent = 'Select high quality MKV/MP4 stream file';
+                    container.style.display = 'none';
+
+                    // Switch to task panel
+                    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                    document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+
+                    const taskItem = document.querySelector('[data-target="taskPanel"]');
+                    taskItem.classList.add('active');
+                    document.getElementById('taskPanel').classList.add('active');
+                    fetchTasks();
+                } else {
+                    let errMsg = 'Upload failed';
+                    try {
+                        const errObj = JSON.parse(xhr.responseText);
+                        errMsg = errObj.error || errMsg;
+                    } catch (e) { }
+                    alert(errMsg);
+                    container.style.display = 'none';
+                }
+            };
+
+            xhr.onerror = function () {
+                btn.disabled = false;
+                alert('Connection failure during raw video upload.');
+                container.style.display = 'none';
+            };
+
+            xhr.send(formData);
+        }
+
+        // Render transcoding status bar and percentage progress
+        function renderTranscodeProgress(task) {
+            const status = (task.transcodeStatus || 'PENDING').toUpperCase();
+
+            let percent = 0;
+            let text = '0%';
+            let barColor = 'var(--gray-border)';
+            let statusText = 'Pending';
+            let icon = 'fa-hourglass-start';
+            let isAnimated = false;
+
+            if (status === 'COMPLETED') {
+                percent = 100;
+                text = '100%';
+                barColor = 'linear-gradient(90deg, #2ecc71, #27ae60)';
+                statusText = 'Completed';
+                icon = 'fa-check-circle';
+            } else if (status === 'FAILED') {
+                percent = 100;
+                text = 'Failed';
+                barColor = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+                statusText = 'Failed';
+                icon = 'fa-exclamation-triangle';
+            } else if (status === 'PENDING') {
+                percent = 5;
+                text = '0%';
+                barColor = 'linear-gradient(90deg, #f1c40f, #f39c12)';
+                statusText = 'In Queue';
+                icon = 'fa-clock';
+            } else if (status === 'PROCESSING') {
+                // Calculate dynamic progress based on elapsed time since updatedAt
+                const elapsedSeconds = (Date.now() - new Date(task.updatedAt).getTime()) / 1000;
+                const typicalDuration = 120; // 120 seconds typically for local dev transcoding
+                percent = Math.min(95, Math.round(15 + (elapsedSeconds / typicalDuration) * 80));
+                text = `${percent}%`;
+                barColor = 'linear-gradient(90deg, var(--secondary) 0%, #00a8ff 100%)';
+                statusText = 'Transcoding';
+                icon = 'fa-cog fa-spin';
+                isAnimated = true;
+            }
+
+            const animatedClass = isAnimated ? 'progress-bar-animated' : '';
+            const statusColor = status === 'COMPLETED' ? 'var(--success)' : status === 'FAILED' ? 'var(--danger)' : 'var(--secondary)';
+
+            return `
+                <div style="width: 100%; min-width: 150px; max-width: 220px; margin-top: 5px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 1.1rem; margin-bottom: 5px; align-items: center;">
+                        <span style="color: var(--gray-text); display: inline-flex; align-items: center; gap: 4px;"><i class="fas ${icon}"></i> ${statusText}</span>
+                        <span style="font-weight: 700; color: ${statusColor};">${text}</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); height: 8px; border-radius: 4px; overflow: hidden; border: 1px solid var(--gray-border);">
+                        <div class="${animatedClass}" style="width: ${percent}%; height: 100%; background: ${barColor}; border-radius: 4px; transition: width 1s ease;"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Fetch task updates from transcoding pipeline
+        async function fetchTasks() {
+            const tbody = document.getElementById('taskTableBody');
+            const token = localStorage.getItem('infinx_token');
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/tasks`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-text);">No HLS tasks recorded in pipeline yet.</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = data.map(task => {
+                        const statusClass = (task.transcodeStatus || 'PENDING').toLowerCase();
+                        const timeText = new Date(task.updatedAt).toLocaleString();
+                        const showTitle = task.show ? task.show.title : `Show #${task.showId}`;
+                        const masterLink = task.videoUrl ? `<a href="${task.videoUrl}" target="_blank" style="color: var(--secondary); text-decoration: none;"><i class="fas fa-external-link-alt"></i> master.m3u8</a>` : `<span style="color: var(--gray-text);">Not ready</span>`;
+
+                        return `
+                            <tr>
+                                <td>
+                                    <strong>${showTitle}</strong><br>
+                                    <span style="color: var(--gray-text); font-size: 1.1rem;">Ep ${task.episodeNumber}: ${task.title}</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge ${statusClass}">${task.transcodeStatus || 'PENDING'}</span>
+                                </td>
+                                <td>
+                                    ${renderTranscodeProgress(task)}
+                                </td>
+                                <td>
+                                    ${masterLink}
+                                </td>
+                                <td>
+                                    <span style="color: var(--gray-text);">${timeText}</span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger);">Failed to query tasks list from database.</td></tr>`;
+                }
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger);">Connection error fetching tasks pipeline.</td></tr>`;
+            }
+        }
+
+        // Fetch and render shows in Manage Catalog panel
+        async function fetchManageShows() {
+            const tbody = document.getElementById('manageTableBody');
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-text);"><i class="fas fa-spinner fa-spin"></i> Loading catalog...</td></tr>`;
+
+            try {
+                const res = await fetch(`${API_BASE}/shows/categories`);
+                if (res.ok) {
+                    const categories = await res.json();
+
+                    // Flatten shows list
+                    let showsList = [];
+                    categories.forEach(cat => {
+                        cat.shows.forEach(show => {
+                            if (!showsList.find(s => s.id === show.id)) {
+                                showsList.push(show);
+                            }
+                        });
+                    });
+
+                    if (showsList.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-text);">No shows registered yet.</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = showsList.map(show => {
+                        const posterUrl = show.poster || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200';
+                        const episodesCount = show.episodes ? show.episodes.length : 0;
+
+                        return `
+                            <tr>
+                                <td>
+                                    <img src="${posterUrl}" alt="${show.title}" style="width: 50px; height: 75px; object-fit: cover; border-radius: 4px; border: 1px solid var(--gray-border);">
+                                </td>
+                                <td>
+                                    <strong style="font-size: 1.4rem; font-family: 'Outfit';">${show.title}</strong><br>
+                                    <span style="color: var(--gray-text); font-size: 1.1rem; max-width: 300px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${show.description}</span>
+                                </td>
+                                <td>
+                                    <span style="color: var(--warning);"><i class="fas fa-star"></i> ${show.rating}</span><br>
+                                    <span style="color: var(--gray-text); font-size: 1.1rem;">${show.year} | ${show.runtime}</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge completed" style="font-size: 1.1rem;">${episodesCount} Episodes</span>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button onclick="manageEpisodes(${show.id}, '${show.title.replace(/'/g, "\\'")}')" class="btn-back" style="padding: 6px 12px; font-size: 1.1rem; background: rgba(0, 168, 255, 0.1); border-color: var(--secondary); color: var(--secondary); cursor: pointer;"><i class="fas fa-tasks"></i> Episodes</button>
+                                        <button onclick="deleteShow(${show.id}, '${show.title.replace(/'/g, "\\'")}')" class="btn-back" style="padding: 6px 12px; font-size: 1.1rem; background: rgba(231, 76, 60, 0.1); border-color: var(--danger); color: var(--danger); cursor: pointer;"><i class="fas fa-trash"></i> Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger);">Failed to load shows.</td></tr>`;
+                }
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger);">Error connecting to API.</td></tr>`;
+            }
+        }
+
+        // Delete entire show
+        async function deleteShow(id, title) {
+            if (!confirm(`Are you sure you want to delete "${title}"? This will delete the show and all its episodes permanently!`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('infinx_token');
+            try {
+                const res = await fetch(`${API_BASE}/admin/shows/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    alert(`Show "${title}" has been deleted successfully.`);
+                    fetchManageShows();
+                    loadShowsList();
+                } else {
+                    const err = await res.json();
+                    alert(`Failed to delete: ${err.error || 'Server error'}`);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Connection error trying to delete show.");
+            }
+        }
+
+        let currentActiveShowId = null;
+
+        // Manage episodes inside a modal
+        async function manageEpisodes(showId, showTitle) {
+            currentActiveShowId = showId;
+            document.getElementById('episodeModalTitle').textContent = `Manage Episodes: ${showTitle}`;
+            document.getElementById('episodeManagerModal').style.display = 'flex';
+
+            await fetchShowEpisodesList(showId);
+        }
+
+        async function fetchShowEpisodesList(showId) {
+            const tbody = document.getElementById('modalEpisodesTableBody');
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--gray-text);"><i class="fas fa-spinner fa-spin"></i> Fetching episodes...</td></tr>`;
+
+            try {
+                // Fetch single show detail (which includes full episodes array!)
+                const res = await fetch(`${API_BASE}/shows/${showId}`);
+                if (res.ok) {
+                    const show = await res.json();
+                    const eps = show.episodes || [];
+
+                    if (eps.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--gray-text);">No episodes added to this show yet.</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = eps.map(ep => {
+                        const statusClass = (ep.transcodeStatus || 'COMPLETED').toLowerCase();
+
+                        return `
+                            <tr>
+                                <td><strong>Ep ${ep.episodeNumber}</strong></td>
+                                <td>${ep.title}</td>
+                                <td><span class="status-badge ${statusClass}">${ep.transcodeStatus || 'COMPLETED'}</span></td>
+                                <td>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button onclick="openEditEpisodeModal(${ep.id}, '${ep.title.replace(/'/g, "\\'")}', ${ep.episodeNumber}, '${(ep.duration || '').replace(/'/g, "\\'")}', '${(ep.videoUrl || '').replace(/'/g, "\\'")}', '${ep.transcodeStatus}')" style="background: rgba(0, 168, 255, 0.1); border: 1px solid var(--secondary); color: var(--secondary); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-edit"></i> Edit</button>
+                                        <button onclick="deleteEpisode(${ep.id}, ${ep.episodeNumber})" style="background: rgba(231, 76, 60, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-trash-alt"></i> Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--danger);">Failed to load show episodes.</td></tr>`;
+                }
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--danger);">Connection error.</td></tr>`;
+            }
+        }
+
+        function closeEpisodeModal() {
+            document.getElementById('episodeManagerModal').style.display = 'none';
+        }
+
+        // Delete single episode
+        async function deleteEpisode(id, epNumber) {
+            if (!confirm(`Are you sure you want to delete Episode ${epNumber}?`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('infinx_token');
+            try {
+                const res = await fetch(`${API_BASE}/admin/episodes/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    alert(`Episode ${epNumber} deleted successfully.`);
+                    if (currentActiveShowId) {
+                        fetchShowEpisodesList(currentActiveShowId);
+                    }
+                    fetchManageShows();
+                } else {
+                    const err = await res.json();
+                    alert(`Failed to delete: ${err.error || 'Server error'}`);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Connection error trying to delete episode.");
+            }
+        }
+
+        // Load and populate the Banner Customizer tab
+        async function loadBannerCustomizer() {
+            const token = localStorage.getItem('infinx_token');
+            const showSelect = document.getElementById('bannerShowSelect');
+            const listBody = document.getElementById('featuredBannerList');
+
+            // Set loading indicators
+            showSelect.innerHTML = `<option value="">Loading shows...</option>`;
+            listBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-text);"><i class="fas fa-spinner fa-spin"></i> Fetching active slideshow...</td></tr>`;
+
+            try {
+                // Fetch all shows
+                const res = await fetch(`${API_BASE}/admin/shows`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const shows = await res.json();
+
+                    // Populate dropdown with all shows
+                    showSelect.innerHTML = `<option value="">-- Choose Anime --</option>` +
+                        shows.map(s => `<option value="${s.id}">${s.title}</option>`).join('');
+
+                    // Populate featured shows list table
+                    const featured = shows.filter(s => s.isFeatured);
+
+                    if (featured.length === 0) {
+                        listBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-text);">No active banner slideshow entries. Use the form above to feature shows!</td></tr>`;
+                        return;
+                    }
+
+                    listBody.innerHTML = featured.map(show => {
+                        const fallbackImage = 'Postes/infinit-cas11.jpg';
+                        const posterUrl = show.poster || fallbackImage;
+                        const bannerUrl = show.banner || fallbackImage;
+
+                        return `
+                            <tr>
+                                <td><strong style="font-size: 1.4rem; color: white;">${show.title}</strong></td>
+                                <td><span style="color: var(--warning);"><i class="fas fa-star"></i> ${show.rating}</span> <span style="margin-left: 8px; color: var(--gray-text); font-size: 1.2rem;">(${show.year})</span></td>
+                                <td><img src="${posterUrl}" style="height: 60px; border-radius: var(--radius-xs); border: 1px solid var(--gray-border); object-fit: cover; aspect-ratio: 2/3;" onerror="this.src='${fallbackImage}'"></td>
+                                <td><img src="${bannerUrl}" style="height: 60px; width: 120px; border-radius: var(--radius-xs); border: 1px solid var(--gray-border); object-fit: cover;" onerror="this.src='${fallbackImage}'"></td>
+                                <td>
+                                    <button onclick="removeFeatured(${show.id}, '${show.title.replace(/'/g, "\\'")}')" style="background: rgba(231, 76, 60, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; gap: 6px;"><i class="fas fa-trash-alt"></i> Remove</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                console.error(e);
+                listBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger);">Failed to load banner list.</td></tr>`;
+            }
+        }
+
+        // Handle Customize Banner Form Submission
+        async function handleCustomizeBanner(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnFeatureSubmit');
+            const originalHtml = btn.innerHTML;
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving Settings...';
+            btn.disabled = true;
+
+            const showId = document.getElementById('bannerShowSelect').value;
+            const titleOverride = document.getElementById('bannerTitleOverride').value;
+            const descriptionOverride = document.getElementById('bannerDescOverride').value;
+            const bannerFile = document.getElementById('bannerCustomFile').files[0];
+
+            const formData = new FormData();
+            formData.append('titleOverride', titleOverride);
+            formData.append('descriptionOverride', descriptionOverride);
+            formData.append('isFeatured', 'true');
+            if (bannerFile) {
+                formData.append('banner', bannerFile);
+            }
+
+            const token = localStorage.getItem('infinx_token');
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/shows/${showId}/feature`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('Show banner overrides saved and featured successfully!');
+                    document.getElementById('customizeBannerForm').reset();
+                    document.getElementById('bannerCustomLabel').textContent = 'Drag & drop landscape backdrop image or click to select';
+                    loadBannerCustomizer();
+                } else {
+                    const err = await res.json();
+                    alert(`Failed to save settings: ${err.error || 'Server error'}`);
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Connection error trying to feature show.');
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // Remove show from featured list
+        async function removeFeatured(showId, showTitle) {
+            if (!confirm(`Are you sure you want to remove "${showTitle}" from the Homepage Banner Slideshow?`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('infinx_token');
+            const formData = new FormData();
+            formData.append('isFeatured', 'false');
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/shows/${showId}/feature`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert(`Removed "${showTitle}" from homepage slideshow successfully.`);
+                    loadBannerCustomizer();
+                } else {
+                    const err = await res.json();
+                    alert(`Failed to remove: ${err.error || 'Server error'}`);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Connection error trying to remove featured show.");
+            }
+        }
+
+
+        // ======= USER MANAGEMENT =======
+        async function fetchUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            const token = localStorage.getItem('infinx_token');
+
+            // Avoid flashing loading screen if it's already populated and we are running inside interval
+            if (tbody.innerHTML.trim() === '' || tbody.innerHTML.includes('Loading users database...')) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-text);"><i class="fas fa-spinner fa-spin"></i> Querying user records...</td></tr>`;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/users`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const users = await res.json();
+                    if (users.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-text);">No registered users found.</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = users.map(user => {
+                        const registerDate = new Date(user.createdAt).toLocaleDateString();
+                        const isBannedText = user.isBanned
+                            ? `<span class="status-badge failed"><i class="fas fa-user-slash"></i> Banned</span>`
+                            : `<span class="status-badge completed"><i class="fas fa-user-check"></i> Active</span>`;
+                        const roleColor = user.role === 'ADMIN' ? 'var(--primary)' : 'var(--secondary)';
+
+                        return `
+                            <tr>
+                                <td><strong>#${user.id}</strong></td>
+                                <td>${user.email}</td>
+                                <td><span style="font-weight: 700; color: ${roleColor};"><i class="fas ${user.role === 'ADMIN' ? 'fa-user-shield' : 'fa-user'}"></i> ${user.role}</span></td>
+                                <td>${isBannedText}</td>
+                                <td><span style="color: var(--gray-text);">${registerDate}</span></td>
+                                <td>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button onclick="openEditUserModal(${user.id}, '${user.email}', '${user.role}', ${user.isBanned})" class="btn-back" style="padding: 6px 12px; font-size: 1.1rem; background: rgba(0, 168, 255, 0.1); border-color: var(--secondary); color: var(--secondary); cursor: pointer;"><i class="fas fa-edit"></i> Edit</button>
+                                        <button onclick="deleteUser(${user.id}, '${user.email}')" class="btn-back" style="padding: 6px 12px; font-size: 1.1rem; background: rgba(231, 76, 60, 0.1); border-color: var(--danger); color: var(--danger); cursor: pointer;"><i class="fas fa-trash"></i> Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger);">Failed to query users database.</td></tr>`;
+                }
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger);">Error connecting to API.</td></tr>`;
+            }
+        }
+
+        function openAddUserModal() {
+            document.getElementById('addUserForm').reset();
+            document.getElementById('addUserModal').style.display = 'flex';
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'none';
+        }
+
+        async function handleAddUser(e) {
+            e.preventDefault();
+            const email = document.getElementById('newUserEmail').value;
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
+            const isBanned = document.getElementById('newUserBanned').checked;
+            const token = localStorage.getItem('infinx_token');
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ email, password, role, isBanned })
+                });
+
+                if (res.ok) {
+                    alert('New user account created successfully!');
+                    closeAddUserModal();
+                    fetchUsers();
+                } else {
+                    const err = await res.json();
+                    alert(`Failed to add user: ${err.error || 'Server error'}`);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error trying to add user.');
+            }
+        }
+
+        function openEditUserModal(id, email, role, isBanned) {
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editUserEmail').value = email;
+            document.getElementById('editUserPassword').value = '';
+            document.getElementById('editUserRole').value = role;
+            document.getElementById('editUserBanned').checked = isBanned;
+            document.getElementById('editUserModal').style.display = 'flex';
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').style.display = 'none';
+        }
+
+        async function handleEditUser(e) {
+            e.preventDefault();
+            const id = document.getElementById('editUserId').value;
+            const email = document.getElementById('editUserEmail').value;
+            const password = document.getElementById('editUserPassword').value;
+            const role = document.getElementById('editUserRole').value;
+            const isBanned = document.getElementById('editUserBanned').checked;
+            const token = localStorage.getItem('infinx_token');
+
+            const payload = { email, role, isBanned };
+            if (password.trim() !== '') {
+                payload.password = password;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/users/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alert('User details saved and updated successfully!');
+                    closeEditUserModal();
+                    fetchUsers();
+                } else {
+                    const err = await res.json();
+                    alert(`Failed to save user: ${err.error || 'Server error'}`);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error trying to edit user.');
+            }
+        }
+
+        async function deleteUser(id, email) {
+            if (!confirm(`Are you absolutely sure you want to completely delete the user account: "${email}"?`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('infinx_token');
+            try {
+                const res = await fetch(`${API_BASE}/admin/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    alert(`User "${email}" deleted successfully.`);
+                    fetchUsers();
+                } else {
+                    const err = await res.json();
+                    alert(`Failed to delete: ${err.error || 'Server error'}`);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Connection error trying to delete user.");
+            }
+        }
+
+        // ======= EPISODE CUSTOMIZATION & EDITING =======
+        function openEditEpisodeModal(id, title, epNum, duration, videoUrl, status) {
+            document.getElementById('editEpisodeId').value = id;
+            document.getElementById('editEpisodeTitle').value = title;
+            document.getElementById('editEpisodeNumber').value = epNum;
+            document.getElementById('editEpisodeDuration').value = duration || '';
+            document.getElementById('editEpisodeVideoUrl').value = videoUrl || '';
+            document.getElementById('editEpisodeStatus').value = status || 'COMPLETED';
+            document.getElementById('editEpisodeModal').style.display = 'flex';
+        }
+
+        function closeEditEpisodeModal() {
+            document.getElementById('editEpisodeModal').style.display = 'none';
+        }
+
+        async function handleEditEpisode(e) {
+            e.preventDefault();
+            const id = document.getElementById('editEpisodeId').value;
+            const title = document.getElementById('editEpisodeTitle').value;
+            const episodeNumber = parseInt(document.getElementById('editEpisodeNumber').value);
+            const duration = document.getElementById('editEpisodeDuration').value;
+            const videoUrl = document.getElementById('editEpisodeVideoUrl').value;
+            const transcodeStatus = document.getElementById('editEpisodeStatus').value;
+            const token = localStorage.getItem('infinx_token');
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/episodes/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ title, episodeNumber, duration, videoUrl, transcodeStatus })
+                });
+
+                if (res.ok) {
+                    alert('Episode settings updated and saved successfully!');
+                    closeEditEpisodeModal();
+                    if (currentActiveShowId) {
+                        fetchShowEpisodesList(currentActiveShowId);
+                    }
+                    fetchManageShows();
+                } else {
+                    const err = await res.json();
+                    alert(`Failed to update episode: ${err.error || 'Server error'}`);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error trying to update episode.');
+            }
+        }
+    </script>
+
+    <!-- Modal: Episode Manager -->
+    <div id="episodeManagerModal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; align-items:center; justify-content:center; padding: 20px;">
+        <div class="card"
+            style="width:100%; max-width:650px; max-height:85vh; overflow-y:auto; position:relative; background:var(--dark-card); border: 1px solid var(--gray-border); padding: 30px; box-shadow: var(--shadow);">
+            <button onclick="closeEpisodeModal()"
+                style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:2.2rem; cursor:pointer;"><i
+                    class="fas fa-times"></i></button>
+            <h3 id="episodeModalTitle"
+                style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
+                Manage Episodes</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Episode</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalEpisodesTableBody">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add User -->
+    <div id="addUserModal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; align-items:center; justify-content:center; padding: 20px;">
+        <div class="card"
+            style="width:100%; max-width:500px; position:relative; background:var(--dark-card); border: 1px solid var(--gray-border); padding: 30px; box-shadow: var(--shadow);">
+            <button onclick="closeAddUserModal()"
+                style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:2.2rem; cursor:pointer;"><i
+                    class="fas fa-times"></i></button>
+            <h3
+                style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
+                <i class="fas fa-user-plus"></i> Add New User</h3>
+
+            <form id="addUserForm" onsubmit="handleAddUser(event)">
+                <div class="form-group">
+                    <label for="newUserEmail">Email Address</label>
+                    <input type="email" id="newUserEmail" placeholder="e.g. user@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="newUserPassword">Password</label>
+                    <input type="password" id="newUserPassword" placeholder="Enter secure password" required>
+                </div>
+                <div class="form-group">
+                    <label for="newUserRole">Access Role</label>
+                    <select id="newUserRole">
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                    </select>
+                </div>
+                <div class="form-group"
+                    style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 10px;">
+                    <input type="checkbox" id="newUserBanned" style="width: 20px; height: 20px; cursor: pointer;">
+                    <label for="newUserBanned" style="cursor: pointer; margin-bottom: 0;">Ban this user
+                        immediately</label>
+                </div>
+                <button type="submit" class="btn-submit" style="width: 100%; margin-top: 20px;"><i
+                        class="fas fa-check"></i> Create User Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit User -->
+    <div id="editUserModal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; align-items:center; justify-content:center; padding: 20px;">
+        <div class="card"
+            style="width:100%; max-width:500px; position:relative; background:var(--dark-card); border: 1px solid var(--gray-border); padding: 30px; box-shadow: var(--shadow);">
+            <button onclick="closeEditUserModal()"
+                style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:2.2rem; cursor:pointer;"><i
+                    class="fas fa-times"></i></button>
+            <h3
+                style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
+                <i class="fas fa-user-edit"></i> Edit User Account</h3>
+
+            <form id="editUserForm" onsubmit="handleEditUser(event)">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label for="editUserEmail">Email Address</label>
+                    <input type="email" id="editUserEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserPassword">Password (Leave blank to keep current password)</label>
+                    <input type="password" id="editUserPassword" placeholder="Enter new password to change">
+                </div>
+                <div class="form-group">
+                    <label for="editUserRole">Access Role</label>
+                    <select id="editUserRole">
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                    </select>
+                </div>
+                <div class="form-group"
+                    style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 10px;">
+                    <input type="checkbox" id="editUserBanned" style="width: 20px; height: 20px; cursor: pointer;">
+                    <label for="editUserBanned" style="cursor: pointer; margin-bottom: 0;">Account Banned</label>
+                </div>
+                <button type="submit" class="btn-submit" style="width: 100%; margin-top: 20px;"><i
+                        class="fas fa-save"></i> Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Episode -->
+    <div id="editEpisodeModal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1100; align-items:center; justify-content:center; padding: 20px;">
+        <div class="card"
+            style="width:100%; max-width:550px; position:relative; background:var(--dark-card); border: 1px solid var(--gray-border); padding: 30px; box-shadow: var(--shadow);">
+            <button onclick="closeEditEpisodeModal()"
+                style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:2.2rem; cursor:pointer;"><i
+                    class="fas fa-times"></i></button>
+            <h3
+                style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
+                <i class="fas fa-edit"></i> Edit Episode Metadata</h3>
+
+            <form id="editEpisodeForm" onsubmit="handleEditEpisode(event)">
+                <input type="hidden" id="editEpisodeId">
+                <div class="form-group">
+                    <label for="editEpisodeTitle">Episode Title</label>
+                    <input type="text" id="editEpisodeTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEpisodeNumber">Episode Number</label>
+                    <input type="number" id="editEpisodeNumber" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEpisodeDuration">Duration (e.g. 24:00)</label>
+                    <input type="text" id="editEpisodeDuration" placeholder="e.g. 24:00">
+                </div>
+                <div class="form-group">
+                    <label for="editEpisodeVideoUrl">HLS Stream Playlist URL (master.m3u8)</label>
+                    <input type="text" id="editEpisodeVideoUrl" placeholder="Direct AWS S3 URL link">
+                </div>
+                <div class="form-group">
+                    <label for="editEpisodeStatus">Transcode Pipeline Status</label>
+                    <select id="editEpisodeStatus">
+                        <option value="PENDING">PENDING</option>
+                        <option value="PROCESSING">PROCESSING</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="FAILED">FAILED</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit" style="width: 100%; margin-top: 20px;"><i
+                        class="fas fa-save"></i> Save Episode Settings</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
