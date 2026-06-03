@@ -3,6 +3,22 @@
     {
       "source": "/api/:path*",
       "destination": "http://13.61.84.121:5000/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "http://13.61.84.121:5000/uploads/:path*"
+    },
+    {
+      "source": "/images/:path*",
+      "destination": "http://13.61.84.121:5000/images/:path*"
+    },
+    {
+      "source": "/posters/:path*",
+      "destination": "http://13.61.84.121:5000/posters/:path*"
+    },
+    {
+      "source": "/thumbnails/:path*",
+      "destination": "http://13.61.84.121:5000/thumbnails/:path*"
     }
   ],
   "headers": [
@@ -10,8 +26,37 @@
       "source": "/(.*)",
       "headers": [
         {
-          "key": "Cache-Control",
-          "value": "no-cache, must-revalidate"
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        },
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
         }
       ]
     },
@@ -21,6 +66,10 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "Content-Type",
+          "value": "image/webp"
         }
       ]
     },
@@ -61,11 +110,37 @@
       ]
     },
     {
-      "source": "/(.*\\.(jpg|jpeg|png|gif|webp|svg|ico|bmp|mp4|webm))",
+      "source": "/(.*\\.(jpg|jpeg|png|gif|webp|svg|ico|bmp|avif))",
       "headers": [
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "Content-Type",
+          "value": "image/webp"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.(css|js))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.(mp4|webm|mkv))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
         }
       ]
     }
