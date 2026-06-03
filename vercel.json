@@ -7,14 +7,6 @@
     {
       "source": "/uploads/:path*",
       "destination": "http://13.61.84.121:5000/uploads/:path*"
-    },
-    {
-      "source": "/images/:path*",
-      "destination": "http://13.61.84.121:5000/images/:path*"
-    },
-    {
-      "source": "/video-player/:path*",
-      "destination": "/video-player/:path*"
     }
   ],
   "headers": [
@@ -26,12 +18,8 @@
           "value": "nosniff"
         },
         {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
+          "key": "Cache-Control",
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -49,10 +37,6 @@
         {
           "key": "Access-Control-Allow-Headers",
           "value": "Content-Type, Authorization"
-        },
-        {
-          "key": "Access-Control-Allow-Credentials",
-          "value": "true"
         }
       ]
     },
@@ -93,43 +77,7 @@
       ]
     },
     {
-      "source": "/video-player/(.*\\.(jpg|jpeg|png|gif|webp|svg|ico))",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/video-player/(.*\\.(css|js))",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/video-player/index.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/(.*\\.(jpg|jpeg|png|gif|webp|svg|ico|bmp))",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/(.*\\.(css|js))",
+      "source": "/(.*\\.(jpg|jpeg|png|gif|webp|svg|ico|bmp|css|js))",
       "headers": [
         {
           "key": "Cache-Control",
