@@ -7,6 +7,26 @@
     {
       "source": "/uploads/:path*",
       "destination": "http://13.61.84.121:5000/uploads/:path*"
+    },
+    {
+      "source": "/Postes/:path*",
+      "destination": "http://13.61.84.121:5000/Postes/:path*"
+    },
+    {
+      "source": "/video-player/Postes/:path*",
+      "destination": "http://13.61.84.121:5000/Postes/:path*"
+    },
+    {
+      "source": "/img/:path*",
+      "destination": "http://13.61.84.121:5000/img/:path*"
+    },
+    {
+      "source": "/AMovies-Poster/:path*",
+      "destination": "http://13.61.84.121:5000/AMovies-Poster/:path*"
+    },
+    {
+      "source": "/Horror-poster/:path*",
+      "destination": "http://13.61.84.121:5000/Horror-poster/:path*"
     }
   ],
   "headers": [
