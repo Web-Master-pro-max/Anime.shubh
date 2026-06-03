@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "http://<YOUR_EC2_IP_OR_DNS>:5000/api/:path*"
+      "destination": "http://<http://13.63.19.177/>:5000/api/:path*"
     }
   ]
 }
