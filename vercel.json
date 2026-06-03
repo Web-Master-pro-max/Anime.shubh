@@ -13,12 +13,8 @@
       "destination": "http://13.61.84.121:5000/images/:path*"
     },
     {
-      "source": "/posters/:path*",
-      "destination": "http://13.61.84.121:5000/posters/:path*"
-    },
-    {
-      "source": "/thumbnails/:path*",
-      "destination": "http://13.61.84.121:5000/thumbnails/:path*"
+      "source": "/video-player/:path*",
+      "destination": "/video-player/:path*"
     }
   ],
   "headers": [
@@ -66,10 +62,6 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
-        },
-        {
-          "key": "Content-Type",
-          "value": "image/webp"
         }
       ]
     },
@@ -101,24 +93,38 @@
       ]
     },
     {
-      "source": "/video-player/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=86400"
-        }
-      ]
-    },
-    {
-      "source": "/(.*\\.(jpg|jpeg|png|gif|webp|svg|ico|bmp|avif))",
+      "source": "/video-player/(.*\\.(jpg|jpeg|png|gif|webp|svg|ico))",
       "headers": [
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
-        },
+        }
+      ]
+    },
+    {
+      "source": "/video-player/(.*\\.(css|js))",
+      "headers": [
         {
-          "key": "Content-Type",
-          "value": "image/webp"
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/video-player/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.(jpg|jpeg|png|gif|webp|svg|ico|bmp))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     },
@@ -128,19 +134,6 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/(.*\\.(mp4|webm|mkv))",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=86400"
-        },
-        {
-          "key": "Accept-Ranges",
-          "value": "bytes"
         }
       ]
     }
