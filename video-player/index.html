@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Anime</title>
-  
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css">
   <!-- Android-fix inline rules removed; using external stylesheet -->
-  
+
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
+
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <!-- hls.js library for HLS playback -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
-  
+
   <!-- Apple Touch Icon -->
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/732/732228.png">
-  
+
   <!-- Android Theme Color -->
   <meta name="theme-color" content="#e50914">
-  
+
   <!-- iOS Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
+
 <body>
   <!-- Header -->
   <header class="site-header">
@@ -37,24 +42,24 @@
         <i class="fas fa-infinity"></i>
         <span class="logo-text">Infinx <span class="logo-pro">Anime</span></span>
       </a>
-      
+
       <!-- Mobile Menu Button -->
       <button class="mobile-menu-btn" aria-label="Toggle menu">
         <i class="fas fa-bars"></i>
       </button>
-      
+
       <nav class="header-nav">
         <a href="/index.html"><i class="fas fa-home"></i> <span class="nav-text">Home</span></a>
-        <a href="#"><i class="fas fa-fire"></i> <span class="nav-text">Trending</span></a>
-        <a href="#"><i class="fas fa-bookmark"></i> <span class="nav-text">Library</span></a>
+        <a href="/view.html#watchlist"><i class="fas fa-heart"></i> <span class="nav-text">Watchlist</span></a>
+        <a href="/view.html#history"><i class="fas fa-history"></i> <span class="nav-text">History</span></a>
         <div class="search-box">
-          <input type="text" placeholder="Search anime..." aria-label="Search anime">
-          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Search anime..." aria-label="Search anime">
+          <i class="fas fa-search" id="searchIcon"></i>
         </div>
       </nav>
     </div>
   </header>
-  
+
   <!-- Mobile Navigation Menu -->
   <div class="mobile-nav-overlay"></div>
   <div class="mobile-nav">
@@ -65,15 +70,16 @@
       </button>
     </div>
     <div class="mobile-nav-items">
+      <div class="search-box" style="margin-bottom: 20px; width: 100%;">
+        <input type="text" id="mobileSearchInput" placeholder="Search anime..." aria-label="Search anime">
+        <i class="fas fa-search" id="mobileSearchIcon"></i>
+      </div>
       <a href="/index.html"><i class="fas fa-home"></i> Home</a>
-      <a href="#"><i class="fas fa-fire"></i> Trending</a>
-      <a href="#"><i class="fas fa-bookmark"></i> Library</a>
-      <a href="#"><i class="fas fa-history"></i> History</a>
-      <a href="#"><i class="fas fa-download"></i> Downloads</a>
-      <a href="#"><i class="fas fa-cog"></i> Settings</a>
+      <a href="/view.html#watchlist"><i class="fas fa-heart"></i> Watchlist</a>
+      <a href="/view.html#history"><i class="fas fa-history"></i> History</a>
     </div>
   </div>
-  
+
   <!-- Main Container -->
   <div class="container">
     <!-- Main Video Player -->
@@ -85,7 +91,7 @@
           <video id="main-video" crossorigin="anonymous" playsinline webkit-playsinline></video>
           <!-- Custom caption overlay (JS-rendered for consistent styling) -->
           <div id="caption-overlay" class="caption-overlay" aria-hidden="true"></div>
-          
+
           <!-- Custom Video Controls -->
           <div class="custom-controls">
             <div class="progress-bar">
@@ -115,19 +121,19 @@
               <button class="control-btn next-btn" aria-label="Next episode">
                 <i class="fas fa-step-forward"></i>
               </button>
-              
+
               <div class="time-display">
                 <span class="current-time">0:00</span> / <span class="duration">0:00</span>
               </div>
-              
+
               <button class="control-btn volume-btn" aria-label="Volume">
                 <i class="fas fa-volume-up"></i>
               </button>
-              
+
               <div class="volume-slider">
                 <input type="range" min="0" max="100" value="100" class="volume-range" aria-label="Volume slider">
               </div>
-              
+
               <!-- Auto Next Checkbox -->
               <div class="auto-next-container">
                 <input type="checkbox" id="auto-next" class="auto-next-checkbox" checked>
@@ -135,7 +141,7 @@
                   <i class="fas fa-forward"></i>
                 </label>
               </div>
-              
+
               <div class="settings-menu">
                 <button class="control-btn settings-btn" aria-label="Settings">
                   <i class="fas fa-cog"></i>
@@ -172,37 +178,39 @@
                       <!-- Additional subtitle tracks will be populated by JavaScript -->
                     </div>
                   </div>
-                    <div class="settings-section">
-                      <div class="settings-title">Captions</div>
-                      <div class="settings-controls">
-                        <button id="open-caption-settings" class="settings-btn">Caption Settings</button>
-                      </div>
+                  <div class="settings-section">
+                    <div class="settings-title">Captions</div>
+                    <div class="settings-controls">
+                      <button id="open-caption-settings" class="settings-btn">Caption Settings</button>
                     </div>
+                  </div>
                 </div>
               </div>
-              
+
               <button class="control-btn fullscreen-btn" aria-label="Fullscreen">
                 <i class="fas fa-expand"></i>
               </button>
               <!-- Fit-screen button removed -->
-           
-                <!-- Android fix button removed -->
-           
+
+              <!-- Android fix button removed -->
+
             </div>
           </div>
-          
+
           <!-- Video Overlay Information -->
           <div class="video-overlay">
-            <div class="video-info">
-              <h2 class="video-title" id="current-video-title">Descendants of the Sun (S1)</h2>
+            <div class="video-info" style="width: 100%;">
+              <h2 class="video-title" id="current-video-title" style="width: 100%;">
+                <span class="skeleton" style="width: 40%; height: 24px; border-radius: 4px;"></span>
+              </h2>
               <div class="video-meta">
-                <span class="episode"><i class="fas fa-play-circle"></i> Episode 1</span>
-                <span class="views"><i class="fas fa-eye"></i> 2.4M views</span>
-                <span class="current-audio-display"><i class="fas fa-volume-up"></i> Hindi</span>
+                <span class="episode"><span class="skeleton" style="width: 80px; height: 16px; border-radius: 2px;"></span></span>
+                <span class="views"><span class="skeleton" style="width: 60px; height: 16px; border-radius: 2px;"></span></span>
+                <span class="current-audio-display"><span class="skeleton" style="width: 100px; height: 16px; border-radius: 2px;"></span></span>
               </div>
             </div>
           </div>
-          
+
           <!-- Mobile Touch Controls -->
           <div class="mobile-touch-controls">
             <div class="touch-left" data-action="rewind"></div>
@@ -210,22 +218,24 @@
             <div class="touch-right" data-action="forward"></div>
           </div>
         </div>
-        
+
         <!-- Video Settings Bar -->
         <div class="video-settings-bar">
           <div class="settings-left">
             <div class="quality-selector">
               <button class="settings-btn quality-btn">
-                <i class="fas fa-hd"></i> <span class="btn-text">Quality</span> <span class="current-quality">Auto</span> <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-hd"></i> <span class="btn-text">Quality</span> <span
+                  class="current-quality">Auto</span> <i class="fas fa-chevron-down"></i>
               </button>
               <div class="quality-dropdown" id="quality-dropdown">
                 <div class="quality-option active" data-quality="auto">Auto</div>
               </div>
             </div>
-            
-             <div class="audio-selector">
+
+            <div class="audio-selector">
               <button class="settings-btn audio-btn">
-                <i class="fas fa-closed-captioning"></i> <span class="btn-text">Audio</span> <span class="current-audio">Japanese</span> <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-closed-captioning"></i> <span class="btn-text">Audio</span> <span
+                  class="current-audio">Japanese</span> <i class="fas fa-chevron-down"></i>
               </button>
               <div class="audio-dropdown" id="audio-dropdown">
                 <div class="audio-option active" data-audio="Hindi">
@@ -239,10 +249,11 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="subtitle-selector">
               <button class="settings-btn subtitle-btn">
-                <i class="fas fa-closed-captioning"></i> <span class="btn-text">Subtitles</span> <span class="current-subtitle">Off</span> <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-closed-captioning"></i> <span class="btn-text">Subtitles</span> <span
+                  class="current-subtitle">Off</span> <i class="fas fa-chevron-down"></i>
               </button>
               <div class="subtitle-dropdown" id="subtitle-dropdown">
                 <div class="subtitle-option active" data-subtitle="off">
@@ -250,10 +261,11 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="playback-speed-selector">
               <button class="settings-btn speed-btn">
-                <i class="fas fa-tachometer-alt"></i> <span class="btn-text">Speed</span> <span class="current-speed">1x</span> <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-tachometer-alt"></i> <span class="btn-text">Speed</span> <span
+                  class="current-speed">1x</span> <i class="fas fa-chevron-down"></i>
               </button>
               <div class="speed-dropdown">
                 <div class="speed-option" data-speed="0.5">0.5x</div>
@@ -265,7 +277,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="settings-right">
             <button class="action-btn download-btn">
               <i class="fas fa-download"></i> <span class="btn-text">Download</span>
@@ -278,22 +290,25 @@
             </button>
           </div>
         </div>
-        
+
         <!-- Video Description -->
         <div class="video-description">
           <h3 class="description-title">Description</h3>
-          <p class="description-text">Saitama faces the Vaccine Man in his first heroic battle.</p>
-          
+          <p class="description-text">
+            <span class="skeleton" style="width: 100%; height: 16px; border-radius: 4px; margin-bottom: 6px;"></span>
+            <span class="skeleton" style="width: 70%; height: 16px; border-radius: 4px;"></span>
+          </p>
+
           <div class="video-tags">
-            <span class="tag">Action</span>
-            <span class="tag">Comedy</span>
-            <span class="tag">Superhero</span>
-            <span class="tag">Parody</span>
+            <span class="skeleton" style="width: 60px; height: 24px; border-radius: 12px; margin-right: 6px;"></span>
+            <span class="skeleton" style="width: 80px; height: 24px; border-radius: 12px; margin-right: 6px;"></span>
+            <span class="skeleton" style="width: 70px; height: 24px; border-radius: 12px;"></span>
           </div>
         </div>
+
       </div>
     </div>
-    
+
     <!-- Video Playlist -->
     <div class="video-playlist">
       <div class="playlist-header">
@@ -307,11 +322,32 @@
           </button>
         </div>
       </div>
-      
+
       <div class="playlist-items" id="playlist-items-container">
         <!-- Playlist items will be populated by JavaScript -->
+        <div class="playlist-item skeleton-playlist-item" style="display:flex; gap:10px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.03);">
+          <div class="skeleton" style="width: 80px; height: 50px; border-radius: 4px; flex-shrink: 0;"></div>
+          <div style="flex-grow: 1; display:flex; flex-direction:column; gap:6px;">
+            <div class="skeleton" style="width: 80%; height: 14px; border-radius: 2px;"></div>
+            <div class="skeleton" style="width: 40%; height: 10px; border-radius: 2px;"></div>
+          </div>
+        </div>
+        <div class="playlist-item skeleton-playlist-item" style="display:flex; gap:10px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.03);">
+          <div class="skeleton" style="width: 80px; height: 50px; border-radius: 4px; flex-shrink: 0;"></div>
+          <div style="flex-grow: 1; display:flex; flex-direction:column; gap:6px;">
+            <div class="skeleton" style="width: 80%; height: 14px; border-radius: 2px;"></div>
+            <div class="skeleton" style="width: 40%; height: 10px; border-radius: 2px;"></div>
+          </div>
+        </div>
+        <div class="playlist-item skeleton-playlist-item" style="display:flex; gap:10px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.03);">
+          <div class="skeleton" style="width: 80px; height: 50px; border-radius: 4px; flex-shrink: 0;"></div>
+          <div style="flex-grow: 1; display:flex; flex-direction:column; gap:6px;">
+            <div class="skeleton" style="width: 80%; height: 14px; border-radius: 2px;"></div>
+            <div class="skeleton" style="width: 40%; height: 10px; border-radius: 2px;"></div>
+          </div>
+        </div>
       </div>
-      
+
       <!-- Playlist Footer -->
       <div class="playlist-footer">
         <button class="load-more-btn hidden">
@@ -319,8 +355,51 @@
         </button>
       </div>
     </div>
+
+    <!-- ====== COMMENTS SECTION ====== -->
+    <div class="comments-section" id="commentsSection">
+      <div class="comments-header">
+        <h3><i class="fas fa-comments"></i> Comments <span id="comments-count-badge" class="comments-count-badge">(0)</span></h3>
+        <div class="comments-sort">
+          <button class="sort-tab active" id="sort-top">Top Comments</button>
+          <button class="sort-tab" id="sort-newest">Newest First</button>
+        </div>
+      </div>
+
+      <!-- Add Comment Form -->
+      <div class="add-comment-box" id="addCommentBox">
+        <!-- Loaded dynamically depending on auth state -->
+      </div>
+
+      <!-- Comments List -->
+      <div class="comments-list" id="comments-list">
+        <!-- Loaded dynamically -->
+        <div style="display:flex; gap:15px; padding:16px; margin-bottom:15px; background:rgba(255,255,255,0.01); border-radius:12px;">
+          <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;"></div>
+          <div style="flex-grow:1; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; gap:10px;">
+              <div class="skeleton" style="width: 100px; height: 14px; border-radius: 2px;"></div>
+              <div class="skeleton" style="width: 50px; height: 12px; border-radius: 2px;"></div>
+            </div>
+            <div class="skeleton" style="width: 100%; height: 16px; border-radius: 2px;"></div>
+            <div class="skeleton" style="width: 90%; height: 16px; border-radius: 2px;"></div>
+          </div>
+        </div>
+        <div style="display:flex; gap:15px; padding:16px; margin-bottom:15px; background:rgba(255,255,255,0.01); border-radius:12px;">
+          <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;"></div>
+          <div style="flex-grow:1; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; gap:10px;">
+              <div class="skeleton" style="width: 100px; height: 14px; border-radius: 2px;"></div>
+              <div class="skeleton" style="width: 50px; height: 12px; border-radius: 2px;"></div>
+            </div>
+            <div class="skeleton" style="width: 100%; height: 16px; border-radius: 2px;"></div>
+            <div class="skeleton" style="width: 90%; height: 16px; border-radius: 2px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  
+
   <!-- Keyboard Shortcuts Help -->
   <div class="shortcuts-help">
     <div class="shortcuts-content">
@@ -364,13 +443,14 @@
       </button>
     </div>
   </div>
-  
+
   <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-section">
         <h4><i class="fas fa-infinity"></i> Infinx Anime</h4>
-        <p>The ultimate destination for anime lovers. Stream the latest episodes in high quality with multiple audio and subtitle options.</p>
+        <p>The ultimate destination for anime lovers. Stream the latest episodes in high quality with multiple audio and
+          subtitle options.</p>
       </div>
       <div class="footer-section">
         <h4>Quick Links</h4>
@@ -397,7 +477,7 @@
       </button> -->
     </div>
   </footer>
-  
+
   <!-- JavaScript -->
   <script src="script.js"></script>
   <!-- Caption Settings Modal -->
@@ -422,7 +502,8 @@
             <div class="caption-settings-label">Text Background</div>
             <div class="caption-settings-controls">
               <div style="display:flex;gap:8px;align-items:center;">
-                <input type="color" id="caption-text-bg-color" value="#000000" style="width:46px;height:34px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">
+                <input type="color" id="caption-text-bg-color" value="#000000"
+                  style="width:46px;height:34px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">
                 <select id="caption-text-bg-opacity">
                   <option value="1">Opaque</option>
                   <option value="0.75">75%</option>
@@ -438,7 +519,8 @@
             <div class="caption-settings-label">Caption Area Background</div>
             <div class="caption-settings-controls">
               <div style="display:flex;gap:8px;align-items:center;">
-                <input type="color" id="caption-area-bg-color" value="#000000" style="width:46px;height:34px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">
+                <input type="color" id="caption-area-bg-color" value="#000000"
+                  style="width:46px;height:34px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">
                 <select id="caption-area-bg-opacity">
                   <option value="0">Transparent</option>
                   <option value="0.25">25%</option>
@@ -481,7 +563,8 @@
             <div class="caption-settings-label">Font Family</div>
             <div class="caption-settings-controls">
               <select id="caption-font-family">
-                <option value="'Proportional Sans-Serif', Poppins, Roboto, sans-serif" selected>Proportional Sans-Serif</option>
+                <option value="'Proportional Sans-Serif', Poppins, Roboto, sans-serif" selected>Proportional Sans-Serif
+                </option>
                 <option value="'Monospace', 'Courier New', monospace">Monospace</option>
                 <option value="'Serif', Georgia, serif">Serif</option>
               </select>
@@ -497,4 +580,5 @@
     </div>
   </div>
 </body>
+
 </html>

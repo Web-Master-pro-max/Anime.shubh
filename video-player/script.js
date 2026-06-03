@@ -518,6 +518,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     function closeSettingsDropdown() {
       isSettingsMenuOpen = false;
       if (settingsMenu) settingsMenu.classList.remove('active');
+      const controls = document.querySelector('.custom-controls');
+      if (controls) {
+        controls.classList.remove('settings-open');
+      }
     }
     
     // Set video quality
@@ -766,8 +770,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Format time function
     function formatTime(seconds) {
       if (isNaN(seconds) || seconds < 0) return "0:00";
-      const mins = Math.floor(seconds / 60);
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
       const secs = Math.floor(seconds % 60);
+      if (hrs > 0) {
+        return `${hrs}:${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }
       return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     }
     
@@ -1043,6 +1051,12 @@ document.addEventListener('DOMContentLoaded', async function() {
       e.stopPropagation();
       isSettingsMenuOpen = !isSettingsMenuOpen;
       if (settingsMenu) settingsMenu.classList.toggle('active', isSettingsMenuOpen);
+      
+      const controls = document.querySelector('.custom-controls');
+      if (controls) {
+        controls.classList.toggle('settings-open', isSettingsMenuOpen);
+      }
+      
       closeAllDropdowns();
     });
     
@@ -1164,6 +1178,40 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Sibling-based Playlist generator
     function initializePlaylist() {
+      // Render category tags dynamically
+      const tagsContainer = document.querySelector('.video-tags');
+      if (tagsContainer) {
+        if (currentEpisode.show?.categories && currentEpisode.show.categories.length > 0) {
+          tagsContainer.innerHTML = currentEpisode.show.categories
+            .map(c => `<span class="tag" onclick="window.location.href='/view.html#${c.category.slug}'">${c.category.name}</span>`)
+            .join('');
+        } else {
+          tagsContainer.innerHTML = '';
+        }
+      }
+
+      // Update views count dynamically
+      const viewsEl = document.querySelector('.views');
+      if (viewsEl) {
+        viewsEl.innerHTML = `<i class="fas fa-eye"></i> ${currentEpisode.views?.toLocaleString() || '0'} views`;
+      }
+
+      if (currentEpisode.show?.type === 'movie') {
+        const playlistEl = document.querySelector('.video-playlist');
+        if (playlistEl) playlistEl.style.display = 'none';
+        const containerEl = document.querySelector('.container');
+        if (containerEl) containerEl.classList.add('no-playlist');
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+        const autoNextCont = document.querySelector('.auto-next-container');
+        if (autoNextCont) autoNextCont.style.display = 'none';
+        if (videoTitle) videoTitle.textContent = currentEpisode.show.title || currentEpisode.title;
+        if (episodeElement) episodeElement.textContent = 'Movie';
+        const descriptionText = document.querySelector('.description-text');
+        if (descriptionText) descriptionText.textContent = currentEpisode.show?.description || '';
+        return;
+      }
+
       playlistContainer.innerHTML = '';
       
       // Update UI title and description for current playing episode
@@ -1206,6 +1254,498 @@ document.addEventListener('DOMContentLoaded', async function() {
       const loadMoreBtn = document.querySelector('.load-more-btn');
       if (loadMoreBtn) loadMoreBtn.style.display = 'none';
     }
+
+    // ====== COMMENTS SECTION LOGIC ======
+    let commentsData = [];
+    let currentSort = 'top';
+
+    function timeAgo(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const seconds = Math.floor((now - date) / 1000);
+      if (seconds < 60) return 'Just now';
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      if (days < 30) return `${days}d ago`;
+      const months = Math.floor(days / 30);
+      if (months < 12) return `${months}mo ago`;
+      const years = Math.floor(months / 12);
+      return `${years}y ago`;
+    }
+
+    function getAvatarClass(email) {
+      if (!email) return 'avatar-a';
+      const initial = email[0].toLowerCase();
+      if (initial >= 'a' && initial <= 'z') {
+        return `avatar-${initial}`;
+      }
+      return 'avatar-a';
+    }
+
+    function getUsername(email) {
+      if (!email) return 'Anonymous';
+      return email.split('@')[0];
+    }
+
+    function escapeHtml(s) {
+      if (!s) return '';
+      return (s+'')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function sortReplies(replies) {
+      return replies.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+
+    function buildCommentTree(comments) {
+      const topLevels = [];
+      const commentMap = {};
+
+      comments.forEach(c => {
+        c.replies = [];
+        commentMap[c.id] = c;
+      });
+
+      function getRootCommentId(comment) {
+        let curr = comment;
+        while (curr.parentId) {
+          const parent = commentMap[curr.parentId];
+          if (!parent) break;
+          curr = parent;
+        }
+        return curr.id;
+      }
+
+      comments.forEach(c => {
+        if (!c.parentId) {
+          topLevels.push(c);
+        } else {
+          const rootId = getRootCommentId(c);
+          if (commentMap[rootId]) {
+            const parentComment = commentMap[c.parentId];
+            if (parentComment && parentComment.parentId) {
+              c.replyToHandle = getUsername(parentComment.user?.email);
+            }
+            commentMap[rootId].replies.push(c);
+          }
+        }
+      });
+
+      topLevels.forEach(c => {
+        sortReplies(c.replies);
+      });
+
+      return topLevels;
+    }
+
+    function sortRoots(roots, sortBy) {
+      return roots.sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+
+        if (sortBy === 'top') {
+          if (b.likesCount !== a.likesCount) {
+            return b.likesCount - a.likesCount;
+          }
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        } else {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        }
+      });
+    }
+
+    function renderCommentCard(comment, isReply = false) {
+      const authorName = escapeHtml(getUsername(comment.user?.email));
+      const avatarChar = authorName[0].toUpperCase();
+      const avatarClass = getAvatarClass(comment.user?.email);
+      const timeAgoStr = timeAgo(comment.createdAt);
+      const isAdmin = comment.user?.role === 'ADMIN';
+      const isPinned = comment.isPinned;
+      const isLiked = comment.isLiked;
+
+      const currentUserEmail = localStorage.getItem('infinx_user_email');
+      const currentUserRole = localStorage.getItem('infinx_user_role');
+      const isOwner = currentUserEmail && currentUserEmail === comment.user?.email;
+      const isUserAdmin = currentUserRole === 'ADMIN';
+
+      const showDeleteBtn = isOwner || isUserAdmin;
+      const showPinBtn = isUserAdmin && !isReply;
+
+      let bodyContent = escapeHtml(comment.content);
+      if (comment.replyToHandle) {
+        bodyContent = `<span style="color: var(--primary); font-weight: 600; margin-right: 4px;">@${escapeHtml(comment.replyToHandle)}</span> ${bodyContent}`;
+      }
+
+      const likeBtnActive = isLiked ? 'liked' : '';
+      const pinBtnActive = isPinned ? 'pinned' : '';
+
+      return `
+        <div class="comment-card ${isPinned ? 'pinned' : ''}" id="comment-${comment.id}">
+          <div class="comment-avatar ${avatarClass}">
+            ${avatarChar}
+          </div>
+          <div class="comment-main">
+            <div class="comment-meta">
+              <span class="comment-author">${authorName}</span>
+              ${isAdmin ? `<span class="comment-role-badge">Admin</span>` : ''}
+              <span class="comment-time">${timeAgoStr}</span>
+              ${isPinned ? `<span class="comment-pin-badge"><i class="fas fa-thumbtack"></i> Pinned</span>` : ''}
+            </div>
+            <div class="comment-body">
+              ${bodyContent}
+            </div>
+            <div class="comment-actions">
+              <button class="comment-action-btn like-btn ${likeBtnActive}" onclick="handleLikeComment(${comment.id})">
+                <i class="${isLiked ? 'fas' : 'far'} fa-thumbs-up"></i>
+                <span class="likes-count">${comment.likesCount}</span>
+              </button>
+              
+              <button class="comment-action-btn reply-btn" onclick="toggleReplyInput(${comment.id})">
+                <i class="far fa-comment-alt"></i> Reply
+              </button>
+              
+              ${showPinBtn ? `
+                <button class="comment-action-btn pin-btn ${pinBtnActive}" onclick="handlePinComment(${comment.id})">
+                  <i class="fas fa-thumbtack"></i> ${isPinned ? 'Unpin' : 'Pin'}
+                </button>
+              ` : ''}
+              
+              ${showDeleteBtn ? `
+                <button class="comment-action-btn delete-btn" onclick="handleDeleteComment(${comment.id})">
+                  <i class="far fa-trash-alt"></i> Delete
+                </button>
+              ` : ''}
+            </div>
+            
+            <div class="reply-input-box" id="reply-box-${comment.id}">
+              <div class="reply-form">
+                <div class="reply-textarea-wrapper">
+                  <textarea id="reply-text-${comment.id}" placeholder="Reply to ${authorName}..." maxlength="500"></textarea>
+                </div>
+                <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.id})">Cancel</button>
+                <button class="reply-submit-btn" id="reply-submit-${comment.id}" onclick="submitReply(${comment.id})">
+                  <i class="fas fa-paper-plane"></i> Reply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCommentsList() {
+      const listContainer = document.getElementById('comments-list');
+      const countBadge = document.getElementById('comments-count-badge');
+      
+      if (!listContainer) return;
+      
+      if (commentsData.length === 0) {
+        listContainer.innerHTML = '<div style="text-align: center; color: var(--light-gray); padding: 30px 10px; font-size: 0.95rem;">No comments yet. Be the first to share your thoughts!</div>';
+        if (countBadge) countBadge.textContent = '(0)';
+        return;
+      }
+      
+      if (countBadge) countBadge.textContent = `(${commentsData.length})`;
+      
+      const tree = buildCommentTree(commentsData);
+      sortRoots(tree, currentSort);
+      
+      let html = '';
+      tree.forEach(comment => {
+        html += '<div class="comment-thread-wrapper">';
+        html += renderCommentCard(comment, false);
+        
+        if (comment.replies && comment.replies.length > 0) {
+          html += '<div class="replies-container">';
+          comment.replies.forEach(reply => {
+            html += renderCommentCard(reply, true);
+          });
+          html += '</div>';
+        }
+        
+        html += '</div>';
+      });
+      
+      listContainer.innerHTML = html;
+    }
+
+    async function loadComments() {
+      try {
+        const headers = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        const res = await fetch(`${API_BASE}/comments/episode/${episodeId}`, { headers });
+        if (res.status === 401) {
+          localStorage.clear();
+          window.location.reload();
+          return;
+        }
+        if (res.ok) {
+          commentsData = await res.json();
+          renderCommentsList();
+        } else {
+          console.error('Failed to load comments');
+        }
+      } catch (error) {
+        console.error('Error loading comments:', error);
+      }
+    }
+
+    function initCommentsSection() {
+      const addCommentBox = document.getElementById('addCommentBox');
+      if (addCommentBox) {
+        if (token) {
+          addCommentBox.innerHTML = `
+            <form class="comment-form" id="main-comment-form">
+              <div class="comment-textarea-wrapper">
+                <textarea id="main-comment-text" placeholder="Add a public comment..." maxlength="500" required></textarea>
+                <span class="char-counter" id="main-comment-counter">500</span>
+              </div>
+              <div class="comment-submit-row">
+                <button type="submit" class="comment-submit-btn" id="main-comment-submit">
+                  <i class="fas fa-paper-plane"></i> Comment
+                </button>
+              </div>
+            </form>
+          `;
+          
+          const textInput = document.getElementById('main-comment-text');
+          const counter = document.getElementById('main-comment-counter');
+          if (textInput && counter) {
+            textInput.addEventListener('input', function() {
+              const remaining = 500 - this.value.length;
+              counter.textContent = remaining;
+            });
+          }
+          
+          const mainForm = document.getElementById('main-comment-form');
+          if (mainForm) {
+            mainForm.addEventListener('submit', async function(e) {
+              e.preventDefault();
+              const content = textInput.value.trim();
+              if (!content) return;
+              
+              const submitBtn = document.getElementById('main-comment-submit');
+              submitBtn.disabled = true;
+              
+              try {
+                const res = await fetch(`${API_BASE}/comments/episode/${episodeId}`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({ content })
+                });
+                
+                if (res.ok) {
+                  textInput.value = '';
+                  counter.textContent = '500';
+                  await loadComments();
+                } else {
+                  const errData = await res.json();
+                  alert(errData.error || 'Failed to post comment.');
+                }
+              } catch (error) {
+                console.error('Error posting comment:', error);
+                alert('Failed to post comment due to connection error.');
+              } finally {
+                submitBtn.disabled = false;
+              }
+            });
+          }
+        } else {
+          addCommentBox.innerHTML = `
+            <div class="comment-login-prompt">
+              <p>Join the conversation! Please <a href="/index.html?login=true">Login</a> or <a href="/index.html?login=true">Register</a> to post a comment.</p>
+            </div>
+          `;
+        }
+      }
+
+      const sortTopBtn = document.getElementById('sort-top');
+      const sortNewestBtn = document.getElementById('sort-newest');
+
+      if (sortTopBtn && sortNewestBtn) {
+        sortTopBtn.addEventListener('click', () => {
+          if (currentSort === 'top') return;
+          currentSort = 'top';
+          sortTopBtn.classList.add('active');
+          sortNewestBtn.classList.remove('active');
+          renderCommentsList();
+        });
+
+        sortNewestBtn.addEventListener('click', () => {
+          if (currentSort === 'newest') return;
+          currentSort = 'newest';
+          sortNewestBtn.classList.add('active');
+          sortTopBtn.classList.remove('active');
+          renderCommentsList();
+        });
+      }
+
+      loadComments();
+    }
+
+    // Attach actions to window for global access from template click triggers
+    window.toggleReplyInput = function(commentId) {
+      if (!token) {
+        alert('Please login to reply.');
+        window.location.href = '/index.html?login=true';
+        return;
+      }
+      const replyBox = document.getElementById(`reply-box-${commentId}`);
+      if (replyBox) {
+        replyBox.classList.toggle('active');
+        const textarea = document.getElementById(`reply-text-${commentId}`);
+        if (textarea && replyBox.classList.contains('active')) {
+          textarea.value = '';
+          textarea.focus();
+        }
+      }
+    };
+
+    window.submitReply = async function(commentId) {
+      if (!token) return;
+      const textarea = document.getElementById(`reply-text-${commentId}`);
+      if (!textarea) return;
+      
+      const content = textarea.value.trim();
+      if (!content) return;
+      
+      const submitBtn = document.getElementById(`reply-submit-${commentId}`);
+      if (submitBtn) submitBtn.disabled = true;
+      
+      try {
+        const res = await fetch(`${API_BASE}/comments/episode/${episodeId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            content,
+            parentId: commentId
+          })
+        });
+        
+        if (res.ok) {
+          await loadComments();
+        } else {
+          const errData = await res.json();
+          alert(errData.error || 'Failed to post reply.');
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      } catch (error) {
+        console.error('Error posting reply:', error);
+        alert('Failed to post reply due to connection error.');
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    };
+
+    window.handleLikeComment = async function(commentId) {
+      if (!token) {
+        alert('Please login to like comments.');
+        window.location.href = '/index.html?login=true';
+        return;
+      }
+      
+      try {
+        const res = await fetch(`${API_BASE}/comments/${commentId}/like`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          commentsData = commentsData.map(c => {
+            if (c.id === commentId) {
+              const liked = data.status === 'liked';
+              return {
+                ...c,
+                isLiked: liked,
+                likesCount: liked ? c.likesCount + 1 : Math.max(0, c.likesCount - 1)
+              };
+            }
+            return c;
+          });
+          renderCommentsList();
+        } else {
+          alert('Failed to like comment.');
+        }
+      } catch (error) {
+        console.error('Error liking comment:', error);
+      }
+    };
+
+    window.handlePinComment = async function(commentId) {
+      if (!token) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/comments/${commentId}/pin`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (res.ok) {
+          const updatedComment = await res.json();
+          commentsData = commentsData.map(c => {
+            if (c.id === commentId) {
+              return {
+                ...c,
+                isPinned: updatedComment.isPinned
+              };
+            } else if (updatedComment.isPinned && !c.parentId) {
+              return {
+                ...c,
+                isPinned: false
+              };
+            }
+            return c;
+          });
+          renderCommentsList();
+        } else {
+          alert('Failed to toggle pin status.');
+        }
+      } catch (error) {
+        console.error('Error pinning comment:', error);
+      }
+    };
+
+    window.handleDeleteComment = async function(commentId) {
+      if (!token) return;
+      if (!confirm('Are you sure you want to delete this comment?')) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/comments/${commentId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (res.ok) {
+          commentsData = commentsData.filter(c => c.id !== commentId && c.parentId !== commentId);
+          renderCommentsList();
+        } else {
+          alert('Failed to delete comment.');
+        }
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+      }
+    };
 
     // Keyboard controls
     document.addEventListener('keydown', function(e) {
@@ -1297,6 +1837,78 @@ document.addEventListener('DOMContentLoaded', async function() {
           autoNextLabel.style.color = '#00a8ff';
         }
       }
+
+      // Search Box Handler
+      const searchInput = document.getElementById('searchInput');
+      const searchIcon = document.getElementById('searchIcon');
+      if (searchInput) {
+        searchInput.addEventListener('keyup', function(e) {
+          if (e.key === 'Enter') {
+            const term = this.value.trim();
+            if (term) {
+              window.location.href = `/view.html#search?q=${encodeURIComponent(term)}`;
+            }
+          }
+        });
+      }
+      if (searchIcon && searchInput) {
+        searchIcon.style.cursor = 'pointer';
+        searchIcon.addEventListener('click', function() {
+          const term = searchInput.value.trim();
+          if (term) {
+            window.location.href = `/view.html#search?q=${encodeURIComponent(term)}`;
+          }
+        });
+      }
+
+      // Mobile Navigation Menu Toggle Listeners
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', function() {
+          if (mobileNav) mobileNav.classList.add('active');
+          if (mobileNavOverlay) mobileNavOverlay.classList.add('active');
+        });
+      }
+      if (mobileNavClose) {
+        mobileNavClose.addEventListener('click', function() {
+          if (mobileNav) mobileNav.classList.remove('active');
+          if (mobileNavOverlay) mobileNavOverlay.classList.remove('active');
+        });
+      }
+      if (mobileNavOverlay) {
+        mobileNavOverlay.addEventListener('click', function() {
+          if (mobileNav) mobileNav.classList.remove('active');
+          if (mobileNavOverlay) mobileNavOverlay.classList.remove('active');
+        });
+      }
+
+      // Mobile Drawer Search Box Handler
+      const mobileSearchInput = document.getElementById('mobileSearchInput');
+      const mobileSearchIcon = document.getElementById('mobileSearchIcon');
+      if (mobileSearchInput) {
+        mobileSearchInput.addEventListener('keyup', function(e) {
+          if (e.key === 'Enter') {
+            const term = this.value.trim();
+            if (term) {
+              if (mobileNav) mobileNav.classList.remove('active');
+              if (mobileNavOverlay) mobileNavOverlay.classList.remove('active');
+              window.location.href = `/view.html#search?q=${encodeURIComponent(term)}`;
+            }
+          }
+        });
+      }
+      if (mobileSearchIcon && mobileSearchInput) {
+        mobileSearchIcon.style.cursor = 'pointer';
+        mobileSearchIcon.addEventListener('click', function() {
+          const term = mobileSearchInput.value.trim();
+          if (term) {
+            if (mobileNav) mobileNav.classList.remove('active');
+            if (mobileNavOverlay) mobileNavOverlay.classList.remove('active');
+            window.location.href = `/view.html#search?q=${encodeURIComponent(term)}`;
+          }
+        });
+      }
+
+      initCommentsSection();
     }
     
     initializePlayer();

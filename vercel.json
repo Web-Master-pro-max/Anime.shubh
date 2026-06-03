@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "http://<YOUR_EC2_IP_OR_DNS>:5000/api/:path*"
+    }
+  ]
+}
