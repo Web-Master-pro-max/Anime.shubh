@@ -489,6 +489,7 @@
             0% {
                 background-position: -200% 0;
             }
+
             100% {
                 background-position: 200% 0;
             }
@@ -567,7 +568,9 @@
                         <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Total Shows
                         </h4>
                         <p id="statTotalShows" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
-                            <span class="skeleton" style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span></p>
+                            <span class="skeleton"
+                                style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span>
+                        </p>
                     </div>
                 </div>
                 <div class="card stat-card"
@@ -576,7 +579,9 @@
                     <div>
                         <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Episodes</h4>
                         <p id="statTotalEpisodes" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
-                            <span class="skeleton" style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span></p>
+                            <span class="skeleton"
+                                style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span>
+                        </p>
                     </div>
                 </div>
                 <div class="card stat-card"
@@ -586,7 +591,9 @@
                         <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Active Tasks
                         </h4>
                         <p id="statActiveTasks" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
-                            <span class="skeleton" style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span></p>
+                            <span class="skeleton"
+                                style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span>
+                        </p>
                     </div>
                 </div>
                 <div class="card stat-card"
@@ -641,9 +648,13 @@
                                 <input type="text" id="showBadge" placeholder="e.g. HD" value="HD" required>
                             </div>
 
-                            <div class="form-group" style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
-                                <input type="checkbox" id="showDubSub" style="width: 20px; height: 20px; cursor: pointer;">
-                                <label for="showDubSub" style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language (Dub/Sub)</label>
+                            <div class="form-group"
+                                style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
+                                <input type="checkbox" id="showDubSub"
+                                    style="width: 20px; height: 20px; cursor: pointer;">
+                                <label for="showDubSub"
+                                    style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language
+                                    (Dub/Sub)</label>
                             </div>
 
                             <div class="form-group">
@@ -681,7 +692,8 @@
                             </div>
 
                             <div class="form-group full-width">
-                                <label>Upload Banner Image/Video (Large Landscape for Homepage Carousel - Optional)</label>
+                                <label>Upload Banner Image/Video (Large Landscape for Homepage Carousel -
+                                    Optional)</label>
                                 <div class="file-upload-wrapper">
                                     <i class="fas fa-photo-film"></i>
                                     <p id="bannerLabel">Drag & drop banner image/video or click to select</p>
@@ -851,10 +863,12 @@
                             </div>
 
                             <div class="form-group full-width">
-                                <label>Upload Custom Banner Backdrop (Large Landscape Image or Video - Stored to S3)</label>
+                                <label>Upload Custom Banner Backdrop (Large Landscape Image or Video - Stored to
+                                    S3)</label>
                                 <div class="file-upload-wrapper">
                                     <i class="fas fa-photo-film"></i>
-                                    <p id="bannerCustomLabel">Drag & drop landscape backdrop image/video or click to select</p>
+                                    <p id="bannerCustomLabel">Drag & drop landscape backdrop image/video or click to
+                                        select</p>
                                     <input type="file" id="bannerCustomFile" accept="image/*,video/*">
                                 </div>
                             </div>
@@ -932,7 +946,7 @@
 
     <!-- ====== SCRIPTS ====== -->
     <script>
-        const API_BASE = '/api';
+        const API_BASE = 'http://13.61.84.121:5000/api';
 
         // Authorization & Guards
         document.addEventListener('DOMContentLoaded', function () {
@@ -1988,7 +2002,7 @@
                     return;
                 }
                 const show = await res.json();
-                
+
                 document.getElementById('editShowId').value = show.id;
                 document.getElementById('editShowTitle').value = show.title;
                 document.getElementById('editShowRating').value = show.rating;
@@ -1999,7 +2013,7 @@
                 document.getElementById('editShowRuntime').value = show.runtime;
                 document.getElementById('editShowDesc').value = show.description;
                 document.getElementById('editShowIsFeatured').checked = show.isFeatured || false;
-                
+
                 // Reset file labels and selections
                 document.getElementById('editShowPosterFile').value = '';
                 document.getElementById('editShowBannerFile').value = '';
@@ -2022,7 +2036,7 @@
                     const data = await catRes.json();
                     const categoriesSelect = document.getElementById('editShowCategories');
                     categoriesSelect.innerHTML = data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-                    
+
                     // Select current categories
                     const currentCategoryIds = show.categories ? show.categories.map(c => c.categoryId) : [];
                     Array.from(categoriesSelect.options).forEach(opt => {
@@ -2151,7 +2165,8 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-user-plus"></i> Add New User</h3>
+                <i class="fas fa-user-plus"></i> Add New User
+            </h3>
 
             <form id="addUserForm" onsubmit="handleAddUser(event)">
                 <div class="form-group">
@@ -2191,7 +2206,8 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-user-edit"></i> Edit User Account</h3>
+                <i class="fas fa-user-edit"></i> Edit User Account
+            </h3>
 
             <form id="editUserForm" onsubmit="handleEditUser(event)">
                 <input type="hidden" id="editUserId">
@@ -2231,7 +2247,8 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-edit"></i> Edit Show Details</h3>
+                <i class="fas fa-edit"></i> Edit Show Details
+            </h3>
 
             <form id="editShowForm" onsubmit="handleEditShow(event)">
                 <input type="hidden" id="editShowId">
@@ -2261,9 +2278,12 @@
                         <label for="editShowBadge">Badge (HD, 4K, NEW, etc.)</label>
                         <input type="text" id="editShowBadge" required>
                     </div>
-                    <div class="form-group" style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
+                    <div class="form-group"
+                        style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
                         <input type="checkbox" id="editShowDubSub" style="width: 20px; height: 20px; cursor: pointer;">
-                        <label for="editShowDubSub" style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language (Dub/Sub)</label>
+                        <label for="editShowDubSub"
+                            style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language
+                            (Dub/Sub)</label>
                     </div>
                     <div class="form-group">
                         <label for="editShowYear">Release Year</label>
@@ -2277,9 +2297,13 @@
                         <label for="editShowDesc">Show Description</label>
                         <textarea id="editShowDesc" required></textarea>
                     </div>
-                    <div class="form-group full-width" style="grid-column: span 2; display: flex; flex-direction: row; align-items: center; gap: 10px;">
-                        <input type="checkbox" id="editShowIsFeatured" style="width: 20px; height: 20px; cursor: pointer;">
-                        <label for="editShowIsFeatured" style="font-size: 1.4rem; font-weight: 600; cursor: pointer; color: var(--primary); margin-bottom: 0;">Feature this show on the Homepage Banner Carousel</label>
+                    <div class="form-group full-width"
+                        style="grid-column: span 2; display: flex; flex-direction: row; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="editShowIsFeatured"
+                            style="width: 20px; height: 20px; cursor: pointer;">
+                        <label for="editShowIsFeatured"
+                            style="font-size: 1.4rem; font-weight: 600; cursor: pointer; color: var(--primary); margin-bottom: 0;">Feature
+                            this show on the Homepage Banner Carousel</label>
                     </div>
                     <div class="form-group full-width" style="grid-column: span 2;">
                         <label>Replace Poster Image (Optional)</label>
@@ -2314,7 +2338,8 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-edit"></i> Edit Episode Metadata</h3>
+                <i class="fas fa-edit"></i> Edit Episode Metadata
+            </h3>
 
             <form id="editEpisodeForm" onsubmit="handleEditEpisode(event)">
                 <input type="hidden" id="editEpisodeId">
