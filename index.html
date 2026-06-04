@@ -2185,7 +2185,7 @@
                         const settingsData = await settingsRes.json();
                         if (settingsData.bannerSlideTime) slideDelay = settingsData.bannerSlideTime;
                     }
-                } catch(err) { console.error('Error loading settings', err); }
+                } catch (err) { console.error('Error loading settings', err); }
 
                 const res = await fetch(`${API_BASE}/shows/carousel`);
                 const data = await res.json();
