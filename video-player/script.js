@@ -9,7 +9,7 @@ window.addEventListener('unhandledrejection', function (e) {
 
 document.addEventListener('DOMContentLoaded', async function () {
   try {
-    const API_BASE = 'http://13.61.84.121:5000/api';
+    const API_BASE = '/api';
 
     // Get episode ID from URL params
     const urlParams = new URLSearchParams(window.location.search);
