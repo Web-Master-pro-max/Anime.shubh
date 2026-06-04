@@ -828,12 +828,22 @@
                 </div>
             </div>
 
-            <!-- PANEL: CUSTOMIZE BANNER -->
             <div id="bannerPanel" class="content-panel">
                 <div class="panel-header">
                     <h2 class="panel-title">Customize Homepage Banner Slideshow</h2>
                     <p class="panel-desc">Manage featured homepage slider entries, customize layout backdrops, and write
                         synapse overrides</p>
+                </div>
+
+                <div class="card" style="margin-bottom: 30px; padding: 25px;">
+                    <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--success);"><i class="fas fa-cog"></i> Global Banner Settings</h3>
+                    <form id="bannerSettingsForm" style="display: flex; align-items: flex-end; gap: 15px;">
+                        <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                            <label for="bannerSlideTime">Slide Time / Delay (in milliseconds)</label>
+                            <input type="number" id="bannerSlideTime" placeholder="e.g. 6000 for 6 seconds" min="1000" step="500" required>
+                        </div>
+                        <button type="submit" class="btn-submit" style="margin-top: 0; padding: 12px 24px;"><i class="fas fa-save"></i> Save Settings</button>
+                    </form>
                 </div>
 
                 <div class="card" style="margin-bottom: 30px; padding: 25px;">
@@ -998,7 +1008,45 @@
             // File selection label mapping
             document.getElementById('showPosterFile').addEventListener('change', function () {
                 const label = document.getElementById('posterLabel');
-                label.textContent = this.files[0] ? `Selected: ${this.files[0].name}` : 'Drag & drop poster image or click to select';
+                label.textContent = this.files[0] ? this.files[0].name : 'Drag & drop poster image or click to select';
+            });
+
+            document.getElementById('bannerSettingsForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const btn = this.querySelector('button[type="submit"]');
+                const time = document.getElementById('bannerSlideTime').value;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                try {
+                    const res = await fetch(`${API_BASE}/settings`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('infinx_token')}`
+                        },
+                        body: JSON.stringify({ bannerSlideTime: time })
+                    });
+                    if (res.ok) {
+                        alert('Settings saved successfully! Changes will be reflected on the homepage.');
+                    } else {
+                        alert('Failed to save settings.');
+                    }
+                } catch(err) {
+                    alert('Connection error');
+                }
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Settings';
+            });
+
+            // Load settings when banner panel is opened
+            document.querySelector('[data-target="bannerPanel"]').addEventListener('click', async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/settings`);
+                    if(res.ok) {
+                        const data = await res.json();
+                        if(data.bannerSlideTime) {
+                            document.getElementById('bannerSlideTime').value = data.bannerSlideTime;
+                        }
+                    }
+                } catch(e) {}
             });
 
             document.getElementById('episodeVideoFile').addEventListener('change', function () {
