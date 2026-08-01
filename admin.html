@@ -968,7 +968,8 @@
 
     <!-- ====== SCRIPTS ====== -->
     <script>
-        const API_BASE = '/api';
+       const EC2_BACKEND_URL = 'http://13.61.84.121:8000';
+        const API_BASE = window.location.hostname.includes('vercel.app') ? `${EC2_BACKEND_URL}/api` : '/api';
         let taskPollInterval = null;
 
         // Authorization & Guards

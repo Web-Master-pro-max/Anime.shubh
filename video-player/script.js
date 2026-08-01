@@ -9,7 +9,8 @@ window.addEventListener('unhandledrejection', function (e) {
 
 document.addEventListener('DOMContentLoaded', async function () {
   try {
-    const API_BASE = '/api';
+     const EC2_BACKEND_URL = 'http://13.61.84.121:8000';
+    const API_BASE = window.location.hostname.includes('vercel.app') ? `${EC2_BACKEND_URL}/api` : '/api';
 
     // Get episode ID from URL params
     const urlParams = new URLSearchParams(window.location.search);
