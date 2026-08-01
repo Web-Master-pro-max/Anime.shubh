@@ -489,7 +489,6 @@
             0% {
                 background-position: -200% 0;
             }
-
             100% {
                 background-position: 200% 0;
             }
@@ -568,9 +567,7 @@
                         <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Total Shows
                         </h4>
                         <p id="statTotalShows" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
-                            <span class="skeleton"
-                                style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span>
-                        </p>
+                            <span class="skeleton" style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span></p>
                     </div>
                 </div>
                 <div class="card stat-card"
@@ -579,9 +576,7 @@
                     <div>
                         <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Episodes</h4>
                         <p id="statTotalEpisodes" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
-                            <span class="skeleton"
-                                style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span>
-                        </p>
+                            <span class="skeleton" style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span></p>
                     </div>
                 </div>
                 <div class="card stat-card"
@@ -591,9 +586,7 @@
                         <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Active Tasks
                         </h4>
                         <p id="statActiveTasks" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
-                            <span class="skeleton"
-                                style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span>
-                        </p>
+                            <span class="skeleton" style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span></p>
                     </div>
                 </div>
                 <div class="card stat-card"
@@ -648,13 +641,9 @@
                                 <input type="text" id="showBadge" placeholder="e.g. HD" value="HD" required>
                             </div>
 
-                            <div class="form-group"
-                                style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
-                                <input type="checkbox" id="showDubSub"
-                                    style="width: 20px; height: 20px; cursor: pointer;">
-                                <label for="showDubSub"
-                                    style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language
-                                    (Dub/Sub)</label>
+                            <div class="form-group" style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
+                                <input type="checkbox" id="showDubSub" style="width: 20px; height: 20px; cursor: pointer;">
+                                <label for="showDubSub" style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language (Dub/Sub)</label>
                             </div>
 
                             <div class="form-group">
@@ -692,8 +681,7 @@
                             </div>
 
                             <div class="form-group full-width">
-                                <label>Upload Banner Image/Video (Large Landscape for Homepage Carousel -
-                                    Optional)</label>
+                                <label>Upload Banner Image/Video (Large Landscape for Homepage Carousel - Optional)</label>
                                 <div class="file-upload-wrapper">
                                     <i class="fas fa-photo-film"></i>
                                     <p id="bannerLabel">Drag & drop banner image/video or click to select</p>
@@ -747,13 +735,39 @@
                         </div>
 
                         <!-- Progress Bar Container -->
-                        <div class="progress-container" id="uploadProgressContainer">
-                            <div class="progress-info">
-                                <span id="progressText">Uploading raw file...</span>
-                                <span id="progressPercent">0%</span>
+                        <div class="progress-container" id="uploadProgressContainer" style="display: none; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--gray-border); padding: 12px 16px; border-radius: 8px; margin-top: 15px;">
+                            <h4 style="margin: 0 0 10px 0; color: var(--secondary); font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-tasks"></i> Pipeline Upload & Transcode Progress
+                            </h4>
+                            <!-- Stage 1: Server Upload -->
+                            <div style="margin-bottom: 8px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 3px;">
+                                    <span style="color: #fff; font-weight: 500;"><i class="fas fa-server" id="iconStage1"></i> 1. Server Upload</span>
+                                    <span style="color: var(--secondary); font-weight: 600;" id="textStage1">0%</span>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden;">
+                                    <div id="barStage1" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00a8ff, #0097e6); transition: width 0.3s ease;"></div>
+                                </div>
                             </div>
-                            <div class="progress-track">
-                                <div class="progress-fill" id="uploadProgressBar"></div>
+                            <!-- Stage 2: HLS Transcoding -->
+                            <div style="margin-bottom: 8px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 3px;">
+                                    <span style="color: #e1e1e1; font-weight: 500;"><i class="fas fa-cogs" id="iconStage2"></i> 2. HLS Transcoding</span>
+                                    <span style="color: var(--gray-text); font-weight: 600;" id="textStage2">Pending</span>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden;">
+                                    <div id="barStage2" style="width: 0%; height: 100%; background: linear-gradient(90deg, #f39c12, #e67e22); transition: width 0.3s ease;"></div>
+                                </div>
+                            </div>
+                            <!-- Stage 3: AWS S3 Upload -->
+                            <div>
+                                <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 3px;">
+                                    <span style="color: #e1e1e1; font-weight: 500;"><i class="fas fa-cloud-upload-alt" id="iconStage3"></i> 3. AWS S3 Upload</span>
+                                    <span style="color: var(--gray-text); font-weight: 600;" id="textStage3">Pending</span>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden;">
+                                    <div id="barStage3" style="width: 0%; height: 100%; background: linear-gradient(90deg, #2ecc71, #27ae60); transition: width 0.3s ease;"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -836,16 +850,13 @@
                 </div>
 
                 <div class="card" style="margin-bottom: 30px; padding: 25px;">
-                    <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--success);"><i
-                            class="fas fa-cog"></i> Global Banner Settings</h3>
+                    <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--success);"><i class="fas fa-cog"></i> Global Banner Settings</h3>
                     <form id="bannerSettingsForm" style="display: flex; align-items: flex-end; gap: 15px;">
                         <div class="form-group" style="margin-bottom: 0; flex: 1;">
                             <label for="bannerSlideTime">Slide Time / Delay (in milliseconds)</label>
-                            <input type="number" id="bannerSlideTime" placeholder="e.g. 6000 for 6 seconds" min="1000"
-                                step="500" required>
+                            <input type="number" id="bannerSlideTime" placeholder="e.g. 6000 for 6 seconds" min="1000" step="500" required>
                         </div>
-                        <button type="submit" class="btn-submit" style="margin-top: 0; padding: 12px 24px;"><i
-                                class="fas fa-save"></i> Save Settings</button>
+                        <button type="submit" class="btn-submit" style="margin-top: 0; padding: 12px 24px;"><i class="fas fa-save"></i> Save Settings</button>
                     </form>
                 </div>
 
@@ -876,12 +887,10 @@
                             </div>
 
                             <div class="form-group full-width">
-                                <label>Upload Custom Banner Backdrop (Large Landscape Image or Video - Stored to
-                                    S3)</label>
+                                <label>Upload Custom Banner Backdrop (Large Landscape Image or Video - Stored to S3)</label>
                                 <div class="file-upload-wrapper">
                                     <i class="fas fa-photo-film"></i>
-                                    <p id="bannerCustomLabel">Drag & drop landscape backdrop image/video or click to
-                                        select</p>
+                                    <p id="bannerCustomLabel">Drag & drop landscape backdrop image/video or click to select</p>
                                     <input type="file" id="bannerCustomFile" accept="image/*,video/*">
                                 </div>
                             </div>
@@ -960,6 +969,7 @@
     <!-- ====== SCRIPTS ====== -->
     <script>
         const API_BASE = '/api';
+        let taskPollInterval = null;
 
         // Authorization & Guards
         document.addEventListener('DOMContentLoaded', function () {
@@ -983,30 +993,26 @@
 
                     this.classList.add('active');
                     const targetPanel = this.dataset.target;
-                    document.getElementById(targetPanel).classList.add('active');
-                });
-            });
+                    const targetEl = document.getElementById(targetPanel);
+                    if (targetEl) targetEl.classList.add('active');
 
-            // Periodically refresh active lists for real-time progress updates
-            setInterval(() => {
-                loadDashboardStats();
-                const activePanel = document.querySelector('.content-panel.active');
-                if (activePanel) {
-                    if (activePanel.id === 'taskPanel') {
-                        fetchTasks();
-                    } else if (activePanel.id === 'managePanel') {
+                    loadDashboardStats();
+
+                    if (targetPanel === 'uploadEpisodePanel') {
+                        loadShowsList();
+                    } else if (targetPanel === 'addShowPanel') {
+                        loadCategoriesList();
+                    } else if (targetPanel === 'managePanel') {
                         fetchManageShows();
-                        const modal = document.getElementById('episodeManagerModal');
-                        if (modal && modal.style.display === 'flex' && currentActiveShowId) {
-                            fetchShowEpisodesList(currentActiveShowId);
-                        }
-                    } else if (activePanel.id === 'bannerPanel') {
+                    } else if (targetPanel === 'taskPanel') {
+                        fetchTasks();
+                    } else if (targetPanel === 'bannerPanel') {
                         loadBannerCustomizer();
-                    } else if (activePanel.id === 'usersPanel') {
+                    } else if (targetPanel === 'usersPanel') {
                         fetchUsers();
                     }
-                }
-            }, 4000);
+                });
+            });
 
             // File selection label mapping
             document.getElementById('showPosterFile').addEventListener('change', function () {
@@ -1014,7 +1020,7 @@
                 label.textContent = this.files[0] ? this.files[0].name : 'Drag & drop poster image or click to select';
             });
 
-            document.getElementById('bannerSettingsForm').addEventListener('submit', async function (e) {
+            document.getElementById('bannerSettingsForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const btn = this.querySelector('button[type="submit"]');
                 const time = document.getElementById('bannerSlideTime').value;
@@ -1033,7 +1039,7 @@
                     } else {
                         alert('Failed to save settings.');
                     }
-                } catch (err) {
+                } catch(err) {
                     alert('Connection error');
                 }
                 btn.innerHTML = '<i class="fas fa-save"></i> Save Settings';
@@ -1043,13 +1049,13 @@
             document.querySelector('[data-target="bannerPanel"]').addEventListener('click', async () => {
                 try {
                     const res = await fetch(`${API_BASE}/settings`);
-                    if (res.ok) {
+                    if(res.ok) {
                         const data = await res.json();
-                        if (data.bannerSlideTime) {
+                        if(data.bannerSlideTime) {
                             document.getElementById('bannerSlideTime').value = data.bannerSlideTime;
                         }
                     }
-                } catch (e) { }
+                } catch(e) {}
             });
 
             document.getElementById('episodeVideoFile').addEventListener('change', function () {
@@ -1089,7 +1095,6 @@
 
             // Form Submissions
             document.getElementById('createShowForm').addEventListener('submit', handleCreateShow);
-            document.getElementById('uploadEpisodeForm').addEventListener('submit', handleUploadEpisode);
             document.getElementById('customizeBannerForm').addEventListener('submit', handleCustomizeBanner);
             document.getElementById('editShowForm').addEventListener('submit', handleEditShow);
 
@@ -1243,147 +1248,232 @@
         }
 
         // Handle raw episode uploads with XMLHttpRequest to track upload progress bar
-        function handleUploadEpisode(e) {
-            e.preventDefault();
 
-            const btn = document.getElementById('btnUploadSubmit');
-            const container = document.getElementById('uploadProgressContainer');
-            const textEl = document.getElementById('progressText');
-            const percentEl = document.getElementById('progressPercent');
-            const fillEl = document.getElementById('uploadProgressBar');
-
-            btn.disabled = true;
-            container.style.display = 'block';
-
-            const showId = document.getElementById('episodeShow').value;
-            const episodeNumber = parseInt(document.getElementById('episodeNumber').value);
-            const title = document.getElementById('episodeTitle').value;
-            const videoFile = document.getElementById('episodeVideoFile').files[0];
-
-            const formData = new FormData();
-            formData.append('showId', showId);
-            formData.append('episodeNumber', episodeNumber);
-            formData.append('title', title);
-            formData.append('video', videoFile);
-
-            const xhr = new XMLHttpRequest();
-            const token = localStorage.getItem('infinx_token');
-
-            xhr.open('POST', `${API_BASE}/admin/upload-episode-video`, true);
-            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-
-            // Update upload progress
-            xhr.upload.onprogress = function (e) {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100);
-                    percentEl.textContent = `${percent}%`;
-                    fillEl.style.width = `${percent}%`;
-
-                    if (percent === 100) {
-                        textEl.textContent = 'Upload complete. Launching transcoding workers pipeline...';
-                    } else {
-                        textEl.textContent = `Uploading video: ${Math.round(e.loaded / 1024 / 1024)}MB / ${Math.round(e.total / 1024 / 1024)}MB`;
-                    }
-                }
-            };
-
-            xhr.onload = function () {
-                btn.disabled = false;
-                if (xhr.status === 200 || xhr.status === 201) {
-                    alert('Episode video uploaded successfully! Background transcoding worker has been dispatched.');
-                    document.getElementById('uploadEpisodeForm').reset();
-                    document.getElementById('videoLabel').textContent = 'Select high quality MKV/MP4 stream file';
-                    container.style.display = 'none';
-
-                    // Switch to task panel
-                    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                    document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
-
-                    const taskItem = document.querySelector('[data-target="taskPanel"]');
-                    taskItem.classList.add('active');
-                    document.getElementById('taskPanel').classList.add('active');
-                    fetchTasks();
-                } else {
-                    let errMsg = 'Upload failed';
-                    try {
-                        const errObj = JSON.parse(xhr.responseText);
-                        errMsg = errObj.error || errMsg;
-                    } catch (e) { }
-                    alert(errMsg);
-                    container.style.display = 'none';
-                }
-            };
-
-            xhr.onerror = function () {
-                btn.disabled = false;
-                alert('Connection failure during raw video upload.');
-                container.style.display = 'none';
-            };
-
-            xhr.send(formData);
+        function formatEtaText(sec) {
+            if (!sec || sec <= 0) return '';
+            if (sec < 60) return `ETA: ${sec}s`;
+            const m = Math.floor(sec / 60);
+            const s = sec % 60;
+            return `ETA: ${m}m ${s}s`;
         }
 
-        // Render transcoding status bar and percentage progress
+        // Handle Add Episode Form Upload Submission with real-time XHR progress metrics
+        const uploadEpisodeForm = document.getElementById('uploadEpisodeForm');
+        if (uploadEpisodeForm) {
+            uploadEpisodeForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const container = document.getElementById('uploadProgressContainer');
+                const btn = document.getElementById('btnUploadSubmit');
+
+                const bar1 = document.getElementById('barStage1');
+                const text1 = document.getElementById('textStage1');
+                const bar2 = document.getElementById('barStage2');
+                const text2 = document.getElementById('textStage2');
+                const bar3 = document.getElementById('barStage3');
+                const text3 = document.getElementById('textStage3');
+
+                btn.disabled = true;
+                container.style.display = 'block';
+
+                // Reset stage progress states
+                bar1.style.width = '0%';
+                text1.textContent = '0% (0.0 MB/s)';
+                text1.style.color = 'var(--secondary)';
+
+                bar2.style.width = '0%';
+                text2.textContent = 'Pending';
+                text2.style.color = 'var(--gray-text)';
+
+                bar3.style.width = '0%';
+                text3.textContent = 'Pending';
+                text3.style.color = 'var(--gray-text)';
+
+                const showId = document.getElementById('episodeShow').value;
+                const episodeNumber = parseInt(document.getElementById('episodeNumber').value);
+                const title = document.getElementById('episodeTitle').value;
+                const videoFile = document.getElementById('episodeVideoFile').files[0];
+
+                const formData = new FormData();
+                formData.append('showId', showId);
+                formData.append('episodeNumber', episodeNumber);
+                formData.append('title', title);
+                formData.append('video', videoFile);
+
+                const xhr = new XMLHttpRequest();
+                const token = localStorage.getItem('infinx_token');
+
+                xhr.open('POST', `${API_BASE}/admin/upload-episode-video`, true);
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+                let startTime = Date.now();
+                let lastTime = Date.now();
+                let lastLoaded = 0;
+
+                // Stage 1: Local upload progress
+                xhr.upload.onprogress = function (e) {
+                    if (e.lengthComputable) {
+                        const now = Date.now();
+                        const timeDiffSec = (now - lastTime) / 1000;
+
+                        if (timeDiffSec >= 0.3 || e.loaded === e.total) {
+                            const totalTimeSec = (now - startTime) / 1000;
+                            const avgSpeedBytesPerSec = e.loaded / (totalTimeSec || 0.1);
+                            const speedMBps = (avgSpeedBytesPerSec / (1024 * 1024)).toFixed(1);
+                            const speedStr = speedMBps >= 1.0 ? `${speedMBps} MB/s` : `${Math.round(avgSpeedBytesPerSec / 1024)} KB/s`;
+
+                            const remainingBytes = e.total - e.loaded;
+                            const etaSec = Math.round(remainingBytes / (avgSpeedBytesPerSec || 1));
+                            const etaDisplay = formatEtaText(etaSec);
+
+                            const percent = Math.round((e.loaded / e.total) * 100);
+                            bar1.style.width = `${percent}%`;
+
+                            if (percent === 100) {
+                                text1.textContent = '100% (Completed)';
+                                text1.style.color = '#2ecc71';
+                                text2.textContent = 'Launching Workers...';
+                                text2.style.color = '#00a8ff';
+                                bar2.style.width = '10%';
+                            } else {
+                                text1.textContent = `${percent}% (${speedStr} ${etaDisplay ? '• ' + etaDisplay : ''})`;
+                            }
+
+                            lastTime = now;
+                            lastLoaded = e.loaded;
+                        }
+                    }
+                };
+
+                xhr.onload = function () {
+                    btn.disabled = false;
+                    if (xhr.status === 200 || xhr.status === 201) {
+                        alert('Episode video uploaded successfully! Worker transcoding pipeline dispatched.');
+                        document.getElementById('uploadEpisodeForm').reset();
+                        document.getElementById('videoLabel').textContent = 'Select high quality MKV/MP4 stream file';
+                        container.style.display = 'none';
+
+                        // Switch to task panel
+                        document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                        document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+
+                        const taskItem = document.querySelector('[data-target="taskPanel"]');
+                        if (taskItem) taskItem.classList.add('active');
+                        document.getElementById('taskPanel').classList.add('active');
+                        fetchTasks();
+                    } else {
+                        let errMsg = 'Upload failed';
+                        try {
+                            const errObj = JSON.parse(xhr.responseText);
+                            errMsg = errObj.error || errMsg;
+                        } catch (err) { }
+                        alert(errMsg);
+                        container.style.display = 'none';
+                    }
+                };
+
+                xhr.onerror = function () {
+                    btn.disabled = false;
+                    alert('Connection failure during raw video upload.');
+                    container.style.display = 'none';
+                };
+
+                xhr.send(formData);
+            });
+        }
+
+        // Render real 3-stage progress bars with speed and ETA
         function renderTranscodeProgress(task) {
-            const status = (task.transcodeStatus || 'PENDING').toUpperCase();
+            const overallStatus = (task.transcodeStatus || 'PENDING').toUpperCase();
 
-            let percent = 0;
-            let text = '0%';
-            let barColor = 'var(--gray-border)';
-            let statusText = 'Pending';
-            let icon = 'fa-hourglass-start';
-            let isAnimated = false;
+            let stageObj = {
+                uploadServer: { percent: 100, speed: 'Done', eta: 0, status: 'COMPLETED' },
+                transcoding: { percent: 0, speed: '0x', eta: 0, status: 'PENDING' },
+                uploadS3: { percent: 0, speed: '0 MB/s', eta: 0, status: 'PENDING' }
+            };
 
-            if (status === 'COMPLETED') {
-                percent = 100;
-                text = '100%';
-                barColor = 'linear-gradient(90deg, #2ecc71, #27ae60)';
-                statusText = 'Completed';
-                icon = 'fa-check-circle';
-            } else if (status === 'FAILED') {
-                percent = 100;
-                text = 'Failed';
-                barColor = 'linear-gradient(90deg, #e74c3c, #c0392b)';
-                statusText = 'Failed';
-                icon = 'fa-exclamation-triangle';
-            } else if (status === 'PENDING') {
-                percent = 5;
-                text = '0%';
-                barColor = 'linear-gradient(90deg, #f1c40f, #f39c12)';
-                statusText = 'In Queue';
-                icon = 'fa-clock';
-            } else if (status === 'PROCESSING') {
-                // Calculate dynamic progress based on elapsed time since updatedAt
-                const elapsedSeconds = (Date.now() - new Date(task.updatedAt).getTime()) / 1000;
-                const typicalDuration = 120; // 120 seconds typically for local dev transcoding
-                percent = Math.min(95, Math.round(15 + (elapsedSeconds / typicalDuration) * 80));
-                text = `${percent}%`;
-                barColor = 'linear-gradient(90deg, var(--secondary) 0%, #00a8ff 100%)';
-                statusText = 'Transcoding';
-                icon = 'fa-cog fa-spin';
-                isAnimated = true;
+            if (task.stageDetails) {
+                try {
+                    stageObj = typeof task.stageDetails === 'string' ? JSON.parse(task.stageDetails) : task.stageDetails;
+                } catch (e) {}
             }
 
-            const animatedClass = isAnimated ? 'progress-bar-animated' : '';
-            const statusColor = status === 'COMPLETED' ? 'var(--success)' : status === 'FAILED' ? 'var(--danger)' : 'var(--secondary)';
+            if (overallStatus === 'PROCESSING') {
+                if (stageObj.transcoding.status === 'PENDING') {
+                    stageObj.transcoding.status = 'PROCESSING';
+                }
+            } else if (overallStatus === 'COMPLETED') {
+                stageObj.transcoding.status = 'COMPLETED';
+                stageObj.transcoding.percent = 100;
+                stageObj.uploadS3.status = 'COMPLETED';
+                stageObj.uploadS3.percent = 100;
+            } else if (overallStatus === 'FAILED') {
+                if (stageObj.transcoding.status === 'PROCESSING') stageObj.transcoding.status = 'FAILED';
+                if (stageObj.uploadS3.status === 'PROCESSING') stageObj.uploadS3.status = 'FAILED';
+            }
+
+            function renderBar(label, icon, data, activeGradient) {
+                const percent = Math.min(100, Math.max(0, Math.round(data.percent || 0)));
+                const st = data.status || 'PENDING';
+
+                let barGradient = 'rgba(255,255,255,0.1)';
+                let statusColor = 'var(--gray-text)';
+                let iconClass = icon;
+                let statusLabel = `${percent}%`;
+
+                if (st === 'COMPLETED') {
+                    barGradient = 'linear-gradient(90deg, #2ecc71, #27ae60)';
+                    statusColor = '#2ecc71';
+                    iconClass = 'fa-check-circle';
+                    statusLabel = '100%';
+                } else if (st === 'FAILED') {
+                    barGradient = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+                    statusColor = '#e74c3c';
+                    iconClass = 'fa-exclamation-triangle';
+                    statusLabel = 'Failed';
+                } else if (st === 'PROCESSING') {
+                    barGradient = activeGradient;
+                    statusColor = '#00a8ff';
+                    iconClass = `${icon} fa-spin`;
+
+                    const speedStr = data.speed && data.speed !== '0' && data.speed !== '0 MB/s' ? data.speed : '';
+                    const etaStr = formatEtaText(data.eta);
+                    const metaArr = [speedStr, etaStr].filter(Boolean);
+                    const metaText = metaArr.length > 0 ? ` (${metaArr.join(' • ')})` : '';
+                    statusLabel = `${percent}%${metaText}`;
+                }
+
+                return `
+                    <div style="margin-bottom: 6px; width: 100%; min-width: 220px; max-width: 320px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; margin-bottom: 2px;">
+                            <span style="color: #e1e1e1; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">
+                                <i class="fas ${iconClass}" style="color: ${statusColor}; font-size: 0.85rem;"></i> ${label}
+                            </span>
+                            <span style="font-weight: 600; color: ${statusColor}; font-size: 0.9rem;">
+                                ${statusLabel}
+                            </span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.06); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);">
+                            <div style="width: ${percent}%; height: 100%; background: ${barGradient}; border-radius: 3px; transition: width 0.4s ease;"></div>
+                        </div>
+                    </div>
+                `;
+            }
 
             return `
-                <div style="width: 100%; min-width: 150px; max-width: 220px; margin-top: 5px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 1.1rem; margin-bottom: 5px; align-items: center;">
-                        <span style="color: var(--gray-text); display: inline-flex; align-items: center; gap: 4px;"><i class="fas ${icon}"></i> ${statusText}</span>
-                        <span style="font-weight: 700; color: ${statusColor};">${text}</span>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.03); height: 8px; border-radius: 4px; overflow: hidden; border: 1px solid var(--gray-border);">
-                        <div class="${animatedClass}" style="width: ${percent}%; height: 100%; background: ${barColor}; border-radius: 4px; transition: width 1s ease;"></div>
-                    </div>
+                <div style="padding: 2px 0;">
+                    ${renderBar('1. Server Upload', 'fa-server', stageObj.uploadServer || { percent: 100, status: 'COMPLETED' }, 'linear-gradient(90deg, #00a8ff, #0097e6)')}
+                    ${renderBar('2. HLS Transcode', 'fa-cog', stageObj.transcoding || { percent: 0, status: 'PENDING' }, 'linear-gradient(90deg, #f39c12, #e67e22)')}
+                    ${renderBar('3. AWS S3 Upload', 'fa-cloud-upload-alt', stageObj.uploadS3 || { percent: 0, status: 'PENDING' }, 'linear-gradient(90deg, #9b59b6, #8e44ad)')}
                 </div>
             `;
         }
 
-        // Fetch task updates from transcoding pipeline
+        // Fetch task updates from transcoding pipeline with auto-polling
         async function fetchTasks() {
             const tbody = document.getElementById('taskTableBody');
             const token = localStorage.getItem('infinx_token');
+
+            if (!tbody) return;
 
             if (tbody.innerHTML.trim() === '' || tbody.innerHTML.includes('Fetching') || tbody.innerHTML.includes('Querying')) {
                 tbody.innerHTML = `
@@ -1416,11 +1506,30 @@
                         return;
                     }
 
+                    const activePanel = document.querySelector('.content-panel.active');
+                    const isTaskPanelActive = activePanel && activePanel.id === 'taskPanel';
+                    const hasActiveTasks = data.some(t => t.transcodeStatus === 'PENDING' || t.transcodeStatus === 'PROCESSING');
+
+                    if (isTaskPanelActive && hasActiveTasks && !taskPollInterval) {
+                        taskPollInterval = setInterval(fetchTasks, 2000);
+                    } else if ((!isTaskPanelActive || !hasActiveTasks) && taskPollInterval) {
+                        clearInterval(taskPollInterval);
+                        taskPollInterval = null;
+                    }
+
                     tbody.innerHTML = data.map(task => {
-                        const statusClass = (task.transcodeStatus || 'PENDING').toLowerCase();
+                        const statusUpper = (task.transcodeStatus || 'PENDING').toUpperCase();
+                        const statusClass = statusUpper.toLowerCase();
                         const timeText = new Date(task.updatedAt).toLocaleString();
                         const showTitle = task.show ? task.show.title : `Show #${task.showId}`;
-                        const masterLink = task.videoUrl ? `<a href="${task.videoUrl}" target="_blank" style="color: var(--secondary); text-decoration: none;"><i class="fas fa-external-link-alt"></i> master.m3u8</a>` : `<span style="color: var(--gray-text);">Not ready</span>`;
+                        const masterLink = task.videoUrl ? `<a href="${task.videoUrl}" target="_blank" style="color: var(--secondary); text-decoration: none; font-weight: 500;"><i class="fas fa-external-link-alt"></i> master.m3u8</a>` : `<span style="color: var(--gray-text);">Not ready</span>`;
+
+                        const retryBtnHtml = statusUpper === 'FAILED' ? `
+                            <br>
+                            <button onclick="retryTask(${task.id})" style="margin-top: 8px; padding: 4px 10px; font-size: 0.85rem; background: linear-gradient(135deg, #e74c3c, #c0392b); border: none; color: #fff; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(231,76,60,0.3);">
+                                <i class="fas fa-redo"></i> Retry Transcode
+                            </button>
+                        ` : '';
 
                         return `
                             <tr>
@@ -1430,6 +1539,7 @@
                                 </td>
                                 <td>
                                     <span class="status-badge ${statusClass}">${task.transcodeStatus || 'PENDING'}</span>
+                                    ${retryBtnHtml}
                                 </td>
                                 <td>
                                     ${renderTranscodeProgress(task)}
@@ -1449,6 +1559,27 @@
             } catch (e) {
                 console.error(e);
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger);">Connection error fetching tasks pipeline.</td></tr>`;
+            }
+        }
+
+        // Retry failed transcode task
+        async function retryTask(taskId) {
+            if (!confirm(`Are you sure you want to retry transcoding for Task #${taskId}?`)) return;
+            const token = localStorage.getItem('infinx_token');
+            try {
+                const res = await fetch(`${API_BASE}/admin/tasks/${taskId}/retry`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Transcode task retry launched successfully!');
+                    fetchTasks();
+                } else {
+                    alert(data.error || 'Failed to retry transcode task.');
+                }
+            } catch (e) {
+                alert('Connection error submitting task retry.');
             }
         }
 
@@ -2053,7 +2184,7 @@
                     return;
                 }
                 const show = await res.json();
-
+                
                 document.getElementById('editShowId').value = show.id;
                 document.getElementById('editShowTitle').value = show.title;
                 document.getElementById('editShowRating').value = show.rating;
@@ -2064,7 +2195,7 @@
                 document.getElementById('editShowRuntime').value = show.runtime;
                 document.getElementById('editShowDesc').value = show.description;
                 document.getElementById('editShowIsFeatured').checked = show.isFeatured || false;
-
+                
                 // Reset file labels and selections
                 document.getElementById('editShowPosterFile').value = '';
                 document.getElementById('editShowBannerFile').value = '';
@@ -2087,7 +2218,7 @@
                     const data = await catRes.json();
                     const categoriesSelect = document.getElementById('editShowCategories');
                     categoriesSelect.innerHTML = data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-
+                    
                     // Select current categories
                     const currentCategoryIds = show.categories ? show.categories.map(c => c.categoryId) : [];
                     Array.from(categoriesSelect.options).forEach(opt => {
@@ -2216,8 +2347,7 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-user-plus"></i> Add New User
-            </h3>
+                <i class="fas fa-user-plus"></i> Add New User</h3>
 
             <form id="addUserForm" onsubmit="handleAddUser(event)">
                 <div class="form-group">
@@ -2257,8 +2387,7 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-user-edit"></i> Edit User Account
-            </h3>
+                <i class="fas fa-user-edit"></i> Edit User Account</h3>
 
             <form id="editUserForm" onsubmit="handleEditUser(event)">
                 <input type="hidden" id="editUserId">
@@ -2298,8 +2427,7 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-edit"></i> Edit Show Details
-            </h3>
+                <i class="fas fa-edit"></i> Edit Show Details</h3>
 
             <form id="editShowForm" onsubmit="handleEditShow(event)">
                 <input type="hidden" id="editShowId">
@@ -2329,12 +2457,9 @@
                         <label for="editShowBadge">Badge (HD, 4K, NEW, etc.)</label>
                         <input type="text" id="editShowBadge" required>
                     </div>
-                    <div class="form-group"
-                        style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
+                    <div class="form-group" style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
                         <input type="checkbox" id="editShowDubSub" style="width: 20px; height: 20px; cursor: pointer;">
-                        <label for="editShowDubSub"
-                            style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language
-                            (Dub/Sub)</label>
+                        <label for="editShowDubSub" style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language (Dub/Sub)</label>
                     </div>
                     <div class="form-group">
                         <label for="editShowYear">Release Year</label>
@@ -2348,13 +2473,9 @@
                         <label for="editShowDesc">Show Description</label>
                         <textarea id="editShowDesc" required></textarea>
                     </div>
-                    <div class="form-group full-width"
-                        style="grid-column: span 2; display: flex; flex-direction: row; align-items: center; gap: 10px;">
-                        <input type="checkbox" id="editShowIsFeatured"
-                            style="width: 20px; height: 20px; cursor: pointer;">
-                        <label for="editShowIsFeatured"
-                            style="font-size: 1.4rem; font-weight: 600; cursor: pointer; color: var(--primary); margin-bottom: 0;">Feature
-                            this show on the Homepage Banner Carousel</label>
+                    <div class="form-group full-width" style="grid-column: span 2; display: flex; flex-direction: row; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="editShowIsFeatured" style="width: 20px; height: 20px; cursor: pointer;">
+                        <label for="editShowIsFeatured" style="font-size: 1.4rem; font-weight: 600; cursor: pointer; color: var(--primary); margin-bottom: 0;">Feature this show on the Homepage Banner Carousel</label>
                     </div>
                     <div class="form-group full-width" style="grid-column: span 2;">
                         <label>Replace Poster Image (Optional)</label>
@@ -2389,8 +2510,7 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-edit"></i> Edit Episode Metadata
-            </h3>
+                <i class="fas fa-edit"></i> Edit Episode Metadata</h3>
 
             <form id="editEpisodeForm" onsubmit="handleEditEpisode(event)">
                 <input type="hidden" id="editEpisodeId">
