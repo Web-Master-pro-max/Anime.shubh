@@ -2,11 +2,31 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "http://13.202.95.5:8000/api/:path*"
+      "destination": "http://13.61.84.121:8000/api/:path*"
     },
     {
       "source": "/uploads/:path*",
-      "destination": "http://13.202.95.5:8000/uploads/:path*"
+      "destination": "http://13.61.84.121:8000/uploads/:path*"
+    },
+    {
+      "source": "/Postes/:path*",
+      "destination": "http://13.61.84.121:8000/Postes/:path*"
+    },
+    {
+      "source": "/video-player/Postes/:path*",
+      "destination": "http://13.61.84.121:8000/Postes/:path*"
+    },
+    {
+      "source": "/img/:path*",
+      "destination": "http://13.61.84.121:8000/img/:path*"
+    },
+    {
+      "source": "/AMovies-Poster/:path*",
+      "destination": "http://13.61.84.121:8000/AMovies-Poster/:path*"
+    },
+    {
+      "source": "/Horror-poster/:path*",
+      "destination": "http://13.61.84.121:8000/Horror-poster/:path*"
     }
   ],
   "headers": [
