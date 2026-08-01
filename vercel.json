@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "http://13.202.95.2:5000/api/:path*"
+      "destination": "http://13.202.95.5:8000/api/:path*"
     },
     {
       "source": "/uploads/:path*",
-      "destination": "http://13.202.95.5:5000/uploads/:path*"
+      "destination": "http://13.202.95.5:8000/uploads/:path*"
     }
   ],
   "headers": [
