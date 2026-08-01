@@ -790,8 +790,7 @@
 
     <script>
         (async function() {
-            const EC2_BACKEND_URL = 'http://13.202.95.5:8000';
-            const API_BASE = window.location.hostname.includes('vercel.app') ? `${EC2_BACKEND_URL}/api` : '/api';
+            const API_BASE = '/api';
             const fallbackPoster = "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500";
 
             // Get category or search from URL (hash), default to 'action'
