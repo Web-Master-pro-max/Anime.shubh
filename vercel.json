@@ -1,43 +1,106 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "frontend/**",
-      "use": "@vercel/static"
+      "source": "/api/:path*",
+      "destination": "http://13.61.84.121:8000/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "http://13.61.84.121:8000/uploads/:path*"
+    },
+    {
+      "source": "/Postes/:path*",
+      "destination": "http://13.61.84.121:8000/Postes/:path*"
+    },
+    {
+      "source": "/video-player/Postes/:path*",
+      "destination": "http://13.61.84.121:8000/Postes/:path*"
+    },
+    {
+      "source": "/img/:path*",
+      "destination": "http://13.61.84.121:8000/img/:path*"
+    },
+    {
+      "source": "/AMovies-Poster/:path*",
+      "destination": "http://13.61.84.121:8000/AMovies-Poster/:path*"
+    },
+    {
+      "source": "/Horror-poster/:path*",
+      "destination": "http://13.61.84.121:8000/Horror-poster/:path*"
     }
   ],
-  "routes": [
+  "headers": [
     {
-      "src": "/api/(.*)",
-      "dest": "http://13.61.84.121:8000/api/$1"
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, must-revalidate"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
     },
     {
-      "src": "/uploads/(.*)",
-      "dest": "http://13.61.84.121:8000/uploads/$1"
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
     },
     {
-      "src": "/Postes/(.*)",
-      "dest": "http://13.61.84.121:8000/Postes/$1"
+      "source": "/Posts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "Content-Type",
+          "value": "image/jpeg"
+        }
+      ]
     },
     {
-      "src": "/video-player/Postes/(.*)",
-      "dest": "http://13.61.84.121:8000/Postes/$1"
+      "source": "/AMovies-Poster/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
-      "src": "/img/(.*)",
-      "dest": "http://13.61.84.121:8000/img/$1"
+      "source": "/Horror-poster/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
-      "src": "/AMovies-Poster/(.*)",
-      "dest": "http://13.61.84.121:8000/AMovies-Poster/$1"
+      "source": "/img/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
-      "src": "/Horror-poster/(.*)",
-      "dest": "http://13.61.84.121:8000/Horror-poster/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
+      "source": "/(.*\\.(jpg|jpeg|png|gif|webp|svg|ico|css|js))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     }
-  ]
+  ],
+  "trailingSlash": false
 }
