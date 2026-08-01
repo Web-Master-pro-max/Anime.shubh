@@ -969,6 +969,8 @@
     <!-- ====== SCRIPTS ====== -->
     <script>
         const API_BASE = '/api';
+        const EC2_BACKEND_URL = 'http://13.61.84.121:8000/api';
+        const DIRECT_UPLOAD_BASE = window.location.hostname.includes('vercel.app') ? EC2_BACKEND_URL : API_BASE;
         let taskPollInterval = null;
 
         // Authorization & Guards
@@ -1222,7 +1224,7 @@
 
             try {
                 const token = localStorage.getItem('infinx_token');
-                const res = await fetch(`${API_BASE}/admin/shows`, {
+                const res = await fetch(`${DIRECT_UPLOAD_BASE}/admin/shows`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
@@ -1302,7 +1304,7 @@
                 const xhr = new XMLHttpRequest();
                 const token = localStorage.getItem('infinx_token');
 
-                xhr.open('POST', `${API_BASE}/admin/upload-episode-video`, true);
+                xhr.open('POST', `${DIRECT_UPLOAD_BASE}/admin/upload-episode-video`, true);
                 xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
                 let startTime = Date.now();
