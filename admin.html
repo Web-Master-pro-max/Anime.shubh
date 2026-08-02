@@ -791,8 +791,10 @@
                         <p class="panel-desc">Monitor background workers parsing audio tracks and uploading HLS master
                             playlists to AWS S3</p>
                     </div>
-                    <button class="btn-back" onclick="fetchTasks()" style="cursor: pointer;"><i class="fas fa-sync"></i>
-                        Refresh Tasks</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-back" onclick="cleanOldUploadsManual()" style="cursor: pointer; background: rgba(231,76,60,0.15); border-color: #e74c3c; color: #ff6b6b;"><i class="fas fa-broom"></i> Clean Storage (>2 Days)</button>
+                        <button class="btn-back" onclick="fetchTasks()" style="cursor: pointer;"><i class="fas fa-sync"></i> Refresh Tasks</button>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -1265,11 +1267,46 @@
         // Handle raw episode uploads with XMLHttpRequest to track upload progress bar
 
         function formatEtaText(sec) {
-            if (!sec || sec <= 0) return '';
-            if (sec < 60) return `ETA: ${sec}s`;
-            const m = Math.floor(sec / 60);
-            const s = sec % 60;
+            if (!sec || sec <= 0 || isNaN(sec) || !isFinite(sec)) return 'ETA: Calculating...';
+            if (sec < 60) return `ETA: ${Math.round(sec)}s`;
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = Math.round(sec % 60);
+            if (h > 0) return `ETA: ${h}h ${m}m ${s}s`;
             return `ETA: ${m}m ${s}s`;
+        }
+
+        function uploadChunkXHR(token, uploadId, chunkIndex, totalChunks, chunkBlob, onProgress) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                const formData = new FormData();
+                formData.append('uploadId', uploadId);
+                formData.append('chunkIndex', chunkIndex.toString());
+                formData.append('totalChunks', totalChunks.toString());
+                formData.append('chunk', chunkBlob, `chunk_${chunkIndex}`);
+
+                xhr.upload.onprogress = function (e) {
+                    if (e.lengthComputable && onProgress) {
+                        onProgress(e.loaded, e.total);
+                    }
+                };
+
+                xhr.onload = function () {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve();
+                    } else {
+                        reject(new Error(`HTTP ${xhr.status}`));
+                    }
+                };
+
+                xhr.onerror = function () {
+                    reject(new Error('Network connection error uploading chunk'));
+                };
+
+                xhr.open('POST', `${API_BASE}/admin/upload-chunk`, true);
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                xhr.send(formData);
+            });
         }
 
         // Handle Add Episode Form Upload Submission with Resumable Chunked Upload & Retry/Resume support
@@ -1342,25 +1379,31 @@
                     uploadedChunks = statusData.uploadedChunks || [];
                 }
 
-                let startTime = Date.now();
-                let uploadedBytesOverall = uploadedChunks.length * CHUNK_SIZE;
+                // Initial base bytes already saved from previous session
+                let sessionBaseBytes = 0;
+                uploadedChunks.forEach(idx => {
+                    const chunkSizeThis = Math.min(CHUNK_SIZE, videoFile.size - (idx * CHUNK_SIZE));
+                    sessionBaseBytes += chunkSizeThis;
+                });
 
-                // Update bar initially if resuming
+                let sessionStartTime = Date.now();
+
+                // Update progress initially if resuming
                 if (uploadedChunks.length > 0) {
-                    const initPercent = Math.min(100, Math.round((uploadedBytesOverall / videoFile.size) * 100));
+                    const initPercent = Math.min(100, Math.round((sessionBaseBytes / videoFile.size) * 100));
                     bar1.style.width = `${initPercent}%`;
                     text1.textContent = `Resuming from ${initPercent}% (${uploadedChunks.length}/${totalChunks} chunks)...`;
                 }
 
-                // 2. Upload missing chunks sequentially with automatic retries per chunk
+                // 2. Upload missing chunks sequentially with real-time XHR progress metrics
                 for (let i = 0; i < totalChunks; i++) {
                     if (uploadedChunks.includes(i)) {
                         continue;
                     }
 
-                    const start = i * CHUNK_SIZE;
-                    const end = Math.min(start + CHUNK_SIZE, videoFile.size);
-                    const chunkBlob = videoFile.slice(start, end);
+                    const chunkStart = i * CHUNK_SIZE;
+                    const chunkEnd = Math.min(chunkStart + CHUNK_SIZE, videoFile.size);
+                    const chunkBlob = videoFile.slice(chunkStart, chunkEnd);
 
                     let chunkSuccess = false;
                     let attempts = 0;
@@ -1368,24 +1411,26 @@
                     while (!chunkSuccess && attempts < 4) {
                         attempts++;
                         try {
-                            const chunkForm = new FormData();
-                            chunkForm.append('uploadId', uploadId);
-                            chunkForm.append('chunkIndex', i.toString());
-                            chunkForm.append('totalChunks', totalChunks.toString());
-                            chunkForm.append('chunk', chunkBlob, `chunk_${i}`);
+                            await uploadChunkXHR(token, uploadId, i, totalChunks, chunkBlob, (loadedInChunk) => {
+                                const currentTotalUploaded = chunkStart + loadedInChunk;
+                                const currentPercent = Math.min(100, Math.round((currentTotalUploaded / videoFile.size) * 100));
+                                bar1.style.width = `${currentPercent}%`;
 
-                            const chunkRes = await fetch(`${API_BASE}/admin/upload-chunk`, {
-                                method: 'POST',
-                                headers: { 'Authorization': `Bearer ${token}` },
-                                body: chunkForm
+                                const elapsedSec = (Date.now() - sessionStartTime) / 1000;
+                                const bytesUploadedInSession = currentTotalUploaded - sessionBaseBytes;
+                                const speedBytesPerSec = bytesUploadedInSession / (elapsedSec || 0.1);
+
+                                const speedMBps = (speedBytesPerSec / (1024 * 1024)).toFixed(1);
+                                const speedStr = speedMBps >= 1.0 ? `${speedMBps} MB/s` : `${Math.round(speedBytesPerSec / 1024)} KB/s`;
+
+                                const remainingBytes = videoFile.size - currentTotalUploaded;
+                                const etaSec = speedBytesPerSec > 0 ? remainingBytes / speedBytesPerSec : 0;
+
+                                text1.textContent = `${currentPercent}% (${speedStr} • ${formatEtaText(etaSec)})`;
                             });
 
-                            if (chunkRes.ok) {
-                                chunkSuccess = true;
-                                uploadedChunks.push(i);
-                            } else {
-                                await new Promise(r => setTimeout(r, 1000));
-                            }
+                            chunkSuccess = true;
+                            uploadedChunks.push(i);
                         } catch (err) {
                             console.warn(`Chunk ${i} upload attempt ${attempts} failed:`, err);
                             await new Promise(r => setTimeout(r, 1000));
@@ -1395,20 +1440,6 @@
                     if (!chunkSuccess) {
                         throw new Error(`Network connection dropped at Chunk ${i + 1} of ${totalChunks}.`);
                     }
-
-                    uploadedBytesOverall += (end - start);
-                    const currentPercent = Math.min(100, Math.round((uploadedBytesOverall / videoFile.size) * 100));
-                    bar1.style.width = `${currentPercent}%`;
-
-                    const elapsedSec = (Date.now() - startTime) / 1000;
-                    const newlyUploadedBytes = uploadedBytesOverall - (uploadedChunks.length * CHUNK_SIZE);
-                    const speedBytesPerSec = newlyUploadedBytes / (elapsedSec || 0.1);
-                    const speedMBps = (speedBytesPerSec / (1024 * 1024)).toFixed(1);
-                    const speedStr = speedMBps >= 1.0 ? `${speedMBps} MB/s` : `${Math.round(speedBytesPerSec / 1024)} KB/s`;
-                    const remainingBytes = videoFile.size - uploadedBytesOverall;
-                    const etaSec = Math.round(remainingBytes / (speedBytesPerSec || 1));
-
-                    text1.textContent = `${currentPercent}% (${speedStr} • ${formatEtaText(etaSec)})`;
                 }
 
                 // 3. Finalize upload: reassemble chunks & trigger transcoding
@@ -1661,6 +1692,26 @@
                 }
             } catch (e) {
                 alert('Connection error submitting task retry.');
+            }
+        }
+
+        // Manual trigger to clean raw upload files & abandoned chunk folders older than 2 days
+        async function cleanOldUploadsManual() {
+            if (!confirm('Run storage cleanup now to purge raw video files & temporary chunks older than 2 days?')) return;
+            const token = localStorage.getItem('infinx_token');
+            try {
+                const res = await fetch(`${API_BASE}/admin/clean-uploads`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(data.message || 'Storage cleanup completed successfully!');
+                } else {
+                    alert(data.error || 'Storage cleanup failed.');
+                }
+            } catch (err) {
+                alert('Connection error performing storage cleanup.');
             }
         }
 
