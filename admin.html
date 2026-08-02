@@ -769,6 +769,12 @@
                                     <div id="barStage3" style="width: 0%; height: 100%; background: linear-gradient(90deg, #2ecc71, #27ae60); transition: width 0.3s ease;"></div>
                                 </div>
                             </div>
+                            <!-- Resume Upload Action Area -->
+                            <div id="resumeUploadActionArea" style="display: none; margin-top: 12px; text-align: center;">
+                                <button type="button" id="resumeUploadBtn" onclick="handleUploadEpisode(true)" style="background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(230,126,34,0.4);">
+                                    <i class="fas fa-play"></i> Resume Interrupted Upload
+                                </button>
+                            </div>
                         </div>
 
                         <button type="submit" class="btn-submit" id="btnUploadSubmit"><i
@@ -1266,128 +1272,194 @@
             return `ETA: ${m}m ${s}s`;
         }
 
-        // Handle Add Episode Form Upload Submission with real-time XHR progress metrics
+        // Handle Add Episode Form Upload Submission with Resumable Chunked Upload & Retry/Resume support
         const uploadEpisodeForm = document.getElementById('uploadEpisodeForm');
         if (uploadEpisodeForm) {
             uploadEpisodeForm.addEventListener('submit', function (e) {
                 e.preventDefault();
-                const container = document.getElementById('uploadProgressContainer');
-                const btn = document.getElementById('btnUploadSubmit');
+                handleUploadEpisode(false);
+            });
+        }
 
-                const bar1 = document.getElementById('barStage1');
-                const text1 = document.getElementById('textStage1');
-                const bar2 = document.getElementById('barStage2');
-                const text2 = document.getElementById('textStage2');
-                const bar3 = document.getElementById('barStage3');
-                const text3 = document.getElementById('textStage3');
+        async function handleUploadEpisode(isResume = false) {
+            const btn = document.getElementById('btnUploadSubmit');
+            const container = document.getElementById('uploadProgressContainer');
+            const resumeArea = document.getElementById('resumeUploadActionArea');
+            const bar1 = document.getElementById('barStage1');
+            const text1 = document.getElementById('textStage1');
+            const bar2 = document.getElementById('barStage2');
+            const text2 = document.getElementById('textStage2');
+            const bar3 = document.getElementById('barStage3');
+            const text3 = document.getElementById('textStage3');
 
-                btn.disabled = true;
-                container.style.display = 'block';
+            const showId = document.getElementById('episodeShow').value;
+            const episodeNumber = parseInt(document.getElementById('episodeNumber').value, 10);
+            const title = document.getElementById('episodeTitle').value;
+            const videoFileInput = document.getElementById('episodeVideoFile');
+            const videoFile = videoFileInput ? videoFileInput.files[0] : null;
 
-                // Reset stage progress states
+            if (!videoFile) {
+                alert('Please select a video file to upload.');
+                return;
+            }
+
+            if (!showId || !episodeNumber || !title) {
+                alert('Please fill in all show and episode details.');
+                return;
+            }
+
+            btn.disabled = true;
+            if (resumeArea) resumeArea.style.display = 'none';
+            container.style.display = 'block';
+
+            if (!isResume) {
                 bar1.style.width = '0%';
-                text1.textContent = '0% (0.0 MB/s)';
+                text1.textContent = '0%';
                 text1.style.color = 'var(--secondary)';
-
                 bar2.style.width = '0%';
                 text2.textContent = 'Pending';
                 text2.style.color = 'var(--gray-text)';
-
                 bar3.style.width = '0%';
                 text3.textContent = 'Pending';
                 text3.style.color = 'var(--gray-text)';
+            }
 
-                const showId = document.getElementById('episodeShow').value;
-                const episodeNumber = parseInt(document.getElementById('episodeNumber').value);
-                const title = document.getElementById('episodeTitle').value;
-                const videoFile = document.getElementById('episodeVideoFile').files[0];
+            const token = localStorage.getItem('infinx_token');
+            const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
+            const totalChunks = Math.ceil(videoFile.size / CHUNK_SIZE);
+            const sanitizeName = videoFile.name.replace(/[^a-zA-Z0-9]/g, '');
+            const uploadId = `ep_${showId}_${episodeNumber}_${videoFile.size}_${sanitizeName}`;
 
-                const formData = new FormData();
-                formData.append('showId', showId);
-                formData.append('episodeNumber', episodeNumber);
-                formData.append('title', title);
-                formData.append('video', videoFile);
+            try {
+                // 1. Query server for already saved chunk indices
+                const statusRes = await fetch(`${API_BASE}/admin/upload-chunk-status?uploadId=${encodeURIComponent(uploadId)}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-                const xhr = new XMLHttpRequest();
-                const token = localStorage.getItem('infinx_token');
-
-                xhr.open('POST', `${API_BASE}/admin/upload-episode-video`, true);
-                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                let uploadedChunks = [];
+                if (statusRes.ok) {
+                    const statusData = await statusRes.json();
+                    uploadedChunks = statusData.uploadedChunks || [];
+                }
 
                 let startTime = Date.now();
-                let lastTime = Date.now();
-                let lastLoaded = 0;
+                let uploadedBytesOverall = uploadedChunks.length * CHUNK_SIZE;
 
-                // Stage 1: Local upload progress
-                xhr.upload.onprogress = function (e) {
-                    if (e.lengthComputable) {
-                        const now = Date.now();
-                        const timeDiffSec = (now - lastTime) / 1000;
+                // Update bar initially if resuming
+                if (uploadedChunks.length > 0) {
+                    const initPercent = Math.min(100, Math.round((uploadedBytesOverall / videoFile.size) * 100));
+                    bar1.style.width = `${initPercent}%`;
+                    text1.textContent = `Resuming from ${initPercent}% (${uploadedChunks.length}/${totalChunks} chunks)...`;
+                }
 
-                        if (timeDiffSec >= 0.3 || e.loaded === e.total) {
-                            const totalTimeSec = (now - startTime) / 1000;
-                            const avgSpeedBytesPerSec = e.loaded / (totalTimeSec || 0.1);
-                            const speedMBps = (avgSpeedBytesPerSec / (1024 * 1024)).toFixed(1);
-                            const speedStr = speedMBps >= 1.0 ? `${speedMBps} MB/s` : `${Math.round(avgSpeedBytesPerSec / 1024)} KB/s`;
+                // 2. Upload missing chunks sequentially with automatic retries per chunk
+                for (let i = 0; i < totalChunks; i++) {
+                    if (uploadedChunks.includes(i)) {
+                        continue;
+                    }
 
-                            const remainingBytes = e.total - e.loaded;
-                            const etaSec = Math.round(remainingBytes / (avgSpeedBytesPerSec || 1));
-                            const etaDisplay = formatEtaText(etaSec);
+                    const start = i * CHUNK_SIZE;
+                    const end = Math.min(start + CHUNK_SIZE, videoFile.size);
+                    const chunkBlob = videoFile.slice(start, end);
 
-                            const percent = Math.round((e.loaded / e.total) * 100);
-                            bar1.style.width = `${percent}%`;
+                    let chunkSuccess = false;
+                    let attempts = 0;
 
-                            if (percent === 100) {
-                                text1.textContent = '100% (Completed)';
-                                text1.style.color = '#2ecc71';
-                                text2.textContent = 'Launching Workers...';
-                                text2.style.color = '#00a8ff';
-                                bar2.style.width = '10%';
+                    while (!chunkSuccess && attempts < 4) {
+                        attempts++;
+                        try {
+                            const chunkForm = new FormData();
+                            chunkForm.append('uploadId', uploadId);
+                            chunkForm.append('chunkIndex', i.toString());
+                            chunkForm.append('totalChunks', totalChunks.toString());
+                            chunkForm.append('chunk', chunkBlob, `chunk_${i}`);
+
+                            const chunkRes = await fetch(`${API_BASE}/admin/upload-chunk`, {
+                                method: 'POST',
+                                headers: { 'Authorization': `Bearer ${token}` },
+                                body: chunkForm
+                            });
+
+                            if (chunkRes.ok) {
+                                chunkSuccess = true;
+                                uploadedChunks.push(i);
                             } else {
-                                text1.textContent = `${percent}% (${speedStr} ${etaDisplay ? '• ' + etaDisplay : ''})`;
+                                await new Promise(r => setTimeout(r, 1000));
                             }
-
-                            lastTime = now;
-                            lastLoaded = e.loaded;
+                        } catch (err) {
+                            console.warn(`Chunk ${i} upload attempt ${attempts} failed:`, err);
+                            await new Promise(r => setTimeout(r, 1000));
                         }
                     }
-                };
 
-                xhr.onload = function () {
-                    btn.disabled = false;
-                    if (xhr.status === 200 || xhr.status === 201) {
-                        alert('Episode video uploaded successfully! Worker transcoding pipeline dispatched.');
-                        document.getElementById('uploadEpisodeForm').reset();
-                        document.getElementById('videoLabel').textContent = 'Select high quality MKV/MP4 stream file';
-                        container.style.display = 'none';
-
-                        // Switch to task panel
-                        document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                        document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
-
-                        const taskItem = document.querySelector('[data-target="taskPanel"]');
-                        if (taskItem) taskItem.classList.add('active');
-                        document.getElementById('taskPanel').classList.add('active');
-                        fetchTasks();
-                    } else {
-                        let errMsg = 'Upload failed';
-                        try {
-                            const errObj = JSON.parse(xhr.responseText);
-                            errMsg = errObj.error || errMsg;
-                        } catch (err) { }
-                        alert(errMsg);
-                        container.style.display = 'none';
+                    if (!chunkSuccess) {
+                        throw new Error(`Network connection dropped at Chunk ${i + 1} of ${totalChunks}.`);
                     }
-                };
 
-                xhr.onerror = function () {
+                    uploadedBytesOverall += (end - start);
+                    const currentPercent = Math.min(100, Math.round((uploadedBytesOverall / videoFile.size) * 100));
+                    bar1.style.width = `${currentPercent}%`;
+
+                    const elapsedSec = (Date.now() - startTime) / 1000;
+                    const newlyUploadedBytes = uploadedBytesOverall - (uploadedChunks.length * CHUNK_SIZE);
+                    const speedBytesPerSec = newlyUploadedBytes / (elapsedSec || 0.1);
+                    const speedMBps = (speedBytesPerSec / (1024 * 1024)).toFixed(1);
+                    const speedStr = speedMBps >= 1.0 ? `${speedMBps} MB/s` : `${Math.round(speedBytesPerSec / 1024)} KB/s`;
+                    const remainingBytes = videoFile.size - uploadedBytesOverall;
+                    const etaSec = Math.round(remainingBytes / (speedBytesPerSec || 1));
+
+                    text1.textContent = `${currentPercent}% (${speedStr} • ${formatEtaText(etaSec)})`;
+                }
+
+                // 3. Finalize upload: reassemble chunks & trigger transcoding
+                text1.textContent = '100% (Finalizing & Merging...)';
+                text1.style.color = '#2ecc71';
+                bar1.style.width = '100%';
+
+                const finalizeRes = await fetch(`${API_BASE}/admin/upload-chunk-finalize`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        uploadId,
+                        showId,
+                        title,
+                        episodeNumber,
+                        description: document.getElementById('episodeDescription')?.value || '',
+                        duration: document.getElementById('episodeDuration')?.value || '',
+                        totalChunks,
+                        fileName: videoFile.name
+                    })
+                });
+
+                if (finalizeRes.ok) {
                     btn.disabled = false;
-                    alert('Connection failure during raw video upload.');
+                    alert('Episode video uploaded & reassembled successfully! HLS Transcoding dispatched.');
+                    document.getElementById('uploadEpisodeForm').reset();
+                    document.getElementById('videoLabel').textContent = 'Select high quality MKV/MP4 stream file';
                     container.style.display = 'none';
-                };
 
-                xhr.send(formData);
-            });
+                    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+                    document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
+
+                    const taskItem = document.querySelector('[data-target="taskPanel"]');
+                    if (taskItem) taskItem.classList.add('active');
+                    document.getElementById('taskPanel').classList.add('active');
+                    fetchTasks();
+                } else {
+                    const errorData = await finalizeRes.json();
+                    throw new Error(errorData.error || 'Failed to finalize chunked video upload.');
+                }
+            } catch (err) {
+                console.error('Upload Error:', err);
+                btn.disabled = false;
+                text1.textContent = `Upload Paused: ${err.message}`;
+                text1.style.color = '#e74c3c';
+                if (resumeArea) resumeArea.style.display = 'block';
+                alert(`Upload Interrupted!\n${err.message}\n\nDon't worry! Click "Resume Interrupted Upload" below to pick up right where it left off.`);
+            }
         }
 
         // Render real 3-stage progress bars with speed and ETA
@@ -1798,6 +1870,70 @@
             } catch (e) {
                 console.error(e);
                 alert("Connection error trying to delete episode.");
+            }
+        }
+
+        function openAddEpisodeModalFromManager() {
+            if (!currentActiveShowId) {
+                alert('No show selected.');
+                return;
+            }
+            document.getElementById('manualEpNumber').value = '';
+            document.getElementById('manualEpTitle').value = '';
+            document.getElementById('manualEpVideoUrl').value = '';
+            document.getElementById('manualEpDuration').value = '';
+            document.getElementById('manualEpDesc').value = '';
+            document.getElementById('addEpisodeManualModal').style.display = 'flex';
+        }
+
+        function closeAddEpisodeManualModal() {
+            document.getElementById('addEpisodeManualModal').style.display = 'none';
+        }
+
+        async function handleCreateEpisodeManual(e) {
+            e.preventDefault();
+            const showId = currentActiveShowId;
+            const episodeNumber = document.getElementById('manualEpNumber').value;
+            const title = document.getElementById('manualEpTitle').value;
+            const videoUrl = document.getElementById('manualEpVideoUrl').value;
+            const duration = document.getElementById('manualEpDuration').value;
+            const description = document.getElementById('manualEpDesc').value;
+
+            if (!showId || !episodeNumber || !title) {
+                alert('Please provide episode number and title.');
+                return;
+            }
+
+            const token = localStorage.getItem('infinx_token');
+            try {
+                const res = await fetch(`${API_BASE}/admin/episodes/manual`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        showId,
+                        episodeNumber,
+                        title,
+                        videoUrl: videoUrl.trim() || null,
+                        duration: duration.trim() || null,
+                        description: description.trim() || ''
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Episode added manually successfully!');
+                    closeAddEpisodeManualModal();
+                    fetchShowEpisodesList(showId);
+                    fetchManageShows();
+                } else {
+                    alert(data.error || 'Failed to add episode manually.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error adding episode manually.');
             }
         }
 
@@ -2321,13 +2457,14 @@
     <div id="episodeManagerModal" class="modal"
         style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; align-items:center; justify-content:center; padding: 20px;">
         <div class="card"
-            style="width:100%; max-width:650px; max-height:85vh; overflow-y:auto; position:relative; background:var(--dark-card); border: 1px solid var(--gray-border); padding: 30px; box-shadow: var(--shadow);">
+            style="width:100%; max-width:700px; max-height:85vh; overflow-y:auto; position:relative; background:var(--dark-card); border: 1px solid var(--gray-border); padding: 30px; box-shadow: var(--shadow);">
             <button onclick="closeEpisodeModal()"
                 style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:2.2rem; cursor:pointer;"><i
                     class="fas fa-times"></i></button>
-            <h3 id="episodeModalTitle"
-                style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                Manage Episodes</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h3 id="episodeModalTitle" style="font-size:1.8rem; font-family:'Outfit'; color:white; margin:0;">Manage Episodes</h3>
+                <button onclick="openAddEpisodeModalFromManager()" class="btn-submit" style="margin: 0; padding: 8px 16px; font-size: 1rem; width: auto; background: linear-gradient(135deg, #00a8ff, #0097e6); display: inline-flex; align-items: center; gap: 6px;"><i class="fas fa-plus-circle"></i> Add Episode Manually</button>
+            </div>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -2343,6 +2480,47 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Episode Manually -->
+    <div id="addEpisodeManualModal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1050; align-items:center; justify-content:center; padding: 20px;">
+        <div class="card"
+            style="width:100%; max-width:550px; position:relative; background:var(--dark-card); border: 1px solid var(--gray-border); padding: 30px; box-shadow: var(--shadow);">
+            <button onclick="closeAddEpisodeManualModal()"
+                style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:2.2rem; cursor:pointer;"><i
+                    class="fas fa-times"></i></button>
+            <h3 style="font-size:1.8rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
+                <i class="fas fa-plus-circle" style="color: var(--secondary);"></i> Add Episode Manually</h3>
+
+            <form id="addEpisodeManualForm" onsubmit="handleCreateEpisodeManual(event)">
+                <div class="form-group">
+                    <label for="manualEpNumber">Episode Number</label>
+                    <input type="number" id="manualEpNumber" min="1" placeholder="e.g. 1" required>
+                </div>
+                <div class="form-group">
+                    <label for="manualEpTitle">Episode Title</label>
+                    <input type="text" id="manualEpTitle" placeholder="e.g. Stone World" required>
+                </div>
+                <div class="form-group">
+                    <label for="manualEpVideoUrl">Video / HLS Master URL (Optional)</label>
+                    <input type="url" id="manualEpVideoUrl" placeholder="e.g. https://.../master.m3u8">
+                </div>
+                <div class="form-group">
+                    <label for="manualEpDuration">Duration (Optional)</label>
+                    <input type="text" id="manualEpDuration" placeholder="e.g. 24:00">
+                </div>
+                <div class="form-group">
+                    <label for="manualEpDesc">Description (Optional)</label>
+                    <textarea id="manualEpDesc" placeholder="Enter episode synopsis..." style="height: 70px;"></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button type="button" onclick="closeAddEpisodeManualModal()" class="btn-back" style="padding: 10px 20px;">Cancel</button>
+                    <button type="submit" class="btn-submit" style="margin-top: 0; padding: 10px 20px;"><i class="fas fa-plus-circle"></i> Save Episode</button>
+                </div>
+            </form>
         </div>
     </div>
 
