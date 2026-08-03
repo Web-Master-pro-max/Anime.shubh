@@ -179,6 +179,14 @@
                     </div>
                   </div>
                   <div class="settings-section">
+                    <div class="settings-title">Screen Fit (Notch)</div>
+                    <div class="screen-fit-options">
+                      <div class="fit-option" data-fit="contain">Fit (Default)</div>
+                      <div class="fit-option active" data-fit="cover">Fill Notch Screen</div>
+                      <div class="fit-option" data-fit="fill">Stretch</div>
+                    </div>
+                  </div>
+                  <div class="settings-section">
                     <div class="settings-title">Captions</div>
                     <div class="settings-controls">
                       <button id="open-caption-settings" class="settings-btn">Caption Settings</button>
@@ -187,12 +195,13 @@
                 </div>
               </div>
 
+              <button class="control-btn fit-screen-btn" aria-label="Toggle Screen Fit/Fill" title="Fill Notch Screen">
+                <i class="fas fa-expand-arrows-alt"></i>
+              </button>
+
               <button class="control-btn fullscreen-btn" aria-label="Fullscreen">
                 <i class="fas fa-expand"></i>
               </button>
-              <!-- Fit-screen button removed -->
-
-              <!-- Android fix button removed -->
 
             </div>
           </div>
