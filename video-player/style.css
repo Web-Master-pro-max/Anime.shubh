@@ -1996,28 +1996,16 @@ video::cue,
 }
 
 /* Screen Fit & Notch Display Modes */
-.video-player.fit-cover #main-video,
-.video-player.fit-cover:fullscreen #main-video,
-.video-player.fit-cover:-webkit-full-screen #main-video,
-.video-player.fit-cover:-moz-full-screen #main-video,
-.video-player.fit-cover:-ms-fullscreen #main-video {
-  object-fit: cover !important;
+.video-player.fit-cover #main-video:not([style*="object-fit"]) {
+  object-fit: cover;
 }
 
-.video-player.fit-fill #main-video,
-.video-player.fit-fill:fullscreen #main-video,
-.video-player.fit-fill:-webkit-full-screen #main-video,
-.video-player.fit-fill:-moz-full-screen #main-video,
-.video-player.fit-fill:-ms-fullscreen #main-video {
-  object-fit: fill !important;
+.video-player.fit-fill #main-video:not([style*="object-fit"]) {
+  object-fit: fill;
 }
 
-.video-player.fit-contain #main-video,
-.video-player.fit-contain:fullscreen #main-video,
-.video-player.fit-contain:-webkit-full-screen #main-video,
-.video-player.fit-contain:-moz-full-screen #main-video,
-.video-player.fit-contain:-ms-fullscreen #main-video {
-  object-fit: contain !important;
+.video-player.fit-contain #main-video:not([style*="object-fit"]) {
+  object-fit: contain;
 }
 
 /* Fullscreen sizing for Notch Screens */
