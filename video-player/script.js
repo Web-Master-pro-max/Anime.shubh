@@ -804,7 +804,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       
       progressHoverTime.textContent = formatTime(hoverTime);
       const percent = Math.min(Math.max((clickPosition / progressBarWidth) * 100, 0), 100);
-      progressHoverTime.style.left = `${percent}%`;
+      progressHoverTime.style.left = `clamp(30px, ${percent}%, calc(100% - 30px))`;
     }
     
     // Play/Pause functionality
@@ -1041,18 +1041,83 @@ document.addEventListener('DOMContentLoaded', async function() {
       });
     });
 
-    // Fullscreen toggles
-    if (fullscreenBtn) fullscreenBtn.addEventListener('click', function() {
+    // Screen Orientation API & Auto-Rotate logic for Mobile
+    async function lockLandscapeOrientation() {
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          await screen.orientation.lock('landscape');
+        } else if (screen.lockOrientation) {
+          screen.lockOrientation('landscape');
+        } else if (screen.mozLockOrientation) {
+          screen.mozLockOrientation('landscape');
+        } else if (screen.msLockOrientation) {
+          screen.msLockOrientation('landscape');
+        }
+      } catch (err) {
+        console.log('Screen orientation lock not supported or allowed:', err);
+      }
+    }
+
+    function unlockOrientation() {
+      try {
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        } else if (screen.unlockOrientation) {
+          screen.unlockOrientation();
+        } else if (screen.mozUnlockOrientation) {
+          screen.mozUnlockOrientation();
+        } else if (screen.msUnlockOrientation) {
+          screen.msUnlockOrientation();
+        }
+      } catch (err) {
+        console.log('Screen orientation unlock error:', err);
+      }
+    }
+
+    function enterFullscreen() {
+      if (!videoPlayer) return;
       if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
         if (videoPlayer.requestFullscreen) videoPlayer.requestFullscreen();
         else if (videoPlayer.webkitRequestFullscreen) videoPlayer.webkitRequestFullscreen();
         else if (videoPlayer.msRequestFullscreen) videoPlayer.msRequestFullscreen();
-        if (fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
-      } else {
+      }
+    }
+
+    function exitFullscreen() {
+      if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
         if (document.exitFullscreen) document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
         else if (document.msExitFullscreen) document.msExitFullscreen();
-        if (fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+      }
+    }
+
+    // Auto-Rotate on Mobile Device Orientation Change
+    function handleDeviceOrientationChange() {
+      if (!isMobile) return;
+      
+      const isLandscape = (screen.orientation && screen.orientation.type)
+        ? screen.orientation.type.startsWith('landscape')
+        : (Math.abs(window.orientation || 0) === 90);
+
+      if (isLandscape && !isFullscreen) {
+        enterFullscreen();
+      } else if (!isLandscape && isFullscreen) {
+        exitFullscreen();
+      }
+    }
+
+    if (screen.orientation) {
+      screen.orientation.addEventListener('change', handleDeviceOrientationChange);
+    } else {
+      window.addEventListener('orientationchange', handleDeviceOrientationChange);
+    }
+
+    // Fullscreen toggles
+    if (fullscreenBtn) fullscreenBtn.addEventListener('click', function() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        enterFullscreen();
+      } else {
+        exitFullscreen();
       }
     });
     
@@ -1079,10 +1144,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                         document.msFullscreenElement);
       
       if (isFullscreen) {
+        lockLandscapeOrientation();
+        if (fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
         showControls();
         videoPlayer.addEventListener('mousemove', handleMouseMove);
         videoPlayer.addEventListener('touchstart', handleMouseMove);
       } else {
+        unlockOrientation();
+        if (fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
         clearTimeout(hideControlsTimeout);
         videoPlayer.removeEventListener('mousemove', handleMouseMove);
         videoPlayer.removeEventListener('touchstart', handleMouseMove);
@@ -1228,6 +1297,62 @@ document.addEventListener('DOMContentLoaded', async function() {
           else setSubtitle(parseInt(option.getAttribute('data-track-index')));
         });
       }
+    }
+
+    // Call dropdown listeners setup
+    setupQualityEventListeners();
+    setupAudioEventListeners();
+    setupSubtitleEventListeners();
+
+    // Mobile Navigation & Search Wireup
+    if (mobileMenuBtn && mobileNav && mobileNavOverlay) {
+      mobileMenuBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        mobileNav.classList.add('active');
+        mobileNavOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+
+      function closeMobileNav() {
+        mobileNav.classList.remove('active');
+        mobileNavOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      if (mobileNavClose) mobileNavClose.addEventListener('click', closeMobileNav);
+      mobileNavOverlay.addEventListener('click', closeMobileNav);
+    }
+
+    // Header & Mobile Search Handlers
+    function executeSearch(query) {
+      if (!query || !query.trim()) return;
+      window.location.href = `/index.html?search=${encodeURIComponent(query.trim())}`;
+    }
+
+    const searchInputEl = document.getElementById('searchInput');
+    const searchIconEl = document.getElementById('searchIcon');
+    const mobileSearchInputEl = document.getElementById('mobileSearchInput');
+    const mobileSearchIconEl = document.getElementById('mobileSearchIcon');
+
+    if (searchInputEl) {
+      searchInputEl.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') executeSearch(this.value);
+      });
+    }
+    if (searchIconEl) {
+      searchIconEl.addEventListener('click', function() {
+        if (searchInputEl) executeSearch(searchInputEl.value);
+      });
+    }
+    if (mobileSearchInputEl) {
+      mobileSearchInputEl.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') executeSearch(this.value);
+      });
+    }
+    if (mobileSearchIconEl) {
+      mobileSearchIconEl.addEventListener('click', function() {
+        if (mobileSearchInputEl) executeSearch(mobileSearchInputEl.value);
+      });
     }
     
     // Asset URL Resolver - ensures relative database paths (e.g. "Postes/frieren.jpg") resolve to root paths
