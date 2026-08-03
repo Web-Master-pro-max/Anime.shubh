@@ -26,8 +26,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     const playPauseBtn = document.querySelector('.play-pause');
     const volumeBtn = document.querySelector('.volume-btn');
     const volumeSlider = document.querySelector('.volume-range');
-    const progressBar = document.querySelector('.progress');
-    const progressBarContainer = document.querySelector('.progress-bar');
+    const progressBarContainer = document.querySelector('.progress-bar-container') || document.querySelector('.progress-bar');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressEl = document.querySelector('.progress');
+    const progressBufferedEl = document.querySelector('.progress-buffered');
     const progressHoverTime = document.querySelector('.progress-hover-time');
     const currentTimeEl = document.querySelector('.current-time');
     const durationEl = document.querySelector('.duration');
@@ -779,32 +781,61 @@ document.addEventListener('DOMContentLoaded', async function() {
       return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     }
     
-    // Update video time
+    // Timeline Scrubbing & Buffer Management
+    let isScrubbing = false;
+
+    function getTimelineFraction(e) {
+      if (!progressBarContainer || isNaN(mainVideo.duration) || mainVideo.duration <= 0) return 0;
+      const rect = progressBarContainer.getBoundingClientRect();
+      const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+      const offsetX = clientX - rect.left;
+      return Math.min(Math.max(offsetX / rect.width, 0), 1);
+    }
+
+    function updateBufferBar() {
+      if (!mainVideo || !progressBufferedEl || isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
+      try {
+        if (mainVideo.buffered.length > 0) {
+          const bufferedEnd = mainVideo.buffered.end(mainVideo.buffered.length - 1);
+          const percent = Math.min((bufferedEnd / mainVideo.duration) * 100, 100);
+          progressBufferedEl.style.width = `${percent}%`;
+        }
+      } catch (e) {}
+    }
+
+    // Update video time & timeline bar
     function updateTime() {
       if (!isNaN(mainVideo.duration) && mainVideo.duration > 0) {
         currentTimeEl.textContent = formatTime(mainVideo.currentTime);
         durationEl.textContent = formatTime(mainVideo.duration);
-        
-        const progressPercent = (mainVideo.currentTime / mainVideo.duration) * 100;
-        progressBar.style.width = `${progressPercent}%`;
-        
-        // Report progress to DB
+
+        if (!isScrubbing && progressEl) {
+          const progressPercent = (mainVideo.currentTime / mainVideo.duration) * 100;
+          progressEl.style.width = `${progressPercent}%`;
+        }
+
+        updateBufferBar();
         reportPlaybackProgress();
       }
     }
-    
-    // Update hover time on progress bar
-    function updateHoverTime(e) {
+
+    function handleScrubMove(e) {
       if (isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
-      
-      const progressBarWidth = progressBarContainer.clientWidth;
-      const rect = progressBarContainer.getBoundingClientRect();
-      const clickPosition = e.clientX - rect.left;
-      const hoverTime = (clickPosition / progressBarWidth) * mainVideo.duration;
-      
-      progressHoverTime.textContent = formatTime(hoverTime);
-      const percent = Math.min(Math.max((clickPosition / progressBarWidth) * 100, 0), 100);
-      progressHoverTime.style.left = `clamp(30px, ${percent}%, calc(100% - 30px))`;
+
+      const fraction = getTimelineFraction(e);
+      const targetTime = fraction * mainVideo.duration;
+
+      if (progressHoverTime) {
+        progressHoverTime.textContent = formatTime(targetTime);
+        const percent = fraction * 100;
+        progressHoverTime.style.left = `clamp(30px, ${percent}%, calc(100% - 30px))`;
+      }
+
+      if (isScrubbing) {
+        if (progressEl) progressEl.style.width = `${fraction * 100}%`;
+        if (currentTimeEl) currentTimeEl.textContent = formatTime(targetTime);
+        mainVideo.currentTime = targetTime;
+      }
     }
     
     // Play/Pause functionality
@@ -971,37 +1002,42 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     mainVideo.addEventListener('volumechange', updateVolumeUI);
     
-    // Progress bar events
-    if (progressBarContainer) {
-      progressBarContainer.addEventListener('mousemove', updateHoverTime);
-      progressBarContainer.addEventListener('touchmove', function(e) {
-        if (isMobile) {
-          const touch = e.touches[0];
-          const fakeMouseEvent = new MouseEvent('mousemove', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-          });
-          updateHoverTime(fakeMouseEvent);
-        }
-      });
-      progressBarContainer.addEventListener('click', function(e) {
-        if (isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
-        const progressBarWidth = this.clientWidth;
-        const rect = this.getBoundingClientRect();
-        const clickPosition = (e.clientX || (e.touches && e.touches[0].clientX) || 0) - rect.left;
-        const seekTime = (clickPosition / progressBarWidth) * mainVideo.duration;
-        mainVideo.currentTime = seekTime;
-      });
-      progressBarContainer.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const fakeMouseEvent = new MouseEvent('click', {
-          clientX: touch.clientX,
-          clientY: touch.clientY
-        });
-        this.dispatchEvent(fakeMouseEvent);
-      });
+    // Ultra-Smooth Drag Scrubbing & Buffer Listeners
+    function startScrubbing(e) {
+      if (isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
+      isScrubbing = true;
+
+      if (progressBarContainer) progressBarContainer.classList.add('scrubbing');
+      handleScrubMove(e);
+
+      document.addEventListener('mousemove', handleScrubMove);
+      document.addEventListener('mouseup', stopScrubbing);
+      document.addEventListener('touchmove', handleScrubMove, { passive: false });
+      document.addEventListener('touchend', stopScrubbing);
     }
+
+    function stopScrubbing(e) {
+      if (!isScrubbing) return;
+      isScrubbing = false;
+
+      if (progressBarContainer) progressBarContainer.classList.remove('scrubbing');
+
+      document.removeEventListener('mousemove', handleScrubMove);
+      document.removeEventListener('mouseup', stopScrubbing);
+      document.removeEventListener('touchmove', handleScrubMove);
+      document.removeEventListener('touchend', stopScrubbing);
+
+      if (e) handleScrubMove(e);
+    }
+
+    if (progressBarContainer) {
+      progressBarContainer.addEventListener('mousedown', startScrubbing);
+      progressBarContainer.addEventListener('mousemove', handleScrubMove);
+      progressBarContainer.addEventListener('touchstart', startScrubbing, { passive: false });
+    }
+
+    mainVideo.addEventListener('progress', updateBufferBar);
+    mainVideo.addEventListener('loadedmetadata', updateBufferBar);
     
     // Toast Feedback function
     function showPlayerToast(message) {

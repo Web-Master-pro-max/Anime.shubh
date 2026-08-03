@@ -507,41 +507,100 @@ video::cue,
   transition: opacity 0.3s ease, transform 0.3s ease !important;
 }
 
-.progress-bar {
-  height: clamp(3px, 0.5vw, 4px);
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
-  margin-bottom: clamp(8px, 1.5vw, 10px);
+/* Sleek Smooth Streaming Timeline */
+.progress-bar-container {
+  padding: 8px 0;
+  margin-top: -4px;
+  margin-bottom: 6px;
   cursor: pointer;
-  overflow: hidden;
   position: relative;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.progress-bar {
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  position: relative;
+  transition: height 0.15s ease;
+}
+
+.progress-bar-container:hover .progress-bar,
+.progress-bar-container.scrubbing .progress-bar {
+  height: 8px;
+}
+
+.progress-buffered {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  pointer-events: none;
+  transition: width 0.3s ease;
 }
 
 .progress {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
+  width: 0%;
   background: var(--primary);
-  width: 30%;
-  border-radius: 2px;
-  transition: width 0.1s;
+  border-radius: 4px;
+  transition: width 0.1s linear;
+  pointer-events: none;
+}
+
+.progress-bar-container.scrubbing .progress {
+  transition: none !important;
+}
+
+.progress-knob {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%) scale(0);
+  width: 13px;
+  height: 13px;
+  background: var(--primary);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 0, 85, 0.85);
+  transition: transform 0.15s ease;
+}
+
+.progress-bar-container:hover .progress-knob,
+.progress-bar-container.scrubbing .progress-knob {
+  transform: translateY(-50%) scale(1);
 }
 
 .progress-hover-time {
   position: absolute;
-  top: -25px;
+  top: -30px;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(10, 10, 18, 0.92);
+  backdrop-filter: blur(8px);
   color: white;
-  padding: 3px 6px;
-  border-radius: 4px;
-  font-size: clamp(10px, 2vw, 12px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.15s ease;
   white-space: nowrap;
   z-index: 60;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.progress-bar:hover .progress-hover-time {
+.progress-bar-container:hover .progress-hover-time,
+.progress-bar-container.scrubbing .progress-hover-time {
   opacity: 1;
 }
 
