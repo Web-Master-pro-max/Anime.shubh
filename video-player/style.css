@@ -598,14 +598,27 @@ video::cue,
   text-overflow: ellipsis;
 }
 
-.volume-slider {
-  width: clamp(50px, 8vw, 80px);
-  display: none;
+.volume-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.volume-btn:hover+.volume-slider,
-.volume-slider:hover {
-  display: block;
+.volume-slider {
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: width 0.25s ease, opacity 0.25s ease;
+  display: flex;
+  align-items: center;
+}
+
+.volume-container:hover .volume-slider,
+.volume-container:focus-within .volume-slider,
+.volume-container.active .volume-slider {
+  width: clamp(55px, 8vw, 85px);
+  opacity: 1;
 }
 
 .volume-range {
@@ -736,7 +749,9 @@ video::cue,
 .speed-options,
 .quality-options,
 .subtitle-options,
-.screen-fit-options {
+.screen-fit-options,
+.aspect-options,
+.crop-options {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -745,12 +760,14 @@ video::cue,
 .speed-option,
 .quality-option,
 .subtitle-option,
-.fit-option {
+.fit-option,
+.aspect-option,
+.crop-option {
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.8);
-  padding: 6px 12px;
+  padding: 6px 10px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -761,7 +778,9 @@ video::cue,
 .speed-option:hover,
 .quality-option:hover,
 .subtitle-option:hover,
-.fit-option:hover {
+.fit-option:hover,
+.aspect-option:hover,
+.crop-option:hover {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.15);
@@ -770,7 +789,9 @@ video::cue,
 .speed-option.active,
 .quality-option.active,
 .subtitle-option.active,
-.fit-option.active {
+.fit-option.active,
+.aspect-option.active,
+.crop-option.active {
   background: var(--primary);
   color: #fff;
   border-color: var(--primary);

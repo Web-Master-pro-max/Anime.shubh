@@ -903,57 +903,73 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
     });
     
-    // Volume controls
-    if (volumeBtn) volumeBtn.addEventListener('click', function() {
-      if (mainVideo.volume > 0) {
-        mainVideo.volume = 0;
-        volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-        if (volumeSlider) volumeSlider.value = 0;
-      } else {
-        mainVideo.volume = 1;
-        volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-        if (volumeSlider) volumeSlider.value = 100;
-      }
-    });
-    
-    if (volumeSlider) volumeSlider.addEventListener('input', function() {
-      const volume = volumeSlider.value / 100;
-      mainVideo.volume = volume;
-      
-      if (volume === 0) {
-        if (volumeBtn) volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-      } else if (volume < 0.5) {
-        if (volumeBtn) volumeBtn.innerHTML = '<i class="fas fa-volume-down"></i>';
-      } else {
-        if (volumeBtn) volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-      }
-    });
-    
-    if (!isMobile) {
-      if (volumeBtn) volumeBtn.addEventListener('mouseenter', function() {
-        if (volumeSlider) volumeSlider.style.display = 'block';
-      });
-      if (volumeBtn) volumeBtn.addEventListener('mouseleave', function(e) {
-        if (!volumeBtn.matches(':hover') && !volumeSlider.matches(':hover')) {
-          if (volumeSlider) volumeSlider.style.display = 'none';
+    // Robust Volume Controls for PC and Mobile/Android
+    const volumeContainer = document.querySelector('.volume-container');
+
+    function updateVolumeUI() {
+      if (!mainVideo) return;
+      const isMuted = mainVideo.muted || mainVideo.volume === 0;
+      const vol = mainVideo.volume;
+
+      if (volumeBtn) {
+        if (isMuted) {
+          volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        } else if (vol < 0.5) {
+          volumeBtn.innerHTML = '<i class="fas fa-volume-down"></i>';
+        } else {
+          volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
         }
-      });
-      if (volumeSlider) volumeSlider.addEventListener('mouseleave', function() {
-        if (!volumeBtn.matches(':hover')) {
-          volumeSlider.style.display = 'none';
-        }
-      });
-    } else {
-      if (volumeBtn) volumeBtn.addEventListener('click', function(e) {
+      }
+
+      if (volumeSlider) {
+        volumeSlider.value = isMuted ? 0 : Math.round(vol * 100);
+      }
+    }
+
+    if (volumeBtn) {
+      volumeBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        if (volumeSlider) volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block';
+        if (mainVideo.muted || mainVideo.volume === 0) {
+          mainVideo.muted = false;
+          if (mainVideo.volume === 0) mainVideo.volume = 1;
+        } else {
+          mainVideo.muted = true;
+        }
+        updateVolumeUI();
+      });
+    }
+
+    if (volumeSlider) {
+      volumeSlider.addEventListener('input', function(e) {
+        e.stopPropagation();
+        const val = parseFloat(this.value) / 100;
+        mainVideo.volume = val;
+        mainVideo.muted = (val === 0);
+        updateVolumeUI();
+      });
+
+      volumeSlider.addEventListener('change', function(e) {
+        e.stopPropagation();
+        const val = parseFloat(this.value) / 100;
+        mainVideo.volume = val;
+        mainVideo.muted = (val === 0);
+        updateVolumeUI();
+      });
+    }
+
+    if (volumeContainer && isMobile) {
+      volumeContainer.addEventListener('click', function(e) {
+        e.stopPropagation();
+        this.classList.toggle('active');
       });
       document.addEventListener('click', function(e) {
-        if (!volumeBtn.contains(e.target) && !volumeSlider.contains(e.target)) {
-          if (volumeSlider) volumeSlider.style.display = 'none';
+        if (!volumeContainer.contains(e.target)) {
+          volumeContainer.classList.remove('active');
         }
       });
     }
+
+    mainVideo.addEventListener('volumechange', updateVolumeUI);
     
     // Progress bar events
     if (progressBarContainer) {
@@ -1036,6 +1052,111 @@ document.addEventListener('DOMContentLoaded', async function() {
         e.stopPropagation();
         const mode = this.getAttribute('data-fit');
         setFitMode(mode);
+        closeAllDropdowns();
+        closeSettingsDropdown();
+      });
+    });
+
+    // Toast Feedback function
+    function showPlayerToast(message) {
+      let toast = document.querySelector('.player-toast');
+      if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+      toast = document.createElement('div');
+      toast.className = 'player-toast';
+      toast.textContent = message;
+      if (videoPlayer) videoPlayer.appendChild(toast);
+      setTimeout(() => {
+        if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 1800);
+    }
+
+    // Aspect Ratio & Crop Management
+    let currentAspectRatio = localStorage.getItem('infinx_video_aspect_ratio') || 'default';
+    let currentCropMode = localStorage.getItem('infinx_video_crop') || 'default';
+
+    function parseRatioString(ratioStr) {
+      if (!ratioStr || ratioStr === 'default') return '';
+      if (ratioStr.includes(':')) {
+        const parts = ratioStr.split(':');
+        return `${parts[0]} / ${parts[1]}`;
+      }
+      return ratioStr.replace(':1', ' / 1');
+    }
+
+    function setAspectRatio(ratio, showToast = true) {
+      currentAspectRatio = ratio;
+      localStorage.setItem('infinx_video_aspect_ratio', ratio);
+
+      if (mainVideo) {
+        if (ratio === 'default') {
+          mainVideo.style.aspectRatio = '';
+          mainVideo.style.objectFit = '';
+        } else {
+          mainVideo.style.aspectRatio = parseRatioString(ratio);
+          mainVideo.style.objectFit = 'contain';
+        }
+      }
+
+      document.querySelectorAll('.aspect-option').forEach(option => {
+        option.classList.toggle('active', option.getAttribute('data-aspect') === ratio);
+      });
+
+      if (showToast) showPlayerToast(`Aspect Ratio: ${ratio === 'default' ? 'Default' : ratio}`);
+    }
+
+    function setCropMode(crop, showToast = true) {
+      currentCropMode = crop;
+      localStorage.setItem('infinx_video_crop', crop);
+
+      if (mainVideo) {
+        if (crop === 'default') {
+          mainVideo.style.aspectRatio = '';
+          mainVideo.style.objectFit = '';
+        } else {
+          mainVideo.style.aspectRatio = parseRatioString(crop);
+          mainVideo.style.objectFit = 'cover';
+        }
+      }
+
+      document.querySelectorAll('.crop-option').forEach(option => {
+        option.classList.toggle('active', option.getAttribute('data-crop') === crop);
+      });
+
+      if (showToast) showPlayerToast(`Crop: ${crop === 'default' ? 'Default' : crop}`);
+    }
+
+    // Initialize saved Aspect Ratio / Crop
+    if (currentCropMode !== 'default') {
+      setCropMode(currentCropMode, false);
+    } else if (currentAspectRatio !== 'default') {
+      setAspectRatio(currentAspectRatio, false);
+    }
+
+    // Aspect Ratio option click listener
+    document.querySelectorAll('.aspect-option').forEach(option => {
+      option.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const ratio = this.getAttribute('data-aspect');
+        currentCropMode = 'default';
+        localStorage.setItem('infinx_video_crop', 'default');
+        document.querySelectorAll('.crop-option').forEach(o => o.classList.toggle('active', o.getAttribute('data-crop') === 'default'));
+        
+        setAspectRatio(ratio);
+        closeAllDropdowns();
+        closeSettingsDropdown();
+      });
+    });
+
+    // Crop option click listener
+    document.querySelectorAll('.crop-option').forEach(option => {
+      option.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const crop = this.getAttribute('data-crop');
+        currentAspectRatio = 'default';
+        localStorage.setItem('infinx_video_aspect_ratio', 'default');
+        document.querySelectorAll('.aspect-option').forEach(o => o.classList.toggle('active', o.getAttribute('data-aspect') === 'default'));
+
+        setCropMode(crop);
         closeAllDropdowns();
         closeSettingsDropdown();
       });
