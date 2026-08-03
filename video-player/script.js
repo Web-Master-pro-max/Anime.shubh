@@ -633,6 +633,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Set subtitle track and render via custom styles
     function setSubtitle(trackIndex) {
+      if (typeof trackIndex === 'string') {
+        if (trackIndex === 'off') trackIndex = -1;
+        else trackIndex = parseInt(trackIndex);
+      }
+      if (isNaN(trackIndex)) trackIndex = -1;
+
+      const subtitleBtn = document.querySelector('.subtitle-btn');
       const captionOverlay = document.getElementById('caption-overlay') || createCaptionOverlay();
 
       function createCaptionOverlay() {
@@ -697,13 +704,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
       }
 
-      if (trackIndex === -1 || trackIndex === 'off') {
+      if (trackIndex === -1) {
         if (hls && typeof hls.subtitleTrack !== 'undefined') {
           try { hls.subtitleTrack = -1; } catch(e) {}
         }
         if (mainVideo.textTracks) {
           for (let i = 0; i < mainVideo.textTracks.length; i++) {
-            try { mainVideo.textTracks[i].mode = 'hidden'; } catch(e) {}
+            try { mainVideo.textTracks[i].mode = 'disabled'; } catch(e) {}
             try { mainVideo.textTracks[i].oncuechange = null; } catch(e) {}
           }
         }
@@ -711,8 +718,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         hideCaption();
         currentSubtitleTrack = -1;
         document.querySelectorAll('.current-subtitle').forEach(el => { el.textContent = 'Off'; });
+        if (subtitleBtn) {
+          subtitleBtn.classList.remove('active');
+          subtitleBtn.innerHTML = '<i class="far fa-closed-captioning"></i>';
+        }
+        showPlayerToast('Subtitles: Off');
       } else if (subtitleTracks && subtitleTracks[trackIndex]) {
         const trackInfo = subtitleTracks[trackIndex];
+        const trackName = getTrackDisplayName(trackInfo, trackIndex, true);
 
         if (hls && trackInfo && trackInfo.url) {
           removeCustomTrackElement();
@@ -720,7 +733,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           tEl.kind = 'subtitles';
           tEl.src = trackInfo.url;
           tEl.srclang = trackInfo.lang || trackInfo.srclang || 'en';
-          tEl.label = trackInfo.name || `Subtitle ${trackIndex + 1}`;
+          tEl.label = trackName;
           tEl.id = 'custom-subtitle-track';
           tEl.default = false;
           mainVideo.appendChild(tEl);
@@ -730,13 +743,13 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (tracks && tracks.length > 0) {
               let tt = null;
               for (let i = 0; i < tracks.length; i++) {
-                if (tracks[i].label === tEl.label) { tt = tracks[i]; break; }
+                if (tracks[i].label === trackName) { tt = tracks[i]; break; }
               }
               if (!tt) tt = tracks[tracks.length - 1];
               detachAllTextTrackListeners();
               attachTextTrackForOverlay(tt);
             }
-          }, 500);
+          }, 400);
         } else if (mainVideo.textTracks && mainVideo.textTracks[trackIndex]) {
           detachAllTextTrackListeners();
           attachTextTrackForOverlay(mainVideo.textTracks[trackIndex]);
@@ -747,26 +760,28 @@ document.addEventListener('DOMContentLoaded', async function() {
               detachAllTextTrackListeners();
               attachTextTrackForOverlay(mainVideo.textTracks[mainVideo.textTracks.length - 1]);
             }
-          }, 500);
+          }, 400);
         }
 
         currentSubtitleTrack = trackIndex;
-        const trackName = getTrackDisplayName(subtitleTracks[trackIndex], trackIndex, true);
         document.querySelectorAll('.current-subtitle').forEach(el => { el.textContent = trackName; });
+        if (subtitleBtn) {
+          subtitleBtn.classList.add('active');
+          subtitleBtn.innerHTML = '<i class="fas fa-closed-captioning"></i>';
+        }
+        showPlayerToast(`Subtitles: ${trackName}`);
       }
 
       document.querySelectorAll('.subtitle-option').forEach(option => {
         option.classList.remove('active');
         const optionIndex = option.getAttribute('data-subtitle');
-        if ((trackIndex === -1 || trackIndex === 'off') && optionIndex === 'off') {
+        const trackIndexAttr = option.getAttribute('data-track-index');
+        if (trackIndex === -1 && optionIndex === 'off') {
           option.classList.add('active');
-        } else if (parseInt(optionIndex) === trackIndex) {
+        } else if (parseInt(optionIndex) === trackIndex || parseInt(trackIndexAttr) === trackIndex) {
           option.classList.add('active');
         }
       });
-
-      closeAllDropdowns();
-      closeSettingsDropdown();
     }
     
     // Format time function
@@ -1444,27 +1459,45 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     
     function setupSubtitleEventListeners() {
+      const subtitleBtn = document.querySelector('.subtitle-btn');
+      if (subtitleBtn) {
+        subtitleBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (currentSubtitleTrack >= 0) {
+            setSubtitle(-1);
+          } else {
+            if (subtitleTracks && subtitleTracks.length > 0) {
+              setSubtitle(0);
+            } else {
+              showPlayerToast('No Subtitles Available');
+            }
+          }
+        });
+      }
+
+      function handleSubtitleClick(e) {
+        const option = e.target.closest('.subtitle-option');
+        if (!option) return;
+        e.stopPropagation();
+        const subtitleAttr = option.getAttribute('data-subtitle');
+        const trackIdxAttr = option.getAttribute('data-track-index');
+        
+        if (subtitleAttr === 'off') {
+          setSubtitle(-1);
+        } else {
+          const idx = trackIdxAttr !== null ? parseInt(trackIdxAttr) : parseInt(subtitleAttr);
+          setSubtitle(isNaN(idx) ? -1 : idx);
+        }
+        closeSettingsDropdown();
+      }
+
       const subtitleContainer = document.querySelector('.subtitle-options');
       if (subtitleContainer) {
-        subtitleContainer.addEventListener('click', function(e) {
-          const option = e.target.closest('.subtitle-option');
-          if (!option) return;
-          e.stopPropagation();
-          const subtitle = option.getAttribute('data-subtitle');
-          if (subtitle === 'off') setSubtitle(-1);
-          else setSubtitle(parseInt(option.getAttribute('data-track-index')));
-        });
+        subtitleContainer.addEventListener('click', handleSubtitleClick);
       }
       const subtitleDropdown = document.getElementById('subtitle-dropdown');
       if (subtitleDropdown) {
-        subtitleDropdown.addEventListener('click', function(e) {
-          const option = e.target.closest('.subtitle-option');
-          if (!option) return;
-          e.stopPropagation();
-          const subtitle = option.getAttribute('data-subtitle');
-          if (subtitle === 'off') setSubtitle(-1);
-          else setSubtitle(parseInt(option.getAttribute('data-track-index')));
-        });
+        subtitleDropdown.addEventListener('click', handleSubtitleClick);
       }
     }
 

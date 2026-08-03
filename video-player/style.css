@@ -435,7 +435,7 @@ video::cue,
 /* JS-rendered caption overlay */
 .caption-overlay {
   position: absolute;
-  bottom: 6%;
+  bottom: 25px;
   left: 0;
   right: 0;
   display: flex;
@@ -443,26 +443,39 @@ video::cue,
   justify-content: center;
   pointer-events: none;
   padding: 0 4%;
-  z-index: 25;
+  z-index: 45;
+  transition: bottom 0.25s ease;
+}
+
+/* Float captions above control bar when visible */
+.video-player:hover .caption-overlay,
+.custom-controls:not(.hidden) ~ .caption-overlay {
+  bottom: 85px;
 }
 
 .caption-overlay .caption-text {
   display: inline-block;
-  max-width: 100%;
+  max-width: 90%;
   color: var(--caption-text-color);
   background: var(--caption-bg);
   font-size: var(--caption-font-size);
   font-family: var(--caption-font-family);
-  line-height: 1.2;
-  padding: 0.25em 0.5em;
+  line-height: 1.3;
+  padding: 0.3em 0.6em;
   border-radius: 0.35em;
   text-align: center;
   pointer-events: none;
   word-break: break-word;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
 .caption-overlay.hidden {
   display: none;
+}
+
+.subtitle-btn.active {
+  color: var(--primary) !important;
+  text-shadow: 0 0 10px rgba(255, 0, 85, 0.6);
 }
 
 /* Hide native video controls */
