@@ -9,7 +9,13 @@ window.addEventListener('unhandledrejection', function(e) {
 
 document.addEventListener('DOMContentLoaded', async function() {
   try {
-    const API_BASE = '/api';
+    const savedBackend = localStorage.getItem('infinx_server_url');
+    const DEFAULT_BACKEND = savedBackend || 'http://13.202.95.5:8000';
+    const API_BASE = (savedBackend)
+      ? `${savedBackend.replace(/\/$/, '')}/api`
+      : (window.location.protocol === 'file:' || window.location.origin === 'null' || (window.location.protocol === 'http:' && !window.location.origin.includes(':8000') && !window.location.hostname.includes('vercel.app')))
+        ? `${DEFAULT_BACKEND}/api`
+        : '/api';
     
     // Get episode ID from URL params
     const urlParams = new URLSearchParams(window.location.search);
