@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#ff0055">
     <title>Infinx Anime | Watch Anime & Movies Online</title>
 
@@ -49,6 +50,15 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .movie-card,
+        .swiper-slide,
+        header,
+        .mobile-tab-bar {
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         html {
@@ -1528,6 +1538,7 @@
             0% {
                 background-position: -200% 0;
             }
+
             100% {
                 background-position: 200% 0;
             }
@@ -1655,10 +1666,10 @@
             <a href="#hollywood" class="nav-link"><i class=""></i> Hollywood</a>
             <a href="#webseries" class="nav-link"><i class=""></i> Web Series</a>
             <a href="#horror" class="nav-link"><i class=""></i> Horror</a>
-            <a href="#child" class="nav-link"><i class=""></i> Kids</a>
-            <a href="#kdrama" class="nav-link"><i class=""></i> Korean Drama</a>
             <a href="view.html#watchlist" class="nav-link"><i class="fas fa-heart"></i> Watchlist</a>
             <a href="view.html#history" class="nav-link"><i class="fas fa-history"></i> History</a>
+            <a href="download.html" class="nav-link" style="color: var(--primary); font-weight: 700;"><i
+                    class="fas fa-mobile-alt"></i> Download App</a>
             <div class="drawer-auth" id="drawerAuthHeader"></div>
         </nav>
 
@@ -1789,7 +1800,7 @@
                 <h2 class="section-title">Kids & Family</h2>
                 <a href="view.html#kids" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
             </div>
-               <div class="movies-grid" id="grid-kids">
+            <div class="movies-grid" id="grid-kids">
                 <!-- Dynamic Content -->
             </div>
         </div>
@@ -1915,7 +1926,18 @@
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 
     <script>
-        const API_BASE = '/api';
+        const DEFAULT_BACKEND = localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000';
+        const SERVER_ORIGIN = (window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':8000'))
+            ? DEFAULT_BACKEND
+            : '';
+        const API_BASE = `${SERVER_ORIGIN}/api`;
+
+        window.formatMediaUrl = function (url) {
+            const fallback = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
+            if (!url) return fallback;
+            if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+            return url.startsWith('/') ? `${DEFAULT_BACKEND}${url}` : `${DEFAULT_BACKEND}/${url}`;
+        };
         let userWatchlist = [];
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -2144,7 +2166,7 @@
                             html += `
                                 <div class="movie-card">
                                     <div class="movie-poster">
-                                        <img src="${show.poster}" alt="${show.title}" onerror="this.src='${fallbackPoster}'">
+                                        <img src="${window.formatMediaUrl(show.poster)}" alt="${show.title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
                                     </div>
                                     <div class="movie-info">
                                         <h3 class="movie-title">${show.title}</h3>
@@ -2184,7 +2206,7 @@
                         const settingsData = await settingsRes.json();
                         if (settingsData.bannerSlideTime) slideDelay = settingsData.bannerSlideTime;
                     }
-                } catch(err) { console.error('Error loading settings', err); }
+                } catch (err) { console.error('Error loading settings', err); }
 
                 const res = await fetch(`${API_BASE}/shows/carousel`);
                 const data = await res.json();
@@ -2328,7 +2350,7 @@
                                         <div class="movie-badge">${show.badge}</div>
                                         ${show.dubsub ? '<div class="dubsub">Sub/Dub</div>' : ''}
                                         <div class="movie-rating"><i class="fas fa-star"></i> ${show.rating}</div>
-                                        <img src="${show.poster}" alt="${show.title}" onerror="this.src='${fallbackPoster}'">
+                                        <img src="${window.formatMediaUrl(show.poster)}" alt="${show.title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
                                     </div>
                                     <div class="movie-info">
                                         <h3 class="movie-title">${show.title}</h3>

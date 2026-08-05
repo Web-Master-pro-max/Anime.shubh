@@ -41,6 +41,8 @@
             overflow-x: hidden;
             background-attachment: fixed;
         }
+        * { -webkit-tap-highlight-color: transparent; }
+        .movie-card, header, .category-hero { transform: translateZ(0); backface-visibility: hidden; }
         ::selection { background: var(--primary); color: white; }
         
         /* ====== SCROLLBAR ====== */
@@ -217,12 +219,12 @@
         .movie-info { padding: 18px; flex: 1; display: flex; flex-direction: column; }
         .movie-title {
             font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 750; margin-bottom: 8px; line-height: 1.3;
-            color: white; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            color: white; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
             transition: var(--transition);
         }
         .movie-card:hover .movie-title { color: var(--primary); }
         .movie-meta { display: flex; justify-content: space-between; color: var(--gray-text); font-size: 1.2rem; margin-bottom: 10px; font-weight: 500; }
-        .movie-desc { color: var(--gray-text); font-size: 1.25rem; line-height: 1.5; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .movie-desc { color: var(--gray-text); font-size: 1.25rem; line-height: 1.5; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .movie-actions { display: flex; gap: 8px; margin-top: auto; }
         
         .btn-small {
@@ -743,6 +745,7 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="download.html" class="back-home" style="background: var(--gradient); border: none; font-weight: 700;"><i class="fas fa-mobile-alt"></i> App</a>
             <a href="javascript:history.back()" class="back-home"><i class="fas fa-arrow-left"></i> Back</a>
             <div class="mobile-toggle" id="mobileToggle">
                 <i class="fas fa-bars"></i>
@@ -790,8 +793,17 @@
 
     <script>
         (async function() {
-            const API_BASE = '/api';
+            const DEFAULT_BACKEND = localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000';
+            const SERVER_ORIGIN = (window.location.protocol === 'file:' || window.location.origin === 'null' || window.location.port === '3000' || window.location.port === '5500')
+                ? DEFAULT_BACKEND
+                : '';
+            const API_BASE = `${SERVER_ORIGIN}/api`;
             const fallbackPoster = "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500";
+            window.formatMediaUrl = function(url) {
+                if (!url) return fallbackPoster;
+                if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+                return url.startsWith('/') ? `${SERVER_ORIGIN}${url}` : `${SERVER_ORIGIN}/${url}`;
+            };
 
             // Get category or search from URL (hash), default to 'action'
             let hash = window.location.hash.substring(1) || 'action';
@@ -1056,7 +1068,7 @@
                             <div class="movie-badge">${m.badge || 'HD'}</div>
                             ${m.dubsub ? `<div class="dubsub">Sub/Dub</div>` : ''}
                             <div class="movie-rating"><i class="fas fa-star"></i> ${m.rating}</div>
-                            <img src="${m.poster}" alt="${m.title}" onerror="this.src='${fallbackPoster}'">
+                            <img src="${window.formatMediaUrl(m.poster)}" alt="${m.title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
                         </div>
                         <div class="movie-info">
                             <h3 class="movie-title">${m.title}</h3>
