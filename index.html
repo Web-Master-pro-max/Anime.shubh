@@ -2126,9 +2126,13 @@
 
     <script>
         const DEFAULT_BACKEND = localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000';
-        const SERVER_ORIGIN = (window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':8000'))
-            ? DEFAULT_BACKEND
-            : '';
+        const isHttps = window.location.protocol === 'https:';
+        const hasCustomServer = !!localStorage.getItem('infinx_server_url');
+        const SERVER_ORIGIN = (isHttps && !hasCustomServer)
+            ? ''
+            : ((window.location.protocol === 'file:' || window.location.origin === 'null' || (!window.location.origin.includes(':8000') && !isHttps))
+                ? DEFAULT_BACKEND
+                : '');
         const API_BASE = `${SERVER_ORIGIN}/api`;
 
         window.formatMediaUrl = function (url) {

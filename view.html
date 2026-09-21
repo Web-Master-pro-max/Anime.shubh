@@ -1019,9 +1019,13 @@
     <script>
         (async function() {
             const DEFAULT_BACKEND = localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000';
-            const SERVER_ORIGIN = (window.location.protocol === 'file:' || window.location.origin === 'null' || window.location.port === '3000' || window.location.port === '5500')
-                ? DEFAULT_BACKEND
-                : '';
+            const isHttps = window.location.protocol === 'https:';
+            const hasCustomServer = !!localStorage.getItem('infinx_server_url');
+            const SERVER_ORIGIN = (isHttps && !hasCustomServer)
+                ? ''
+                : ((window.location.protocol === 'file:' || window.location.origin === 'null' || window.location.port === '3000' || window.location.port === '5500')
+                    ? DEFAULT_BACKEND
+                    : '');
             const API_BASE = `${SERVER_ORIGIN}/api`;
             const fallbackPoster = "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500";
             window.formatMediaUrl = function(url) {
