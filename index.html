@@ -210,6 +210,189 @@
             text-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
         }
 
+        /* Nav Dropdown Menus */
+        .nav-item-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%) translateY(10px) scale(0.95);
+            background: rgba(12, 12, 22, 0.96);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 0, 85, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1100;
+        }
+
+        .dropdown-menu.genres-menu {
+            min-width: 360px;
+        }
+
+        .dropdown-menu.categories-menu {
+            min-width: 260px;
+        }
+
+        .nav-item-dropdown:hover .dropdown-menu,
+        .nav-item-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0) scale(1);
+        }
+
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .dropdown-grid.single-col {
+            grid-template-columns: 1fr;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            color: var(--light-text);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .dropdown-item i {
+            font-size: 1.4rem;
+            color: var(--primary);
+            width: 18px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 0, 85, 0.15);
+            color: #ffffff;
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(255, 0, 85, 0.2);
+        }
+
+        .dropdown-item:hover i {
+            color: var(--secondary);
+            transform: scale(1.2);
+        }
+
+        /* Filter & Sort Bar */
+        .filter-sort-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(20, 20, 35, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--gray-border);
+            padding: 14px 24px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .sort-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sort-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sort-label i {
+            color: var(--primary);
+        }
+
+        .sort-select {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--gray-border);
+            color: var(--light-text);
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sort-select option {
+            background: #0f0f1a;
+            color: white;
+            padding: 10px;
+        }
+
+        .sort-select:hover,
+        .sort-select:focus {
+            border-color: var(--primary);
+            background: rgba(255, 0, 85, 0.12);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.25);
+        }
+
+        .genre-quick-pills {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            max-width: 100%;
+        }
+
+        .pill-btn {
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--gray-border);
+            border-radius: 20px;
+            color: var(--gray-text);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+
+        .pill-btn:hover,
+        .pill-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
         /* Header Actions */
         .header-actions {
             display: flex;
@@ -1349,6 +1532,48 @@
                 letter-spacing: 0.5px;
             }
 
+            .nav-item-dropdown {
+                width: 100%;
+            }
+
+            .nav-item-dropdown .dropdown-toggle {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .dropdown-menu {
+                position: static !important;
+                transform: none !important;
+                top: auto !important;
+                left: auto !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                box-shadow: none !important;
+                margin-top: 6px !important;
+                background: rgba(255, 255, 255, 0.04) !important;
+                border: 1px solid var(--gray-border) !important;
+                border-radius: var(--radius-sm) !important;
+                display: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                padding: 10px !important;
+                pointer-events: auto !important;
+            }
+
+            .nav-item-dropdown.active .dropdown-menu {
+                display: block !important;
+            }
+
+            .dropdown-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 6px !important;
+            }
+
+            .dropdown-item {
+                font-size: 1.2rem !important;
+                padding: 6px 10px !important;
+            }
+
             /* Close button in drawer */
             .drawer-close {
                 display: flex;
@@ -1661,15 +1886,56 @@
         <nav class="navbar">
             <div class="drawer-close" id="closeDrawer"><i class="fas fa-times"></i></div>
             <a href="#home" class="nav-link active"><i class="fas fa-home"></i> Home</a>
-            <a href="#action" class="nav-link"><i class=""></i> Action</a>
-            <a href="#anime" class="nav-link"><i class=""></i> Anime</a>
-            <a href="#hollywood" class="nav-link"><i class=""></i> Hollywood</a>
-            <a href="#webseries" class="nav-link"><i class=""></i> Web Series</a>
-            <a href="#horror" class="nav-link"><i class=""></i> Horror</a>
+
+            <!-- Genres Dropdown -->
+            <div class="nav-item-dropdown">
+                <a href="#" class="nav-link dropdown-toggle"><i class="fas fa-layer-group"></i> Genres <i
+                        class="fas fa-chevron-down" style="font-size: 1rem; margin-left: 2px;"></i></a>
+                <div class="dropdown-menu genres-menu">
+                    <div class="dropdown-grid">
+                        <a href="view.html#action" class="dropdown-item"><i class="fas fa-fire"></i> Action</a>
+                        <a href="view.html#adventure" class="dropdown-item"><i class="fas fa-compass"></i> Adventure</a>
+                        <a href="view.html#animation" class="dropdown-item"><i class="fas fa-magic"></i> Animation</a>
+                        <a href="view.html#comedy" class="dropdown-item"><i class="fas fa-laugh-beam"></i> Comedy</a>
+                        <a href="view.html#crime" class="dropdown-item"><i class="fas fa-user-ninja"></i> Crime</a>
+                        <a href="view.html#drama" class="dropdown-item"><i class="fas fa-theater-masks"></i> Drama</a>
+                        <a href="view.html#fantasy" class="dropdown-item"><i class="fas fa-dragon"></i> Fantasy</a>
+                        <a href="view.html#historical" class="dropdown-item"><i class="fas fa-landmark"></i>
+                            Historical</a>
+                        <a href="view.html#horror" class="dropdown-item"><i class="fas fa-ghost"></i> Horror</a>
+                        <a href="view.html#mystery" class="dropdown-item"><i class="fas fa-user-secret"></i> Mystery</a>
+                        <a href="view.html#political" class="dropdown-item"><i class="fas fa-building-columns"></i>
+                            Political</a>
+                        <a href="view.html#romance" class="dropdown-item"><i class="fas fa-heart"></i> Romance</a>
+                        <a href="view.html#sci-fi" class="dropdown-item"><i class="fas fa-atom"></i> Sci-Fi</a>
+                        <a href="view.html#thriller" class="dropdown-item"><i class="fas fa-bolt"></i> Thriller</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Dropdown -->
+            <div class="nav-item-dropdown">
+                <a href="#" class="nav-link dropdown-toggle"><i class="fas fa-list-ul"></i> Categories <i
+                        class="fas fa-chevron-down" style="font-size: 1rem; margin-left: 2px;"></i></a>
+                <div class="dropdown-menu categories-menu">
+                    <div class="dropdown-grid single-col">
+                        <a href="view.html#south-hindi-dubbed" class="dropdown-item"><i class="fas fa-language"></i>
+                            South Hindi Dubbed</a>
+                        <a href="view.html#hollywood" class="dropdown-item"><i class="fas fa-film"></i> Hollywood
+                            Movies</a>
+                        <a href="view.html#bollywood" class="dropdown-item"><i class="fas fa-clapperboard"></i>
+                            Bollywood Movies</a>
+                        <a href="view.html#anime" class="dropdown-item"><i class="fas fa-play-circle"></i> Anime
+                            Series</a>
+                        <a href="view.html#web-series" class="dropdown-item"><i class="fas fa-tv"></i> Web Series</a>
+                        <a href="view.html#kids" class="dropdown-item"><i class="fas fa-child"></i> Kids & Family</a>
+                        <a href="view.html#kdrama" class="dropdown-item"><i class="fas fa-video"></i> Korean Drama</a>
+                    </div>
+                </div>
+            </div>
+
             <a href="view.html#watchlist" class="nav-link"><i class="fas fa-heart"></i> Watchlist</a>
             <a href="view.html#history" class="nav-link"><i class="fas fa-history"></i> History</a>
-            <a href="download.html" class="nav-link" style="color: var(--primary); font-weight: 700;"><i
-                    class="fas fa-mobile-alt"></i> Download App</a>
             <div class="drawer-auth" id="drawerAuthHeader"></div>
         </nav>
 
@@ -1710,8 +1976,8 @@
                 </div>
             </div>
             <div class="swiper-pagination"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
+            <!-- <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>-->
         </div>
     </section>
 
@@ -1727,97 +1993,30 @@
         </div>
     </section>
 
-
-    <!-- ====== ACTION MOVIES SECTION ====== -->
-    <section class="section" id="action">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Action Movies</h2>
-                <a href="view.html#action" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+    <!-- ====== FILTER & SORT BAR ====== -->
+    <div class="container" style="margin-top: 10px;">
+        <div class="filter-sort-bar">
+            <div class="sort-group">
+                <span class="sort-label"><i class="fas fa-sort-amount-down"></i> Sort Shows:</span>
+                <select id="homeSortSelect" class="sort-select" onchange="changeHomeSort(this.value)">
+                    <option value="default">✨ Default Order</option>
+                    <option value="rating-desc">🌟 Top Rated</option>
+                    <option value="newest">⚡ Latest Releases</option>
+                    <option value="views-desc">👁️ Most Popular</option>
+                    <option value="title-asc">🔤 Title (A - Z)</option>
+                    <option value="title-desc">🔠 Title (Z - A)</option>
+                </select>
             </div>
-            <div class="movies-grid" id="grid-action">
-                <!-- Dynamic Content -->
-            </div>
-        </div>
-    </section>
-
-    <!-- ====== ANIME SERIES SECTION ====== -->
-    <section class="section" id="anime">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Anime Series</h2>
-                <a href="view.html#anime" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
-            </div>
-            <div class="movies-grid" id="grid-anime">
-                <!-- Dynamic Content -->
+            <div class="genre-quick-pills" id="genreQuickPills">
+                <!-- Dynamically filled with top genre quick pills -->
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- ====== HOLLYWOOD MOVIES SECTION ====== -->
-    <section class="section" id="hollywood">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Hollywood Movies</h2>
-                <a href="view.html#hollywood" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
-            </div>
-            <div class="movies-grid" id="grid-hollywood">
-                <!-- Dynamic Content -->
-            </div>
-        </div>
-    </section>
-
-    <!-- ====== WEB SERIES SECTION ====== -->
-    <section class="section" id="webseries">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Web Series</h2>
-                <a href="view.html#web-series" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
-            </div>
-            <div class="movies-grid" id="grid-web-series">
-                <!-- Dynamic Content -->
-            </div>
-        </div>
-    </section>
-
-    <!-- ====== HORROR MOVIES SECTION ====== -->
-    <section class="section" id="horror">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Horror Movies</h2>
-                <a href="view.html#horror" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
-            </div>
-            <div class="movies-grid" id="grid-horror">
-                <!-- Dynamic Content -->
-            </div>
-        </div>
-    </section>
-
-    <!-- ====== KIDS SECTION ====== -->
-    <section class="section" id="child">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Kids & Family</h2>
-                <a href="view.html#kids" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
-            </div>
-            <div class="movies-grid" id="grid-kids">
-                <!-- Dynamic Content -->
-            </div>
-        </div>
-    </section>
-
-    <!-- ====== KOREAN DRAMA SECTION ====== -->
-    <section class="section" id="kdrama">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Korean Drama</h2>
-                <a href="view.html#kdrama" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
-            </div>
-            <div class="movies-grid" id="grid-kdrama">
-                <!-- Dynamic Content -->
-            </div>
-        </div>
-    </section>
+    <!-- ====== DYNAMIC GENRE & CATEGORY SECTIONS ====== -->
+    <div id="homeDynamicSections">
+        <!-- Loaded dynamically via loadCategories() -->
+    </div>
 
     <!-- ====== FOOTER ====== -->
     <footer>
@@ -1926,55 +2125,17 @@
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 
     <script>
-        const savedBackend = localStorage.getItem('infinx_server_url');
-        const DEFAULT_BACKEND = savedBackend || 'http://13.202.95.5:8000';
-
-        function getApiBase() {
-            if (savedBackend) return `${savedBackend.replace(/\/$/, '')}/api`;
-            // Prevent mixed content errors when loaded over HTTPS (e.g. Vercel)
-            if (window.location.protocol === 'https:') {
-                return '/api';
-            }
-            if (window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':8000')) {
-                return `${DEFAULT_BACKEND}/api`;
-            }
-            return '/api';
-        }
-
-        let API_BASE = getApiBase();
-
-        async function apiFetch(path, options = {}) {
-            let primaryUrl = path.startsWith('http') ? path : `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
-            try {
-                const res = await fetch(primaryUrl, options);
-                return res;
-            } catch (err) {
-                // Network failure or Mixed Content block fallback logic
-                if (primaryUrl.startsWith('http') && !path.startsWith('http')) {
-                    const fallbackUrl = `/api${path.startsWith('/') ? '' : '/'}${path}`;
-                    try {
-                        const fallbackRes = await fetch(fallbackUrl, options);
-                        API_BASE = '/api';
-                        return fallbackRes;
-                    } catch (err2) {}
-                } else if (!primaryUrl.startsWith('http') && !path.startsWith('http')) {
-                    const fallbackUrl = `${DEFAULT_BACKEND}/api${path.startsWith('/') ? '' : '/'}${path}`;
-                    try {
-                        const fallbackRes = await fetch(fallbackUrl, options);
-                        API_BASE = `${DEFAULT_BACKEND}/api`;
-                        return fallbackRes;
-                    } catch (err2) {}
-                }
-                throw err;
-            }
-        }
+        const DEFAULT_BACKEND = localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000';
+        const SERVER_ORIGIN = (window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':8000'))
+            ? DEFAULT_BACKEND
+            : '';
+        const API_BASE = `${SERVER_ORIGIN}/api`;
 
         window.formatMediaUrl = function (url) {
             const fallback = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
             if (!url) return fallback;
             if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
-            const base = API_BASE.replace(/\/api$/, '');
-            return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
+            return url.startsWith('/') ? `${DEFAULT_BACKEND}${url}` : `${DEFAULT_BACKEND}/${url}`;
         };
         let userWatchlist = [];
 
@@ -2020,8 +2181,31 @@
             if (closeDrawer) closeDrawer.addEventListener('click', closeMobileMenu);
             if (navOverlay) navOverlay.addEventListener('click', closeMobileMenu);
 
-            // Close menu when clicking any nav link inside the drawer (only on mobile)
-            const navLinks = document.querySelectorAll('.navbar .nav-link');
+            // Dropdown toggle click/tap handlers (for desktop & mobile)
+            document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const parent = this.closest('.nav-item-dropdown');
+                    if (parent) {
+                        const wasActive = parent.classList.contains('active');
+                        document.querySelectorAll('.nav-item-dropdown').forEach(d => d.classList.remove('active'));
+                        if (!wasActive) {
+                            parent.classList.add('active');
+                        }
+                    }
+                });
+            });
+
+            // Close open dropdowns when tapping outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.nav-item-dropdown')) {
+                    document.querySelectorAll('.nav-item-dropdown').forEach(d => d.classList.remove('active'));
+                }
+            });
+
+            // Close menu when clicking direct nav links or dropdown items inside the drawer (only on mobile)
+            const navLinks = document.querySelectorAll('.navbar .nav-link:not(.dropdown-toggle), .navbar .dropdown-item');
             navLinks.forEach(link => {
                 link.addEventListener('click', () => {
                     if (window.innerWidth <= 992) {
@@ -2152,7 +2336,7 @@
         // Fetch Watchlist items
         async function loadWatchlist() {
             try {
-                const res = await apiFetch('/user/watchlist', { headers: getAuthHeader() });
+                const res = await fetch(`${API_BASE}/user/watchlist`, { headers: getAuthHeader() });
                 if (res.status === 401) {
                     handleLogout();
                     return;
@@ -2183,7 +2367,7 @@
         // Fetch Continue Watching List
         async function loadContinueWatching() {
             try {
-                const res = await apiFetch('/user/history', { headers: getAuthHeader() });
+                const res = await fetch(`${API_BASE}/user/history`, { headers: getAuthHeader() });
                 if (res.status === 401) {
                     handleLogout();
                     return;
@@ -2239,15 +2423,14 @@
             try {
                 let slideDelay = 6000;
                 try {
-                    const settingsRes = await apiFetch('/settings');
+                    const settingsRes = await fetch(`${API_BASE}/settings`);
                     if (settingsRes.ok) {
                         const settingsData = await settingsRes.json();
                         if (settingsData.bannerSlideTime) slideDelay = settingsData.bannerSlideTime;
                     }
                 } catch (err) { console.error('Error loading settings', err); }
 
-                const res = await apiFetch('/shows/carousel');
-                if (!res.ok) return;
+                const res = await fetch(`${API_BASE}/shows/carousel`);
                 const data = await res.json();
                 const wrapper = document.getElementById('carouselWrapper');
 
@@ -2259,7 +2442,7 @@
                             ? `/video-player/index.html?episodeId=${show.episodes[0].id}`
                             : '#';
                         const rawBanner = show.banner || show.poster;
-                        const bannerImg = rawBanner ? window.formatMediaUrl(rawBanner) : 'Postes/infinit-cas11.jpg';
+                        const bannerImg = rawBanner ? encodeURI(rawBanner) : 'Postes/infinit-cas11.jpg';
                         const isVideo = rawBanner && (rawBanner.toLowerCase().endsWith('.mp4') || rawBanner.toLowerCase().endsWith('.webm') || rawBanner.toLowerCase().endsWith('.mkv') || rawBanner.toLowerCase().endsWith('.mov'));
 
                         const bannerContent = `
@@ -2316,252 +2499,311 @@
             }
         }
 
-        // Fetch categories with shows
-        async function loadCategories() {
-            // Map category slugs to grid containers
-            const categoryMapping = {
-                'action': 'grid-action',
-                'anime': 'grid-anime',
-                'hollywood': 'grid-hollywood',
-                'web-series': 'grid-web-series',
-                'horror': 'grid-horror',
-                'kids': 'grid-kids',
-                'kdrama': 'grid-kdrama'
-            };
+        // Fetch categories with shows & dynamic section renderer with sorting
+        let globalCategoriesData = [];
+        let currentSortOrder = 'default';
 
-            // Pre-populate grids with skeletons
-            Object.values(categoryMapping).forEach(gridId => {
-                const grid = document.getElementById(gridId);
-                if (grid) {
-                    let skeletonHtml = '';
-                    for (let i = 0; i < 6; i++) {
-                        skeletonHtml += `
-                            <div class="movie-card skeleton-card">
-                                <div class="skeleton skeleton-card-poster"></div>
-                                <div class="skeleton-card-info">
-                                    <div class="skeleton skeleton-card-title"></div>
-                                    <div class="skeleton skeleton-card-meta"></div>
-                                    <div class="skeleton skeleton-card-desc"></div>
-                                    <div class="skeleton-card-actions">
-                                        <div class="skeleton skeleton-card-btn"></div>
-                                        <div class="skeleton skeleton-card-fav"></div>
-                                    </div>
-                                </div>
+        const CATEGORY_MAP = {
+            // Categories
+            'south-hindi-dubbed': { name: 'South Hindi Dubbed', icon: 'fa-language', color: '#ff793f' },
+            'hollywood': { name: 'Hollywood Movies', icon: 'fa-film', color: '#9c27b0' },
+            'bollywood': { name: 'Bollywood Movies', icon: 'fa-clapperboard', color: '#ff5252' },
+            'anime': { name: 'Anime Series', icon: 'fa-play-circle', color: '#00a8ff' },
+            'web-series': { name: 'Web Series', icon: 'fa-tv', color: '#2ecc71' },
+            'kids': { name: 'Kids & Family', icon: 'fa-child', color: '#f1c40f' },
+            'kdrama': { name: 'Korean Drama', icon: 'fa-video', color: '#e67e22' },
+            // Genres
+            'action': { name: 'Action', icon: 'fa-fire', color: '#ff0055' },
+            'adventure': { name: 'Adventure', icon: 'fa-compass', color: '#e67e22' },
+            'animation': { name: 'Animation', icon: 'fa-magic', color: '#9b59b6' },
+            'comedy': { name: 'Comedy', icon: 'fa-laugh-beam', color: '#f1c40f' },
+            'crime': { name: 'Crime', icon: 'fa-user-ninja', color: '#34495e' },
+            'drama': { name: 'Drama', icon: 'fa-theater-masks', color: '#e74c3c' },
+            'fantasy': { name: 'Fantasy', icon: 'fa-dragon', color: '#a200ff' },
+            'historical': { name: 'Historical', icon: 'fa-landmark', color: '#d35400' },
+            'horror': { name: 'Horror', icon: 'fa-ghost', color: '#2c3e50' },
+            'mystery': { name: 'Mystery', icon: 'fa-user-secret', color: '#8e44ad' },
+            'political': { name: 'Political', icon: 'fa-building-columns', color: '#7f8c8d' },
+            'romance': { name: 'Romance', icon: 'fa-heart', color: '#ff4757' },
+            'sci-fi': { name: 'Sci-Fi', icon: 'fa-atom', color: '#00f0ff' },
+            'thriller': { name: 'Thriller', icon: 'fa-bolt', color: '#ff6b6b' }
+        };
+
+        function sortShowsList(shows, sortOption) {
+            let list = [...shows];
+            if (sortOption === 'rating-desc') {
+                return list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            } else if (sortOption === 'newest') {
+                return list.sort((a, b) => parseInt(b.year || 0) - parseInt(a.year || 0) || b.id - a.id);
+            } else if (sortOption === 'views-desc') {
+                return list.sort((a, b) => (b.views || 0) - (a.views || 0));
+            } else if (sortOption === 'title-asc') {
+                return list.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (sortOption === 'title-desc') {
+                return list.sort((a, b) => b.title.localeCompare(a.title));
+            }
+            return list;
+        }
+
+        function changeHomeSort(val) {
+            currentSortOrder = val;
+            renderDynamicHomeSections();
+        }
+
+        async function loadCategories() {
+            const container = document.getElementById('homeDynamicSections');
+            if (!container) return;
+
+            // Render skeleton sections
+            let skeletonHtml = '';
+            for (let i = 0; i < 4; i++) {
+                skeletonHtml += `
+                    <section class="section">
+                        <div class="container">
+                            <div class="section-header">
+                                <div class="skeleton" style="width: 200px; height: 30px; border-radius: 6px;"></div>
+                                <div class="skeleton" style="width: 80px; height: 20px; border-radius: 4px;"></div>
                             </div>
-                        `;
-                    }
-                    grid.innerHTML = skeletonHtml;
-                }
-            });
+                            <div class="movies-grid">
+                                ${Array(6).fill(`
+                                    <div class="movie-card skeleton-card">
+                                        <div class="skeleton skeleton-card-poster"></div>
+                                        <div class="skeleton-card-info">
+                                            <div class="skeleton skeleton-card-title"></div>
+                                            <div class="skeleton skeleton-card-meta"></div>
+                                            <div class="skeleton skeleton-card-desc"></div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </section>
+                `;
+            }
+            container.innerHTML = skeletonHtml;
 
             try {
-                const res = await apiFetch('/shows/categories');
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-
-                // Reset grids
-                Object.values(categoryMapping).forEach(gridId => {
-                    const grid = document.getElementById(gridId);
-                    if (grid) grid.innerHTML = '<p style="color: var(--gray-text);">No content available</p>';
-                });
-
-                const fallbackPoster = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
-
-                data.forEach(category => {
-                    const gridId = categoryMapping[category.slug];
-                    const grid = document.getElementById(gridId);
-                    if (grid && category.shows && category.shows.length > 0) {
-                        let html = '';
-                        category.shows.slice(0, 6).forEach(show => {
-                            const isFav = userWatchlist.includes(show.id) ? 'active' : '';
-                            const heartIcon = userWatchlist.includes(show.id) ? 'fas fa-heart' : 'far fa-heart';
-
-                            // Load first episode
-                            const hasEpisodes = show.episodes && show.episodes.length > 0;
-                            const playUrl = hasEpisodes
-                                ? `/video-player/index.html?episodeId=${show.episodes[0].id}`
-                                : '#';
-                            const playBtnText = hasEpisodes ? '<i class="fas fa-play"></i> Watch' : 'Soon';
-                            const btnDisabled = !hasEpisodes ? 'disabled style="opacity: 0.5; pointer-events: none;"' : '';
-
-                            html += `
-                                <div class="movie-card">
-                                    <div class="movie-poster">
-                                        <div class="movie-badge">${show.badge || ''}</div>
-                                        ${show.dubsub ? '<div class="dubsub">Sub/Dub</div>' : ''}
-                                        <div class="movie-rating"><i class="fas fa-star"></i> ${show.rating || '8.0'}</div>
-                                        <img src="${window.formatMediaUrl(show.poster)}" alt="${show.title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
-                                    </div>
-                                    <div class="movie-info">
-                                        <h3 class="movie-title">${show.title}</h3>
-                                        <div class="movie-meta">
-                                            <span>${show.year || ''}</span>
-                                            <span>${show.runtime || ''}</span>
-                                        </div>
-                                        <p class="movie-desc">${show.description || ''}</p>
-                                        <div class="movie-actions">
-                                            <a href="${playUrl}" class="btn btn-primary btn-small" style="flex:1;" ${btnDisabled}>${playBtnText}</a>
-                                            <button class="btn-watchlist-toggle ${isFav}" data-show-id="${show.id}" onclick="toggleWatchlist(this, ${show.id})">
-                                                <i class="${heartIcon}"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        grid.innerHTML = html;
-                    }
-                });
+                const res = await fetch(`${API_BASE}/shows/categories`);
+                if (res.ok) {
+                    globalCategoriesData = await res.json();
+                    renderQuickPills();
+                    renderDynamicHomeSections();
+                }
             } catch (e) {
-                console.error('Error loading shows:', e);
-                Object.values(categoryMapping).forEach(gridId => {
-                    const grid = document.getElementById(gridId);
-                    if (grid) {
-                        grid.innerHTML = `
-                            <div style="grid-column: 1 / -1; text-align: center; padding: 25px; background: rgba(255, 0, 85, 0.05); border: 1px dashed rgba(255, 0, 85, 0.2); border-radius: 12px; color: var(--gray-text);">
-                                <i class="fas fa-exclamation-triangle" style="font-size: 1.8rem; color: var(--primary); margin-bottom: 10px;"></i>
-                                <p style="font-size: 0.95rem; margin-bottom: 12px;">Failed to load shows from server. Please check your network connection.</p>
-                                <button onclick="loadCategories()" class="btn btn-secondary btn-small">
-                                    <i class="fas fa-sync-alt"></i> Retry Loading
-                                </button>
-                            </div>
-                        `;
-                    }
-                });
+                console.error('Error fetching categories:', e);
+                container.innerHTML = `<div class="container"><p style="color: var(--primary); text-align: center; padding: 40px 0;"><i class="fas fa-exclamation-circle"></i> Failed to load show categories.</p></div>`;
             }
         }
 
-        // Toggle favorite watchlist item
-        async function toggleWatchlist(btn, showId) {
-            if (!isLoggedIn()) {
-                openModal('login');
+        function renderQuickPills() {
+            const pillsContainer = document.getElementById('genreQuickPills');
+            if (!pillsContainer) return;
+
+            let pillsHtml = `<a href="index.html#home" class="pill-btn active">All</a>`;
+            globalCategoriesData.forEach(cat => {
+                if (cat.shows && cat.shows.length > 0) {
+                    const info = CATEGORY_MAP[cat.slug] || { name: cat.name };
+                    pillsHtml += `<a href="#section-${cat.slug}" class="pill-btn">${info.name} (${cat.shows.length})</a>`;
+                }
+            });
+            pillsContainer.innerHTML = pillsHtml;
+        }
+
+        function renderDynamicHomeSections() {
+            const container = document.getElementById('homeDynamicSections');
+            if (!container) return;
+
+            if (!globalCategoriesData || globalCategoriesData.length === 0) {
+                container.innerHTML = `<div class="container"><p style="color: var(--gray-text); text-align: center;">No categories available.</p></div>`;
                 return;
             }
-            try {
-                const res = await apiFetch('/user/watchlist', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...getAuthHeader()
-                    },
-                    body: JSON.stringify({ showId })
-                });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.status === 'added') {
-                        btn.classList.add('active');
-                        btn.querySelector('i').className = 'fas fa-heart';
-                        userWatchlist.push(showId);
-                    } else {
-                        btn.classList.remove('active');
-                        btn.querySelector('i').className = 'far fa-heart';
-                        userWatchlist = userWatchlist.filter(id => id !== showId);
-                    }
-                    loadWatchlist();
+            let sectionsHtml = '';
+
+            globalCategoriesData.forEach(cat => {
+                const shows = cat.shows || [];
+                if (shows.length > 0) {
+                    const info = CATEGORY_MAP[cat.slug] || { name: cat.name, icon: 'fa-layer-group', color: '#ff0055' };
+                    const sortedShows = sortShowsList(shows, currentSortOrder);
+
+                    let cardsHtml = '';
+                    sortedShows.slice(0, 6).forEach(show => {
+                        const isFav = userWatchlist.includes(show.id) ? 'active' : '';
+                        const heartIcon = userWatchlist.includes(show.id) ? 'fas fa-heart' : 'far fa-heart';
+                        const hasEpisodes = show.episodes && show.episodes.length > 0;
+                        const playUrl = hasEpisodes ? `/video-player/index.html?episodeId=${show.episodes[0].id}` : '#';
+                        const playBtnText = hasEpisodes ? '<i class="fas fa-play"></i> Watch' : 'Soon';
+                        const btnDisabled = !hasEpisodes ? 'disabled style="opacity: 0.5; pointer-events: none;"' : '';
+
+                        cardsHtml += `
+                            <div class="movie-card">
+                                <div class="movie-poster">
+                                    <div class="movie-badge">${show.badge || 'HD'}</div>
+                                    ${show.dubsub ? '<div class="dubsub">Sub/Dub</div>' : ''}
+                                    <div class="movie-rating"><i class="fas fa-star"></i> ${show.rating}</div>
+                                    <img src="${window.formatMediaUrl(show.poster)}" alt="${show.title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
+                                </div>
+                                <div class="movie-info">
+                                    <h3 class="movie-title">${show.title}</h3>
+                                    <div class="movie-meta">
+                                        <span>${show.year}</span>
+                                        <span>${show.runtime}</span>
+                                    </div>
+                                    <p class="movie-desc">${show.description}</p>
+                                    <div class="movie-actions">
+                                        <a href="${playUrl}" class="btn btn-primary btn-small" style="flex:1;" ${btnDisabled}>${playBtnText}</a>
+                                        <button class="btn-watchlist-toggle ${isFav}" data-show-id="${show.id}" onclick="toggleWatchlist(this, ${show.id})">
+                                            <i class="${heartIcon}"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    sectionsHtml += `
+                        <section class="section" id="section-${cat.slug}">
+                            <div class="container">
+                                <div class="section-header">
+                                    <h2 class="section-title"><i class="fas ${info.icon}" style="color: ${info.color || 'var(--primary)'}; margin-right: 10px;"></i>${info.name}</h2>
+                                    <a href="view.html#${cat.slug}" class="view-all">View All (${shows.length}) <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                                <div class="movies-grid">
+                                    ${cardsHtml}
+                                </div>
+                            </div>
+                        </section>
+                    `;
                 }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        // Authentication Handlers
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            try {
-                const res = await apiFetch('/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await res.json();
-                if (res.ok) {
-                    localStorage.setItem('infinx_token', data.token);
-                    localStorage.setItem('infinx_user_email', data.user.email);
-                    localStorage.setItem('infinx_user_role', data.user.role);
-
-                    closeModal('login');
-                    initApp();
-                } else {
-                    alert(data.error || 'Login failed');
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Connection error');
-            }
-        }
-
-        async function handleRegister(e) {
-            e.preventDefault();
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-
-            try {
-                const res = await apiFetch('/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await res.json();
-                if (res.ok) {
-                    localStorage.setItem('infinx_token', data.token);
-                    localStorage.setItem('infinx_user_email', data.user.email);
-                    localStorage.setItem('infinx_user_role', data.user.role);
-
-                    closeModal('register');
-                    initApp();
-                } else {
-                    alert(data.error || 'Registration failed');
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Connection error');
-            }
-        }
-
-        function handleLogout(e) {
-            if (e) e.stopPropagation();
-            localStorage.clear();
-            updateAuthHeader();
-            document.getElementById('continueWatchingSection').classList.add('hidden');
-            // Remove active classes from hearts
-            document.querySelectorAll('.btn-watchlist-toggle').forEach(btn => {
-                btn.classList.remove('active');
-                btn.querySelector('i').className = 'far fa-heart';
             });
-            userWatchlist = [];
-        }
 
-        // Modal triggers
-        function openModal(type) {
-            document.getElementById(`${type}Modal`).classList.add('active');
-            try { history.pushState({ modalOpen: true }, ''); } catch (e) {}
-        }
-
-        function closeModal(type) {
-            document.getElementById(`${type}Modal`).classList.remove('active');
-        }
-
-        function switchModal(closeType, openType) {
-            closeModal(closeType);
-            setTimeout(() => openModal(openType), 100);
-        }
-
-        window.addEventListener('popstate', function(e) {
-            const activeModal = document.querySelector('.modal.active');
-            if (activeModal) {
-                activeModal.classList.remove('active');
+            if (!sectionsHtml) {
+                sectionsHtml = `<div class="container"><p style="color: var(--gray-text); text-align: center; padding: 40px 0;">No shows available in catalog.</p></div>`;
             }
-            const activeOverlay = document.querySelector('.mobile-search-overlay.active');
-            if (activeOverlay) {
-                activeOverlay.classList.remove('active');
+
+            container.innerHTML = sectionsHtml;
+        }
+
+
+            // Toggle favorite watchlist item
+            async function toggleWatchlist(btn, showId) {
+                if (!isLoggedIn()) {
+                    openModal('login');
+                    return;
+                }
+                try {
+                    const res = await fetch(`${API_BASE}/user/watchlist`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...getAuthHeader()
+                        },
+                        body: JSON.stringify({ showId })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.status === 'added') {
+                            btn.classList.add('active');
+                            btn.querySelector('i').className = 'fas fa-heart';
+                            userWatchlist.push(showId);
+                        } else {
+                            btn.classList.remove('active');
+                            btn.querySelector('i').className = 'far fa-heart';
+                            userWatchlist = userWatchlist.filter(id => id !== showId);
+                        }
+                        loadWatchlist();
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
             }
-        });
+
+            // Authentication Handlers
+            async function handleLogin(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+
+                try {
+                    const res = await fetch(`${API_BASE}/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await res.json();
+                    if (res.ok) {
+                        localStorage.setItem('infinx_token', data.token);
+                        localStorage.setItem('infinx_user_email', data.user.email);
+                        localStorage.setItem('infinx_user_role', data.user.role);
+
+                        closeModal('login');
+                        initApp();
+                    } else {
+                        alert(data.error || 'Login failed');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Connection error');
+                }
+            }
+
+            async function handleRegister(e) {
+                e.preventDefault();
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+
+                try {
+                    const res = await fetch(`${API_BASE}/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await res.json();
+                    if (res.ok) {
+                        localStorage.setItem('infinx_token', data.token);
+                        localStorage.setItem('infinx_user_email', data.user.email);
+                        localStorage.setItem('infinx_user_role', data.user.role);
+
+                        closeModal('register');
+                        initApp();
+                    } else {
+                        alert(data.error || 'Registration failed');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Connection error');
+                }
+            }
+
+            function handleLogout(e) {
+                if (e) e.stopPropagation();
+                localStorage.clear();
+                updateAuthHeader();
+                document.getElementById('continueWatchingSection').classList.add('hidden');
+                // Remove active classes from hearts
+                document.querySelectorAll('.btn-watchlist-toggle').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.querySelector('i').className = 'far fa-heart';
+                });
+                userWatchlist = [];
+            }
+
+            // Modal triggers
+            function openModal(type) {
+                document.getElementById(`${type}Modal`).classList.add('active');
+            }
+
+            function closeModal(type) {
+                document.getElementById(`${type}Modal`).classList.remove('active');
+            }
+
+            function switchModal(closeType, openType) {
+                closeModal(closeType);
+                setTimeout(() => openModal(openType), 100);
+            }
     </script>
 </body>
 
