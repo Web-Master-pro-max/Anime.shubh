@@ -93,23 +93,168 @@
             filter: drop-shadow(0 0 12px var(--secondary));
         }
 
-        .category-nav {
-            display: flex; gap: 8px; background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 40px;
-            border: 1px solid var(--gray-border);
+        .navbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .cat-link {
-            color: var(--gray-text); text-decoration: none; font-family: 'Outfit', sans-serif;
-            font-size: 1.3rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
-            padding: 8px 18px; border-radius: 30px; transition: var(--transition);
-            display: inline-flex; align-items: center; gap: 6px;
+
+        .nav-link {
+            color: var(--gray-text);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
             border: 1px solid transparent;
         }
-        .cat-link i { font-size: 1.3rem; }
-        .cat-link:hover, .cat-link.active-cat {
+
+        .nav-link:hover,
+        .nav-link.active {
             color: white;
             background: rgba(255, 0, 85, 0.08);
             border-color: rgba(255, 0, 85, 0.15);
             text-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+        }
+
+        /* Nav Dropdown Menus */
+        .nav-item-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%) translateY(10px) scale(0.95);
+            background: rgba(12, 12, 22, 0.96);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 0, 85, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1100;
+        }
+
+        .dropdown-menu.genres-menu {
+            min-width: 360px;
+        }
+
+        .dropdown-menu.categories-menu {
+            min-width: 260px;
+        }
+
+        .nav-item-dropdown:hover .dropdown-menu,
+        .nav-item-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0) scale(1);
+        }
+
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .dropdown-grid.single-col {
+            grid-template-columns: 1fr;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            color: var(--light-text);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .dropdown-item i {
+            font-size: 1.4rem;
+            color: var(--primary);
+            width: 18px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 0, 85, 0.15);
+            color: #ffffff;
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(255, 0, 85, 0.2);
+        }
+
+        .dropdown-item:hover i {
+            color: var(--secondary);
+            transform: scale(1.2);
+        }
+
+        /* Horizontal Category Pills Bar */
+        .category-pills-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0 15px 0;
+            margin-bottom: 20px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .category-pills-bar::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .category-pills-bar::-webkit-scrollbar-thumb {
+            background: rgba(255, 0, 85, 0.3);
+            border-radius: 4px;
+        }
+
+        .cat-pill {
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--gray-border);
+            border-radius: 30px;
+            color: var(--gray-text);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cat-pill:hover, .cat-pill.active-pill {
+            background: var(--gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(255, 0, 85, 0.3);
+            transform: translateY(-2px);
         }
 
         .back-home {
@@ -524,8 +669,8 @@
                 font-size: 1.2rem;
             }
 
-            /* Turn category-nav into a glassmorphic sidebar drawer */
-            .category-nav {
+            /* Turn navbar into a glassmorphic sidebar drawer */
+            .navbar, .category-nav {
                 position: fixed;
                 top: 0;
                 right: -300px;
@@ -547,18 +692,11 @@
                 overflow-y: auto;
             }
 
-            .category-nav.active {
+            .navbar.active, .category-nav.active {
                 right: 0;
             }
 
-            .category-nav-links {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                width: 100%;
-            }
-
-            .cat-link {
+            .nav-link {
                 width: 100%;
                 padding: 12px 18px;
                 border-radius: var(--radius-sm);
@@ -566,6 +704,48 @@
                 justify-content: flex-start;
                 text-transform: none;
                 letter-spacing: 0.5px;
+            }
+
+            .nav-item-dropdown {
+                width: 100%;
+            }
+
+            .nav-item-dropdown .dropdown-toggle {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .dropdown-menu {
+                position: static !important;
+                transform: none !important;
+                top: auto !important;
+                left: auto !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                box-shadow: none !important;
+                margin-top: 6px !important;
+                background: rgba(255, 255, 255, 0.04) !important;
+                border: 1px solid var(--gray-border) !important;
+                border-radius: var(--radius-sm) !important;
+                display: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                padding: 10px !important;
+                pointer-events: auto !important;
+            }
+
+            .nav-item-dropdown.active .dropdown-menu {
+                display: block !important;
+            }
+
+            .dropdown-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 6px !important;
+            }
+
+            .dropdown-item {
+                font-size: 1.2rem !important;
+                padding: 6px 10px !important;
             }
 
             /* Close button in drawer */
@@ -735,14 +915,54 @@
 <body>
     <header>
         <div class="nav-overlay" id="navOverlay"></div>
-        <a href="#" class="logo" onclick="window.location.href='index.html'; return false;"><i class="fas fa-infinity"></i>Infinx Anime</a>
+        <a href="index.html" class="logo"><i class="fas fa-infinity"></i>Infinx Anime</a>
         
-        <div class="category-nav" id="categoryNav">
+        <nav class="navbar" id="categoryNav">
             <div class="drawer-close" id="closeDrawer"><i class="fas fa-times"></i></div>
-            <div class="category-nav-links" id="categoryNavLinks">
-                <!-- js will populate links based on current category -->
+            <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+
+            <!-- Genres Dropdown -->
+            <div class="nav-item-dropdown">
+                <a href="#" class="nav-link dropdown-toggle"><i class="fas fa-layer-group"></i> Genres <i class="fas fa-chevron-down" style="font-size: 1rem; margin-left: 2px;"></i></a>
+                <div class="dropdown-menu genres-menu">
+                    <div class="dropdown-grid">
+                        <a href="view.html#action" class="dropdown-item"><i class="fas fa-fire"></i> Action</a>
+                        <a href="view.html#adventure" class="dropdown-item"><i class="fas fa-compass"></i> Adventure</a>
+                        <a href="view.html#animation" class="dropdown-item"><i class="fas fa-magic"></i> Animation</a>
+                        <a href="view.html#comedy" class="dropdown-item"><i class="fas fa-laugh-beam"></i> Comedy</a>
+                        <a href="view.html#crime" class="dropdown-item"><i class="fas fa-user-ninja"></i> Crime</a>
+                        <a href="view.html#drama" class="dropdown-item"><i class="fas fa-theater-masks"></i> Drama</a>
+                        <a href="view.html#fantasy" class="dropdown-item"><i class="fas fa-dragon"></i> Fantasy</a>
+                        <a href="view.html#historical" class="dropdown-item"><i class="fas fa-landmark"></i> Historical</a>
+                        <a href="view.html#horror" class="dropdown-item"><i class="fas fa-ghost"></i> Horror</a>
+                        <a href="view.html#mystery" class="dropdown-item"><i class="fas fa-user-secret"></i> Mystery</a>
+                        <a href="view.html#political" class="dropdown-item"><i class="fas fa-building-columns"></i> Political</a>
+                        <a href="view.html#romance" class="dropdown-item"><i class="fas fa-heart"></i> Romance</a>
+                        <a href="view.html#sci-fi" class="dropdown-item"><i class="fas fa-atom"></i> Sci-Fi</a>
+                        <a href="view.html#thriller" class="dropdown-item"><i class="fas fa-bolt"></i> Thriller</a>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <!-- Categories Dropdown -->
+            <div class="nav-item-dropdown">
+                <a href="#" class="nav-link dropdown-toggle"><i class="fas fa-list-ul"></i> Categories <i class="fas fa-chevron-down" style="font-size: 1rem; margin-left: 2px;"></i></a>
+                <div class="dropdown-menu categories-menu">
+                    <div class="dropdown-grid single-col">
+                        <a href="view.html#south-hindi-dubbed" class="dropdown-item"><i class="fas fa-language"></i> South Hindi Dubbed</a>
+                        <a href="view.html#hollywood" class="dropdown-item"><i class="fas fa-film"></i> Hollywood Movies</a>
+                        <a href="view.html#bollywood" class="dropdown-item"><i class="fas fa-clapperboard"></i> Bollywood Movies</a>
+                        <a href="view.html#anime" class="dropdown-item"><i class="fas fa-play-circle"></i> Anime Series</a>
+                        <a href="view.html#web-series" class="dropdown-item"><i class="fas fa-tv"></i> Web Series</a>
+                        <a href="view.html#kids" class="dropdown-item"><i class="fas fa-child"></i> Kids & Family</a>
+                        <a href="view.html#kdrama" class="dropdown-item"><i class="fas fa-video"></i> Korean Drama</a>
+                    </div>
+                </div>
+            </div>
+
+            <a href="view.html#watchlist" class="nav-link"><i class="fas fa-heart"></i> Watchlist</a>
+            <a href="view.html#history" class="nav-link"><i class="fas fa-history"></i> History</a>
+        </nav>
 
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="download.html" class="back-home" style="background: var(--gradient); border: none; font-weight: 700;"><i class="fas fa-mobile-alt"></i> App</a>
@@ -754,6 +974,11 @@
     </header>
 
     <div class="container">
+        <!-- Horizontal Scrollable Category Pills Bar -->
+        <div class="category-pills-bar" id="categoryPillsBar">
+            <!-- filled by js -->
+        </div>
+
         <!-- dynamic category hero -->
         <div class="category-hero" id="categoryHero">
             <!-- filled by js -->
@@ -793,51 +1018,16 @@
 
     <script>
         (async function() {
-            const savedBackend = localStorage.getItem('infinx_server_url');
-            const DEFAULT_BACKEND = savedBackend || 'http://13.202.95.5:8000';
-
-            function getApiBase() {
-                if (savedBackend) return `${savedBackend.replace(/\/$/, '')}/api`;
-                if (window.location.protocol === 'https:') return '/api';
-                if (window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':8000')) {
-                    return `${DEFAULT_BACKEND}/api`;
-                }
-                return '/api';
-            }
-
-            let API_BASE = getApiBase();
-
-            async function apiFetch(path, options = {}) {
-                let primaryUrl = path.startsWith('http') ? path : `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
-                try {
-                    const res = await fetch(primaryUrl, options);
-                    return res;
-                } catch (err) {
-                    if (primaryUrl.startsWith('http') && !path.startsWith('http')) {
-                        const fallbackUrl = `/api${path.startsWith('/') ? '' : '/'}${path}`;
-                        try {
-                            const fallbackRes = await fetch(fallbackUrl, options);
-                            API_BASE = '/api';
-                            return fallbackRes;
-                        } catch (err2) {}
-                    } else if (!primaryUrl.startsWith('http') && !path.startsWith('http')) {
-                        const fallbackUrl = `${DEFAULT_BACKEND}/api${path.startsWith('/') ? '' : '/'}${path}`;
-                        try {
-                            const fallbackRes = await fetch(fallbackUrl, options);
-                            API_BASE = `${DEFAULT_BACKEND}/api`;
-                            return fallbackRes;
-                        } catch (err2) {}
-                    }
-                    throw err;
-                }
-            }
-
+            const DEFAULT_BACKEND = localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000';
+            const SERVER_ORIGIN = (window.location.protocol === 'file:' || window.location.origin === 'null' || window.location.port === '3000' || window.location.port === '5500')
+                ? DEFAULT_BACKEND
+                : '';
+            const API_BASE = `${SERVER_ORIGIN}/api`;
             const fallbackPoster = "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500";
             window.formatMediaUrl = function(url) {
                 if (!url) return fallbackPoster;
                 if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
-                const base = API_BASE.replace(/\/api$/, '');
-                return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
+                return url.startsWith('/') ? `${SERVER_ORIGIN}${url}` : `${SERVER_ORIGIN}/${url}`;
             };
 
             // Get category or search from URL (hash), default to 'action'
@@ -854,39 +1044,70 @@
             const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
             const catInfo = {
-                action: { name: 'Action Movies', icon: 'fa-fire', color: '#ff0055' },
-                anime: { name: 'Anime Series', icon: 'fa-play-circle', color: '#00a8ff' },
-                hollywood: { name: 'Hollywood Movies', icon: 'fa-film', color: '#9c27b0' },
+                // Categories
+                'south-hindi-dubbed': { name: 'South Hindi Dubbed', icon: 'fa-language', color: '#ff793f' },
+                'hollywood': { name: 'Hollywood Movies', icon: 'fa-film', color: '#9c27b0' },
+                'bollywood': { name: 'Bollywood Movies', icon: 'fa-clapperboard', color: '#ff5252' },
+                'anime': { name: 'Anime Series', icon: 'fa-play-circle', color: '#00a8ff' },
                 'web-series': { name: 'Web Series', icon: 'fa-tv', color: '#2ecc71' },
-                horror: { name: 'Horror Movies', icon: 'fa-ghost', color: '#2c3e50' },
-                kids: { name: 'Kids & Family', icon: 'fa-child', color: '#f1c40f' },
-                kdrama: { name: 'Korean Drama', icon: 'fa-k', color: '#e67e22' },
-                watchlist: { name: 'My Watchlist', icon: 'fa-heart', color: '#ff0055' },
-                history: { name: 'Watch History', icon: 'fa-history', color: '#00a8ff' }
+                'kids': { name: 'Kids & Family', icon: 'fa-child', color: '#f1c40f' },
+                'kdrama': { name: 'Korean Drama', icon: 'fa-video', color: '#e67e22' },
+                // Genres
+                'action': { name: 'Action', icon: 'fa-fire', color: '#ff0055' },
+                'adventure': { name: 'Adventure', icon: 'fa-compass', color: '#e67e22' },
+                'animation': { name: 'Animation', icon: 'fa-magic', color: '#9b59b6' },
+                'comedy': { name: 'Comedy', icon: 'fa-laugh-beam', color: '#f1c40f' },
+                'crime': { name: 'Crime', icon: 'fa-user-ninja', color: '#34495e' },
+                'drama': { name: 'Drama', icon: 'fa-theater-masks', color: '#e74c3c' },
+                'fantasy': { name: 'Fantasy', icon: 'fa-dragon', color: '#a200ff' },
+                'historical': { name: 'Historical', icon: 'fa-landmark', color: '#d35400' },
+                'horror': { name: 'Horror', icon: 'fa-ghost', color: '#2c3e50' },
+                'mystery': { name: 'Mystery', icon: 'fa-user-secret', color: '#8e44ad' },
+                'political': { name: 'Political', icon: 'fa-building-columns', color: '#7f8c8d' },
+                'romance': { name: 'Romance', icon: 'fa-heart', color: '#ff4757' },
+                'sci-fi': { name: 'Sci-Fi', icon: 'fa-atom', color: '#00f0ff' },
+                'thriller': { name: 'Thriller', icon: 'fa-bolt', color: '#ff6b6b' },
+                'watchlist': { name: 'My Watchlist', icon: 'fa-heart', color: '#ff0055' },
+                'history': { name: 'Watch History', icon: 'fa-history', color: '#00a8ff' }
             };
 
             if (currentCategory !== 'search' && !catInfo[currentCategory]) {
                 currentCategory = 'action';
             }
 
-            // Build category navigation (top header)
-            const navContainer = document.getElementById('categoryNavLinks') || document.getElementById('categoryNav');
-            let navHtml = '';
-            for (let [key, info] of Object.entries(catInfo)) {
-                if ((key === 'watchlist' || key === 'history') && !token) continue;
-                const activeClass = (key === currentCategory) ? 'active-cat' : '';
-                navHtml += `<a href="#${key}" class="cat-link ${activeClass}" data-cat="${key}"><i class="fas ${info.icon}"></i>${info.name.split(' ')[0]}</a>`;
+            // Build horizontal category pills bar below hero for quick switching
+            const pillsBar = document.getElementById('categoryPillsBar');
+            if (pillsBar) {
+                let pillsHtml = '';
+                for (let [key, info] of Object.entries(catInfo)) {
+                    if (['watchlist', 'history'].includes(key)) continue;
+                    const activeClass = (key === currentCategory) ? 'active-pill' : '';
+                    pillsHtml += `<a href="#${key}" class="cat-pill ${activeClass}"><i class="fas ${info.icon}"></i> ${info.name}</a>`;
+                }
+                pillsBar.innerHTML = pillsHtml;
             }
-            navContainer.innerHTML = navHtml;
 
-            // Navigation click listeners
-            document.querySelectorAll('.cat-link').forEach(link => {
-                link.addEventListener('click', (e) => {
+            // Dropdown toggle click handlers (for desktop & mobile)
+            document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+                btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const newCat = link.dataset.cat;
-                    window.location.hash = newCat;
-                    window.location.reload();
+                    e.stopPropagation();
+                    const parent = this.closest('.nav-item-dropdown');
+                    if (parent) {
+                        const wasActive = parent.classList.contains('active');
+                        document.querySelectorAll('.nav-item-dropdown').forEach(d => d.classList.remove('active'));
+                        if (!wasActive) {
+                            parent.classList.add('active');
+                        }
+                    }
                 });
+            });
+
+            // Close open dropdowns when tapping outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.nav-item-dropdown')) {
+                    document.querySelectorAll('.nav-item-dropdown').forEach(d => d.classList.remove('active'));
+                }
             });
 
             // Set bottom tab active classes
@@ -921,23 +1142,28 @@
                 `;
             }
 
-            // Build sub filters based on category
+            // Build sub filters & sorting based on category
             const subBar = document.getElementById('subFilterBar');
             let subHtml = '';
             if (['watchlist', 'history', 'search'].includes(currentCategory)) {
-                subHtml = ''; // no subfilters for watchlist, history, and search
-            } else if (['action', 'hollywood', 'horror'].includes(currentCategory)) {
+                subHtml = '';
+            } else {
                 subHtml = `
                     <button class="sub-filter-btn active-sub" data-sub="all"><i class="fas fa-list"></i> All</button>
                     <button class="sub-filter-btn" data-sub="new"><i class="fas fa-bolt"></i> New Releases</button>
                     <button class="sub-filter-btn" data-sub="rated"><i class="fas fa-star"></i> Top Rated</button>
-                `;
-            } else {
-                subHtml = `
-                    <button class="sub-filter-btn active-sub" data-sub="all"><i class="fas fa-list"></i> All</button>
                     <button class="sub-filter-btn" data-sub="series"><i class="fas fa-tv"></i> Series</button>
                     <button class="sub-filter-btn" data-sub="movie"><i class="fas fa-film"></i> Movies</button>
-                    <button class="sub-filter-btn" data-sub="new"><i class="fas fa-bolt"></i> Latest</button>
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.3rem; font-weight: 600; color: var(--gray-text);"><i class="fas fa-sort"></i> Sort:</span>
+                        <select id="viewSortSelect" onchange="window.handleViewSort(this.value)" style="background: rgba(255,255,255,0.05); border: 1px solid var(--gray-border); color: white; padding: 6px 14px; border-radius: 20px; font-family: Outfit; font-size: 1.2rem; outline: none; cursor: pointer;">
+                            <option value="default" style="background:#000;">Default</option>
+                            <option value="rating-desc" style="background:#000;">Highest Rated</option>
+                            <option value="newest" style="background:#000;">Newest</option>
+                            <option value="title-asc" style="background:#000;">A - Z</option>
+                            <option value="title-desc" style="background:#000;">Z - A</option>
+                        </select>
+                    </div>
                 `;
             }
             subBar.innerHTML = subHtml;
@@ -947,7 +1173,7 @@
             // Get watchlist if logged in
             if (token) {
                 try {
-                    const wlRes = await apiFetch('/user/watchlist', { headers });
+                    const wlRes = await fetch(`${API_BASE}/user/watchlist`, { headers });
                     if (wlRes.ok) {
                         const wlData = await wlRes.json();
                         userWatchlist = wlData.map(s => s.id);
@@ -984,7 +1210,7 @@
             let categoryMovies = [];
             try {
                 if (currentCategory === 'search') {
-                    const res = await apiFetch(`/shows/search?q=${encodeURIComponent(searchQuery)}`);
+                    const res = await fetch(`${API_BASE}/shows/search?q=${encodeURIComponent(searchQuery)}`);
                     if (!res.ok) throw new Error('Search request failed');
                     categoryMovies = await res.json();
                 } else if (currentCategory === 'watchlist') {
@@ -997,7 +1223,7 @@
                             </div>`;
                         return;
                     }
-                    const res = await apiFetch('/user/watchlist', { headers });
+                    const res = await fetch(`${API_BASE}/user/watchlist`, { headers });
                     if (!res.ok) throw new Error('Watchlist request failed');
                     categoryMovies = await res.json();
                 } else if (currentCategory === 'history') {
@@ -1010,7 +1236,7 @@
                             </div>`;
                         return;
                     }
-                    const res = await apiFetch('/user/history', { headers });
+                    const res = await fetch(`${API_BASE}/user/history`, { headers });
                     if (!res.ok) throw new Error('History request failed');
                     const historyData = await res.json();
                     
@@ -1026,7 +1252,7 @@
                         };
                     });
                 } else {
-                    const res = await apiFetch('/shows/categories');
+                    const res = await fetch(`${API_BASE}/shows/categories`);
                     if (!res.ok) throw new Error('API request failed');
                     const categoriesData = await res.json();
                     
@@ -1043,8 +1269,17 @@
                 return;
             }
 
-            // Render function with subfiltering
+            let currentViewSort = 'default';
+            let currentSubFilter = 'all';
+
+            window.handleViewSort = function(sortVal) {
+                currentViewSort = sortVal;
+                renderCategory(currentSubFilter);
+            };
+
+            // Render function with subfiltering and sorting
             function renderCategory(subFilter = 'all') {
+                currentSubFilter = subFilter;
                 let filtered = categoryMovies;
                 
                 if (currentCategory !== 'watchlist' && currentCategory !== 'history') {
@@ -1057,6 +1292,17 @@
                     } else if (subFilter === 'movie') {
                         filtered = categoryMovies.filter(m => m.type === 'movie');
                     }
+                }
+
+                // Apply view sorting
+                if (currentViewSort === 'rating-desc') {
+                    filtered = [...filtered].sort((a,b) => (b.rating||0) - (a.rating||0));
+                } else if (currentViewSort === 'newest') {
+                    filtered = [...filtered].sort((a,b) => parseInt(b.year||0) - parseInt(a.year||0) || b.id - a.id);
+                } else if (currentViewSort === 'title-asc') {
+                    filtered = [...filtered].sort((a,b) => a.title.localeCompare(b.title));
+                } else if (currentViewSort === 'title-desc') {
+                    filtered = [...filtered].sort((a,b) => b.title.localeCompare(a.title));
                 }
 
                 // Update result count
@@ -1188,7 +1434,7 @@
                     return;
                 }
                 try {
-                    const toggleRes = await apiFetch('/user/watchlist', {
+                    const toggleRes = await fetch(`${API_BASE}/user/watchlist`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1235,9 +1481,9 @@
             if (closeDrawer) closeDrawer.addEventListener('click', closeMobileMenu);
             if (navOverlay) navOverlay.addEventListener('click', closeMobileMenu);
 
-            // Close menu when clicking any category link inside the drawer (only on mobile)
-            const catLinks = document.querySelectorAll('.category-nav .cat-link');
-            catLinks.forEach(link => {
+            // Close menu when clicking direct nav links or dropdown items inside the drawer (only on mobile)
+            const navLinks = document.querySelectorAll('.navbar .nav-link:not(.dropdown-toggle), .navbar .dropdown-item, .category-nav .cat-link');
+            navLinks.forEach(link => {
                 link.addEventListener('click', () => {
                     if (window.innerWidth <= 992) {
                         closeMobileMenu();

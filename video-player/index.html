@@ -2,632 +2,2809 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Watch Anime | Infinx Anime</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#ff0055">
+    <title>Infinx Anime | Watch Anime & Movies Online</title>
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="style.css">
-  <!-- Android-fix inline rules removed; using external stylesheet -->
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css">
 
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Google Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
-  <!-- hls.js library for HLS playback -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
+    <!-- Custom CSS -->
+    <style>
+        /* ====== VARIABLES & RESET ====== */
+        :root {
+            --primary: #ff0055;
+            --primary-dark: #d60047;
+            --primary-glow: rgba(255, 0, 85, 0.45);
+            --secondary: #00f0ff;
+            --accent: #b800ff;
+            --dark: #000000;
+            --darker: #000000;
+            --dark-card: rgba(20, 20, 35, 0.55);
+            --dark-card-hover: rgba(32, 32, 55, 0.8);
+            --light-text: #f3f3f6;
+            --gray-text: #a0a5b9;
+            --gray-border: rgba(255, 255, 255, 0.08);
+            --shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 25px rgba(255, 0, 85, 0.35);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --header-height: 76px;
+            --gradient: linear-gradient(135deg, #ff0055 0%, #a200ff 50%, #00f0ff 100%);
+            --gradient-dark: #000000;
+        }
 
-  <!-- Apple Touch Icon -->
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/732/732228.png">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  <!-- Android Theme Color -->
-  <meta name="theme-color" content="#e50914">
+        .movie-card,
+        .swiper-slide,
+        header,
+        .mobile-tab-bar {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
 
-  <!-- iOS Meta Tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        html {
+            font-size: 62.5%;
+            scroll-behavior: smooth;
+            scroll-padding-top: var(--header-height);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: var(--light-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-attachment: fixed;
+        }
+
+        ::selection {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* ====== SCROLLBAR ====== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            border: 2px solid var(--darker);
+            transition: var(--transition);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* ====== CONTAINER ====== */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ====== HEADER ====== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            background: transparent;
+            border-bottom: 1px solid transparent;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            height: 64px;
+            background: rgba(4, 4, 8, 0.95);
+            border-bottom: 1px solid var(--gray-border);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #fff 20%, var(--primary) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .logo i {
+            color: var(--primary);
+            margin-right: 8px;
+            font-size: 2.8rem;
+            transition: var(--transition);
+            -webkit-text-fill-color: var(--primary);
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo:hover i {
+            transform: rotate(180deg) scale(1.1);
+            color: var(--secondary);
+            -webkit-text-fill-color: var(--secondary);
+            filter: drop-shadow(0 0 12px var(--secondary));
+        }
+
+        /* Navigation */
+        .navbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link {
+            color: var(--gray-text);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+            background: rgba(255, 0, 85, 0.08);
+            border-color: rgba(255, 0, 85, 0.15);
+            text-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+        }
+
+        /* Nav Dropdown Menus */
+        .nav-item-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%) translateY(10px) scale(0.95);
+            background: rgba(12, 12, 22, 0.96);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 0, 85, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1100;
+        }
+
+        .dropdown-menu.genres-menu {
+            min-width: 360px;
+        }
+
+        .dropdown-menu.categories-menu {
+            min-width: 260px;
+        }
+
+        .nav-item-dropdown:hover .dropdown-menu,
+        .nav-item-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0) scale(1);
+        }
+
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .dropdown-grid.single-col {
+            grid-template-columns: 1fr;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            color: var(--light-text);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .dropdown-item i {
+            font-size: 1.4rem;
+            color: var(--primary);
+            width: 18px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 0, 85, 0.15);
+            color: #ffffff;
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(255, 0, 85, 0.2);
+        }
+
+        .dropdown-item:hover i {
+            color: var(--secondary);
+            transform: scale(1.2);
+        }
+
+        /* Filter & Sort Bar */
+        .filter-sort-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(20, 20, 35, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--gray-border);
+            padding: 14px 24px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .sort-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sort-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sort-label i {
+            color: var(--primary);
+        }
+
+        .sort-select {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--gray-border);
+            color: var(--light-text);
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sort-select option {
+            background: #0f0f1a;
+            color: white;
+            padding: 10px;
+        }
+
+        .sort-select:hover,
+        .sort-select:focus {
+            border-color: var(--primary);
+            background: rgba(255, 0, 85, 0.12);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.25);
+        }
+
+        .genre-quick-pills {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            max-width: 100%;
+        }
+
+        .pill-btn {
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--gray-border);
+            border-radius: 20px;
+            color: var(--gray-text);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+
+        .pill-btn:hover,
+        .pill-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        /* Search */
+        .search-container {
+            position: relative;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--gray-border);
+            border-radius: 30px;
+            padding: 8px 18px;
+            width: 200px;
+            transition: var(--transition);
+        }
+
+        .search-box:focus-within {
+            width: 260px;
+            border-color: var(--primary);
+            background: rgba(4, 4, 8, 0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.25);
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.3rem;
+            width: 100%;
+            padding: 2px;
+        }
+
+        .search-box i {
+            color: var(--gray-text);
+            font-size: 1.4rem;
+            margin-right: 8px;
+            transition: var(--transition);
+        }
+
+        .search-box:focus-within i {
+            color: var(--primary);
+        }
+
+        /* Auth buttons in header */
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-profile-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+            border-color: var(--secondary);
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 2.4rem;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .mobile-toggle:hover {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .drawer-close {
+            display: none;
+        }
+
+        .drawer-auth {
+            display: none;
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(4, 4, 8, 0.55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2400;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ====== HERO SECTION ====== */
+        .hero {
+            padding-top: 0;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .hero-slider {
+            width: 100%;
+            height: 85vh;
+            min-height: 480px;
+            max-height: 850px;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: none;
+            border: none;
+        }
+
+        .swiper-slide .box {
+            width: 100%;
+            height: 100%;
+            background-size: cover !important;
+            background-position: center center !important;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner-media {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        .swiper-slide .box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%), linear-gradient(to top, rgba(0, 0, 0, 1) 0%, transparent 40%);
+            z-index: 2;
+        }
+
+        .swiper-slide .box.second::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to left, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%), linear-gradient(to top, rgba(0, 0, 0, 1) 0%, transparent 40%);
+            z-index: 2;
+        }
+
+        .content {
+            position: relative;
+            z-index: 3;
+            max-width: 650px;
+            padding: 40px;
+            margin-left: 6%;
+        }
+
+        .box.second .content {
+            margin-left: auto;
+            margin-right: 6%;
+            text-align: right;
+        }
+
+        .content h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(3.2rem, 6vw, 5.6rem);
+            font-weight: 900;
+            margin-bottom: 18px;
+            color: white;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .content p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: var(--gray-text);
+            line-height: 1.6;
+            font-weight: 400;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+        }
+
+        /* Premium Pill-Shaped Banner Buttons & Swiper Pagination */
+        .banner-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-banner-play {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            background: #ffffff;
+            color: #07070d !important;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-banner-play i {
+            font-size: 1.2rem;
+        }
+
+        .btn-banner-play:hover {
+            background: #f3f3f6;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.35);
+        }
+
+        .btn-banner-details {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: var(--transition);
+        }
+
+        .btn-banner-details i {
+            font-size: 1.1rem;
+        }
+
+        .btn-banner-details:hover {
+            background: rgba(255, 255, 255, 0.22);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        .hero-slider .swiper-button-next,
+        .hero-slider .swiper-button-prev {
+            color: #ffffff;
+            background: rgba(4, 4, 8, 0.45);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: var(--transition);
+            opacity: 0;
+        }
+
+        .hero-slider:hover .swiper-button-next,
+        .hero-slider:hover .swiper-button-prev {
+            opacity: 1;
+        }
+
+        .hero-slider .swiper-button-next:hover,
+        .hero-slider .swiper-button-prev:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: scale(1.05);
+        }
+
+        .hero-slider .swiper-button-next::after,
+        .hero-slider .swiper-button-prev::after {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .hero-slider .swiper-pagination-bullet {
+            background: rgba(255, 255, 255, 0.35);
+            opacity: 1;
+            width: 8px;
+            height: 8px;
+            transition: var(--transition);
+            border-radius: 4px;
+        }
+
+        .hero-slider .swiper-pagination-bullet-active {
+            background: #ffffff;
+            width: 24px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .hero-slider .swiper-pagination {
+            bottom: 25px !important;
+            left: auto !important;
+            right: 6% !important;
+            width: auto !important;
+        }
+
+        /* ====== BUTTONS ====== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            background-size: 200% auto;
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 0, 85, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-position: right center;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 0, 85, 0.45);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid var(--gray-border);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: rgba(255, 0, 85, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 0, 85, 0.15);
+        }
+
+        .btn-small {
+            padding: 8px 20px;
+            font-size: 1.3rem;
+            border-radius: 20px;
+        }
+
+        /* ====== SECTION STYLES ====== */
+        .section {
+            padding: 30px 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            position: relative;
+            padding-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+        }
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .view-all i {
+            transition: var(--transition);
+        }
+
+        .view-all:hover {
+            color: var(--secondary);
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+        }
+
+        .view-all:hover i {
+            transform: translateX(6px);
+        }
+
+        /* ====== MOVIE CARDS ====== */
+        .movies-grid {
+            display: flex;
+            overflow-x: auto;
+            gap: 24px;
+            margin-bottom: 20px;
+            padding: 10px 5px 20px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .movies-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .movies-grid .movie-card {
+            flex: 0 0 230px;
+            height: auto;
+        }
+
+        .movie-card {
+            background: var(--dark-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border: 1px solid var(--gray-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .movie-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 0, 85, 0.15);
+            border-color: rgba(255, 0, 85, 0.3);
+            background: var(--dark-card-hover);
+        }
+
+        .movie-card:hover .movie-poster img {
+            transform: scale(1.08);
+        }
+
+        .movie-poster {
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .movie-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255, 0, 85, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            z-index: 2;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 12px rgba(255, 0, 85, 0.3);
+        }
+
+        .dubsub {
+            position: absolute;
+            top: 42px;
+            left: 12px;
+            background: rgba(0, 240, 255, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #040408;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 750;
+            text-transform: uppercase;
+            z-index: 2;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 240, 255, 0.3);
+        }
+
+        .movie-rating {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(4, 4, 8, 0.8);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            color: #ffd700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 2;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .movie-info {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .movie-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 750;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            color: white;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .movie-card:hover .movie-title {
+            color: var(--primary);
+        }
+
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray-text);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .movie-desc {
+            color: var(--gray-text);
+            font-size: 1.25rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .movie-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        /* Heart button for watchlist */
+        .btn-watchlist-toggle {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--gray-border);
+            color: var(--gray-text);
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-watchlist-toggle:hover,
+        .btn-watchlist-toggle.active {
+            color: var(--primary);
+            background: rgba(255, 0, 85, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* ====== CONTINUE WATCHING PROGRESS ====== */
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+        }
+
+        /* ====== AUTH MODAL ====== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(4, 4, 8, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: rgba(15, 15, 26, 0.8);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 400px;
+            padding: 35px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 0, 85, 0.1);
+            transform: scale(0.95) translateY(10px);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--gray-text);
+            font-size: 2.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-align: center;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.3rem;
+            color: var(--gray-text);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.4rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.25);
+        }
+
+        .modal-switch {
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--gray-text);
+            margin-top: 20px;
+        }
+
+        .modal-switch a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .modal-switch a:hover {
+            color: var(--secondary);
+        }
+
+        /* ====== SWIPER SLIDERS FOR SECTIONS ====== */
+        .swiper {
+            padding: 10px 5px 40px !important;
+        }
+
+        .swiper-slide {
+            height: auto;
+        }
+
+        .swiper-pagination-bullet {
+            background: var(--gray-text) !important;
+            opacity: 0.5;
+            width: 10px !important;
+            height: 10px !important;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: var(--primary) !important;
+            opacity: 1;
+        }
+
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: var(--primary) !important;
+            background: rgba(0, 0, 0, 0.5);
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .swiper-button-next:after,
+        .swiper-button-prev:after {
+            font-size: 1.8rem !important;
+        }
+
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            background: rgba(255, 0, 85, 0.2);
+        }
+
+        /* ====== FOOTER ====== */
+        footer {
+            background: var(--darker);
+            padding: 60px 0 30px;
+            margin-top: 60px;
+            border-top: 1px solid var(--gray-border);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: var(--gray-text);
+            text-decoration: none;
+            font-size: 1.4rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--gray-border);
+            color: var(--gray-text);
+            font-size: 1.4rem;
+        }
+
+        .copyright {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+        }
+
+        /* ====== RESPONSIVE DESIGN & MOBILE UI ====== */
+        .mobile-tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(10, 10, 18, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 2000;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-text);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            min-width: 44px;
+            min-height: 44px;
+            flex: 1;
+            padding-top: 5px;
+        }
+
+        .tab-item i {
+            font-size: 1.8rem;
+            margin-bottom: 3px;
+            transition: var(--transition);
+        }
+
+        .tab-item:hover,
+        .tab-item.active {
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(255, 0, 85, 0.3);
+        }
+
+        /* Mobile Search Overlay */
+        .mobile-search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 18, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 2100;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            padding-top: calc(20px + env(safe-area-inset-top, 0px));
+        }
+
+        .mobile-search-overlay.active {
+            display: flex;
+        }
+
+        .search-overlay-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 8px;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 12px 45px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-input-wrapper input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.25);
+        }
+
+        .search-input-wrapper .search-icon {
+            position: absolute;
+            left: 18px;
+            color: var(--gray-text);
+            font-size: 1.6rem;
+        }
+
+        .search-clear-btn {
+            position: absolute;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--gray-text);
+            font-size: 1.6rem;
+            cursor: pointer;
+            padding: 8px;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-overlay-results {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .movies-grid .movie-card {
+                flex: 0 0 210px;
+            }
+
+            .movie-poster {
+                height: 280px;
+            }
+        }
+
+        @media (min-width: 992px) and (max-width: 1200px) {
+            .nav-link {
+                padding: 6px 10px;
+                font-size: 1.2rem;
+            }
+
+            .navbar {
+                gap: 4px;
+            }
+
+            .logo {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .movies-grid {
+                gap: 18px;
+                padding-bottom: 12px;
+            }
+
+            .movies-grid .movie-card {
+                flex: 0 0 190px;
+            }
+
+            .movie-poster {
+                height: 260px;
+            }
+
+            header {
+                padding: 0 20px;
+                height: 64px;
+            }
+
+            .logo {
+                font-size: 2.0rem;
+            }
+
+            .logo i {
+                font-size: 2.2rem;
+            }
+
+            /* Turn navbar into a glassmorphic sidebar drawer */
+            .navbar {
+                position: fixed;
+                top: 0;
+                right: -300px;
+                width: 280px;
+                height: 100vh;
+                background: rgba(10, 10, 18, 0.96);
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                display: flex !important;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 30px 24px 80px 24px;
+                gap: 12px;
+                z-index: 2500;
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.6);
+                transition: var(--transition);
+                border-left: 1px solid rgba(255, 255, 255, 0.08);
+                overflow-y: auto;
+            }
+
+            .navbar.active {
+                right: 0;
+            }
+
+            .nav-link {
+                width: 100%;
+                padding: 12px 18px;
+                border-radius: var(--radius-sm);
+                font-size: 1.4rem;
+                justify-content: flex-start;
+                text-transform: none;
+                letter-spacing: 0.5px;
+            }
+
+            .nav-item-dropdown {
+                width: 100%;
+            }
+
+            .nav-item-dropdown .dropdown-toggle {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .dropdown-menu {
+                position: static !important;
+                transform: none !important;
+                top: auto !important;
+                left: auto !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                box-shadow: none !important;
+                margin-top: 6px !important;
+                background: rgba(255, 255, 255, 0.04) !important;
+                border: 1px solid var(--gray-border) !important;
+                border-radius: var(--radius-sm) !important;
+                display: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                padding: 10px !important;
+                pointer-events: auto !important;
+            }
+
+            .nav-item-dropdown.active .dropdown-menu {
+                display: block !important;
+            }
+
+            .dropdown-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 6px !important;
+            }
+
+            .dropdown-item {
+                font-size: 1.2rem !important;
+                padding: 6px 10px !important;
+            }
+
+            /* Close button in drawer */
+            .drawer-close {
+                display: flex;
+                align-self: flex-end;
+                font-size: 2.0rem;
+                color: var(--gray-text);
+                cursor: pointer;
+                transition: var(--transition);
+                margin-bottom: 15px;
+                width: 40px;
+                height: 40px;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid var(--gray-border);
+            }
+
+            .drawer-close:hover {
+                color: white;
+                background: rgba(255, 0, 85, 0.1);
+                border-color: var(--primary);
+                transform: rotate(90deg);
+            }
+
+            /* User auth section at bottom of drawer */
+            .drawer-auth {
+                width: 100%;
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 1px solid var(--gray-border);
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            /* Enable and style hamburger toggle */
+            .mobile-toggle {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid var(--gray-border);
+                font-size: 1.8rem;
+                cursor: pointer;
+            }
+
+            .mobile-toggle:hover {
+                color: var(--primary);
+                background: rgba(255, 0, 85, 0.1);
+                border-color: var(--primary);
+            }
+
+            /* Clean up header buttons in actions area to save space */
+            .header-actions .btn-secondary,
+            .header-actions .user-profile-menu .btn-secondary,
+            .header-actions .user-profile-menu a[href="/admin.html"] {
+                display: none !important;
+            }
+
+            .header-actions .user-profile-menu {
+                gap: 0;
+            }
+
+            .search-box:focus-within {
+                width: 180px;
+            }
+
+            .content h3 {
+                font-size: clamp(2.4rem, 5vw, 3.6rem);
+                letter-spacing: -1px;
+            }
+
+            .swiper-slide .box {
+                align-items: flex-end;
+            }
+
+            .swiper-slide .box::before,
+            .swiper-slide .box.second::before {
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%) !important;
+            }
+
+            .content {
+                margin: 0 !important;
+                max-width: 100% !important;
+                padding: 30px 20px 50px 20px !important;
+                text-align: left !important;
+                width: 100%;
+            }
+
+            .hero-slider .swiper-button-next,
+            .hero-slider .swiper-button-prev {
+                display: none !important;
+            }
+
+            .hero-slider .swiper-pagination {
+                right: 50% !important;
+                transform: translateX(50%) !important;
+                bottom: 15px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-tab-bar {
+                display: flex;
+            }
+
+            body {
+                padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .section {
+                padding: 20px 0;
+            }
+
+            .hero-slider {
+                height: 65vh;
+            }
+
+            .header-actions {
+                gap: 10px;
+            }
+
+            .search-box {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .movies-grid {
+                gap: 12px;
+                padding-bottom: 8px;
+            }
+
+            .movies-grid .movie-card {
+                flex: 0 0 150px;
+            }
+
+            .movie-poster {
+                height: 210px;
+            }
+
+            .movie-info {
+                padding: 12px;
+            }
+
+            .movie-actions {
+                gap: 6px;
+            }
+
+            .btn-small {
+                padding: 8px 12px;
+                font-size: 1.1rem;
+                min-height: 36px;
+            }
+
+            .btn-watchlist-toggle {
+                min-width: 36px !important;
+                min-height: 36px !important;
+                padding: 6px !important;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .logo {
+                font-size: 1.8rem;
+            }
+
+            .logo i {
+                font-size: 2.0rem;
+            }
+        }
+
+        /* ====== SKELETON LOADING AESTHETICS ====== */
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.6s infinite linear;
+            display: inline-block;
+        }
+
+        .skeleton-banner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 6%;
+            background: #000000;
+        }
+
+        .skeleton-banner-title {
+            width: 45%;
+            height: 50px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .skeleton-banner-text {
+            width: 60%;
+            height: 20px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .skeleton-banner-text.short {
+            width: 40%;
+            margin-bottom: 30px;
+        }
+
+        .skeleton-banner-btn {
+            width: 140px;
+            height: 45px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-right: 12px;
+        }
+
+        .skeleton-card {
+            background: rgba(20, 20, 35, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius);
+            overflow: hidden;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .skeleton-card-poster {
+            width: 100%;
+            height: 300px;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .skeleton-card-info {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .skeleton-card-title {
+            width: 80%;
+            height: 18px;
+            border-radius: 4px;
+        }
+
+        .skeleton-card-meta {
+            width: 50%;
+            height: 14px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+        .skeleton-card-desc {
+            width: 100%;
+            height: 30px;
+            border-radius: 4px;
+        }
+
+        .skeleton-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .skeleton-card-btn {
+            flex: 1;
+            height: 36px;
+            border-radius: var(--radius-sm);
+        }
+
+        .skeleton-card-fav {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+        }
+    </style>
 </head>
 
 <body>
-  <!-- Header -->
-  <header class="site-header">
-    <div class="header-container">
-      <a href="/index.html" class="logo">
-        <i class="fas fa-infinity"></i>
-        <span class="logo-text">Infinx <span class="logo-pro">Anime</span></span>
-      </a>
+    <!-- ====== HEADER ====== -->
+    <header>
+        <div class="nav-overlay" id="navOverlay"></div>
+        <a href="#" class="logo"><i class="fas fa-infinity"></i>Infinx Anime</a>
 
-      <!-- Mobile Menu Button -->
-      <button class="mobile-menu-btn" aria-label="Toggle menu">
-        <i class="fas fa-bars"></i>
-      </button>
+        <nav class="navbar">
+            <div class="drawer-close" id="closeDrawer"><i class="fas fa-times"></i></div>
+            <a href="#home" class="nav-link active"><i class="fas fa-home"></i> Home</a>
 
-      <nav class="header-nav">
-        <a href="/index.html"><i class="fas fa-home"></i> <span class="nav-text">Home</span></a>
-        <a href="/view.html#watchlist"><i class="fas fa-heart"></i> <span class="nav-text">Watchlist</span></a>
-        <a href="/view.html#history"><i class="fas fa-history"></i> <span class="nav-text">History</span></a>
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Search anime..." aria-label="Search anime">
-          <i class="fas fa-search" id="searchIcon"></i>
-        </div>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Mobile Navigation Menu -->
-  <div class="mobile-nav-overlay"></div>
-  <div class="mobile-nav">
-    <div class="mobile-nav-header">
-      <h3>Menu</h3>
-      <button class="mobile-nav-close" aria-label="Close menu">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="mobile-nav-items">
-      <div class="search-box" style="margin-bottom: 20px; width: 100%;">
-        <input type="text" id="mobileSearchInput" placeholder="Search anime..." aria-label="Search anime">
-        <i class="fas fa-search" id="mobileSearchIcon"></i>
-      </div>
-      <a href="/index.html"><i class="fas fa-home"></i> Home</a>
-      <a href="/view.html#watchlist"><i class="fas fa-heart"></i> Watchlist</a>
-      <a href="/view.html#history"><i class="fas fa-history"></i> History</a>
-    </div>
-  </div>
-
-  <!-- Main Container -->
-  <div class="container">
-    <!-- Main Video Player -->
-    <div class="main-video-container">
-      <div class="video-player-wrapper">
-        <!-- Video Player -->
-        <div class="video-player">
-          <!-- Video element WITHOUT native controls -->
-          <video id="main-video" crossorigin="anonymous" playsinline webkit-playsinline></video>
-          <!-- Custom caption overlay (JS-rendered for consistent styling) -->
-          <div id="caption-overlay" class="caption-overlay" aria-hidden="true"></div>
-
-          <!-- Custom Video Controls -->
-          <div class="custom-controls">
-            <div class="progress-bar-container">
-              <div class="progress-bar">
-                <div class="progress-buffered"></div>
-                <div class="progress">
-                  <div class="progress-knob"></div>
+            <!-- Genres Dropdown -->
+            <div class="nav-item-dropdown">
+                <a href="#" class="nav-link dropdown-toggle"><i class="fas fa-layer-group"></i> Genres <i
+                        class="fas fa-chevron-down" style="font-size: 1rem; margin-left: 2px;"></i></a>
+                <div class="dropdown-menu genres-menu">
+                    <div class="dropdown-grid">
+                        <a href="view.html#action" class="dropdown-item"><i class="fas fa-fire"></i> Action</a>
+                        <a href="view.html#adventure" class="dropdown-item"><i class="fas fa-compass"></i> Adventure</a>
+                        <a href="view.html#animation" class="dropdown-item"><i class="fas fa-magic"></i> Animation</a>
+                        <a href="view.html#comedy" class="dropdown-item"><i class="fas fa-laugh-beam"></i> Comedy</a>
+                        <a href="view.html#crime" class="dropdown-item"><i class="fas fa-user-ninja"></i> Crime</a>
+                        <a href="view.html#drama" class="dropdown-item"><i class="fas fa-theater-masks"></i> Drama</a>
+                        <a href="view.html#fantasy" class="dropdown-item"><i class="fas fa-dragon"></i> Fantasy</a>
+                        <a href="view.html#historical" class="dropdown-item"><i class="fas fa-landmark"></i>
+                            Historical</a>
+                        <a href="view.html#horror" class="dropdown-item"><i class="fas fa-ghost"></i> Horror</a>
+                        <a href="view.html#mystery" class="dropdown-item"><i class="fas fa-user-secret"></i> Mystery</a>
+                        <a href="view.html#political" class="dropdown-item"><i class="fas fa-building-columns"></i>
+                            Political</a>
+                        <a href="view.html#romance" class="dropdown-item"><i class="fas fa-heart"></i> Romance</a>
+                        <a href="view.html#sci-fi" class="dropdown-item"><i class="fas fa-atom"></i> Sci-Fi</a>
+                        <a href="view.html#thriller" class="dropdown-item"><i class="fas fa-bolt"></i> Thriller</a>
+                    </div>
                 </div>
-                <div class="progress-hover-time">0:00</div>
-              </div>
             </div>
-            <div class="control-buttons">
-              <!-- Previous Button -->
-              <button class="control-btn prev-btn" aria-label="Previous episode">
-                <i class="fas fa-step-backward"></i>
-              </button>
-              <!-- Rewind 10s -->
-              <button class="control-btn rewind-10" aria-label="Rewind 10s">
-                <i class="fas fa-undo"></i>
-              </button>
 
-              <button class="control-btn play-pause" aria-label="Play/Pause">
-                <i class="fas fa-play"></i>
-              </button>
-
-              <!-- Forward 10s -->
-              <button class="control-btn forward-10" aria-label="Forward 10s">
-                <i class="fas fa-redo"></i>
-              </button>
-
-              <!-- Next Button -->
-              <button class="control-btn next-btn" aria-label="Next episode">
-                <i class="fas fa-step-forward"></i>
-              </button>
-
-              <div class="time-display">
-                <span class="current-time">0:00</span> / <span class="duration">0:00</span>
-              </div>
-
-              <div class="volume-container">
-                <button class="control-btn volume-btn" aria-label="Volume">
-                  <i class="fas fa-volume-up"></i>
-                </button>
-                <div class="volume-slider">
-                  <input type="range" min="0" max="100" value="100" class="volume-range" aria-label="Volume slider">
+            <!-- Categories Dropdown -->
+            <div class="nav-item-dropdown">
+                <a href="#" class="nav-link dropdown-toggle"><i class="fas fa-list-ul"></i> Categories <i
+                        class="fas fa-chevron-down" style="font-size: 1rem; margin-left: 2px;"></i></a>
+                <div class="dropdown-menu categories-menu">
+                    <div class="dropdown-grid single-col">
+                        <a href="view.html#south-hindi-dubbed" class="dropdown-item"><i class="fas fa-language"></i>
+                            South Hindi Dubbed</a>
+                        <a href="view.html#hollywood" class="dropdown-item"><i class="fas fa-film"></i> Hollywood
+                            Movies</a>
+                        <a href="view.html#bollywood" class="dropdown-item"><i class="fas fa-clapperboard"></i>
+                            Bollywood Movies</a>
+                        <a href="view.html#anime" class="dropdown-item"><i class="fas fa-play-circle"></i> Anime
+                            Series</a>
+                        <a href="view.html#web-series" class="dropdown-item"><i class="fas fa-tv"></i> Web Series</a>
+                        <a href="view.html#kids" class="dropdown-item"><i class="fas fa-child"></i> Kids & Family</a>
+                        <a href="view.html#kdrama" class="dropdown-item"><i class="fas fa-video"></i> Korean Drama</a>
+                    </div>
                 </div>
-              </div>
+            </div>
 
-              <!-- Auto Next Checkbox -->
-              <div class="auto-next-container">
-                <input type="checkbox" id="auto-next" class="auto-next-checkbox" checked>
-                <label for="auto-next" class="auto-next-label" title="Auto play next episode">
-                  <i class="fas fa-forward"></i>
-                </label>
-              </div>
+            <a href="view.html#watchlist" class="nav-link"><i class="fas fa-heart"></i> Watchlist</a>
+            <a href="view.html#history" class="nav-link"><i class="fas fa-history"></i> History</a>
+            <div class="drawer-auth" id="drawerAuthHeader"></div>
+        </nav>
 
-              <div class="settings-menu">
-                <button class="control-btn settings-btn" aria-label="Settings">
-                  <i class="fas fa-cog"></i>
-                </button>
-                <div class="settings-dropdown">
-                  <div class="settings-section">
-                    <div class="settings-title">Playback Speed</div>
-                    <div class="speed-options">
-                      <div class="speed-option" data-speed="0.5">0.5x</div>
-                      <div class="speed-option" data-speed="0.75">0.75x</div>
-                      <div class="speed-option active" data-speed="1">Normal</div>
-                      <div class="speed-option" data-speed="1.25">1.25x</div>
-                      <div class="speed-option" data-speed="1.5">1.5x</div>
-                      <div class="speed-option" data-speed="2">2x</div>
-                    </div>
-                  </div>
-                  <div class="settings-section">
-                    <div class="settings-title">Aspect Ratio</div>
-                    <div class="aspect-options">
-                      <div class="aspect-option active" data-aspect="default">Default</div>
-                      <div class="aspect-option" data-aspect="16:9">16:9</div>
-                      <div class="aspect-option" data-aspect="4:3">4:3</div>
-                      <div class="aspect-option" data-aspect="1:1">1:1</div>
-                      <div class="aspect-option" data-aspect="16:10">16:10</div>
-                      <div class="aspect-option" data-aspect="2.21:1">2.21:1</div>
-                      <div class="aspect-option" data-aspect="2.35:1">2.35:1</div>
-                      <div class="aspect-option" data-aspect="2.39:1">2.39:1</div>
-                      <div class="aspect-option" data-aspect="5:4">5:4</div>
-                    </div>
-                  </div>
-                  <div class="settings-section">
-                    <div class="settings-title">Crop Video</div>
-                    <div class="crop-options">
-                      <div class="crop-option active" data-crop="default">Default</div>
-                      <div class="crop-option" data-crop="16:10">16:10</div>
-                      <div class="crop-option" data-crop="16:9">16:9</div>
-                      <div class="crop-option" data-crop="4:3">4:3</div>
-                      <div class="crop-option" data-crop="1.85:1">1.85:1</div>
-                      <div class="crop-option" data-crop="2.21:1">2.21:1</div>
-                      <div class="crop-option" data-crop="2.35:1">2.35:1</div>
-                      <div class="crop-option" data-crop="2.39:1">2.39:1</div>
-                      <div class="crop-option" data-crop="5:3">5:3</div>
-                      <div class="crop-option" data-crop="5:4">5:4</div>
-                      <div class="crop-option" data-crop="1:1">1:1</div>
-                    </div>
-                  </div>
-                  <div class="settings-section">
-                    <div class="settings-title">Quality</div>
-                    <div class="quality-options">
-                      <div class="quality-option active" data-quality="auto">Auto</div>
-                      <!-- Quality options will be populated by JavaScript -->
-                    </div>
-                  </div>
-                  <div class="settings-section">
-                    <div class="settings-title">Audio Language</div>
-                    <div class="audio-options" id="audio-track-list">
-                      <!-- Audio tracks will be populated by JavaScript -->
-                    </div>
-                  </div>
-                  <div class="settings-section">
-                    <div class="settings-title">Subtitles</div>
-                    <div class="subtitle-options" id="subtitle-track-list">
-                      <div class="subtitle-option active" data-subtitle="off">Off</div>
-                      <!-- Additional subtitle tracks will be populated by JavaScript -->
-                    </div>
-                  </div>
-                  <div class="settings-section">
-                    <div class="settings-title">Screen Fit (Notch)</div>
-                    <div class="screen-fit-options">
-                      <div class="fit-option" data-fit="contain">Fit (Default)</div>
-                      <div class="fit-option active" data-fit="cover">Fill Notch Screen</div>
-                      <div class="fit-option" data-fit="fill">Stretch</div>
-                    </div>
-                  </div>
-                  <div class="settings-section">
-                    <div class="settings-title">Captions</div>
-                    <div class="settings-controls">
-                      <button id="open-caption-settings" class="settings-btn">Caption Settings</button>
-                    </div>
-                  </div>
+        <div class="header-actions">
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search anime...">
                 </div>
-              </div>
-
-              <button class="control-btn subtitle-btn" aria-label="Toggle Subtitles" title="Subtitles (CC)">
-                <i class="far fa-closed-captioning"></i>
-              </button>
-
-              <button class="control-btn fit-screen-btn" aria-label="Toggle Screen Fit/Fill" title="Fill Notch Screen">
-                <i class="fas fa-expand-arrows-alt"></i>
-              </button>
-
-              <button class="control-btn fullscreen-btn" aria-label="Fullscreen">
-                <i class="fas fa-expand"></i>
-              </button>
-
             </div>
-          </div>
 
-          <!-- Video Overlay Information -->
-          <div class="video-overlay">
-            <div class="video-info" style="width: 100%;">
-              <h2 class="video-title" id="current-video-title" style="width: 100%;">
-                <span class="skeleton" style="width: 40%; height: 24px; border-radius: 4px;"></span>
-              </h2>
-              <div class="video-meta">
-                <span class="episode"><span class="skeleton" style="width: 80px; height: 16px; border-radius: 2px;"></span></span>
-                <span class="views"><span class="skeleton" style="width: 60px; height: 16px; border-radius: 2px;"></span></span>
-                <span class="current-audio-display"><span class="skeleton" style="width: 100px; height: 16px; border-radius: 2px;"></span></span>
-              </div>
+            <!-- Dynamic Authentication Header Section -->
+            <div class="auth-buttons" id="authHeader">
+                <button class="btn btn-secondary btn-small" onclick="openModal('login')">Login</button>
             </div>
-          </div>
 
-          <!-- Mobile Touch Controls -->
-          <div class="mobile-touch-controls">
-            <div class="touch-left" data-action="rewind"></div>
-            <div class="touch-center" data-action="play-pause"></div>
-            <div class="touch-right" data-action="forward"></div>
-          </div>
+            <div class="mobile-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
         </div>
+    </header>
 
-        <!-- Video Settings Bar -->
-        <div class="video-settings-bar">
-          <div class="settings-left">
-            <div class="quality-selector">
-              <button class="settings-btn quality-btn">
-                <i class="fas fa-hd"></i> <span class="btn-text">Quality</span> <span
-                  class="current-quality">Auto</span> <i class="fas fa-chevron-down"></i>
-              </button>
-              <div class="quality-dropdown" id="quality-dropdown">
-                <div class="quality-option active" data-quality="auto">Auto</div>
-              </div>
-            </div>
-
-            <div class="audio-selector">
-              <button class="settings-btn audio-btn">
-                <i class="fas fa-closed-captioning"></i> <span class="btn-text">Audio</span> <span
-                  class="current-audio">Japanese</span> <i class="fas fa-chevron-down"></i>
-              </button>
-              <div class="audio-dropdown" id="audio-dropdown">
-                <div class="audio-option active" data-audio="Hindi">
-                  <i class="fas fa-volume-up"></i> Hindi (Hindi)
+    <!-- ====== HERO SECTION ====== -->
+    <section class="hero" id="home">
+        <div class="hero-slider swiper">
+            <div class="swiper-wrapper" id="carouselWrapper">
+                <!-- Loaded dynamically via API -->
+                <div class="swiper-slide">
+                    <div class="skeleton-banner">
+                        <div class="skeleton skeleton-banner-title"></div>
+                        <div class="skeleton skeleton-banner-text"></div>
+                        <div class="skeleton skeleton-banner-text short"></div>
+                        <div>
+                            <div class="skeleton skeleton-banner-btn"></div>
+                            <div class="skeleton skeleton-banner-btn"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="audio-option" data-audio="english">
-                  <i class="fas fa-volume-up"></i> English (Dub)
-                </div>
-                <div class="audio-option" data-audio="japanese">
-                  <i class="fas fa-volume-up"></i> Japanese (Dub)
-                </div>
-              </div>
             </div>
+            <div class="swiper-pagination"></div>
+            <!-- <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>-->
+        </div>
+    </section>
 
-            <div class="subtitle-selector">
-              <button class="settings-btn subtitle-btn">
-                <i class="fas fa-closed-captioning"></i> <span class="btn-text">Subtitles</span> <span
-                  class="current-subtitle">Off</span> <i class="fas fa-chevron-down"></i>
-              </button>
-              <div class="subtitle-dropdown" id="subtitle-dropdown">
-                <div class="subtitle-option active" data-subtitle="off">
-                  <i class="fas fa-ban"></i> Off
-                </div>
-              </div>
+    <!-- ====== CONTINUE WATCHING (HIDDEN BY DEFAULT) ====== -->
+    <section class="section hidden" id="continueWatchingSection">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Continue Watching</h2>
             </div>
-
-            <div class="playback-speed-selector">
-              <button class="settings-btn speed-btn">
-                <i class="fas fa-tachometer-alt"></i> <span class="btn-text">Speed</span> <span
-                  class="current-speed">1x</span> <i class="fas fa-chevron-down"></i>
-              </button>
-              <div class="speed-dropdown">
-                <div class="speed-option" data-speed="0.5">0.5x</div>
-                <div class="speed-option" data-speed="0.75">0.75x</div>
-                <div class="speed-option active" data-speed="1">Normal</div>
-                <div class="speed-option" data-speed="1.25">1.25x</div>
-                <div class="speed-option" data-speed="1.5">1.5x</div>
-                <div class="speed-option" data-speed="2">2x</div>
-              </div>
+            <div class="movies-grid" id="continueWatchingGrid">
+                <!-- Loaded dynamically -->
             </div>
-          </div>
+        </div>
+    </section>
 
-          <div class="settings-right">
-            <button class="action-btn download-btn">
-              <i class="fas fa-download"></i> <span class="btn-text">Download</span>
-            </button>
-            <button class="action-btn share-btn">
-              <i class="fas fa-share-alt"></i> <span class="btn-text">Share</span>
-            </button>
-            <button class="action-btn favorite-btn">
-              <i class="far fa-heart"></i> <span class="btn-text">Favorite</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Video Description -->
-        <div class="video-description">
-          <h3 class="description-title">Description</h3>
-          <p class="description-text">
-            <span class="skeleton" style="width: 100%; height: 16px; border-radius: 4px; margin-bottom: 6px;"></span>
-            <span class="skeleton" style="width: 70%; height: 16px; border-radius: 4px;"></span>
-          </p>
-
-          <div class="video-tags">
-            <span class="skeleton" style="width: 60px; height: 24px; border-radius: 12px; margin-right: 6px;"></span>
-            <span class="skeleton" style="width: 80px; height: 24px; border-radius: 12px; margin-right: 6px;"></span>
-            <span class="skeleton" style="width: 70px; height: 24px; border-radius: 12px;"></span>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Video Playlist -->
-    <div class="video-playlist">
-      <div class="playlist-header">
-        <h3><i class="fas fa-list-ol"></i> Playlist <span class="episode-count">(16 episodes)</span></h3>
-        <div class="playlist-actions">
-          <button class="playlist-btn shuffle-btn" title="Shuffle">
-            <i class="fas fa-random"></i>
-          </button>
-          <button class="playlist-btn autoplay-btn active" title="Autoplay">
-            <i class="fas fa-play-circle"></i>
-          </button>
-        </div>
-      </div>
-
-      <div class="playlist-items" id="playlist-items-container">
-        <!-- Playlist items will be populated by JavaScript -->
-        <div class="playlist-item skeleton-playlist-item" style="display:flex; gap:10px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.03);">
-          <div class="skeleton" style="width: 80px; height: 50px; border-radius: 4px; flex-shrink: 0;"></div>
-          <div style="flex-grow: 1; display:flex; flex-direction:column; gap:6px;">
-            <div class="skeleton" style="width: 80%; height: 14px; border-radius: 2px;"></div>
-            <div class="skeleton" style="width: 40%; height: 10px; border-radius: 2px;"></div>
-          </div>
-        </div>
-        <div class="playlist-item skeleton-playlist-item" style="display:flex; gap:10px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.03);">
-          <div class="skeleton" style="width: 80px; height: 50px; border-radius: 4px; flex-shrink: 0;"></div>
-          <div style="flex-grow: 1; display:flex; flex-direction:column; gap:6px;">
-            <div class="skeleton" style="width: 80%; height: 14px; border-radius: 2px;"></div>
-            <div class="skeleton" style="width: 40%; height: 10px; border-radius: 2px;"></div>
-          </div>
-        </div>
-        <div class="playlist-item skeleton-playlist-item" style="display:flex; gap:10px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.03);">
-          <div class="skeleton" style="width: 80px; height: 50px; border-radius: 4px; flex-shrink: 0;"></div>
-          <div style="flex-grow: 1; display:flex; flex-direction:column; gap:6px;">
-            <div class="skeleton" style="width: 80%; height: 14px; border-radius: 2px;"></div>
-            <div class="skeleton" style="width: 40%; height: 10px; border-radius: 2px;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Playlist Footer -->
-      <div class="playlist-footer">
-        <button class="load-more-btn hidden">
-          <i class="fas fa-chevron-down"></i> Load More Episodes
-        </button>
-      </div>
-    </div>
-
-    <!-- ====== COMMENTS SECTION ====== -->
-    <div class="comments-section" id="commentsSection">
-      <div class="comments-header">
-        <h3><i class="fas fa-comments"></i> Comments <span id="comments-count-badge" class="comments-count-badge">(0)</span></h3>
-        <div class="comments-sort">
-          <button class="sort-tab active" id="sort-top">Top Comments</button>
-          <button class="sort-tab" id="sort-newest">Newest First</button>
-        </div>
-      </div>
-
-      <!-- Add Comment Form -->
-      <div class="add-comment-box" id="addCommentBox">
-        <!-- Loaded dynamically depending on auth state -->
-      </div>
-
-      <!-- Comments List -->
-      <div class="comments-list" id="comments-list">
-        <!-- Loaded dynamically -->
-        <div style="display:flex; gap:15px; padding:16px; margin-bottom:15px; background:rgba(255,255,255,0.01); border-radius:12px;">
-          <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;"></div>
-          <div style="flex-grow:1; display:flex; flex-direction:column; gap:8px;">
-            <div style="display:flex; gap:10px;">
-              <div class="skeleton" style="width: 100px; height: 14px; border-radius: 2px;"></div>
-              <div class="skeleton" style="width: 50px; height: 12px; border-radius: 2px;"></div>
-            </div>
-            <div class="skeleton" style="width: 100%; height: 16px; border-radius: 2px;"></div>
-            <div class="skeleton" style="width: 90%; height: 16px; border-radius: 2px;"></div>
-          </div>
-        </div>
-        <div style="display:flex; gap:15px; padding:16px; margin-bottom:15px; background:rgba(255,255,255,0.01); border-radius:12px;">
-          <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;"></div>
-          <div style="flex-grow:1; display:flex; flex-direction:column; gap:8px;">
-            <div style="display:flex; gap:10px;">
-              <div class="skeleton" style="width: 100px; height: 14px; border-radius: 2px;"></div>
-              <div class="skeleton" style="width: 50px; height: 12px; border-radius: 2px;"></div>
-            </div>
-            <div class="skeleton" style="width: 100%; height: 16px; border-radius: 2px;"></div>
-            <div class="skeleton" style="width: 90%; height: 16px; border-radius: 2px;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Keyboard Shortcuts Help -->
-  <div class="shortcuts-help">
-    <div class="shortcuts-content">
-      <h3><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h3>
-      <div class="shortcuts-grid">
-        <div class="shortcut-help-item">
-          <span class="shortcut-key">Space / K</span>
-          <span class="shortcut-action">Play/Pause</span>
-        </div>
-        <div class="shortcut-help-item">
-          <span class="shortcut-key">F</span>
-          <span class="shortcut-action">Fullscreen</span>
-        </div>
-        <div class="shortcut-help-item">
-          <span class="shortcut-key">M</span>
-          <span class="shortcut-action">Mute</span>
-        </div>
-        <div class="shortcut-help-item">
-          <span class="shortcut-key">← →</span>
-          <span class="shortcut-action">Seek ±10s</span>
-        </div>
-        <div class="shortcut-help-item">
-          <span class="shortcut-key">↑ ↓</span>
-          <span class="shortcut-action">Volume ±10%</span>
-        </div>
-        <div class="shortcut-help-item">
-          <span class="shortcut-key">N</span>
-          <span class="shortcut-action">Next Episode</span>
-        </div>
-        <div class="shortcut-help-item">
-          <span class="shortcut-key">P</span>
-          <span class="shortcut-action">Previous Episode</span>
-        </div>
-        <div class="shortcut-help-item">
-          <span class="shortcut-key">0-9</span>
-          <span class="shortcut-action">Jump to %</span>
-        </div>
-      </div>
-      <button class="close-shortcuts-btn">
-        <i class="fas fa-times"></i> Close
-      </button>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <div class="footer-section">
-        <h4><i class="fas fa-infinity"></i> Infinx Anime</h4>
-        <p>The ultimate destination for anime lovers. Stream the latest episodes in high quality with multiple audio and
-          subtitle options.</p>
-      </div>
-      <div class="footer-section">
-        <h4>Quick Links</h4>
-        <a href="https://anime-shubh.vercel.app/">Home</a>
-        <a href="#">Trending</a>
-        <a href="#">Genres</a>
-        <a href="#">Schedule</a>
-      </div>
-      <div class="footer-section">
-        <h4>Legal</h4>
-        <a href="#">Terms of Service</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Cookie Policy</a>
-        <a href="#">DMCA</a>
-      </div>
-      <div class="footer-section">
-        <!-- Social links can be added here -->
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2023 infinx Anime. All rights reserved. This is a demonstration site.</p>
-      <!--<button class="keyboard-shortcuts-btn">
-        <i class="fas fa-keyboard"></i> Keyboard Shortcuts
-      </button> -->
-    </div>
-  </footer>
-
-  <!-- JavaScript -->
-  <script src="script.js"></script>
-  <!-- Caption Settings Modal -->
-  <div class="caption-settings-modal" id="caption-settings-modal" aria-hidden="true">
-    <div class="caption-settings-panel" role="dialog" aria-modal="true" aria-label="Caption settings">
-      <h3 style="margin-top:0;">Caption Settings</h3>
-      <div class="caption-settings-grid">
-        <div>
-          <div class="caption-settings-row">
-            <div class="caption-settings-label">Text Color</div>
-            <div class="caption-settings-controls">
-              <select id="caption-text-color">
-                <option value="#ffffff">White</option>
-                <option value="#000000">Black</option>
-                <option value="#ffcc00">Yellow</option>
-                <option value="#00ffea">Cyan</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="caption-settings-row">
-            <div class="caption-settings-label">Text Background</div>
-            <div class="caption-settings-controls">
-              <div style="display:flex;gap:8px;align-items:center;">
-                <input type="color" id="caption-text-bg-color" value="#000000"
-                  style="width:46px;height:34px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">
-                <select id="caption-text-bg-opacity">
-                  <option value="1">Opaque</option>
-                  <option value="0.75">75%</option>
-                  <option value="0.5">50%</option>
-                  <option value="0.25">25%</option>
-                  <option value="0">Transparent</option>
+    <!-- ====== FILTER & SORT BAR ====== -->
+    <div class="container" style="margin-top: 10px;">
+        <div class="filter-sort-bar">
+            <div class="sort-group">
+                <span class="sort-label"><i class="fas fa-sort-amount-down"></i> Sort Shows:</span>
+                <select id="homeSortSelect" class="sort-select" onchange="changeHomeSort(this.value)">
+                    <option value="default">✨ Default Order</option>
+                    <option value="rating-desc">🌟 Top Rated</option>
+                    <option value="newest">⚡ Latest Releases</option>
+                    <option value="views-desc">👁️ Most Popular</option>
+                    <option value="title-asc">🔤 Title (A - Z)</option>
+                    <option value="title-desc">🔠 Title (Z - A)</option>
                 </select>
-              </div>
             </div>
-          </div>
-
-          <div class="caption-settings-row">
-            <div class="caption-settings-label">Caption Area Background</div>
-            <div class="caption-settings-controls">
-              <div style="display:flex;gap:8px;align-items:center;">
-                <input type="color" id="caption-area-bg-color" value="#000000"
-                  style="width:46px;height:34px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">
-                <select id="caption-area-bg-opacity">
-                  <option value="0">Transparent</option>
-                  <option value="0.25">25%</option>
-                  <option value="0.5">50%</option>
-                  <option value="0.75">75%</option>
-                  <option value="1">Opaque</option>
-                </select>
-              </div>
+            <div class="genre-quick-pills" id="genreQuickPills">
+                <!-- Dynamically filled with top genre quick pills -->
             </div>
-          </div>
         </div>
-
-        <div>
-          <div class="caption-settings-row">
-            <div class="caption-settings-label">Font Size</div>
-            <div class="caption-settings-controls">
-              <select id="caption-font-size">
-                <option value="12px">75%</option>
-                <option value="14px">85%</option>
-                <option value="16px" selected>100%</option>
-                <option value="18px">115%</option>
-                <option value="20px">125%</option>
-                <option value="22px">150%</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="caption-settings-row">
-            <div class="caption-settings-label">Text Edge Style</div>
-            <div class="caption-settings-controls">
-              <select id="caption-text-edge">
-                <option value="none">None</option>
-                <option value="stroke">Uniform stroke</option>
-                <option value="drop">Drop shadow</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="caption-settings-row">
-            <div class="caption-settings-label">Font Family</div>
-            <div class="caption-settings-controls">
-              <select id="caption-font-family">
-                <option value="'Proportional Sans-Serif', Poppins, Roboto, sans-serif" selected>Proportional Sans-Serif
-                </option>
-                <option value="'Monospace', 'Courier New', monospace">Monospace</option>
-                <option value="'Serif', Georgia, serif">Serif</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="caption-settings-actions">
-        <button class="reset-btn" id="caption-reset">Reset</button>
-        <button class="done-btn" id="caption-done">Done</button>
-      </div>
     </div>
-  </div>
+
+    <!-- ====== DYNAMIC GENRE & CATEGORY SECTIONS ====== -->
+    <div id="homeDynamicSections">
+        <!-- Loaded dynamically via loadCategories() -->
+    </div>
+
+    <!-- ====== FOOTER ====== -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h3>Infinx Anime</h3>
+                    <p style="font-size: 1.4rem; color: var(--gray-text); margin-bottom: 20px;">
+                        The ultimate destination for anime and movie lovers. Watch HLS multi-audio content dynamically.
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#action"><i class="fas fa-chevron-right"></i> Action Movies</a></li>
+                        <li><a href="#anime"><i class="fas fa-chevron-right"></i> Anime Series</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Help Center</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="copyright">
+                    <div class="logo-icon">S</div>
+                    <span>Infinx Anime &copy; 2026. All rights reserved.</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ====== LOGIN MODAL ====== -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('login')">&times;</span>
+            <h2 class="modal-title">Sign In</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Login</button>
+            </form>
+            <div class="modal-switch">
+                Don't have an account? <a href="#" onclick="switchModal('login', 'register')">Sign Up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== REGISTER MODAL ====== -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('register')">&times;</span>
+            <h2 class="modal-title">Sign Up</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="registerEmail" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="registerPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Register</button>
+            </form>
+            <div class="modal-switch">
+                Already have an account? <a href="#" onclick="switchModal('register', 'login')">Sign In</a>
+            </div>
+        </div>
+    </div>
+    <!-- ====== MOBILE SEARCH OVERLAY ====== -->
+    <div class="mobile-search-overlay" id="mobileSearchOverlay">
+        <div class="search-overlay-header">
+            <button class="search-back-btn" id="closeSearchOverlay" aria-label="Close search"><i
+                    class="fas fa-arrow-left"></i></button>
+            <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="mobileSearchInput" placeholder="Search anime, movies...">
+                <button class="search-clear-btn" id="clearMobileSearch" aria-label="Clear text"
+                    style="display: none;"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div class="search-overlay-results" id="mobileSearchResults"></div>
+    </div>
+
+    <!-- ====== MOBILE BOTTOM TAB BAR ====== -->
+    <nav class="mobile-tab-bar">
+        <a href="index.html" class="tab-item active" id="tabHome"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="#" class="tab-item" id="tabSearch"><i class="fas fa-search"></i><span>Search</span></a>
+        <a href="view.html#watchlist" class="tab-item" id="tabWatchlist"><i
+                class="fas fa-heart"></i><span>Watchlist</span></a>
+        <a href="view.html#history" class="tab-item" id="tabHistory"><i
+                class="fas fa-history"></i><span>History</span></a>
+    </nav>
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+
+    <script>
+        const DEFAULT_BACKEND = localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000';
+        const SERVER_ORIGIN = (window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':8000'))
+            ? DEFAULT_BACKEND
+            : '';
+        const API_BASE = `${SERVER_ORIGIN}/api`;
+
+        window.formatMediaUrl = function (url) {
+            const fallback = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
+            if (!url) return fallback;
+            if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+            return url.startsWith('/') ? `${DEFAULT_BACKEND}${url}` : `${DEFAULT_BACKEND}/${url}`;
+        };
+        let userWatchlist = [];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Load homepage configurations
+            initApp();
+
+            // Open login modal if redirected with login=true param
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('login') === 'true' && !isLoggedIn()) {
+                setTimeout(() => openModal('login'), 300);
+            }
+
+            // Header scroll effect
+            const header = document.querySelector('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // Mobile Menu Toggle
+            const mobileToggle = document.querySelector('.mobile-toggle');
+            const navbar = document.querySelector('.navbar');
+            const closeDrawer = document.getElementById('closeDrawer');
+            const navOverlay = document.getElementById('navOverlay');
+
+            function openMobileMenu() {
+                navbar.classList.add('active');
+                navOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            window.closeMobileMenu = function () {
+                navbar.classList.remove('active');
+                navOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            mobileToggle.addEventListener('click', openMobileMenu);
+            if (closeDrawer) closeDrawer.addEventListener('click', closeMobileMenu);
+            if (navOverlay) navOverlay.addEventListener('click', closeMobileMenu);
+
+            // Dropdown toggle click/tap handlers (for desktop & mobile)
+            document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const parent = this.closest('.nav-item-dropdown');
+                    if (parent) {
+                        const wasActive = parent.classList.contains('active');
+                        document.querySelectorAll('.nav-item-dropdown').forEach(d => d.classList.remove('active'));
+                        if (!wasActive) {
+                            parent.classList.add('active');
+                        }
+                    }
+                });
+            });
+
+            // Close open dropdowns when tapping outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.nav-item-dropdown')) {
+                    document.querySelectorAll('.nav-item-dropdown').forEach(d => d.classList.remove('active'));
+                }
+            });
+
+            // Close menu when clicking direct nav links or dropdown items inside the drawer (only on mobile)
+            const navLinks = document.querySelectorAll('.navbar .nav-link:not(.dropdown-toggle), .navbar .dropdown-item');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 992) {
+                        closeMobileMenu();
+                    }
+                });
+            });
+
+            // Search logic (redirect to unified search results page)
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('keyup', function (e) {
+                if (e.key === 'Enter') {
+                    const term = this.value.trim();
+                    if (term) {
+                        window.location.href = `view.html#search?q=${encodeURIComponent(term)}`;
+                    }
+                }
+            });
+
+            // Mobile Search Overlay listeners
+            const tabSearch = document.getElementById('tabSearch');
+            const mobileSearchOverlay = document.getElementById('mobileSearchOverlay');
+            const closeSearchOverlay = document.getElementById('closeSearchOverlay');
+            const clearMobileSearch = document.getElementById('clearMobileSearch');
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+
+            tabSearch.addEventListener('click', (e) => {
+                e.preventDefault();
+                mobileSearchOverlay.classList.add('active');
+                mobileSearchInput.focus();
+            });
+
+            closeSearchOverlay.addEventListener('click', () => {
+                mobileSearchOverlay.classList.remove('active');
+            });
+
+            mobileSearchInput.addEventListener('input', function () {
+                if (this.value.trim()) {
+                    clearMobileSearch.style.display = 'flex';
+                } else {
+                    clearMobileSearch.style.display = 'none';
+                }
+            });
+
+            clearMobileSearch.addEventListener('click', () => {
+                mobileSearchInput.value = '';
+                clearMobileSearch.style.display = 'none';
+                mobileSearchInput.focus();
+            });
+
+            mobileSearchInput.addEventListener('keyup', function (e) {
+                if (e.key === 'Enter') {
+                    const term = this.value.trim();
+                    if (term) {
+                        mobileSearchOverlay.classList.remove('active');
+                        window.location.href = `view.html#search?q=${encodeURIComponent(term)}`;
+                    }
+                }
+            });
+
+            // Handle forms
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+        });
+
+        // Initialize user status & catalog content
+        async function initApp() {
+            updateAuthHeader();
+            await loadCarousel();
+            await loadCategories();
+
+            if (isLoggedIn()) {
+                loadWatchlist();
+                loadContinueWatching();
+            }
+        }
+
+        function isLoggedIn() {
+            return !!localStorage.getItem('infinx_token');
+        }
+
+        function getAuthHeader() {
+            const token = localStorage.getItem('infinx_token');
+            return token ? { 'Authorization': `Bearer ${token}` } : {};
+        }
+
+        function updateAuthHeader() {
+            const headerDiv = document.getElementById('authHeader');
+            const drawerDiv = document.getElementById('drawerAuthHeader');
+
+            if (isLoggedIn()) {
+                const email = localStorage.getItem('infinx_user_email') || 'User';
+                const role = localStorage.getItem('infinx_user_role');
+                const adminLink = role === 'ADMIN' ? `<a href="/admin.html" class="nav-link" style="color: var(--secondary);"><i class="fas fa-lock"></i> Admin</a>` : '';
+
+                headerDiv.innerHTML = `
+                    <div class="user-profile-menu">
+                        ${adminLink}
+                        <div class="user-avatar" title="${email}">${email[0].toUpperCase()}</div>
+                        <button class="btn btn-secondary btn-small" onclick="handleLogout(event)">Logout</button>
+                    </div>
+                `;
+
+                if (drawerDiv) {
+                    drawerDiv.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px; padding: 0 10px;">
+                            <div class="user-avatar">${email[0].toUpperCase()}</div>
+                            <div style="font-size: 1.4rem; font-weight: 500; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${email}</div>
+                        </div>
+                        ${role === 'ADMIN' ? `<a href="/admin.html" class="nav-link" style="color: var(--secondary);"><i class="fas fa-lock"></i> Admin Panel</a>` : ''}
+                        <button class="btn btn-secondary" onclick="handleLogout(event)" style="width: 100%; justify-content: center; text-transform: uppercase;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    `;
+                }
+            } else {
+                headerDiv.innerHTML = `
+                    <button class="btn btn-secondary btn-small" onclick="openModal('login')">Login</button>
+                `;
+
+                if (drawerDiv) {
+                    drawerDiv.innerHTML = `
+                        <button class="btn btn-primary" onclick="closeMobileMenu(); openModal('login')" style="width: 100%; justify-content: center; text-transform: uppercase; margin-bottom: 8px;"><i class="fas fa-sign-in-alt"></i> Login</button>
+                        <button class="btn btn-secondary" onclick="closeMobileMenu(); openModal('register')" style="width: 100%; justify-content: center; text-transform: uppercase;"><i class="fas fa-user-plus"></i> Register</button>
+                    `;
+                }
+            }
+        }
+
+        // Fetch Watchlist items
+        async function loadWatchlist() {
+            try {
+                const res = await fetch(`${API_BASE}/user/watchlist`, { headers: getAuthHeader() });
+                if (res.status === 401) {
+                    handleLogout();
+                    return;
+                }
+                if (res.ok) {
+                    const data = await res.json();
+                    userWatchlist = data.map(show => show.id);
+
+                    // update favorite heart states across all rendered movie cards
+                    document.querySelectorAll('.btn-watchlist-toggle').forEach(btn => {
+                        const showId = parseInt(btn.dataset.showId);
+                        if (userWatchlist.includes(showId)) {
+                            btn.classList.add('active');
+                            const icon = btn.querySelector('i');
+                            if (icon) icon.className = 'fas fa-heart';
+                        } else {
+                            btn.classList.remove('active');
+                            const icon = btn.querySelector('i');
+                            if (icon) icon.className = 'far fa-heart';
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Fetch Continue Watching List
+        async function loadContinueWatching() {
+            try {
+                const res = await fetch(`${API_BASE}/user/history`, { headers: getAuthHeader() });
+                if (res.status === 401) {
+                    handleLogout();
+                    return;
+                }
+                if (res.ok) {
+                    const data = await res.json();
+                    const container = document.getElementById('continueWatchingSection');
+                    const grid = document.getElementById('continueWatchingGrid');
+
+                    if (data && data.length > 0) {
+                        container.classList.remove('hidden');
+                        let html = '';
+                        data.slice(0, 6).forEach(item => {
+                            const percent = (item.progress / item.duration) * 100;
+                            const show = item.episode.show;
+                            const fallbackPoster = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
+
+                            html += `
+                                <div class="movie-card">
+                                    <div class="movie-poster">
+                                        <img src="${window.formatMediaUrl(show.poster)}" alt="${show.title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
+                                    </div>
+                                    <div class="movie-info">
+                                        <h3 class="movie-title">${show.title}</h3>
+                                        <div class="movie-meta">
+                                            <span>Ep ${item.episode.episodeNumber}</span>
+                                            <span>${Math.round(percent)}% watched</span>
+                                        </div>
+                                        <div class="progress-container">
+                                            <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                                        </div>
+                                        <div class="movie-actions" style="margin-top: 15px;">
+                                            <a href="/video-player/index.html?episodeId=${item.episodeId}" class="btn btn-primary btn-small" style="width: 100%;">
+                                                <i class="fas fa-play"></i> Resume
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        grid.innerHTML = html;
+                    } else {
+                        container.classList.add('hidden');
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Fetch carousel featured items
+        async function loadCarousel() {
+            try {
+                let slideDelay = 6000;
+                try {
+                    const settingsRes = await fetch(`${API_BASE}/settings`);
+                    if (settingsRes.ok) {
+                        const settingsData = await settingsRes.json();
+                        if (settingsData.bannerSlideTime) slideDelay = settingsData.bannerSlideTime;
+                    }
+                } catch (err) { console.error('Error loading settings', err); }
+
+                const res = await fetch(`${API_BASE}/shows/carousel`);
+                const data = await res.json();
+                const wrapper = document.getElementById('carouselWrapper');
+
+                if (data && data.length > 0) {
+                    let html = '';
+                    data.forEach((show, index) => {
+                        // Find first episode to watch, or default watch action
+                        const playLink = show.episodes && show.episodes.length > 0
+                            ? `/video-player/index.html?episodeId=${show.episodes[0].id}`
+                            : '#';
+                        const rawBanner = show.banner || show.poster;
+                        const bannerImg = rawBanner ? encodeURI(rawBanner) : 'Postes/infinit-cas11.jpg';
+                        const isVideo = rawBanner && (rawBanner.toLowerCase().endsWith('.mp4') || rawBanner.toLowerCase().endsWith('.webm') || rawBanner.toLowerCase().endsWith('.mkv') || rawBanner.toLowerCase().endsWith('.mov'));
+
+                        const bannerContent = `
+                            <div class="content-inner">
+                                <h3>${show.title}</h3>
+                                <p>${show.description}</p>
+                                <div class="banner-actions">
+                                    <a href="${playLink}" class="btn-banner-play"><i class="fas fa-play"></i> Watch Now</a>
+                                    <a href="${playLink}" class="btn-banner-details">Details <i class="fas fa-chevron-right"></i></a>
+                                </div>
+                            </div>
+                        `;
+
+                        if (isVideo) {
+                            html += `
+                                <div class="swiper-slide">
+                                    <div class="box ${index % 2 === 1 ? 'second' : ''}">
+                                        <video class="banner-media" autoplay loop muted playsinline>
+                                            <source src="${bannerImg}" type="video/mp4">
+                                        </video>
+                                        <div class="content">
+                                            ${bannerContent}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            html += `
+                                <div class="swiper-slide">
+                                    <div class="box ${index % 2 === 1 ? 'second' : ''}" style="background: url('${bannerImg}') no-repeat; background-size: cover; background-position: center;">
+                                        <div class="content">
+                                            ${bannerContent}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+                    wrapper.innerHTML = html;
+
+                    // Re-initialize swiper
+                    new Swiper('.hero-slider', {
+                        loop: true,
+                        autoplay: { delay: slideDelay, disableOnInteraction: false },
+                        pagination: { el: '.swiper-pagination', clickable: true },
+                        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                        effect: 'fade',
+                        fadeEffect: { crossFade: true },
+                        speed: 800
+                    });
+                }
+            } catch (e) {
+                console.error('Error fetching carousel:', e);
+            }
+        }
+
+        // Fetch categories with shows & dynamic section renderer with sorting
+        let globalCategoriesData = [];
+        let currentSortOrder = 'default';
+
+        const CATEGORY_MAP = {
+            // Categories
+            'south-hindi-dubbed': { name: 'South Hindi Dubbed', icon: 'fa-language', color: '#ff793f' },
+            'hollywood': { name: 'Hollywood Movies', icon: 'fa-film', color: '#9c27b0' },
+            'bollywood': { name: 'Bollywood Movies', icon: 'fa-clapperboard', color: '#ff5252' },
+            'anime': { name: 'Anime Series', icon: 'fa-play-circle', color: '#00a8ff' },
+            'web-series': { name: 'Web Series', icon: 'fa-tv', color: '#2ecc71' },
+            'kids': { name: 'Kids & Family', icon: 'fa-child', color: '#f1c40f' },
+            'kdrama': { name: 'Korean Drama', icon: 'fa-video', color: '#e67e22' },
+            // Genres
+            'action': { name: 'Action', icon: 'fa-fire', color: '#ff0055' },
+            'adventure': { name: 'Adventure', icon: 'fa-compass', color: '#e67e22' },
+            'animation': { name: 'Animation', icon: 'fa-magic', color: '#9b59b6' },
+            'comedy': { name: 'Comedy', icon: 'fa-laugh-beam', color: '#f1c40f' },
+            'crime': { name: 'Crime', icon: 'fa-user-ninja', color: '#34495e' },
+            'drama': { name: 'Drama', icon: 'fa-theater-masks', color: '#e74c3c' },
+            'fantasy': { name: 'Fantasy', icon: 'fa-dragon', color: '#a200ff' },
+            'historical': { name: 'Historical', icon: 'fa-landmark', color: '#d35400' },
+            'horror': { name: 'Horror', icon: 'fa-ghost', color: '#2c3e50' },
+            'mystery': { name: 'Mystery', icon: 'fa-user-secret', color: '#8e44ad' },
+            'political': { name: 'Political', icon: 'fa-building-columns', color: '#7f8c8d' },
+            'romance': { name: 'Romance', icon: 'fa-heart', color: '#ff4757' },
+            'sci-fi': { name: 'Sci-Fi', icon: 'fa-atom', color: '#00f0ff' },
+            'thriller': { name: 'Thriller', icon: 'fa-bolt', color: '#ff6b6b' }
+        };
+
+        function sortShowsList(shows, sortOption) {
+            let list = [...shows];
+            if (sortOption === 'rating-desc') {
+                return list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            } else if (sortOption === 'newest') {
+                return list.sort((a, b) => parseInt(b.year || 0) - parseInt(a.year || 0) || b.id - a.id);
+            } else if (sortOption === 'views-desc') {
+                return list.sort((a, b) => (b.views || 0) - (a.views || 0));
+            } else if (sortOption === 'title-asc') {
+                return list.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (sortOption === 'title-desc') {
+                return list.sort((a, b) => b.title.localeCompare(a.title));
+            }
+            return list;
+        }
+
+        function changeHomeSort(val) {
+            currentSortOrder = val;
+            renderDynamicHomeSections();
+        }
+
+        async function loadCategories() {
+            const container = document.getElementById('homeDynamicSections');
+            if (!container) return;
+
+            // Render skeleton sections
+            let skeletonHtml = '';
+            for (let i = 0; i < 4; i++) {
+                skeletonHtml += `
+                    <section class="section">
+                        <div class="container">
+                            <div class="section-header">
+                                <div class="skeleton" style="width: 200px; height: 30px; border-radius: 6px;"></div>
+                                <div class="skeleton" style="width: 80px; height: 20px; border-radius: 4px;"></div>
+                            </div>
+                            <div class="movies-grid">
+                                ${Array(6).fill(`
+                                    <div class="movie-card skeleton-card">
+                                        <div class="skeleton skeleton-card-poster"></div>
+                                        <div class="skeleton-card-info">
+                                            <div class="skeleton skeleton-card-title"></div>
+                                            <div class="skeleton skeleton-card-meta"></div>
+                                            <div class="skeleton skeleton-card-desc"></div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </section>
+                `;
+            }
+            container.innerHTML = skeletonHtml;
+
+            try {
+                const res = await fetch(`${API_BASE}/shows/categories`);
+                if (res.ok) {
+                    globalCategoriesData = await res.json();
+                    renderQuickPills();
+                    renderDynamicHomeSections();
+                }
+            } catch (e) {
+                console.error('Error fetching categories:', e);
+                container.innerHTML = `<div class="container"><p style="color: var(--primary); text-align: center; padding: 40px 0;"><i class="fas fa-exclamation-circle"></i> Failed to load show categories.</p></div>`;
+            }
+        }
+
+        function renderQuickPills() {
+            const pillsContainer = document.getElementById('genreQuickPills');
+            if (!pillsContainer) return;
+
+            let pillsHtml = `<a href="index.html#home" class="pill-btn active">All</a>`;
+            globalCategoriesData.forEach(cat => {
+                if (cat.shows && cat.shows.length > 0) {
+                    const info = CATEGORY_MAP[cat.slug] || { name: cat.name };
+                    pillsHtml += `<a href="#section-${cat.slug}" class="pill-btn">${info.name} (${cat.shows.length})</a>`;
+                }
+            });
+            pillsContainer.innerHTML = pillsHtml;
+        }
+
+        function renderDynamicHomeSections() {
+            const container = document.getElementById('homeDynamicSections');
+            if (!container) return;
+
+            if (!globalCategoriesData || globalCategoriesData.length === 0) {
+                container.innerHTML = `<div class="container"><p style="color: var(--gray-text); text-align: center;">No categories available.</p></div>`;
+                return;
+            }
+
+            let sectionsHtml = '';
+
+            globalCategoriesData.forEach(cat => {
+                const shows = cat.shows || [];
+                if (shows.length > 0) {
+                    const info = CATEGORY_MAP[cat.slug] || { name: cat.name, icon: 'fa-layer-group', color: '#ff0055' };
+                    const sortedShows = sortShowsList(shows, currentSortOrder);
+
+                    let cardsHtml = '';
+                    sortedShows.slice(0, 6).forEach(show => {
+                        const isFav = userWatchlist.includes(show.id) ? 'active' : '';
+                        const heartIcon = userWatchlist.includes(show.id) ? 'fas fa-heart' : 'far fa-heart';
+                        const hasEpisodes = show.episodes && show.episodes.length > 0;
+                        const playUrl = hasEpisodes ? `/video-player/index.html?episodeId=${show.episodes[0].id}` : '#';
+                        const playBtnText = hasEpisodes ? '<i class="fas fa-play"></i> Watch' : 'Soon';
+                        const btnDisabled = !hasEpisodes ? 'disabled style="opacity: 0.5; pointer-events: none;"' : '';
+
+                        cardsHtml += `
+                            <div class="movie-card">
+                                <div class="movie-poster">
+                                    <div class="movie-badge">${show.badge || 'HD'}</div>
+                                    ${show.dubsub ? '<div class="dubsub">Sub/Dub</div>' : ''}
+                                    <div class="movie-rating"><i class="fas fa-star"></i> ${show.rating}</div>
+                                    <img src="${window.formatMediaUrl(show.poster)}" alt="${show.title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
+                                </div>
+                                <div class="movie-info">
+                                    <h3 class="movie-title">${show.title}</h3>
+                                    <div class="movie-meta">
+                                        <span>${show.year}</span>
+                                        <span>${show.runtime}</span>
+                                    </div>
+                                    <p class="movie-desc">${show.description}</p>
+                                    <div class="movie-actions">
+                                        <a href="${playUrl}" class="btn btn-primary btn-small" style="flex:1;" ${btnDisabled}>${playBtnText}</a>
+                                        <button class="btn-watchlist-toggle ${isFav}" data-show-id="${show.id}" onclick="toggleWatchlist(this, ${show.id})">
+                                            <i class="${heartIcon}"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    sectionsHtml += `
+                        <section class="section" id="section-${cat.slug}">
+                            <div class="container">
+                                <div class="section-header">
+                                    <h2 class="section-title"><i class="fas ${info.icon}" style="color: ${info.color || 'var(--primary)'}; margin-right: 10px;"></i>${info.name}</h2>
+                                    <a href="view.html#${cat.slug}" class="view-all">View All (${shows.length}) <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                                <div class="movies-grid">
+                                    ${cardsHtml}
+                                </div>
+                            </div>
+                        </section>
+                    `;
+                }
+            });
+
+            if (!sectionsHtml) {
+                sectionsHtml = `<div class="container"><p style="color: var(--gray-text); text-align: center; padding: 40px 0;">No shows available in catalog.</p></div>`;
+            }
+
+            container.innerHTML = sectionsHtml;
+        }
+
+
+            // Toggle favorite watchlist item
+            async function toggleWatchlist(btn, showId) {
+                if (!isLoggedIn()) {
+                    openModal('login');
+                    return;
+                }
+                try {
+                    const res = await fetch(`${API_BASE}/user/watchlist`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...getAuthHeader()
+                        },
+                        body: JSON.stringify({ showId })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.status === 'added') {
+                            btn.classList.add('active');
+                            btn.querySelector('i').className = 'fas fa-heart';
+                            userWatchlist.push(showId);
+                        } else {
+                            btn.classList.remove('active');
+                            btn.querySelector('i').className = 'far fa-heart';
+                            userWatchlist = userWatchlist.filter(id => id !== showId);
+                        }
+                        loadWatchlist();
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+            // Authentication Handlers
+            async function handleLogin(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+
+                try {
+                    const res = await fetch(`${API_BASE}/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await res.json();
+                    if (res.ok) {
+                        localStorage.setItem('infinx_token', data.token);
+                        localStorage.setItem('infinx_user_email', data.user.email);
+                        localStorage.setItem('infinx_user_role', data.user.role);
+
+                        closeModal('login');
+                        initApp();
+                    } else {
+                        alert(data.error || 'Login failed');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Connection error');
+                }
+            }
+
+            async function handleRegister(e) {
+                e.preventDefault();
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+
+                try {
+                    const res = await fetch(`${API_BASE}/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await res.json();
+                    if (res.ok) {
+                        localStorage.setItem('infinx_token', data.token);
+                        localStorage.setItem('infinx_user_email', data.user.email);
+                        localStorage.setItem('infinx_user_role', data.user.role);
+
+                        closeModal('register');
+                        initApp();
+                    } else {
+                        alert(data.error || 'Registration failed');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Connection error');
+                }
+            }
+
+            function handleLogout(e) {
+                if (e) e.stopPropagation();
+                localStorage.clear();
+                updateAuthHeader();
+                document.getElementById('continueWatchingSection').classList.add('hidden');
+                // Remove active classes from hearts
+                document.querySelectorAll('.btn-watchlist-toggle').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.querySelector('i').className = 'far fa-heart';
+                });
+                userWatchlist = [];
+            }
+
+            // Modal triggers
+            function openModal(type) {
+                document.getElementById(`${type}Modal`).classList.add('active');
+            }
+
+            function closeModal(type) {
+                document.getElementById(`${type}Modal`).classList.remove('active');
+            }
+
+            function switchModal(closeType, openType) {
+                closeModal(closeType);
+                setTimeout(() => openModal(openType), 100);
+            }
+    </script>
 </body>
 
 </html>

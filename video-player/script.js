@@ -7,6 +7,50 @@ window.addEventListener('unhandledrejection', function(e) {
   try { console.error('Unhandled promise rejection:', e.reason); } catch (err) {}
 });
 
+// Global Safe Navigation Back to Home
+window.navigateBackToHome = function() {
+  if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+    else if (document.msExitFullscreen) document.msExitFullscreen();
+    return;
+  }
+  
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.href = '/index.html';
+  }
+};
+
+// Guarantee Home page (/index.html) exists prior in history stack
+(function setupPlayerHistory() {
+  try {
+    const currentUrl = window.location.href;
+    const ref = document.referrer;
+    const cameFromApp = ref && (ref.includes('/index.html') || ref.includes('/view.html') || (window.location.host && ref.includes(window.location.host)));
+    
+    if (!cameFromApp || window.history.length <= 1) {
+      window.history.replaceState({ page: 'home' }, '', '/index.html');
+      window.history.pushState({ page: 'player' }, '', currentUrl);
+    }
+  } catch (err) {
+    console.error('History setup error:', err);
+  }
+})();
+
+// Intercept popstate to handle fullscreen mode
+window.addEventListener('popstate', function (e) {
+  if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+    else if (document.msExitFullscreen) document.msExitFullscreen();
+    window.history.pushState({ page: 'player' }, '', window.location.href);
+  }
+});
+
 document.addEventListener('DOMContentLoaded', async function() {
   try {
     const savedBackend = localStorage.getItem('infinx_server_url');
@@ -909,7 +953,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
       if (curIndex > 0) {
         const prevEp = siblingEpisodes[curIndex - 1];
-        window.location.href = `/video-player/index.html?episodeId=${prevEp.id}`;
+        window.location.replace(`/video-player/index.html?episodeId=${prevEp.id}`);
       } else {
         alert('This is the first episode!');
       }
@@ -919,7 +963,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
       if (curIndex >= 0 && curIndex < siblingEpisodes.length - 1) {
         const nextEp = siblingEpisodes[curIndex + 1];
-        window.location.href = `/video-player/index.html?episodeId=${nextEp.id}`;
+        window.location.replace(`/video-player/index.html?episodeId=${nextEp.id}`);
       } else {
         alert('This is the final episode!');
       }
@@ -1312,18 +1356,29 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
     
     function hideControls() {
-      if (isFullscreen) {
-        document.querySelector('.custom-controls').classList.add('hidden');
-        document.querySelector('.video-overlay').classList.add('hidden');
+      // Hide controls when video is playing and user is inactive
+      if (!mainVideo.paused && !isSettingsMenuOpen) {
+        const controls = document.querySelector('.custom-controls');
+        const overlay = document.querySelector('.video-overlay');
+        const topBackBtn = document.querySelector('.player-top-back-btn');
+        if (controls) controls.classList.add('hidden');
+        if (overlay) overlay.classList.add('hidden');
+        if (topBackBtn) topBackBtn.classList.add('hidden');
       }
     }
     
     function showControls() {
       clearTimeout(hideControlsTimeout);
-      document.querySelector('.custom-controls').classList.remove('hidden');
-      document.querySelector('.video-overlay').classList.remove('hidden');
-      if (isFullscreen) {
-        hideControlsTimeout = setTimeout(hideControls, 5000);
+      const controls = document.querySelector('.custom-controls');
+      const overlay = document.querySelector('.video-overlay');
+      const topBackBtn = document.querySelector('.player-top-back-btn');
+      if (controls) controls.classList.remove('hidden');
+      if (overlay) overlay.classList.remove('hidden');
+      if (topBackBtn) topBackBtn.classList.remove('hidden');
+      
+      // Auto-hide controls after 3 seconds of inactivity during video playback
+      if (!mainVideo.paused && !isSettingsMenuOpen) {
+        hideControlsTimeout = setTimeout(hideControls, 3000);
       }
     }
     
@@ -1336,23 +1391,25 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (isFullscreen) {
         lockLandscapeOrientation();
         if (fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
-        showControls();
-        videoPlayer.addEventListener('mousemove', handleMouseMove);
-        videoPlayer.addEventListener('touchstart', handleMouseMove);
       } else {
         unlockOrientation();
         if (fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
-        clearTimeout(hideControlsTimeout);
-        videoPlayer.removeEventListener('mousemove', handleMouseMove);
-        videoPlayer.removeEventListener('touchstart', handleMouseMove);
-        document.querySelector('.custom-controls').classList.remove('hidden');
-        document.querySelector('.video-overlay').classList.remove('hidden');
       }
-    }
-    
-    function handleMouseMove() {
       showControls();
     }
+    
+    // Auto-hide control listeners
+    if (videoPlayer) {
+      videoPlayer.addEventListener('mousemove', showControls);
+      videoPlayer.addEventListener('touchstart', showControls, { passive: true });
+      videoPlayer.addEventListener('pointerdown', showControls, { passive: true });
+    }
+
+    mainVideo.addEventListener('play', showControls);
+    mainVideo.addEventListener('pause', function() {
+      clearTimeout(hideControlsTimeout);
+      showControls();
+    });
     
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
@@ -1829,7 +1886,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         `;
         
         playlistItem.addEventListener('click', function() {
-          window.location.href = `/video-player/index.html?episodeId=${ep.id}`;
+          window.location.replace(`/video-player/index.html?episodeId=${ep.id}`);
         });
         
         playlistContainer.appendChild(playlistItem);
