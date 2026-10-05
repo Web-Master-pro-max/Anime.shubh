@@ -2124,7 +2124,7 @@
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 
     <script>
-        const DEFAULT_BACKEND = localStorage.getItem('infinx_server_url') || 'https://education-feet-enrollment-fundamentals.trycloudflare.com';
+        const DEFAULT_BACKEND = localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000';
         const isHttps = window.location.protocol === 'https:';
         const hasCustomServer = !!localStorage.getItem('infinx_server_url');
         const SERVER_ORIGIN = (isHttps && !hasCustomServer)

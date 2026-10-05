@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const SERVER_ORIGIN = (isHttps && !hasCustomServer)
       ? ''
       : ((window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':'))
-        ? (localStorage.getItem('infinx_server_url') || 'https://education-feet-enrollment-fundamentals.trycloudflare.com')
+        ? (localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000')
         : '');
     const API_BASE = `${SERVER_ORIGIN}/api`;
 
