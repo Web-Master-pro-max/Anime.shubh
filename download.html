@@ -682,7 +682,7 @@
     <script>
         // Dynamically point APK download link to backend server if needed
         const SERVER_ORIGIN = (window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':'))
-            ? (localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000')
+            ? (localStorage.getItem('infinx_server_url') || 'https://education-feet-enrollment-fundamentals.trycloudflare.com')
             : '';
 
         const apkBtn = document.getElementById('apkDownloadLink');
