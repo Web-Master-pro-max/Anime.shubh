@@ -79,9 +79,122 @@ document.addEventListener('DOMContentLoaded', async function () {
     const keyboardShortcutsBtn = document.querySelector('.keyboard-shortcuts-btn');
     const closeShortcutsBtn = document.querySelector('.close-shortcuts-btn');
 
-    // Auth helpers
-    const token = localStorage.getItem('infinx_token');
-    const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
+    // Auth helpers (Strict User Authentication Gate)
+    let token = localStorage.getItem('infinx_token');
+    let authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+    function checkIsLoggedIn() {
+      token = localStorage.getItem('infinx_token');
+      authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
+      return !!token;
+    }
+
+    let currentAuthTab = 'register';
+
+    window.switchPlayerAuthTab = function (mode) {
+      currentAuthTab = mode;
+      const tabReg = document.getElementById('playerTabRegister');
+      const tabLogin = document.getElementById('playerTabLogin');
+      const title = document.getElementById('playerAuthTitle');
+      const submitText = document.getElementById('playerAuthSubmitText');
+      const errorBox = document.getElementById('playerAuthError');
+      if (errorBox) {
+        errorBox.textContent = '';
+        errorBox.style.display = 'none';
+      }
+
+      if (mode === 'register') {
+        if (tabReg) tabReg.classList.add('active');
+        if (tabLogin) tabLogin.classList.remove('active');
+        if (title) title.textContent = 'Sign Up to Start Watching';
+        if (submitText) submitText.textContent = 'Sign Up & Watch Now';
+      } else {
+        if (tabLogin) tabLogin.classList.add('active');
+        if (tabReg) tabReg.classList.remove('active');
+        if (title) title.textContent = 'Sign In to Continue Watching';
+        if (submitText) submitText.textContent = 'Sign In & Watch';
+      }
+    };
+
+    window.showPlayerAuthLock = function () {
+      const modal = document.getElementById('playerAuthModal');
+      if (modal) modal.style.display = 'flex';
+      if (videoPlayer) videoPlayer.classList.remove('loading');
+      if (mainVideo) {
+        mainVideo.pause();
+        try { mainVideo.removeAttribute('src'); mainVideo.load(); } catch (e) { }
+      }
+      if (hls) {
+        try { hls.destroy(); } catch (e) { }
+        hls = null;
+      }
+    };
+
+    window.hidePlayerAuthLock = function () {
+      const modal = document.getElementById('playerAuthModal');
+      if (modal) modal.style.display = 'none';
+    };
+
+    window.handlePlayerAuthSubmit = async function (e) {
+      if (e) e.preventDefault();
+      const emailInput = document.getElementById('playerAuthEmail');
+      const passwordInput = document.getElementById('playerAuthPassword');
+      const errorBox = document.getElementById('playerAuthError');
+      const submitBtn = document.getElementById('playerAuthSubmitBtn');
+
+      const email = emailInput ? emailInput.value.trim() : '';
+      const password = passwordInput ? passwordInput.value : '';
+
+      if (!email || !password) {
+        if (errorBox) {
+          errorBox.textContent = 'Please enter both email and password.';
+          errorBox.style.display = 'block';
+        }
+        return;
+      }
+
+      try {
+        if (submitBtn) submitBtn.disabled = true;
+        if (errorBox) {
+          errorBox.textContent = '';
+          errorBox.style.display = 'none';
+        }
+
+        const endpoint = currentAuthTab === 'register' ? '/auth/register' : '/auth/login';
+        const res = await fetch(`${API_BASE}${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Authentication failed. Please check your credentials.');
+        }
+
+        // Store tokens
+        localStorage.setItem('infinx_token', data.token);
+        if (data.user) {
+          localStorage.setItem('infinx_user_email', data.user.email);
+          localStorage.setItem('infinx_user_role', data.user.role);
+        }
+
+        token = data.token;
+        authHeaders = { 'Authorization': `Bearer ${token}` };
+
+        hidePlayerAuthLock();
+
+        // Boot and play!
+        startAuthenticatedPlayback();
+      } catch (err) {
+        if (errorBox) {
+          errorBox.textContent = err.message || 'Authentication error';
+          errorBox.style.display = 'block';
+        }
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    };
 
     // Load dynamic episode data
     let currentEpisode = null;
@@ -359,6 +472,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Initialize HLS
     function initHLS(videoSrc, seekTime = null, autoPlay = true) {
+      if (!checkIsLoggedIn()) {
+        showPlayerAuthLock();
+        return;
+      }
+
       if (!videoSrc) {
         videoPlayer.classList.remove('loading');
         const container = document.querySelector('.video-container') || videoPlayer;
@@ -1226,6 +1344,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Play/Pause functionality
     function togglePlayPause() {
+      if (!checkIsLoggedIn()) {
+        showPlayerAuthLock();
+        return;
+      }
       if (mainVideo.paused) {
         mainVideo.play();
         playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
@@ -1313,6 +1435,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     mainVideo.addEventListener('play', function () {
+      if (!checkIsLoggedIn()) {
+        mainVideo.pause();
+        showPlayerAuthLock();
+        return;
+      }
       if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
     });
 
@@ -2810,16 +2937,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       initializePlaylist();
       updateServerOptions();
 
-      const initialServer = (availableServers && availableServers.find(s => s.id === activeServerId)) || (availableServers && availableServers[0]) || null;
-      const initialVideoUrl = initialServer ? initialServer.url : (currentEpisode.videoUrl || null);
-      initHLS(initialVideoUrl);
-
-      if (autoNextCheckbox && autoNextCheckbox.checked) {
-        if (autoNextLabel) {
-          autoNextLabel.style.color = '#00a8ff';
-        }
-      }
-
       // Search Box Handler
       const searchInput = document.getElementById('searchInput');
       const searchIcon = document.getElementById('searchIcon');
@@ -2891,6 +3008,29 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
 
       initCommentsSection();
+
+      // STRICT AUTHENTICATION WALL:
+      // Users must be registered or logged in to stream any content!
+      if (!checkIsLoggedIn()) {
+        console.warn('Playback blocked: Sign in or sign up required to watch.');
+        showPlayerAuthLock();
+        return;
+      }
+
+      startAuthenticatedPlayback();
+    }
+
+    function startAuthenticatedPlayback() {
+      updateServerOptions();
+      const initialServer = (availableServers && availableServers.find(s => s.id === activeServerId)) || (availableServers && availableServers[0]) || null;
+      const initialVideoUrl = initialServer ? initialServer.url : (currentEpisode.videoUrl || null);
+      initHLS(initialVideoUrl);
+
+      if (autoNextCheckbox && autoNextCheckbox.checked) {
+        if (autoNextLabel) {
+          autoNextLabel.style.color = '#00a8ff';
+        }
+      }
     }
 
     initializePlayer();

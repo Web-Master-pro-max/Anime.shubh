@@ -1674,7 +1674,7 @@
                             <p class="movie-desc">${m.description}</p>
                             ${progressHtml}
                             <div class="movie-actions" style="margin-top: auto; padding-top: 10px;">
-                                <a href="${watchLink}" class="btn-small" ${watchDisabled}>${playBtnText}</a>
+                                <a href="${watchLink}" class="btn-small" ${watchDisabled} onclick="return window.requireAuthPlay(event, '${watchLink}')">${playBtnText}</a>
                                 <button class="btn-watchlist-toggle ${isFav}" onclick="toggleWatchlistItem(this, ${m.id})">
                                     <i class="${userWatchlist.includes(m.id) ? 'fas fa-heart' : 'far fa-heart'}"></i>
                                 </button>
@@ -1740,6 +1740,26 @@
                     renderCategory(btn.dataset.sub);
                 });
             });
+
+            // Intercept playback for unauthenticated users (strict sign-up gate)
+            window.requireAuthPlay = function (e, targetUrl) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                const currentToken = localStorage.getItem('infinx_token');
+                if (!currentToken) {
+                    if (targetUrl && targetUrl !== '#') {
+                        sessionStorage.setItem('infinx_redirect_after_auth', targetUrl);
+                    }
+                    window.location.href = '/index.html?login=true';
+                    return false;
+                }
+                if (targetUrl && targetUrl !== '#') {
+                    window.location.href = targetUrl;
+                }
+                return true;
+            };
 
             // Toggle watchlist handler (exposed globally for onclick)
             window.toggleWatchlistItem = async function (btn, showId) {

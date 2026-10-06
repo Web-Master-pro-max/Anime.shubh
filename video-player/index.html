@@ -655,6 +655,44 @@
       </div>
     </div>
   </div>
+
+  <!-- Player Authentication Lock Modal (Strict Gate) -->
+  <div id="playerAuthModal" class="player-auth-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="playerAuthTitle">
+    <div class="player-auth-card">
+      <div class="player-auth-badge">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h2 class="player-auth-title" id="playerAuthTitle">Sign Up to Start Watching</h2>
+      <p class="player-auth-subtitle">Full access to 1080p anime streaming, multiple audio tracks, and watch history requires an account.</p>
+
+      <div class="player-auth-tabs">
+        <button type="button" class="player-auth-tab active" id="playerTabRegister" onclick="switchPlayerAuthTab('register')">Create Account</button>
+        <button type="button" class="player-auth-tab" id="playerTabLogin" onclick="switchPlayerAuthTab('login')">Sign In</button>
+      </div>
+
+      <div id="playerAuthError" class="player-auth-error" style="display: none;"></div>
+
+      <form id="playerAuthForm" onsubmit="handlePlayerAuthSubmit(event)">
+        <div class="player-auth-input-group">
+          <label for="playerAuthEmail"><i class="fas fa-envelope"></i> Email Address</label>
+          <input type="email" id="playerAuthEmail" placeholder="name@example.com" required autocomplete="email">
+        </div>
+
+        <div class="player-auth-input-group">
+          <label for="playerAuthPassword"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="playerAuthPassword" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="playerAuthSubmitBtn" class="player-auth-submit-btn">
+          <i class="fas fa-play-circle"></i> <span id="playerAuthSubmitText">Sign Up & Watch Now</span>
+        </button>
+      </form>
+
+      <div class="player-auth-footer">
+        <a href="/index.html" class="player-auth-back-link"><i class="fas fa-arrow-left"></i> Back to Homepage</a>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

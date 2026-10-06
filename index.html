@@ -2011,8 +2011,8 @@
                  Dynamically filled with top genre quick pills 
             </div>
         </div>
-    </div>-->
-
+    </div>
+            -->
     <!-- ====== DYNAMIC GENRE & CATEGORY SECTIONS ====== -->
     <div id="homeDynamicSections">
         <!-- Loaded dynamically via loadCategories() -->
@@ -2414,7 +2414,7 @@
                                             <div class="progress-bar-fill" style="width: ${percent}%"></div>
                                         </div>
                                         <div class="movie-actions" style="margin-top: 15px;">
-                                            <a href="/video-player/index.html?episodeId=${item.episodeId}" class="btn btn-primary btn-small" style="width: 100%;">
+                                            <a href="/video-player/index.html?episodeId=${item.episodeId}" class="btn btn-primary btn-small" style="width: 100%;" onclick="return window.requireAuthPlay(event, '/video-player/index.html?episodeId=${item.episodeId}')">
                                                 <i class="fas fa-play"></i> Resume
                                             </a>
                                         </div>
@@ -2464,8 +2464,8 @@
                                 <h3>${show.title}</h3>
                                 <p>${show.description}</p>
                                 <div class="banner-actions">
-                                    <a href="${playLink}" class="btn-banner-play"><i class="fas fa-play"></i> Watch Now</a>
-                                    <a href="${playLink}" class="btn-banner-details">Details <i class="fas fa-chevron-right"></i></a>
+                                    <a href="${playLink}" class="btn-banner-play" onclick="return window.requireAuthPlay(event, '${playLink}')"><i class="fas fa-play"></i> Watch Now</a>
+                                    <a href="${playLink}" class="btn-banner-details" onclick="return window.requireAuthPlay(event, '${playLink}')">Details <i class="fas fa-chevron-right"></i></a>
                                 </div>
                             </div>
                         `;
@@ -2665,7 +2665,7 @@
                                     </div>
                                     <p class="movie-desc">${show.description}</p>
                                     <div class="movie-actions">
-                                        <a href="${playUrl}" class="btn btn-primary btn-small" style="flex:1;" ${btnDisabled}>${playBtnText}</a>
+                                        <a href="${playUrl}" class="btn btn-primary btn-small" style="flex:1;" ${btnDisabled} onclick="return window.requireAuthPlay(event, '${playUrl}')">${playBtnText}</a>
                                         <button class="btn-watchlist-toggle ${isFav}" data-show-id="${show.id}" onclick="toggleWatchlist(this, ${show.id})">
                                             <i class="${heartIcon}"></i>
                                         </button>
@@ -2733,6 +2733,26 @@
             }
         }
 
+        // Intercept playback for unauthenticated users (strict sign-up gate)
+        window.requireAuthPlay = function (e, playUrl) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            if (!isLoggedIn()) {
+                if (playUrl && playUrl !== '#') {
+                    sessionStorage.setItem('infinx_redirect_after_auth', playUrl);
+                }
+                // Open registration modal by default to encourage signing up
+                openModal('register');
+                return false;
+            }
+            if (playUrl && playUrl !== '#') {
+                window.location.href = playUrl;
+            }
+            return true;
+        };
+
         // Authentication Handlers
         async function handleLogin(e) {
             e.preventDefault();
@@ -2754,6 +2774,13 @@
 
                     closeModal('login');
                     initApp();
+
+                    const target = sessionStorage.getItem('infinx_redirect_after_auth');
+                    if (target) {
+                        sessionStorage.removeItem('infinx_redirect_after_auth');
+                        window.location.href = target;
+                        return;
+                    }
                 } else {
                     alert(data.error || 'Login failed');
                 }
@@ -2783,6 +2810,13 @@
 
                     closeModal('register');
                     initApp();
+
+                    const target = sessionStorage.getItem('infinx_redirect_after_auth');
+                    if (target) {
+                        sessionStorage.removeItem('infinx_redirect_after_auth');
+                        window.location.href = target;
+                        return;
+                    }
                 } else {
                     alert(data.error || 'Registration failed');
                 }
