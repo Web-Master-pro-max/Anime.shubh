@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Infinx Anime | Premium Admin Dashboard</title>
 
     <!-- Font Awesome -->
@@ -413,57 +414,261 @@
         }
 
         @media (max-width: 992px) {
+            html {
+                font-size: 85% !important;
+                -webkit-text-size-adjust: 100% !important;
+            }
+
+            body {
+                font-size: 1.35rem !important;
+                overflow-x: hidden !important;
+                width: 100% !important;
+                max-width: 100vw !important;
+            }
+
             header {
-                padding: 0 16px;
-                height: 60px;
+                padding: 0 14px !important;
+                height: 56px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+            }
+
+            header .btn-back {
+                display: none !important;
+            }
+
+            header .logo {
+                pointer-events: none !important;
+                cursor: default !important;
             }
 
             .logo {
-                font-size: 1.8rem;
+                font-size: 1.6rem !important;
             }
 
             .logo i {
-                font-size: 2.2rem;
+                font-size: 2rem !important;
             }
 
             .btn-back {
-                padding: 6px 12px;
-                font-size: 1.2rem;
+                padding: 6px 12px !important;
+                font-size: 1.15rem !important;
             }
 
             .admin-container {
-                grid-template-columns: 1fr;
-                padding: 20px;
-                gap: 20px;
+                grid-template-columns: 1fr !important;
+                width: 100% !important;
+                max-width: 100vw !important;
+                margin: 8px auto !important;
+                padding: 10px !important;
+                gap: 14px !important;
+                box-sizing: border-box !important;
+                overflow-x: hidden !important;
+            }
+
+            .sidebar {
+                width: 100% !important;
+                padding: 10px !important;
+                border-radius: 12px !important;
+                background: #141424 !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                box-sizing: border-box !important;
+            }
+
+            .sidebar-title {
+                display: none !important;
+            }
+
+            .sidebar-menu {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+                padding: 0 !important;
+            }
+
+            .menu-item {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                gap: 6px !important;
+                padding: 10px 6px !important;
+                font-size: 1.15rem !important;
+                font-weight: 600 !important;
+                border-radius: 8px !important;
+                background: rgba(255, 255, 255, 0.05) !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                color: #b0b0c0 !important;
+            }
+
+            .menu-item.active {
+                background: var(--primary) !important;
+                border-color: var(--primary) !important;
+                color: #ffffff !important;
+                box-shadow: 0 2px 10px rgba(255, 0, 85, 0.35) !important;
+                border-left: 1px solid var(--primary) !important;
+            }
+
+            .main-content {
+                min-width: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow-x: hidden !important;
+                box-sizing: border-box !important;
             }
 
             .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+                margin-bottom: 16px !important;
             }
 
-            .form-grid {
-                grid-template-columns: 1fr;
+            .stat-card {
+                padding: 12px 14px !important;
+                border-radius: 10px !important;
             }
 
-            .form-group.full-width {
-                grid-column: span 1;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .admin-container {
-                padding: 12px;
-                gap: 15px;
+            .stat-card h4 {
+                font-size: 1.05rem !important;
             }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
+            .stat-card p {
+                font-size: 1.7rem !important;
+            }
+
+            .panel-header {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+                margin-bottom: 14px !important;
+            }
+
+            .panel-header>div:first-child {
+                width: 100% !important;
+            }
+
+            .panel-header>div:last-child,
+            .panel-header>button {
+                width: 100% !important;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+            }
+
+            .panel-header .btn-back,
+            .panel-header .btn-submit {
+                flex: 1 !important;
+                justify-content: center !important;
+                margin-top: 0 !important;
+                padding: 9px 14px !important;
+                font-size: 1.2rem !important;
+            }
+
+            .panel-title {
+                font-size: 2rem !important;
+                line-height: 1.3 !important;
+            }
+
+            .panel-desc {
+                font-size: 1.2rem !important;
+                line-height: 1.4 !important;
             }
 
             .card {
-                padding: 15px;
+                padding: 14px !important;
+                border-radius: 12px !important;
+                margin-bottom: 16px !important;
+                box-sizing: border-box !important;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr !important;
+                gap: 14px !important;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1 !important;
+            }
+
+            input,
+            select,
+            textarea {
+                font-size: 1.35rem !important;
+                padding: 11px 14px !important;
+            }
+
+            #bannerSettingsForm {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px !important;
+            }
+
+            #bannerSettingsForm .btn-submit {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+
+            .table-responsive {
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                display: block !important;
+                border-radius: 8px !important;
+                background: rgba(10, 10, 18, 0.7) !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                box-sizing: border-box !important;
+                margin-top: 8px !important;
+            }
+
+            .table-responsive table {
+                width: 100% !important;
+                min-width: 680px !important;
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+            }
+
+            .table-responsive th {
+                padding: 12px 14px !important;
+                font-size: 1.15rem !important;
+                white-space: nowrap !important;
+                background: #171728 !important;
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 2 !important;
+            }
+
+            .table-responsive td {
+                padding: 12px 14px !important;
+                font-size: 1.3rem !important;
+                vertical-align: middle !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            }
+
+            .table-responsive button,
+            .table-responsive .btn-back {
+                padding: 8px 14px !important;
+                font-size: 1.15rem !important;
+                min-height: 38px !important;
+                border-radius: 6px !important;
+                white-space: nowrap !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 6px !important;
+                font-weight: 600 !important;
+            }
+
+            .modal>.card {
+                width: 94% !important;
+                max-width: 94% !important;
+                padding: 16px !important;
+                max-height: 88vh !important;
+                overflow-y: auto !important;
             }
         }
 
@@ -489,6 +694,7 @@
             0% {
                 background-position: -200% 0;
             }
+
             100% {
                 background-position: 200% 0;
             }
@@ -550,6 +756,8 @@
                     Transcoding Tasks</li>
                 <li class="menu-item" data-target="bannerPanel" onclick="loadBannerCustomizer()"><i
                         class="fas fa-images"></i> Customize Banner</li>
+                <li class="menu-item" data-target="storagePanel" onclick="loadStorageSettings()"><i
+                        class="fas fa-hdd"></i> Storage Settings</li>
                 <li class="menu-item" data-target="usersPanel" onclick="fetchUsers()"><i class="fas fa-users"></i>
                     Manage Users</li>
             </ul>
@@ -567,7 +775,9 @@
                         <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Total Shows
                         </h4>
                         <p id="statTotalShows" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
-                            <span class="skeleton" style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span></p>
+                            <span class="skeleton"
+                                style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span>
+                        </p>
                     </div>
                 </div>
                 <div class="card stat-card"
@@ -576,7 +786,9 @@
                     <div>
                         <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Episodes</h4>
                         <p id="statTotalEpisodes" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
-                            <span class="skeleton" style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span></p>
+                            <span class="skeleton"
+                                style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span>
+                        </p>
                     </div>
                 </div>
                 <div class="card stat-card"
@@ -586,7 +798,9 @@
                         <h4 style="font-size: 1.2rem; color: var(--gray-text); text-transform: uppercase;">Active Tasks
                         </h4>
                         <p id="statActiveTasks" style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit';">
-                            <span class="skeleton" style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span></p>
+                            <span class="skeleton"
+                                style="width: 50px; height: 26px; border-radius: 4px; display: block; margin-top: 4px;"></span>
+                        </p>
                     </div>
                 </div>
                 <div class="card stat-card"
@@ -641,9 +855,13 @@
                                 <input type="text" id="showBadge" placeholder="e.g. HD" value="HD" required>
                             </div>
 
-                            <div class="form-group" style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
-                                <input type="checkbox" id="showDubSub" style="width: 20px; height: 20px; cursor: pointer;">
-                                <label for="showDubSub" style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language (Dub/Sub)</label>
+                            <div class="form-group"
+                                style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
+                                <input type="checkbox" id="showDubSub"
+                                    style="width: 20px; height: 20px; cursor: pointer;">
+                                <label for="showDubSub"
+                                    style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language
+                                    (Dub/Sub)</label>
                             </div>
 
                             <div class="form-group">
@@ -681,7 +899,8 @@
                             </div>
 
                             <div class="form-group full-width">
-                                <label>Upload Banner Image/Video (Large Landscape for Homepage Carousel - Optional)</label>
+                                <label>Upload Banner Image/Video (Large Landscape for Homepage Carousel -
+                                    Optional)</label>
                                 <div class="file-upload-wrapper">
                                     <i class="fas fa-photo-film"></i>
                                     <p id="bannerLabel">Drag & drop banner image/video or click to select</p>
@@ -724,6 +943,87 @@
                                 <input type="text" id="episodeTitle" placeholder="e.g. The Portal of Destiny" required>
                             </div>
 
+                            <!-- Storage Destination Selector -->
+                            <div class="form-group full-width"
+                                style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--gray-border); padding: 18px; border-radius: var(--radius-sm); margin: 6px 0 14px 0;">
+                                <div
+                                    style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                                    <label
+                                        style="color: white; font-size: 1.35rem; margin-bottom: 0; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-hdd" style="color: var(--secondary);"></i> Where to Store This
+                                        Video?
+                                    </label>
+                                    <span id="storageBadgeActive"
+                                        style="background: rgba(0, 168, 255, 0.15); color: var(--secondary); border: 1px solid var(--secondary); padding: 3px 10px; border-radius: 4px; font-size: 1.1rem; font-weight: 600;">
+                                        <i class="fas fa-laptop"></i> Laptop Local Storage
+                                    </span>
+                                </div>
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+                                    <label id="uploadStorageLocalLabel"
+                                        style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 2px solid var(--secondary); background: rgba(0, 168, 255, 0.08); border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition);">
+                                        <input type="radio" name="uploadStorageType" value="local" checked
+                                            onchange="toggleUploadStorageType('local')"
+                                            style="margin-top: 4px; accent-color: var(--secondary); width: 18px; height: 18px; cursor: pointer;">
+                                        <div>
+                                            <strong style="color: white; font-size: 1.3rem; display: block;"><i
+                                                    class="fas fa-laptop"></i> Laptop Local Storage</strong>
+                                            <span
+                                                style="font-size: 1.15rem; color: var(--gray-text); display: block; margin-top: 3px;">Save
+                                                HLS streams directly on your laptop hard drive</span>
+                                        </div>
+                                    </label>
+                                    <label id="uploadStorageS3Label"
+                                        style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 2px solid var(--gray-border); background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition);">
+                                        <input type="radio" name="uploadStorageType" value="s3"
+                                            onchange="toggleUploadStorageType('s3')"
+                                            style="margin-top: 4px; accent-color: var(--primary); width: 18px; height: 18px; cursor: pointer;">
+                                        <div>
+                                            <strong style="color: white; font-size: 1.3rem; display: block;"><i
+                                                    class="fas fa-cloud-upload-alt"></i> AWS S3 Cloud</strong>
+                                            <span
+                                                style="font-size: 1.15rem; color: var(--gray-text); display: block; margin-top: 3px;">Upload
+                                                HLS chunks to your AWS S3 bucket</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Custom Local Destination Folder -->
+                                <div id="uploadLocalPathContainer"
+                                    style="margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.06);">
+                                    <label for="uploadLocalPathInput"
+                                        style="font-size: 1.2rem; color: var(--gray-text); margin-bottom: 6px; display: block;">
+                                        Destination Folder on Laptop (Optional override):
+                                    </label>
+                                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                        <input type="text" id="uploadLocalPathInput"
+                                            placeholder="Default: ./uploads (or /mnt/d/anime_storage)"
+                                            style="font-size: 1.3rem; flex: 1; min-width: 200px;">
+                                        <button type="button" onclick="setUploadPathPreset('/mnt/d/anime_storage')"
+                                            class="btn-back"
+                                            style="padding: 6px 12px; font-size: 1.1rem; white-space: nowrap;"><i
+                                                class="fab fa-windows"></i> D: Drive</button>
+                                        <button type="button" onclick="setUploadPathPreset('')" class="btn-back"
+                                            style="padding: 6px 12px; font-size: 1.1rem; white-space: nowrap;"><i
+                                                class="fas fa-undo"></i> Default</button>
+                                    </div>
+                                    <small style="color: #7b7b93; font-size: 1.1rem; display: block; margin-top: 5px;">
+                                        <i class="fas fa-info-circle"></i> In WSL Ubuntu, you can choose any directory
+                                        on the entire laptop (e.g. <code>/mnt/d/anime_storage</code>).
+                                    </small>
+                                </div>
+
+                                <!-- S3 Cloud Info Box -->
+                                <div id="uploadS3DetailsContainer"
+                                    style="display: none; margin-top: 14px; padding: 12px 14px; background: rgba(255, 0, 85, 0.05); border: 1px solid rgba(255, 0, 85, 0.2); border-radius: 6px;">
+                                    <span
+                                        style="font-size: 1.15rem; color: #ff85a2; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-cloud"></i> Target S3 Bucket: <strong id="uploadS3BucketName"
+                                            style="color: white;">serverbuket-12</strong> (ap-south-1)
+                                    </span>
+                                </div>
+                            </div>
+
                             <div class="form-group full-width">
                                 <label>Select Video File (MKV, MP4)</label>
                                 <div class="file-upload-wrapper">
@@ -735,43 +1035,65 @@
                         </div>
 
                         <!-- Progress Bar Container -->
-                        <div class="progress-container" id="uploadProgressContainer" style="display: none; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--gray-border); padding: 12px 16px; border-radius: 8px; margin-top: 15px;">
-                            <h4 style="margin: 0 0 10px 0; color: var(--secondary); font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
+                        <div class="progress-container" id="uploadProgressContainer"
+                            style="display: none; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--gray-border); padding: 12px 16px; border-radius: 8px; margin-top: 15px;">
+                            <h4
+                                style="margin: 0 0 10px 0; color: var(--secondary); font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
                                 <i class="fas fa-tasks"></i> Pipeline Upload & Transcode Progress
                             </h4>
                             <!-- Stage 1: Server Upload -->
                             <div style="margin-bottom: 8px;">
-                                <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 3px;">
-                                    <span style="color: #fff; font-weight: 500;"><i class="fas fa-server" id="iconStage1"></i> 1. Server Upload</span>
+                                <div
+                                    style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 3px;">
+                                    <span style="color: #fff; font-weight: 500;"><i class="fas fa-server"
+                                            id="iconStage1"></i> 1. Server Upload</span>
                                     <span style="color: var(--secondary); font-weight: 600;" id="textStage1">0%</span>
                                 </div>
-                                <div style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden;">
-                                    <div id="barStage1" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00a8ff, #0097e6); transition: width 0.3s ease;"></div>
+                                <div
+                                    style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden;">
+                                    <div id="barStage1"
+                                        style="width: 0%; height: 100%; background: linear-gradient(90deg, #00a8ff, #0097e6); transition: width 0.3s ease;">
+                                    </div>
                                 </div>
                             </div>
                             <!-- Stage 2: HLS Transcoding -->
                             <div style="margin-bottom: 8px;">
-                                <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 3px;">
-                                    <span style="color: #e1e1e1; font-weight: 500;"><i class="fas fa-cogs" id="iconStage2"></i> 2. HLS Transcoding</span>
-                                    <span style="color: var(--gray-text); font-weight: 600;" id="textStage2">Pending</span>
+                                <div
+                                    style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 3px;">
+                                    <span style="color: #e1e1e1; font-weight: 500;"><i class="fas fa-cogs"
+                                            id="iconStage2"></i> 2. HLS Transcoding</span>
+                                    <span style="color: var(--gray-text); font-weight: 600;"
+                                        id="textStage2">Pending</span>
                                 </div>
-                                <div style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden;">
-                                    <div id="barStage2" style="width: 0%; height: 100%; background: linear-gradient(90deg, #f39c12, #e67e22); transition: width 0.3s ease;"></div>
+                                <div
+                                    style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden;">
+                                    <div id="barStage2"
+                                        style="width: 0%; height: 100%; background: linear-gradient(90deg, #f39c12, #e67e22); transition: width 0.3s ease;">
+                                    </div>
                                 </div>
                             </div>
-                            <!-- Stage 3: AWS S3 Upload -->
+                            <!-- Stage 3: Storage Saving / Upload -->
                             <div>
-                                <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 3px;">
-                                    <span style="color: #e1e1e1; font-weight: 500;"><i class="fas fa-cloud-upload-alt" id="iconStage3"></i> 3. AWS S3 Upload</span>
-                                    <span style="color: var(--gray-text); font-weight: 600;" id="textStage3">Pending</span>
+                                <div
+                                    style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 3px;">
+                                    <span style="color: #e1e1e1; font-weight: 500;"><i class="fas fa-laptop"
+                                            id="iconStage3"></i> <span id="labelStage3">3. Save to Laptop Local
+                                            Storage</span></span>
+                                    <span style="color: var(--gray-text); font-weight: 600;"
+                                        id="textStage3">Pending</span>
                                 </div>
-                                <div style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden;">
-                                    <div id="barStage3" style="width: 0%; height: 100%; background: linear-gradient(90deg, #2ecc71, #27ae60); transition: width 0.3s ease;"></div>
+                                <div
+                                    style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden;">
+                                    <div id="barStage3"
+                                        style="width: 0%; height: 100%; background: linear-gradient(90deg, #2ecc71, #27ae60); transition: width 0.3s ease;">
+                                    </div>
                                 </div>
                             </div>
                             <!-- Resume Upload Action Area -->
-                            <div id="resumeUploadActionArea" style="display: none; margin-top: 12px; text-align: center;">
-                                <button type="button" id="resumeUploadBtn" onclick="handleUploadEpisode(true)" style="background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(230,126,34,0.4);">
+                            <div id="resumeUploadActionArea"
+                                style="display: none; margin-top: 12px; text-align: center;">
+                                <button type="button" id="resumeUploadBtn" onclick="handleUploadEpisode(true)"
+                                    style="background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(230,126,34,0.4);">
                                     <i class="fas fa-play"></i> Resume Interrupted Upload
                                 </button>
                             </div>
@@ -792,8 +1114,11 @@
                             playlists to AWS S3</p>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <button class="btn-back" onclick="cleanOldUploadsManual()" style="cursor: pointer; background: rgba(231,76,60,0.15); border-color: #e74c3c; color: #ff6b6b;"><i class="fas fa-broom"></i> Clean Storage (>2 Days)</button>
-                        <button class="btn-back" onclick="fetchTasks()" style="cursor: pointer;"><i class="fas fa-sync"></i> Refresh Tasks</button>
+                        <button class="btn-back" onclick="cleanOldUploadsManual()"
+                            style="cursor: pointer; background: rgba(231,76,60,0.15); border-color: #e74c3c; color: #ff6b6b;"><i
+                                class="fas fa-broom"></i> Clean Storage (>2 Days)</button>
+                        <button class="btn-back" onclick="fetchTasks()" style="cursor: pointer;"><i
+                                class="fas fa-sync"></i> Refresh Tasks</button>
                     </div>
                 </div>
 
@@ -858,13 +1183,16 @@
                 </div>
 
                 <div class="card" style="margin-bottom: 30px; padding: 25px;">
-                    <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--success);"><i class="fas fa-cog"></i> Global Banner Settings</h3>
+                    <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--success);"><i
+                            class="fas fa-cog"></i> Global Banner Settings</h3>
                     <form id="bannerSettingsForm" style="display: flex; align-items: flex-end; gap: 15px;">
                         <div class="form-group" style="margin-bottom: 0; flex: 1;">
                             <label for="bannerSlideTime">Slide Time / Delay (in milliseconds)</label>
-                            <input type="number" id="bannerSlideTime" placeholder="e.g. 6000 for 6 seconds" min="1000" step="500" required>
+                            <input type="number" id="bannerSlideTime" placeholder="e.g. 6000 for 6 seconds" min="1000"
+                                step="500" required>
                         </div>
-                        <button type="submit" class="btn-submit" style="margin-top: 0; padding: 12px 24px;"><i class="fas fa-save"></i> Save Settings</button>
+                        <button type="submit" class="btn-submit" style="margin-top: 0; padding: 12px 24px;"><i
+                                class="fas fa-save"></i> Save Settings</button>
                     </form>
                 </div>
 
@@ -895,10 +1223,12 @@
                             </div>
 
                             <div class="form-group full-width">
-                                <label>Upload Custom Banner Backdrop (Large Landscape Image or Video - Stored to S3)</label>
+                                <label>Upload Custom Banner Backdrop (Large Landscape Image or Video - Stored to
+                                    S3)</label>
                                 <div class="file-upload-wrapper">
                                     <i class="fas fa-photo-film"></i>
-                                    <p id="bannerCustomLabel">Drag & drop landscape backdrop image/video or click to select</p>
+                                    <p id="bannerCustomLabel">Drag & drop landscape backdrop image/video or click to
+                                        select</p>
                                     <input type="file" id="bannerCustomFile" accept="image/*,video/*">
                                 </div>
                             </div>
@@ -971,6 +1301,170 @@
                 </div>
             </div>
 
+            <!-- PANEL: STORAGE SETTINGS -->
+            <div id="storagePanel" class="content-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Video & Media Storage Configuration</h2>
+                    <p class="panel-desc">Choose whether new video uploads are stored directly on your laptop hard drive
+                        or uploaded to AWS S3 Cloud</p>
+                </div>
+
+                <div class="card" style="margin-bottom: 25px; padding: 25px;">
+                    <h3
+                        style="font-size: 1.6rem; font-weight: 700; margin-bottom: 12px; color: var(--secondary); display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-hdd"></i> Default Storage Mode
+                    </h3>
+                    <p style="font-size: 1.25rem; color: var(--gray-text); margin-bottom: 20px;">
+                        Choose where the system should store new videos by default. You can also override this
+                        per-episode on the upload screen.
+                    </p>
+
+                    <form id="globalStorageForm">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                            <!-- Local Storage Option -->
+                            <label id="globalStorageLocalCard"
+                                style="display: flex; align-items: flex-start; gap: 14px; padding: 20px; border: 2px solid var(--secondary); background: rgba(0, 168, 255, 0.08); border-radius: var(--radius); cursor: pointer; transition: var(--transition);">
+                                <input type="radio" name="globalStorageType" value="local" checked
+                                    onchange="handleGlobalStorageChange('local')"
+                                    style="margin-top: 4px; accent-color: var(--secondary); width: 20px; height: 20px;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <strong style="color: white; font-size: 1.45rem;"><i class="fas fa-laptop"></i>
+                                            Laptop Local Storage</strong>
+                                        <span id="globalLocalBadge"
+                                            style="background: var(--secondary); color: black; font-size: 1rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;">ACTIVE</span>
+                                    </div>
+                                    <p
+                                        style="font-size: 1.2rem; color: var(--gray-text); margin-top: 6px; line-height: 1.5;">
+                                        Transcodes and stores all HLS video streams and images directly on your laptop's
+                                        local hard drive. Faster processing, zero AWS bandwidth costs, offline capable.
+                                    </p>
+                                </div>
+                            </label>
+
+                            <!-- S3 Storage Option -->
+                            <label id="globalStorageS3Card"
+                                style="display: flex; align-items: flex-start; gap: 14px; padding: 20px; border: 2px solid var(--gray-border); background: rgba(255, 255, 255, 0.02); border-radius: var(--radius); cursor: pointer; transition: var(--transition);">
+                                <input type="radio" name="globalStorageType" value="s3"
+                                    onchange="handleGlobalStorageChange('s3')"
+                                    style="margin-top: 4px; accent-color: var(--primary); width: 20px; height: 20px;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <strong style="color: white; font-size: 1.45rem;"><i
+                                                class="fas fa-cloud-upload-alt"></i> AWS S3 Cloud Storage</strong>
+                                        <span id="globalS3Badge"
+                                            style="display: none; background: var(--primary); color: white; font-size: 1rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;">ACTIVE</span>
+                                    </div>
+                                    <p
+                                        style="font-size: 1.2rem; color: var(--gray-text); margin-top: 6px; line-height: 1.5;">
+                                        Transcodes locally and uploads HLS video files and images to your configured
+                                        Amazon S3 Bucket in the cloud.
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Local Storage Path Configurator -->
+                        <div id="globalLocalPathSection"
+                            style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--gray-border); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 25px;">
+                            <h4
+                                style="font-size: 1.35rem; color: white; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-folder-open" style="color: var(--secondary);"></i> Destination Folder
+                                on Laptop
+                            </h4>
+                            <p style="font-size: 1.2rem; color: var(--gray-text); margin-bottom: 12px;">
+                                Specify any folder on your entire laptop where all videos and media will be saved.
+                            </p>
+
+                            <div class="form-group" style="margin-bottom: 14px;">
+                                <input type="text" id="globalLocalStoragePath"
+                                    placeholder="Default: ./uploads (or /mnt/d/anime_storage)"
+                                    style="font-size: 1.35rem; padding: 12px 16px;">
+                            </div>
+
+                            <!-- Quick Path Presets -->
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+                                <span
+                                    style="font-size: 1.15rem; color: var(--gray-text); display: flex; align-items: center; margin-right: 4px;">Quick
+                                    Presets:</span>
+                                <button type="button" class="btn-back"
+                                    onclick="setGlobalPathPreset('/mnt/d/anime_storage')"
+                                    style="padding: 6px 12px; font-size: 1.15rem;"><i class="fab fa-windows"></i>
+                                    Windows D: Drive (/mnt/d/anime_storage)</button>
+                                <button type="button" class="btn-back"
+                                    onclick="setGlobalPathPreset('/mnt/c/anime_storage')"
+                                    style="padding: 6px 12px; font-size: 1.15rem;"><i class="fab fa-windows"></i>
+                                    Windows C: Drive (/mnt/c/anime_storage)</button>
+                                <button type="button" class="btn-back"
+                                    onclick="setGlobalPathPreset('/home/ubuntu/anime_storage')"
+                                    style="padding: 6px 12px; font-size: 1.15rem;"><i class="fab fa-ubuntu"></i> Ubuntu
+                                    Home (/home/ubuntu/anime_storage)</button>
+                                <button type="button" class="btn-back" onclick="setGlobalPathPreset('')"
+                                    style="padding: 6px 12px; font-size: 1.15rem;"><i class="fas fa-undo"></i> Project
+                                    Default (./uploads)</button>
+                            </div>
+
+                            <small style="color: #8e8ea6; font-size: 1.1rem; line-height: 1.5; display: block;">
+                                <strong>WSL Ubuntu Guide:</strong> Windows drives are mounted under <code>/mnt/</code>
+                                (e.g. <code>/mnt/d/</code> is your D: drive). If the directory doesn't exist yet, it
+                                will be created automatically.
+                            </small>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                            <button type="submit" class="btn-submit" id="btnSaveStorageSettings"
+                                style="margin-top: 0; padding: 12px 28px;">
+                                <i class="fas fa-save"></i> Save Storage Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- System Status Card -->
+                <div class="card" style="padding: 25px;">
+                    <h3
+                        style="font-size: 1.5rem; font-weight: 700; margin-bottom: 15px; color: var(--success); display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-check-circle"></i> Storage Health & Backward Compatibility
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">
+                        <div
+                            style="background: rgba(255,255,255,0.02); border: 1px solid var(--gray-border); padding: 15px; border-radius: var(--radius-sm);">
+                            <span
+                                style="font-size: 1.1rem; color: var(--gray-text); text-transform: uppercase;">Existing
+                                S3 Uploads</span>
+                            <p style="font-size: 1.35rem; color: var(--success); font-weight: 600; margin-top: 4px;">
+                                <i class="fas fa-shield-alt"></i> 100% Protected & Active
+                            </p>
+                            <small style="color: var(--gray-text); font-size: 1.05rem;">All existing S3 videos continue
+                                playing directly from S3 cloud without any changes.</small>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.02); border: 1px solid var(--gray-border); padding: 15px; border-radius: var(--radius-sm);">
+                            <span
+                                style="font-size: 1.1rem; color: var(--gray-text); text-transform: uppercase;">Configured
+                                S3 Bucket</span>
+                            <p id="statusS3Bucket"
+                                style="font-size: 1.35rem; color: white; font-weight: 600; margin-top: 4px;">
+                                serverbuket-12
+                            </p>
+                            <small style="color: var(--gray-text); font-size: 1.05rem;">Region: ap-south-1</small>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.02); border: 1px solid var(--gray-border); padding: 15px; border-radius: var(--radius-sm);">
+                            <span style="font-size: 1.1rem; color: var(--gray-text); text-transform: uppercase;">Active
+                                Local Mount</span>
+                            <p id="statusLocalMount"
+                                style="font-size: 1.35rem; color: var(--secondary); font-weight: 600; margin-top: 4px; word-break: break-all;">
+                                ./uploads
+                            </p>
+                            <small style="color: var(--gray-text); font-size: 1.05rem;">Served statically at
+                                <code>/uploads/*</code></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -978,6 +1472,26 @@
     <script>
         const API_BASE = '/api';
         let taskPollInterval = null;
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        window.formatMediaUrl = function (url) {
+            const fallback = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200';
+            if (!url) return fallback;
+            if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+            if (url.startsWith('/uploads/')) return url;
+            if (url.startsWith('posters/') || url.startsWith('banners/')) return `/uploads/${url}`;
+            if (!url.includes('/')) return `/uploads/posters/${url}`;
+            return url.startsWith('/') ? url : `/${url}`;
+        };
 
         // Authorization & Guards
         document.addEventListener('DOMContentLoaded', function () {
@@ -1017,6 +1531,7 @@
 
                     if (targetPanel === 'uploadEpisodePanel') {
                         loadShowsList();
+                        loadStorageSettings();
                     } else if (targetPanel === 'addShowPanel') {
                         loadCategoriesList();
                     } else if (targetPanel === 'managePanel') {
@@ -1025,11 +1540,16 @@
                         fetchTasks();
                     } else if (targetPanel === 'bannerPanel') {
                         loadBannerCustomizer();
+                    } else if (targetPanel === 'storagePanel') {
+                        loadStorageSettings();
                     } else if (targetPanel === 'usersPanel') {
                         fetchUsers();
                     }
                 });
             });
+
+            // Initial load of storage preferences & defaults
+            loadStorageSettings();
 
             // File selection label mapping
             document.getElementById('showPosterFile').addEventListener('change', function () {
@@ -1037,7 +1557,12 @@
                 label.textContent = this.files[0] ? this.files[0].name : 'Drag & drop poster image or click to select';
             });
 
-            document.getElementById('bannerSettingsForm').addEventListener('submit', async function(e) {
+            const globalStorageForm = document.getElementById('globalStorageForm');
+            if (globalStorageForm) {
+                globalStorageForm.addEventListener('submit', saveStorageSettings);
+            }
+
+            document.getElementById('bannerSettingsForm').addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const btn = this.querySelector('button[type="submit"]');
                 const time = document.getElementById('bannerSlideTime').value;
@@ -1056,7 +1581,7 @@
                     } else {
                         alert('Failed to save settings.');
                     }
-                } catch(err) {
+                } catch (err) {
                     alert('Connection error');
                 }
                 btn.innerHTML = '<i class="fas fa-save"></i> Save Settings';
@@ -1066,13 +1591,13 @@
             document.querySelector('[data-target="bannerPanel"]').addEventListener('click', async () => {
                 try {
                     const res = await fetch(`${API_BASE}/settings`);
-                    if(res.ok) {
+                    if (res.ok) {
                         const data = await res.json();
-                        if(data.bannerSlideTime) {
+                        if (data.bannerSlideTime) {
                             document.getElementById('bannerSlideTime').value = data.bannerSlideTime;
                         }
                     }
-                } catch(e) {}
+                } catch (e) { }
             });
 
             document.getElementById('episodeVideoFile').addEventListener('change', function () {
@@ -1395,57 +1920,93 @@
                     text1.textContent = `Resuming from ${initPercent}% (${uploadedChunks.length}/${totalChunks} chunks)...`;
                 }
 
-                // 2. Upload missing chunks sequentially with real-time XHR progress metrics
+                // 2. Build queue of missing chunks & launch parallel worker pool (3x to 5x faster upload)
+                const missingChunks = [];
                 for (let i = 0; i < totalChunks; i++) {
-                    if (uploadedChunks.includes(i)) {
-                        continue;
+                    if (!uploadedChunks.includes(i)) {
+                        missingChunks.push(i);
                     }
+                }
 
-                    const chunkStart = i * CHUNK_SIZE;
-                    const chunkEnd = Math.min(chunkStart + CHUNK_SIZE, videoFile.size);
-                    const chunkBlob = videoFile.slice(chunkStart, chunkEnd);
+                const chunkProgressMap = {};
 
-                    let chunkSuccess = false;
-                    let attempts = 0;
+                function updateOverallProgress() {
+                    let bytesUploadedInSession = 0;
+                    Object.values(chunkProgressMap).forEach(b => bytesUploadedInSession += b);
 
-                    while (!chunkSuccess && attempts < 4) {
-                        attempts++;
-                        try {
-                            await uploadChunkXHR(token, uploadId, i, totalChunks, chunkBlob, (loadedInChunk) => {
-                                const currentTotalUploaded = chunkStart + loadedInChunk;
-                                const currentPercent = Math.min(100, Math.round((currentTotalUploaded / videoFile.size) * 100));
-                                bar1.style.width = `${currentPercent}%`;
+                    const currentTotalUploaded = sessionBaseBytes + bytesUploadedInSession;
+                    const currentPercent = Math.min(100, Math.round((currentTotalUploaded / videoFile.size) * 100));
+                    bar1.style.width = `${currentPercent}%`;
 
-                                const elapsedSec = (Date.now() - sessionStartTime) / 1000;
-                                const bytesUploadedInSession = currentTotalUploaded - sessionBaseBytes;
-                                const speedBytesPerSec = bytesUploadedInSession / (elapsedSec || 0.1);
+                    const elapsedSec = (Date.now() - sessionStartTime) / 1000;
+                    const speedBytesPerSec = bytesUploadedInSession / (elapsedSec || 0.1);
 
-                                const speedMBps = (speedBytesPerSec / (1024 * 1024)).toFixed(1);
-                                const speedStr = speedMBps >= 1.0 ? `${speedMBps} MB/s` : `${Math.round(speedBytesPerSec / 1024)} KB/s`;
+                    const speedMBps = (speedBytesPerSec / (1024 * 1024)).toFixed(1);
+                    const speedStr = speedMBps >= 1.0 ? `${speedMBps} MB/s` : `${Math.round(speedBytesPerSec / 1024)} KB/s`;
 
-                                const remainingBytes = videoFile.size - currentTotalUploaded;
-                                const etaSec = speedBytesPerSec > 0 ? remainingBytes / speedBytesPerSec : 0;
+                    const remainingBytes = videoFile.size - currentTotalUploaded;
+                    const etaSec = speedBytesPerSec > 0 ? remainingBytes / speedBytesPerSec : 0;
 
-                                text1.textContent = `${currentPercent}% (${speedStr} • ${formatEtaText(etaSec)})`;
-                            });
+                    text1.textContent = `${currentPercent}% (${speedStr} • ${formatEtaText(etaSec)})`;
+                }
 
-                            chunkSuccess = true;
-                            uploadedChunks.push(i);
-                        } catch (err) {
-                            console.warn(`Chunk ${i} upload attempt ${attempts} failed:`, err);
-                            await new Promise(r => setTimeout(r, 1000));
+                const CONCURRENCY = 3; // 3 parallel streams for max network throughput
+                let workerError = null;
+
+                async function uploadWorker() {
+                    while (missingChunks.length > 0 && !workerError) {
+                        const chunkIndex = missingChunks.shift();
+                        if (chunkIndex === undefined) break;
+
+                        const chunkStart = chunkIndex * CHUNK_SIZE;
+                        const chunkEnd = Math.min(chunkStart + CHUNK_SIZE, videoFile.size);
+                        const chunkBlob = videoFile.slice(chunkStart, chunkEnd);
+
+                        let chunkSuccess = false;
+                        let attempts = 0;
+
+                        while (!chunkSuccess && attempts < 4 && !workerError) {
+                            attempts++;
+                            try {
+                                await uploadChunkXHR(token, uploadId, chunkIndex, totalChunks, chunkBlob, (loadedInChunk) => {
+                                    chunkProgressMap[chunkIndex] = loadedInChunk;
+                                    updateOverallProgress();
+                                });
+
+                                chunkSuccess = true;
+                                uploadedChunks.push(chunkIndex);
+                            } catch (err) {
+                                console.warn(`Chunk ${chunkIndex} attempt ${attempts} failed:`, err);
+                                await new Promise(r => setTimeout(r, 1000));
+                            }
+                        }
+
+                        if (!chunkSuccess) {
+                            workerError = new Error(`Network connection dropped at Chunk ${chunkIndex + 1} of ${totalChunks}.`);
+                            break;
                         }
                     }
+                }
 
-                    if (!chunkSuccess) {
-                        throw new Error(`Network connection dropped at Chunk ${i + 1} of ${totalChunks}.`);
-                    }
+                const workerPromises = [];
+                const activeWorkers = Math.min(CONCURRENCY, missingChunks.length);
+                for (let w = 0; w < activeWorkers; w++) {
+                    workerPromises.push(uploadWorker());
+                }
+
+                await Promise.all(workerPromises);
+
+                if (workerError) {
+                    throw workerError;
                 }
 
                 // 3. Finalize upload: reassemble chunks & trigger transcoding
                 text1.textContent = '100% (Finalizing & Merging...)';
                 text1.style.color = '#2ecc71';
                 bar1.style.width = '100%';
+
+                const selectedStorageType = document.querySelector('input[name="uploadStorageType"]:checked')?.value || 'local';
+                const selectedLocalStoragePath = document.getElementById('uploadLocalPathInput')?.value.trim() || '';
 
                 const finalizeRes = await fetch(`${API_BASE}/admin/upload-chunk-finalize`, {
                     method: 'POST',
@@ -1461,7 +2022,9 @@
                         description: document.getElementById('episodeDescription')?.value || '',
                         duration: document.getElementById('episodeDuration')?.value || '',
                         totalChunks,
-                        fileName: videoFile.name
+                        fileName: videoFile.name,
+                        storageType: selectedStorageType,
+                        localStoragePath: selectedLocalStoragePath
                     })
                 });
 
@@ -1506,10 +2069,18 @@
             if (task.stageDetails) {
                 try {
                     stageObj = typeof task.stageDetails === 'string' ? JSON.parse(task.stageDetails) : task.stageDetails;
-                } catch (e) {}
+                } catch (e) { }
             }
 
-            if (overallStatus === 'PROCESSING') {
+            // If videoUrl is already generated and valid, it is fully completed
+            if (task.videoUrl && task.videoUrl.includes('master.m3u8') && overallStatus !== 'FAILED') {
+                stageObj.transcoding.status = 'COMPLETED';
+                stageObj.transcoding.percent = 100;
+                stageObj.transcoding.speed = 'Done';
+                stageObj.uploadS3.status = 'COMPLETED';
+                stageObj.uploadS3.percent = 100;
+                stageObj.uploadS3.speed = 'Done';
+            } else if (overallStatus === 'PROCESSING') {
                 if (stageObj.transcoding.status === 'PENDING') {
                     stageObj.transcoding.status = 'PROCESSING';
                 }
@@ -1541,7 +2112,8 @@
                     barGradient = 'linear-gradient(90deg, #e74c3c, #c0392b)';
                     statusColor = '#e74c3c';
                     iconClass = 'fa-exclamation-triangle';
-                    statusLabel = 'Failed';
+                    const errSnippet = data.error || (data.speed && data.speed !== '0' && data.speed !== '0x' && data.speed !== 'Done' ? data.speed : 'Transcode failed');
+                    statusLabel = `<span title="${escapeHtml(errSnippet)}" style="cursor: help;">Failed</span>`;
                 } else if (st === 'PROCESSING') {
                     barGradient = activeGradient;
                     statusColor = '#00a8ff';
@@ -1553,6 +2125,12 @@
                     const metaText = metaArr.length > 0 ? ` (${metaArr.join(' • ')})` : '';
                     statusLabel = `${percent}%${metaText}`;
                 }
+
+                const errDetailHtml = (st === 'FAILED' && (data.error || (data.speed && data.speed !== 'Failed' && data.speed !== '0x' && data.speed !== 'Done'))) ? `
+                    <div style="font-size: 0.8rem; color: #ff7675; margin-top: 4px; line-height: 1.3; background: rgba(231,76,60,0.12); padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(231,76,60,0.3); word-break: break-all;">
+                        <i class="fas fa-exclamation-circle"></i> ${escapeHtml(data.error || data.speed)}
+                    </div>
+                ` : '';
 
                 return `
                     <div style="margin-bottom: 6px; width: 100%; min-width: 220px; max-width: 320px;">
@@ -1567,15 +2145,21 @@
                         <div style="background: rgba(255,255,255,0.06); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);">
                             <div style="width: ${percent}%; height: 100%; background: ${barGradient}; border-radius: 3px; transition: width 0.4s ease;"></div>
                         </div>
+                        ${errDetailHtml}
                     </div>
                 `;
             }
+
+            const isLocal = task.videoUrl ? task.videoUrl.startsWith('/uploads') : false;
+            const stage3Label = isLocal ? '3. Local Storage' : '3. S3 Cloud Upload';
+            const stage3Icon = isLocal ? 'fa-laptop' : 'fa-cloud-upload-alt';
+            const stage3Gradient = isLocal ? 'linear-gradient(90deg, #00a8ff, #0097e6)' : 'linear-gradient(90deg, #9b59b6, #8e44ad)';
 
             return `
                 <div style="padding: 2px 0;">
                     ${renderBar('1. Server Upload', 'fa-server', stageObj.uploadServer || { percent: 100, status: 'COMPLETED' }, 'linear-gradient(90deg, #00a8ff, #0097e6)')}
                     ${renderBar('2. HLS Transcode', 'fa-cog', stageObj.transcoding || { percent: 0, status: 'PENDING' }, 'linear-gradient(90deg, #f39c12, #e67e22)')}
-                    ${renderBar('3. AWS S3 Upload', 'fa-cloud-upload-alt', stageObj.uploadS3 || { percent: 0, status: 'PENDING' }, 'linear-gradient(90deg, #9b59b6, #8e44ad)')}
+                    ${renderBar(stage3Label, stage3Icon, stageObj.uploadS3 || { percent: 0, status: 'PENDING' }, stage3Gradient)}
                 </div>
             `;
         }
@@ -1620,7 +2204,11 @@
 
                     const activePanel = document.querySelector('.content-panel.active');
                     const isTaskPanelActive = activePanel && activePanel.id === 'taskPanel';
-                    const hasActiveTasks = data.some(t => t.transcodeStatus === 'PENDING' || t.transcodeStatus === 'PROCESSING');
+                    const hasActiveTasks = data.some(t => {
+                        const isReady = t.videoUrl && t.videoUrl.includes('master.m3u8') && (t.transcodeStatus || '').toUpperCase() !== 'FAILED';
+                        if (isReady) return false;
+                        return t.transcodeStatus === 'PENDING' || t.transcodeStatus === 'PROCESSING';
+                    });
 
                     if (isTaskPanelActive && hasActiveTasks && !taskPollInterval) {
                         taskPollInterval = setInterval(fetchTasks, 2000);
@@ -1630,17 +2218,27 @@
                     }
 
                     tbody.innerHTML = data.map(task => {
-                        const statusUpper = (task.transcodeStatus || 'PENDING').toUpperCase();
+                        const isReady = task.videoUrl && task.videoUrl.includes('master.m3u8') && (task.transcodeStatus || '').toUpperCase() !== 'FAILED';
+                        const effectiveStatus = isReady ? 'COMPLETED' : (task.transcodeStatus || 'PENDING');
+                        const statusUpper = effectiveStatus.toUpperCase();
                         const statusClass = statusUpper.toLowerCase();
                         const timeText = new Date(task.updatedAt).toLocaleString();
                         const showTitle = task.show ? task.show.title : `Show #${task.showId}`;
-                        const masterLink = task.videoUrl ? `<a href="${task.videoUrl}" target="_blank" style="color: var(--secondary); text-decoration: none; font-weight: 500;"><i class="fas fa-external-link-alt"></i> master.m3u8</a>` : `<span style="color: var(--gray-text);">Not ready</span>`;
+                        const isLocal = task.videoUrl ? task.videoUrl.startsWith('/uploads') : false;
+                        const storageBadge = task.videoUrl ? (isLocal ? `<span style="font-size: 0.85rem; padding: 2px 6px; background: rgba(0,168,255,0.15); color: var(--secondary); border: 1px solid var(--secondary); border-radius: 4px; margin-left: 6px;"><i class="fas fa-laptop"></i> Local</span>` : `<span style="font-size: 0.85rem; padding: 2px 6px; background: rgba(255,0,85,0.15); color: var(--primary); border: 1px solid var(--primary); border-radius: 4px; margin-left: 6px;"><i class="fas fa-cloud"></i> S3</span>`) : '';
+                        const masterLink = task.videoUrl ? `<a href="${task.videoUrl}" target="_blank" style="color: var(--secondary); text-decoration: none; font-weight: 500;"><i class="fas fa-external-link-alt"></i> master.m3u8</a>${storageBadge}` : `<span style="color: var(--gray-text);">Not ready</span>`;
 
-                        const retryBtnHtml = statusUpper === 'FAILED' ? `
-                            <br>
-                            <button onclick="retryTask(${task.id})" style="margin-top: 8px; padding: 4px 10px; font-size: 0.85rem; background: linear-gradient(135deg, #e74c3c, #c0392b); border: none; color: #fff; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(231,76,60,0.3);">
-                                <i class="fas fa-redo"></i> Retry Transcode
-                            </button>
+                        const actionBtnsHtml = statusUpper !== 'COMPLETED' ? `
+                            <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 6px;">
+                                ${statusUpper === 'FAILED' ? `
+                                    <button onclick="retryTask(${task.id})" style="padding: 4px 8px; font-size: 0.8rem; background: linear-gradient(135deg, #e74c3c, #c0392b); border: none; color: #fff; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(231,76,60,0.3);">
+                                        <i class="fas fa-redo"></i> Retry
+                                    </button>
+                                ` : ''}
+                                <button onclick="completeTask(${task.id})" style="padding: 4px 8px; font-size: 0.8rem; background: linear-gradient(135deg, #27ae60, #2ecc71); border: none; color: #fff; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(46,204,113,0.3);">
+                                    <i class="fas fa-check-circle"></i> Sync Done
+                                </button>
+                            </div>
                         ` : '';
 
                         return `
@@ -1650,8 +2248,8 @@
                                     <span style="color: var(--gray-text); font-size: 1.1rem;">Ep ${task.episodeNumber}: ${task.title}</span>
                                 </td>
                                 <td>
-                                    <span class="status-badge ${statusClass}">${task.transcodeStatus || 'PENDING'}</span>
-                                    ${retryBtnHtml}
+                                    <span class="status-badge ${statusClass}">${effectiveStatus}</span>
+                                    ${actionBtnsHtml}
                                 </td>
                                 <td>
                                     ${renderTranscodeProgress(task)}
@@ -1692,6 +2290,30 @@
                 }
             } catch (e) {
                 alert('Connection error submitting task retry.');
+            }
+        }
+
+        // Force complete / sync a stuck transcode task
+        async function completeTask(taskId) {
+            if (!confirm(`Sync and mark Task #${taskId} as COMPLETED?`)) return;
+            const token = localStorage.getItem('infinx_token');
+            try {
+                const res = await fetch(`${API_BASE}/admin/tasks/${taskId}/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Task synchronized and marked as COMPLETED!');
+                    fetchTasks();
+                } else {
+                    alert(data.error || 'Failed to complete task.');
+                }
+            } catch (e) {
+                alert('Connection error completing task: ' + e.message);
             }
         }
 
@@ -1756,7 +2378,8 @@
                     }
 
                     tbody.innerHTML = showsList.map(show => {
-                        const posterUrl = show.poster || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200';
+                        const fallbackPoster = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200';
+                        const posterUrl = window.formatMediaUrl(show.poster) || fallbackPoster;
                         const episodesCount = show.episodes ? show.episodes.length : 0;
                         const isMovie = show.type === 'movie';
                         const epBtnLabel = isMovie ? '<i class="fas fa-video"></i> Movie File' : '<i class="fas fa-tasks"></i> Episodes';
@@ -1766,7 +2389,7 @@
                         return `
                             <tr>
                                 <td>
-                                    <img src="${posterUrl}" alt="${show.title}" style="width: 50px; height: 75px; object-fit: cover; border-radius: 4px; border: 1px solid var(--gray-border);">
+                                    <img src="${posterUrl}" alt="${escapeHtml(show.title)}" style="width: 50px; height: 75px; object-fit: cover; border-radius: 4px; border: 1px solid var(--gray-border);" onerror="this.onerror=null; this.src='${fallbackPoster}';">
                                 </td>
                                 <td>
                                     <strong style="font-size: 1.4rem; font-family: 'Outfit';">${show.title}</strong><br>
@@ -1859,6 +2482,7 @@
                 if (res.ok) {
                     const show = await res.json();
                     const eps = show.episodes || [];
+                    window.currentShowEpisodesList = eps;
 
                     if (eps.length === 0) {
                         tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--gray-text);">No episodes added to this show yet.</td></tr>`;
@@ -1867,15 +2491,26 @@
 
                     tbody.innerHTML = eps.map(ep => {
                         const statusClass = (ep.transcodeStatus || 'COMPLETED').toLowerCase();
+                        const isTranscoding = ep.transcodeStatus === 'PROCESSING';
+                        const isPaused = ep.transcodeStatus === 'PAUSED';
+                        const isPending = ep.transcodeStatus === 'PENDING';
+
+                        const hasS3 = ep.s3Url || (ep.videoUrl && (ep.videoUrl.includes('amazonaws.com') || (ep.videoUrl.startsWith('http') && !ep.videoUrl.includes('/uploads/'))));
+                        const hasLocal = ep.localUrl || (ep.videoUrl && (ep.videoUrl.startsWith('/uploads') || ep.videoUrl.includes('/uploads/')));
+                        const s3Badge = hasS3 ? '<span style="font-size: 0.8rem; padding: 2px 6px; background: rgba(255,0,85,0.15); color: var(--primary); border: 1px solid var(--primary); border-radius: 4px; margin-left: 4px;" title="Server 1: AWS S3"><i class="fas fa-cloud"></i> S3</span>' : '';
+                        const localBadge = hasLocal ? '<span style="font-size: 0.8rem; padding: 2px 6px; background: rgba(0,168,255,0.15); color: var(--secondary); border: 1px solid var(--secondary); border-radius: 4px; margin-left: 4px;" title="Server 2: Laptop Local Storage"><i class="fas fa-laptop"></i> Laptop</span>' : '';
 
                         return `
                             <tr>
                                 <td><strong>Ep ${ep.episodeNumber}</strong></td>
-                                <td>${ep.title}</td>
+                                <td>${ep.title} ${s3Badge}${localBadge}</td>
                                 <td><span class="status-badge ${statusClass}">${ep.transcodeStatus || 'COMPLETED'}</span></td>
                                 <td>
-                                    <div style="display: flex; gap: 8px;">
-                                        <button onclick="openEditEpisodeModal(${ep.id}, '${ep.title.replace(/'/g, "\\'")}', ${ep.episodeNumber}, '${(ep.duration || '').replace(/'/g, "\\'")}', '${(ep.videoUrl || '').replace(/'/g, "\\'")}', '${ep.transcodeStatus}')" style="background: rgba(0, 168, 255, 0.1); border: 1px solid var(--secondary); color: var(--secondary); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-edit"></i> Edit</button>
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        ${isTranscoding ? `<button onclick="pauseTranscodeTask(${ep.id})" style="background: rgba(241, 196, 15, 0.15); border: 1px solid var(--warning); color: var(--warning); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-pause"></i> Pause</button>` : ''}
+                                        ${isPaused ? `<button onclick="resumeTranscodeTask(${ep.id})" style="background: rgba(46, 204, 113, 0.15); border: 1px solid var(--success); color: var(--success); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-play"></i> Resume</button>` : ''}
+                                        ${(isTranscoding || isPending || isPaused) ? `<button onclick="stopTranscodeTask(${ep.id})" style="background: rgba(231, 76, 60, 0.15); border: 1px solid var(--danger); color: var(--danger); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-stop"></i> Stop</button>` : ''}
+                                        <button onclick="openEditEpisodeModal(${ep.id})" style="background: rgba(0, 168, 255, 0.1); border: 1px solid var(--secondary); color: var(--secondary); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-edit"></i> Edit</button>
                                         <button onclick="deleteEpisode(${ep.id}, ${ep.episodeNumber})" style="background: rgba(231, 76, 60, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-trash-alt"></i> Delete</button>
                                     </div>
                                 </td>
@@ -1893,6 +2528,46 @@
 
         function closeEpisodeModal() {
             document.getElementById('episodeManagerModal').style.display = 'none';
+        }
+
+        async function pauseTranscodeTask(epId) {
+            const token = localStorage.getItem('infinx_token');
+            try {
+                const res = await fetch(`${API_BASE}/admin/tasks/${epId}/pause`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    if (currentActiveShowId) fetchShowEpisodesList(currentActiveShowId);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function resumeTranscodeTask(epId) {
+            const token = localStorage.getItem('infinx_token');
+            try {
+                const res = await fetch(`${API_BASE}/admin/tasks/${epId}/resume`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    if (currentActiveShowId) fetchShowEpisodesList(currentActiveShowId);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function stopTranscodeTask(epId) {
+            if (!confirm('Are you sure you want to stop/cancel this transcoding task?')) return;
+            const token = localStorage.getItem('infinx_token');
+            try {
+                const res = await fetch(`${API_BASE}/admin/tasks/${epId}/stop`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    if (currentActiveShowId) fetchShowEpisodesList(currentActiveShowId);
+                }
+            } catch (e) { console.error(e); }
         }
 
         // Delete single episode
@@ -1931,7 +2606,9 @@
             }
             document.getElementById('manualEpNumber').value = '';
             document.getElementById('manualEpTitle').value = '';
-            document.getElementById('manualEpVideoUrl').value = '';
+            if (document.getElementById('manualEpS3Url')) document.getElementById('manualEpS3Url').value = '';
+            if (document.getElementById('manualEpLocalUrl')) document.getElementById('manualEpLocalUrl').value = '';
+            if (document.getElementById('manualEpVideoUrl')) document.getElementById('manualEpVideoUrl').value = '';
             document.getElementById('manualEpDuration').value = '';
             document.getElementById('manualEpDesc').value = '';
             document.getElementById('addEpisodeManualModal').style.display = 'flex';
@@ -1946,7 +2623,10 @@
             const showId = currentActiveShowId;
             const episodeNumber = document.getElementById('manualEpNumber').value;
             const title = document.getElementById('manualEpTitle').value;
-            const videoUrl = document.getElementById('manualEpVideoUrl').value;
+            const s3Url = (document.getElementById('manualEpS3Url')?.value || '').trim();
+            const localUrl = (document.getElementById('manualEpLocalUrl')?.value || '').trim();
+            const fallbackVideo = (document.getElementById('manualEpVideoUrl')?.value || '').trim();
+            const videoUrl = localUrl || s3Url || fallbackVideo || null;
             const duration = document.getElementById('manualEpDuration').value;
             const description = document.getElementById('manualEpDesc').value;
 
@@ -1967,7 +2647,9 @@
                         showId,
                         episodeNumber,
                         title,
-                        videoUrl: videoUrl.trim() || null,
+                        videoUrl,
+                        s3Url: s3Url || null,
+                        localUrl: localUrl || null,
                         duration: duration.trim() || null,
                         description: description.trim() || ''
                     })
@@ -2029,15 +2711,15 @@
 
                     listBody.innerHTML = featured.map(show => {
                         const fallbackImage = 'Postes/infinit-cas11.jpg';
-                        const posterUrl = show.poster || fallbackImage;
-                        const bannerUrl = show.banner || fallbackImage;
+                        const posterUrl = window.formatMediaUrl(show.poster) || fallbackImage;
+                        const bannerUrl = window.formatMediaUrl(show.banner) || fallbackImage;
 
                         return `
                             <tr>
-                                <td><strong style="font-size: 1.4rem; color: white;">${show.title}</strong></td>
+                                <td><strong style="font-size: 1.4rem; color: white;">${escapeHtml(show.title)}</strong></td>
                                 <td><span style="color: var(--warning);"><i class="fas fa-star"></i> ${show.rating}</span> <span style="margin-left: 8px; color: var(--gray-text); font-size: 1.2rem;">(${show.year})</span></td>
-                                <td><img src="${posterUrl}" style="height: 60px; border-radius: var(--radius-xs); border: 1px solid var(--gray-border); object-fit: cover; aspect-ratio: 2/3;" onerror="this.src='${fallbackImage}'"></td>
-                                <td><img src="${bannerUrl}" style="height: 60px; width: 120px; border-radius: var(--radius-xs); border: 1px solid var(--gray-border); object-fit: cover;" onerror="this.src='${fallbackImage}'"></td>
+                                <td><img src="${posterUrl}" style="height: 60px; border-radius: var(--radius-xs); border: 1px solid var(--gray-border); object-fit: cover; aspect-ratio: 2/3;" onerror="this.onerror=null; this.src='${fallbackImage}';"></td>
+                                <td><img src="${bannerUrl}" style="height: 60px; width: 120px; border-radius: var(--radius-xs); border: 1px solid var(--gray-border); object-fit: cover;" onerror="this.onerror=null; this.src='${fallbackImage}';"></td>
                                 <td>
                                     <button onclick="removeFeatured(${show.id}, '${show.title.replace(/'/g, "\\'")}')" style="background: rgba(231, 76, 60, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; gap: 6px;"><i class="fas fa-trash-alt"></i> Remove</button>
                                 </td>
@@ -2320,13 +3002,33 @@
         }
 
         // ======= EPISODE CUSTOMIZATION & EDITING =======
-        function openEditEpisodeModal(id, title, epNum, duration, videoUrl, status) {
+        function openEditEpisodeModal(id, title, epNum, duration, videoUrl, status, s3Url, localUrl) {
             document.getElementById('editEpisodeId').value = id;
-            document.getElementById('editEpisodeTitle').value = title;
-            document.getElementById('editEpisodeNumber').value = epNum;
-            document.getElementById('editEpisodeDuration').value = duration || '';
-            document.getElementById('editEpisodeVideoUrl').value = videoUrl || '';
-            document.getElementById('editEpisodeStatus').value = status || 'COMPLETED';
+
+            let epObj = null;
+            if (window.currentShowEpisodesList && Array.isArray(window.currentShowEpisodesList)) {
+                epObj = window.currentShowEpisodesList.find(e => e.id === id);
+            }
+
+            document.getElementById('editEpisodeTitle').value = (epObj ? epObj.title : title) || '';
+            document.getElementById('editEpisodeNumber').value = (epObj ? epObj.episodeNumber : epNum) || 1;
+            document.getElementById('editEpisodeDuration').value = (epObj ? epObj.duration : duration) || '';
+
+            let s3Val = (epObj && epObj.s3Url) || s3Url || '';
+            let localVal = (epObj && epObj.localUrl) || localUrl || '';
+            const rawVideo = (epObj && epObj.videoUrl) || videoUrl || '';
+
+            if (!s3Val && rawVideo && (rawVideo.includes('amazonaws.com') || (rawVideo.startsWith('http') && !rawVideo.includes('/uploads/')))) {
+                s3Val = rawVideo;
+            }
+            if (!localVal && rawVideo && (rawVideo.startsWith('/uploads') || rawVideo.includes('/uploads/'))) {
+                localVal = rawVideo;
+            }
+
+            if (document.getElementById('editEpisodeS3Url')) document.getElementById('editEpisodeS3Url').value = s3Val;
+            if (document.getElementById('editEpisodeLocalUrl')) document.getElementById('editEpisodeLocalUrl').value = localVal;
+            if (document.getElementById('editEpisodeVideoUrl')) document.getElementById('editEpisodeVideoUrl').value = rawVideo;
+            document.getElementById('editEpisodeStatus').value = (epObj && epObj.transcodeStatus) || status || 'COMPLETED';
             document.getElementById('editEpisodeModal').style.display = 'flex';
         }
 
@@ -2340,7 +3042,10 @@
             const title = document.getElementById('editEpisodeTitle').value;
             const episodeNumber = parseInt(document.getElementById('editEpisodeNumber').value);
             const duration = document.getElementById('editEpisodeDuration').value;
-            const videoUrl = document.getElementById('editEpisodeVideoUrl').value;
+            const s3Url = document.getElementById('editEpisodeS3Url') ? document.getElementById('editEpisodeS3Url').value.trim() : '';
+            const localUrl = document.getElementById('editEpisodeLocalUrl') ? document.getElementById('editEpisodeLocalUrl').value.trim() : '';
+            const fallbackVideo = document.getElementById('editEpisodeVideoUrl') ? document.getElementById('editEpisodeVideoUrl').value.trim() : '';
+            const videoUrl = localUrl || s3Url || fallbackVideo || null;
             const transcodeStatus = document.getElementById('editEpisodeStatus').value;
             const token = localStorage.getItem('infinx_token');
 
@@ -2351,7 +3056,15 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ title, episodeNumber, duration, videoUrl, transcodeStatus })
+                    body: JSON.stringify({
+                        title,
+                        episodeNumber,
+                        duration,
+                        videoUrl,
+                        s3Url: s3Url || null,
+                        localUrl: localUrl || null,
+                        transcodeStatus
+                    })
                 });
 
                 if (res.ok) {
@@ -2380,7 +3093,7 @@
                     return;
                 }
                 const show = await res.json();
-                
+
                 document.getElementById('editShowId').value = show.id;
                 document.getElementById('editShowTitle').value = show.title;
                 document.getElementById('editShowRating').value = show.rating;
@@ -2391,7 +3104,7 @@
                 document.getElementById('editShowRuntime').value = show.runtime;
                 document.getElementById('editShowDesc').value = show.description;
                 document.getElementById('editShowIsFeatured').checked = show.isFeatured || false;
-                
+
                 // Reset file labels and selections
                 document.getElementById('editShowPosterFile').value = '';
                 document.getElementById('editShowBannerFile').value = '';
@@ -2414,7 +3127,7 @@
                     const data = await catRes.json();
                     const categoriesSelect = document.getElementById('editShowCategories');
                     categoriesSelect.innerHTML = data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-                    
+
                     // Select current categories
                     const currentCategoryIds = show.categories ? show.categories.map(c => c.categoryId) : [];
                     Array.from(categoriesSelect.options).forEach(opt => {
@@ -2423,6 +3136,22 @@
                         }
                     });
                 }
+
+                // Server streaming URLs for movies / first episode
+                const firstEp = (show.episodes && show.episodes[0]) || null;
+                let s3Val = (firstEp && firstEp.s3Url) || '';
+                let localVal = (firstEp && firstEp.localUrl) || '';
+                const epVid = (firstEp && firstEp.videoUrl) || '';
+
+                if (!s3Val && epVid && (epVid.includes('amazonaws.com') || (epVid.startsWith('http') && !epVid.includes('/uploads/')))) {
+                    s3Val = epVid;
+                }
+                if (!localVal && epVid && (epVid.startsWith('/uploads') || epVid.includes('/uploads/'))) {
+                    localVal = epVid;
+                }
+
+                if (document.getElementById('editShowS3Url')) document.getElementById('editShowS3Url').value = s3Val;
+                if (document.getElementById('editShowLocalUrl')) document.getElementById('editShowLocalUrl').value = localVal;
 
                 document.getElementById('editShowModal').style.display = 'flex';
             } catch (err) {
@@ -2454,6 +3183,8 @@
             const isFeatured = document.getElementById('editShowIsFeatured').checked;
             const posterFile = document.getElementById('editShowPosterFile').files[0];
             const bannerFile = document.getElementById('editShowBannerFile').files[0];
+            const s3Url = document.getElementById('editShowS3Url') ? document.getElementById('editShowS3Url').value.trim() : '';
+            const localUrl = document.getElementById('editShowLocalUrl') ? document.getElementById('editShowLocalUrl').value.trim() : '';
 
             // Collect selected categories
             const selectedOptions = Array.from(document.getElementById('editShowCategories').selectedOptions);
@@ -2469,6 +3200,8 @@
             formData.append('runtime', runtime);
             formData.append('description', description);
             formData.append('isFeatured', isFeatured);
+            formData.append('s3Url', s3Url);
+            formData.append('localUrl', localUrl);
             if (posterFile) {
                 formData.append('poster', posterFile);
             }
@@ -2502,6 +3235,214 @@
                 btn.disabled = false;
             }
         }
+
+        // ======= VIDEO STORAGE MANAGEMENT & CONFIGURATION =======
+        async function loadStorageSettings() {
+            try {
+                const res = await fetch(`${API_BASE}/settings`);
+                if (!res.ok) return;
+                const data = await res.json();
+
+                const currentType = (data.storageType || 'local').toLowerCase().trim();
+                const currentPath = data.localStoragePath || '';
+                const s3Bucket = data.s3Bucket || 'serverbuket-12';
+                const s3Region = data.s3Region || 'ap-south-1';
+
+                // Update Storage Panel elements
+                const globalPathInput = document.getElementById('globalLocalStoragePath');
+                if (globalPathInput) globalPathInput.value = currentPath;
+
+                const localRadio = document.querySelector('input[name="globalStorageType"][value="local"]');
+                const s3Radio = document.querySelector('input[name="globalStorageType"][value="s3"]');
+                if (currentType === 's3' && s3Radio) {
+                    s3Radio.checked = true;
+                    handleGlobalStorageChange('s3');
+                } else if (localRadio) {
+                    localRadio.checked = true;
+                    handleGlobalStorageChange('local');
+                }
+
+                // Update Status Cards
+                const bucketEl = document.getElementById('statusS3Bucket');
+                if (bucketEl) bucketEl.textContent = `${s3Bucket} (${s3Region})`;
+
+                const mountEl = document.getElementById('statusLocalMount');
+                if (mountEl) mountEl.textContent = currentPath || './uploads';
+
+                // Update Episode Upload Form defaults if not already modified by user
+                const uploadLocalRadio = document.querySelector('input[name="uploadStorageType"][value="local"]');
+                const uploadS3Radio = document.querySelector('input[name="uploadStorageType"][value="s3"]');
+                const uploadPathInput = document.getElementById('uploadLocalPathInput');
+                const uploadBucketName = document.getElementById('uploadS3BucketName');
+
+                if (uploadBucketName) uploadBucketName.textContent = `${s3Bucket} (${s3Region})`;
+
+                if (uploadPathInput && !uploadPathInput.value && currentPath) {
+                    uploadPathInput.placeholder = `Default: ${currentPath}`;
+                }
+
+                if (currentType === 's3' && uploadS3Radio && !uploadS3Radio.dataset.userTouched) {
+                    uploadS3Radio.checked = true;
+                    toggleUploadStorageType('s3');
+                } else if (currentType === 'local' && uploadLocalRadio && !uploadLocalRadio.dataset.userTouched) {
+                    uploadLocalRadio.checked = true;
+                    toggleUploadStorageType('local');
+                }
+            } catch (err) {
+                console.warn('Could not load storage settings:', err);
+            }
+        }
+
+        async function saveStorageSettings(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const btn = document.getElementById('btnSaveStorageSettings');
+            const originalHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                btn.disabled = true;
+            }
+
+            try {
+                const storageType = document.querySelector('input[name="globalStorageType"]:checked')?.value || 'local';
+                const localStoragePath = document.getElementById('globalLocalStoragePath')?.value.trim() || '';
+                const token = localStorage.getItem('infinx_token');
+
+                const res = await fetch(`${API_BASE}/settings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ storageType, localStoragePath })
+                });
+
+                if (res.ok) {
+                    const result = await res.json();
+                    alert('✅ Storage preferences saved successfully!\nNew video uploads will automatically follow this configuration.');
+                    await loadStorageSettings();
+                } else {
+                    const err = await res.json();
+                    alert(`Failed to save storage settings: ${err.error || 'Server error'}`);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error while saving storage settings.');
+            } finally {
+                if (btn) {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        function toggleUploadStorageType(type) {
+            const radio = document.querySelector(`input[name="uploadStorageType"][value="${type}"]`);
+            if (radio) radio.dataset.userTouched = "true";
+
+            const localCard = document.getElementById('uploadStorageLocalLabel');
+            const s3Card = document.getElementById('uploadStorageS3Label');
+            const localContainer = document.getElementById('uploadLocalPathContainer');
+            const s3Container = document.getElementById('uploadS3DetailsContainer');
+            const badge = document.getElementById('storageBadgeActive');
+            const labelStage3 = document.getElementById('labelStage3');
+            const iconStage3 = document.getElementById('iconStage3');
+
+            if (type === 'local') {
+                if (localCard) {
+                    localCard.style.borderColor = 'var(--secondary)';
+                    localCard.style.background = 'rgba(0, 168, 255, 0.08)';
+                }
+                if (s3Card) {
+                    s3Card.style.borderColor = 'var(--gray-border)';
+                    s3Card.style.background = 'rgba(255, 255, 255, 0.02)';
+                }
+                if (localContainer) localContainer.style.display = 'block';
+                if (s3Container) s3Container.style.display = 'none';
+                if (badge) {
+                    badge.style.background = 'rgba(0, 168, 255, 0.15)';
+                    badge.style.color = 'var(--secondary)';
+                    badge.style.borderColor = 'var(--secondary)';
+                    badge.innerHTML = '<i class="fas fa-laptop"></i> Laptop Local Storage';
+                }
+                if (labelStage3) labelStage3.textContent = '3. Save to Laptop Local Storage';
+                if (iconStage3) {
+                    iconStage3.className = 'fas fa-laptop';
+                    iconStage3.style.color = 'var(--secondary)';
+                }
+            } else {
+                if (localCard) {
+                    localCard.style.borderColor = 'var(--gray-border)';
+                    localCard.style.background = 'rgba(255, 255, 255, 0.02)';
+                }
+                if (s3Card) {
+                    s3Card.style.borderColor = 'var(--primary)';
+                    s3Card.style.background = 'rgba(255, 0, 85, 0.08)';
+                }
+                if (localContainer) localContainer.style.display = 'none';
+                if (s3Container) s3Container.style.display = 'block';
+                if (badge) {
+                    badge.style.background = 'rgba(255, 0, 85, 0.15)';
+                    badge.style.color = 'var(--primary)';
+                    badge.style.borderColor = 'var(--primary)';
+                    badge.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> AWS S3 Cloud';
+                }
+                if (labelStage3) labelStage3.textContent = '3. Upload to AWS S3 Cloud';
+                if (iconStage3) {
+                    iconStage3.className = 'fas fa-cloud-upload-alt';
+                    iconStage3.style.color = 'var(--primary)';
+                }
+            }
+        }
+
+        function setUploadPathPreset(preset) {
+            const input = document.getElementById('uploadLocalPathInput');
+            if (input) {
+                input.value = preset;
+                input.focus();
+            }
+        }
+
+        function handleGlobalStorageChange(type) {
+            const localCard = document.getElementById('globalStorageLocalCard');
+            const s3Card = document.getElementById('globalStorageS3Card');
+            const localBadge = document.getElementById('globalLocalBadge');
+            const s3Badge = document.getElementById('globalS3Badge');
+            const pathSection = document.getElementById('globalLocalPathSection');
+
+            if (type === 'local') {
+                if (localCard) {
+                    localCard.style.borderColor = 'var(--secondary)';
+                    localCard.style.background = 'rgba(0, 168, 255, 0.08)';
+                }
+                if (s3Card) {
+                    s3Card.style.borderColor = 'var(--gray-border)';
+                    s3Card.style.background = 'rgba(255, 255, 255, 0.02)';
+                }
+                if (localBadge) localBadge.style.display = 'inline-block';
+                if (s3Badge) s3Badge.style.display = 'none';
+                if (pathSection) pathSection.style.display = 'block';
+            } else {
+                if (localCard) {
+                    localCard.style.borderColor = 'var(--gray-border)';
+                    localCard.style.background = 'rgba(255, 255, 255, 0.02)';
+                }
+                if (s3Card) {
+                    s3Card.style.borderColor = 'var(--primary)';
+                    s3Card.style.background = 'rgba(255, 0, 85, 0.08)';
+                }
+                if (localBadge) localBadge.style.display = 'none';
+                if (s3Badge) s3Badge.style.display = 'inline-block';
+                if (pathSection) pathSection.style.display = 'none';
+            }
+        }
+
+        function setGlobalPathPreset(preset) {
+            const input = document.getElementById('globalLocalStoragePath');
+            if (input) {
+                input.value = preset;
+                input.focus();
+            }
+        }
     </script>
 
     <!-- Modal: Episode Manager -->
@@ -2512,9 +3453,13 @@
             <button onclick="closeEpisodeModal()"
                 style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:2.2rem; cursor:pointer;"><i
                     class="fas fa-times"></i></button>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                <h3 id="episodeModalTitle" style="font-size:1.8rem; font-family:'Outfit'; color:white; margin:0;">Manage Episodes</h3>
-                <button onclick="openAddEpisodeModalFromManager()" class="btn-submit" style="margin: 0; padding: 8px 16px; font-size: 1rem; width: auto; background: linear-gradient(135deg, #00a8ff, #0097e6); display: inline-flex; align-items: center; gap: 6px;"><i class="fas fa-plus-circle"></i> Add Episode Manually</button>
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h3 id="episodeModalTitle" style="font-size:1.8rem; font-family:'Outfit'; color:white; margin:0;">Manage
+                    Episodes</h3>
+                <button onclick="openAddEpisodeModalFromManager()" class="btn-submit"
+                    style="margin: 0; padding: 8px 16px; font-size: 1rem; width: auto; background: linear-gradient(135deg, #00a8ff, #0097e6); display: inline-flex; align-items: center; gap: 6px;"><i
+                        class="fas fa-plus-circle"></i> Add Episode Manually</button>
             </div>
             <div class="table-responsive">
                 <table>
@@ -2542,8 +3487,10 @@
             <button onclick="closeAddEpisodeManualModal()"
                 style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:2.2rem; cursor:pointer;"><i
                     class="fas fa-times"></i></button>
-            <h3 style="font-size:1.8rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-plus-circle" style="color: var(--secondary);"></i> Add Episode Manually</h3>
+            <h3
+                style="font-size:1.8rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
+                <i class="fas fa-plus-circle" style="color: var(--secondary);"></i> Add Episode Manually
+            </h3>
 
             <form id="addEpisodeManualForm" onsubmit="handleCreateEpisodeManual(event)">
                 <div class="form-group">
@@ -2555,21 +3502,32 @@
                     <input type="text" id="manualEpTitle" placeholder="e.g. Stone World" required>
                 </div>
                 <div class="form-group">
-                    <label for="manualEpVideoUrl">Video / HLS Master URL (Optional)</label>
-                    <input type="url" id="manualEpVideoUrl" placeholder="e.g. https://.../master.m3u8">
+                    <label for="manualEpS3Url"><i class="fas fa-cloud" style="color: var(--primary);"></i> Server 1: AWS
+                        S3 HLS Stream URL (master.m3u8)</label>
+                    <input type="url" id="manualEpS3Url"
+                        placeholder="https://serverbuket-12.s3.ap-south-1.amazonaws.com/.../master.m3u8">
                 </div>
+                <div class="form-group">
+                    <label for="manualEpLocalUrl"><i class="fas fa-laptop" style="color: var(--secondary);"></i> Server
+                        2: Laptop Local Storage URL (master.m3u8)</label>
+                    <input type="text" id="manualEpLocalUrl" placeholder="/uploads/videos/show_X/ep_Y/master.m3u8">
+                </div>
+                <input type="hidden" id="manualEpVideoUrl">
                 <div class="form-group">
                     <label for="manualEpDuration">Duration (Optional)</label>
                     <input type="text" id="manualEpDuration" placeholder="e.g. 24:00">
                 </div>
                 <div class="form-group">
                     <label for="manualEpDesc">Description (Optional)</label>
-                    <textarea id="manualEpDesc" placeholder="Enter episode synopsis..." style="height: 70px;"></textarea>
+                    <textarea id="manualEpDesc" placeholder="Enter episode synopsis..."
+                        style="height: 70px;"></textarea>
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                    <button type="button" onclick="closeAddEpisodeManualModal()" class="btn-back" style="padding: 10px 20px;">Cancel</button>
-                    <button type="submit" class="btn-submit" style="margin-top: 0; padding: 10px 20px;"><i class="fas fa-plus-circle"></i> Save Episode</button>
+                    <button type="button" onclick="closeAddEpisodeManualModal()" class="btn-back"
+                        style="padding: 10px 20px;">Cancel</button>
+                    <button type="submit" class="btn-submit" style="margin-top: 0; padding: 10px 20px;"><i
+                            class="fas fa-plus-circle"></i> Save Episode</button>
                 </div>
             </form>
         </div>
@@ -2585,7 +3543,8 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-user-plus"></i> Add New User</h3>
+                <i class="fas fa-user-plus"></i> Add New User
+            </h3>
 
             <form id="addUserForm" onsubmit="handleAddUser(event)">
                 <div class="form-group">
@@ -2625,7 +3584,8 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-user-edit"></i> Edit User Account</h3>
+                <i class="fas fa-user-edit"></i> Edit User Account
+            </h3>
 
             <form id="editUserForm" onsubmit="handleEditUser(event)">
                 <input type="hidden" id="editUserId">
@@ -2665,7 +3625,8 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-edit"></i> Edit Show Details</h3>
+                <i class="fas fa-edit"></i> Edit Show Details
+            </h3>
 
             <form id="editShowForm" onsubmit="handleEditShow(event)">
                 <input type="hidden" id="editShowId">
@@ -2695,9 +3656,12 @@
                         <label for="editShowBadge">Badge (HD, 4K, NEW, etc.)</label>
                         <input type="text" id="editShowBadge" required>
                     </div>
-                    <div class="form-group" style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
+                    <div class="form-group"
+                        style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 25px;">
                         <input type="checkbox" id="editShowDubSub" style="width: 20px; height: 20px; cursor: pointer;">
-                        <label for="editShowDubSub" style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language (Dub/Sub)</label>
+                        <label for="editShowDubSub"
+                            style="font-size: 1.3rem; font-weight: 600; cursor: pointer; margin-bottom: 0;">Multi-Language
+                            (Dub/Sub)</label>
                     </div>
                     <div class="form-group">
                         <label for="editShowYear">Release Year</label>
@@ -2711,9 +3675,13 @@
                         <label for="editShowDesc">Show Description</label>
                         <textarea id="editShowDesc" required></textarea>
                     </div>
-                    <div class="form-group full-width" style="grid-column: span 2; display: flex; flex-direction: row; align-items: center; gap: 10px;">
-                        <input type="checkbox" id="editShowIsFeatured" style="width: 20px; height: 20px; cursor: pointer;">
-                        <label for="editShowIsFeatured" style="font-size: 1.4rem; font-weight: 600; cursor: pointer; color: var(--primary); margin-bottom: 0;">Feature this show on the Homepage Banner Carousel</label>
+                    <div class="form-group full-width"
+                        style="grid-column: span 2; display: flex; flex-direction: row; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="editShowIsFeatured"
+                            style="width: 20px; height: 20px; cursor: pointer;">
+                        <label for="editShowIsFeatured"
+                            style="font-size: 1.4rem; font-weight: 600; cursor: pointer; color: var(--primary); margin-bottom: 0;">Feature
+                            this show on the Homepage Banner Carousel</label>
                     </div>
                     <div class="form-group full-width" style="grid-column: span 2;">
                         <label>Replace Poster Image (Optional)</label>
@@ -2729,6 +3697,26 @@
                             <i class="fas fa-image"></i>
                             <p id="editBannerLabel">Drag & drop banner image or click to select</p>
                             <input type="file" id="editShowBannerFile" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="form-group full-width"
+                        style="grid-column: span 2; background: rgba(255, 255, 255, 0.03); padding: 18px; border-radius: 8px; border: 1px solid var(--gray-border); margin-top: 5px;">
+                        <h4
+                            style="font-size: 1.4rem; color: white; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-server" style="color: var(--secondary);"></i> Streaming Server Sources (For
+                            Movies / Direct Stream)
+                        </h4>
+                        <div style="margin-bottom: 12px;">
+                            <label for="editShowS3Url"><i class="fas fa-cloud" style="color: var(--primary);"></i>
+                                Server 1: AWS S3 HLS Playlist URL (master.m3u8)</label>
+                            <input type="text" id="editShowS3Url"
+                                placeholder="https://serverbuket-12.s3.ap-south-1.amazonaws.com/.../master.m3u8">
+                        </div>
+                        <div>
+                            <label for="editShowLocalUrl"><i class="fas fa-laptop" style="color: var(--secondary);"></i>
+                                Server 2: Laptop Local Storage URL (master.m3u8)</label>
+                            <input type="text" id="editShowLocalUrl"
+                                placeholder="/uploads/videos/show_X/ep_1/master.m3u8">
                         </div>
                     </div>
                 </div>
@@ -2748,7 +3736,8 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-edit"></i> Edit Episode Metadata</h3>
+                <i class="fas fa-edit"></i> Edit Episode Metadata
+            </h3>
 
             <form id="editEpisodeForm" onsubmit="handleEditEpisode(event)">
                 <input type="hidden" id="editEpisodeId">
@@ -2765,9 +3754,17 @@
                     <input type="text" id="editEpisodeDuration" placeholder="e.g. 24:00">
                 </div>
                 <div class="form-group">
-                    <label for="editEpisodeVideoUrl">HLS Stream Playlist URL (master.m3u8)</label>
-                    <input type="text" id="editEpisodeVideoUrl" placeholder="Direct AWS S3 URL link">
+                    <label for="editEpisodeS3Url"><i class="fas fa-cloud" style="color: var(--primary);"></i> Server 1:
+                        AWS S3 HLS Stream URL (master.m3u8)</label>
+                    <input type="text" id="editEpisodeS3Url"
+                        placeholder="https://serverbuket-12.s3.ap-south-1.amazonaws.com/.../master.m3u8">
                 </div>
+                <div class="form-group">
+                    <label for="editEpisodeLocalUrl"><i class="fas fa-laptop" style="color: var(--secondary);"></i>
+                        Server 2: Laptop Local Storage URL (master.m3u8)</label>
+                    <input type="text" id="editEpisodeLocalUrl" placeholder="/uploads/videos/show_X/ep_Y/master.m3u8">
+                </div>
+                <input type="hidden" id="editEpisodeVideoUrl">
                 <div class="form-group">
                     <label for="editEpisodeStatus">Transcode Pipeline Status</label>
                     <select id="editEpisodeStatus">

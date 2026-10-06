@@ -9,12 +9,16 @@ window.addEventListener('unhandledrejection', function (e) {
 
 document.addEventListener('DOMContentLoaded', async function () {
   try {
+    const getSavedServer = () => {
+      const saved = localStorage.getItem('infinx_server_url');
+      return (saved && !saved.startsWith('file:')) ? saved.replace(/\/$/, '') : null;
+    };
     const isHttps = window.location.protocol === 'https:';
-    const hasCustomServer = !!localStorage.getItem('infinx_server_url');
-    const SERVER_ORIGIN = (isHttps && !hasCustomServer)
+    const savedServer = getSavedServer();
+    const SERVER_ORIGIN = (isHttps && !savedServer)
       ? ''
       : ((window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':'))
-        ? (localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000')
+        ? (savedServer || 'http://13.202.95.5:8000')
         : '');
     const API_BASE = `${SERVER_ORIGIN}/api`;
 
@@ -85,24 +89,58 @@ document.addEventListener('DOMContentLoaded', async function () {
     let showId = null;
 
     try {
-      // 1. Fetch current episode info
+      // 1. Fetch current episode info with resilient handling
       const epRes = await fetch(`${API_BASE}/shows/episodes/${episodeId}`);
-      if (!epRes.ok) throw new Error('Episode not found');
-      currentEpisode = await epRes.json();
-      showId = currentEpisode.showId;
+      if (!epRes.ok) {
+        throw new Error(`Server returned HTTP ${epRes.status}`);
+      }
+      const rawData = await epRes.json();
 
-      // 2. Fetch parent show details to get siblings list
-      const showRes = await fetch(`${API_BASE}/shows/${showId}`);
-      if (showRes.ok) {
-        const showData = await showRes.json();
-        siblingEpisodes = showData.episodes || [];
+      // Normalize if response has nested episode or flat structure
+      if (rawData.episode) {
+        currentEpisode = {
+          ...rawData.episode,
+          show: rawData.show || rawData.episode.show,
+          servers: rawData.servers || rawData.episode.servers
+        };
+      } else {
+        currentEpisode = rawData;
+      }
+
+      showId = currentEpisode.showId || (currentEpisode.show && currentEpisode.show.id);
+
+      // Sibling episodes from embedded show object if present
+      if (currentEpisode.show && Array.isArray(currentEpisode.show.episodes) && currentEpisode.show.episodes.length > 0) {
+        siblingEpisodes = currentEpisode.show.episodes;
+      } else if (showId) {
+        try {
+          const showRes = await fetch(`${API_BASE}/shows/${showId}`);
+          if (showRes.ok) {
+            const showData = await showRes.json();
+            siblingEpisodes = showData.episodes || [];
+          }
+        } catch (showErr) {
+          console.warn('Could not load sibling episodes for showId:', showId, showErr);
+        }
       }
     } catch (err) {
-      console.error(err);
-      alert('Failed to load anime metadata from server.');
-      window.location.href = '/index.html';
-      return;
+      console.error('Failed to load episode metadata:', err);
+      // Attempt recovery: fallback to dummy object so player doesn't hard-crash if partial data exists
+      currentEpisode = currentEpisode || {
+        id: episodeId,
+        title: `Episode ${episodeId}`,
+        episodeNumber: 1,
+        videoUrl: '',
+        servers: []
+      };
+      // Show user-friendly notification inside the UI instead of hard-killing the tab
+      const errorBanner = document.createElement('div');
+      errorBanner.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#e11d48;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:99999;box-shadow:0 10px 25px rgba(0,0,0,0.5);display:flex;align-items:center;gap:10px;';
+      errorBanner.innerHTML = `<span>⚠️ Could not load episode metadata from server.</span> <button style="background:#fff;color:#e11d48;border:none;padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;" onclick="location.reload()">Retry</button>`;
+      document.body.appendChild(errorBanner);
+      setTimeout(() => { if (errorBanner.parentNode) errorBanner.remove(); }, 8000);
     }
+
 
     // Variables
     let isSettingsMenuOpen = false;
@@ -119,8 +157,208 @@ document.addEventListener('DOMContentLoaded', async function () {
     let lastProgressReportTime = 0;
     const episodesPerPage = 6;
 
+    // URL resolver for local vs cloud media
+    function resolveMediaUrl(url) {
+      if (!url) return '';
+      if (url.startsWith('http://') || url.startsWith('https://')) return url;
+      return `${SERVER_ORIGIN}${url}`;
+    }
+
+    // Available streaming servers for current episode
+    let availableServers = [];
+    let activeServerId = 's3';
+
+    function getAvailableServers(ep) {
+      if (!ep) return [];
+      if (ep.servers && Array.isArray(ep.servers) && ep.servers.length > 0) {
+        return ep.servers;
+      }
+      const isS3 = (u) => u && (u.includes('amazonaws.com') || (u.startsWith('http') && !u.includes('/uploads/')));
+      const isLocal = (u) => u && (u.startsWith('/uploads') || u.includes('/uploads/'));
+
+      const s3Url = ep.s3Url || (isS3(ep.videoUrl) ? ep.videoUrl : null);
+      const localUrl = ep.localUrl || (isLocal(ep.videoUrl) ? ep.videoUrl : null);
+
+      const list = [];
+      if (s3Url) {
+        list.push({
+          id: 's3',
+          name: 'Server 1',
+          shortName: 'Server 1',
+          badge: 'AWS S3',
+          url: s3Url,
+          type: 'cloud'
+        });
+      }
+      if (localUrl) {
+        list.push({
+          id: 'local',
+          name: 'Server 2',
+          shortName: 'Server 2',
+          badge: 'Local Disk',
+          url: localUrl,
+          type: 'local'
+        });
+      }
+      if (list.length === 0 && ep.videoUrl) {
+        list.push({
+          id: 'default',
+          name: 'Default Server',
+          shortName: 'Server 1',
+          badge: 'Online',
+          url: ep.videoUrl,
+          type: 'default'
+        });
+      }
+      return list;
+    }
+
+    function updateServerOptions() {
+      availableServers = getAvailableServers(currentEpisode);
+      const serverDropdown = document.getElementById('server-dropdown');
+      const playerServerOptions = document.getElementById('player-server-options');
+      const serverSelector = document.getElementById('server-selector');
+      const playerServerSection = document.getElementById('player-server-section');
+
+      // Always keep the server selector visible on the frontend as requested
+      if (serverSelector) serverSelector.style.display = 'inline-block';
+      if (playerServerSection) playerServerSection.style.display = 'block';
+
+      if (!availableServers || availableServers.length === 0) {
+        if (currentEpisode && currentEpisode.videoUrl) {
+          availableServers = [{
+            id: 's3',
+            name: 'Server 1',
+            shortName: 'Server 1',
+            badge: 'AWS S3',
+            url: currentEpisode.videoUrl,
+            type: 'cloud'
+          }];
+        } else {
+          return;
+        }
+      }
+
+      // Pick preferred server if available, else first available
+      const preferred = localStorage.getItem('infinx_preferred_server');
+      const match = availableServers.find(s => s.id === preferred) || availableServers[0];
+      activeServerId = match ? match.id : availableServers[0].id;
+
+      // Update button text
+      const curDisplay = document.getElementById('current-server-display');
+      if (curDisplay && match) {
+        curDisplay.textContent = match.shortName || match.name;
+      }
+
+      const hasS3 = availableServers.some(s => s.id === 's3');
+      const hasLocal = availableServers.some(s => s.id === 'local');
+
+      const renderServerItem = (s) => {
+        const isActive = s.id === activeServerId;
+        const icon = s.id === 's3' ? 'fas fa-cloud' : 'fas fa-laptop';
+        const badgeClass = s.id === 's3' ? 'server-badge-cloud' : 'server-badge-local';
+        return `
+          <div class="server-option ${isActive ? 'active' : ''}" data-server-id="${s.id}">
+            <i class="${icon}"></i>
+            <span>${s.name}</span>
+            <span class="server-badge-pill ${badgeClass}">${s.badge}</span>
+          </div>
+        `;
+      };
+
+      let html = availableServers.map(renderServerItem).join('');
+
+      // If Server 2 has not been uploaded yet for this episode, show it clearly as not uploaded yet
+      if (hasS3 && !hasLocal) {
+        html += `
+          <div class="server-option disabled" style="opacity: 0.5; cursor: not-allowed;" title="Not uploaded to Server 2 yet">
+            <i class="fas fa-laptop"></i>
+            <span>Server 2</span>
+            <span class="server-badge-pill" style="background: rgba(255,255,255,0.1); color: #888; font-size: 10px;">Not Added</span>
+          </div>
+        `;
+      } else if (!hasS3 && hasLocal) {
+        html += `
+          <div class="server-option disabled" style="opacity: 0.5; cursor: not-allowed;" title="Not hosted on Server 1">
+            <i class="fas fa-cloud"></i>
+            <span>Server 1</span>
+            <span class="server-badge-pill" style="background: rgba(255,255,255,0.1); color: #888; font-size: 10px;">Not Added</span>
+          </div>
+        `;
+      }
+
+      if (serverDropdown) {
+        serverDropdown.innerHTML = html;
+      }
+      if (playerServerOptions) {
+        playerServerOptions.innerHTML = html;
+      }
+    }
+
+
+    function switchServer(serverId, preserveTime = true) {
+      if (!availableServers || availableServers.length === 0) return;
+      const target = availableServers.find(s => s.id === serverId);
+      if (!target) {
+        showPlayerToast('Selected server is not available for this episode.');
+        return;
+      }
+
+      if (target.id === activeServerId && hls && hls.url) {
+        closeAllDropdowns();
+        closeSettingsDropdown();
+        return;
+      }
+
+      activeServerId = target.id;
+      localStorage.setItem('infinx_preferred_server', target.id);
+
+      const curDisplay = document.getElementById('current-server-display');
+      if (curDisplay) {
+        curDisplay.textContent = target.shortName || target.name;
+      }
+
+      document.querySelectorAll('.server-option').forEach(opt => {
+        opt.classList.toggle('active', opt.getAttribute('data-server-id') === target.id);
+      });
+
+      closeAllDropdowns();
+      closeSettingsDropdown();
+
+      const savedTime = (preserveTime && !isNaN(mainVideo.currentTime)) ? mainVideo.currentTime : null;
+      const wasPlaying = !mainVideo.paused;
+
+      showPlayerToast(`Switched to ${target.name}`);
+      initHLS(target.url, savedTime, wasPlaying);
+    }
+
+    function setupServerEventListeners() {
+      const handleServerClick = (e) => {
+        const opt = e.target.closest('.server-option');
+        if (!opt) return;
+        if (opt.classList.contains('disabled')) {
+          showPlayerToast('This server stream has not been uploaded yet.');
+          return;
+        }
+        e.stopPropagation();
+        const sId = opt.getAttribute('data-server-id');
+        if (sId) switchServer(sId, true);
+      };
+
+      const serverDropdown = document.getElementById('server-dropdown');
+      if (serverDropdown) {
+        serverDropdown.addEventListener('click', handleServerClick);
+      }
+
+      const playerServerOptions = document.getElementById('player-server-options');
+      if (playerServerOptions) {
+        playerServerOptions.addEventListener('click', handleServerClick);
+      }
+    }
+
+
     // Initialize HLS
-    function initHLS(videoSrc) {
+    function initHLS(videoSrc, seekTime = null, autoPlay = true) {
       if (!videoSrc) {
         videoPlayer.classList.remove('loading');
         const container = document.querySelector('.video-container') || videoPlayer;
@@ -142,14 +380,16 @@ document.addEventListener('DOMContentLoaded', async function () {
           overlay.style.padding = '20px';
           overlay.style.textAlign = 'center';
           overlay.innerHTML = `
-            <div style="font-size: 5rem; margin-bottom: 20px; color: var(--primary); animation: fa-spin 4s linear infinite;"><i class="fas fa-cog"></i></div>
-            <h2 style="font-size: 2.2rem; font-family: 'Outfit'; color: white; margin-bottom: 10px;">HLS Transcoding in Progress...</h2>
-            <p style="font-size: 1.4rem; color: var(--gray-text); max-width: 400px; line-height: 1.6;">Our background workers are currently parsing audio tracks and rendering HLS master playlists. Please check back in a moment!</p>
+            <div style="font-size: 5rem; margin-bottom: 20px; color: var(--primary); animation: fa-spin 4s linear infinite;"><i class="fas fa-server"></i></div>
+            <h2 style="font-size: 2.2rem; font-family: 'Outfit'; color: white; margin-bottom: 10px;">Stream Not Available on This Server</h2>
+            <p style="font-size: 1.4rem; color: var(--gray-text); max-width: 420px; line-height: 1.6;">This episode is not hosted on the selected server. Please switch to the other server using the Server selector button below!</p>
           `;
           container.appendChild(overlay);
         }
         return;
       }
+
+      const resolvedVideoSrc = resolveMediaUrl(videoSrc);
 
       // Manually parse master playlist for subtitles as a robust fallback for raw VTTs
       async function parseMasterPlaylist(videoSrc) {
@@ -196,7 +436,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
 
       // Start manual parsing immediately for raw VTT track resolution
-      parseMasterPlaylist(videoSrc);
+      parseMasterPlaylist(resolvedVideoSrc);
 
       videoPlayer.classList.add('loading');
 
@@ -212,13 +452,17 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (Hls.isSupported()) {
         hls = new Hls({
           enableWorker: true,
-          lowLatencyMode: true,
+          lowLatencyMode: false,
           backBufferLength: 90,
+          maxBufferLength: 30,
+          maxMaxBufferLength: 60,
           startLevel: -1, // Auto
-          capLevelToPlayerSize: true,
+          capLevelToPlayerSize: false,
+          nudgeOffset: 0.1,
+          nudgeMaxRetry: 5,
         });
 
-        hls.loadSource(videoSrc);
+        hls.loadSource(resolvedVideoSrc);
         hls.attachMedia(mainVideo);
 
         hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
@@ -229,9 +473,8 @@ document.addEventListener('DOMContentLoaded', async function () {
           if (hls.audioTracks && hls.audioTracks.length > 0) {
             audioTracks = hls.audioTracks;
             updateAudioOptions();
-            hls.audioTrack = 0;
-            currentAudioTrack = 0;
-            updateAudioDisplay(0);
+            currentAudioTrack = hls.audioTrack >= 0 ? hls.audioTrack : 0;
+            updateAudioDisplay(currentAudioTrack);
           } else {
             updateAudioOptions();
           }
@@ -243,13 +486,19 @@ document.addEventListener('DOMContentLoaded', async function () {
             updateSubtitleOptions();
           }
 
-          // Resume saved progress if any
-          resumeSavedProgress();
+          // Restore position when switching servers or resume saved progress
+          if (seekTime !== null && !isNaN(seekTime) && seekTime > 0) {
+            mainVideo.currentTime = seekTime;
+          } else {
+            resumeSavedProgress();
+          }
 
-          mainVideo.play().catch(e => {
-            console.log("Autoplay prevented:", e);
-            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-          });
+          if (autoPlay) {
+            mainVideo.play().catch(e => {
+              console.log("Autoplay prevented:", e);
+              playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            });
+          }
         });
 
         hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, function (event, data) {
@@ -303,9 +552,27 @@ document.addEventListener('DOMContentLoaded', async function () {
           });
         });
 
+        hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+          if (hls.autoLevelEnabled || hls.currentLevel === -1) {
+            const activeLevel = (qualities && qualities[data.level]) ? qualities[data.level] : null;
+            if (activeLevel && activeLevel.height) {
+              document.querySelectorAll('.current-quality').forEach(el => {
+                el.textContent = `Auto (${activeLevel.height}p)`;
+              });
+            }
+          }
+        });
+
         hls.on(Hls.Events.ERROR, function (event, data) {
           console.error('HLS error:', data);
           videoPlayer.classList.remove('loading');
+
+          if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
+            console.warn('HLS buffer stalled, nudging playhead forward...');
+            if (!mainVideo.paused && mainVideo.readyState >= 2) {
+              mainVideo.currentTime = Math.min(mainVideo.duration || Infinity, mainVideo.currentTime + 0.1);
+            }
+          }
 
           if (data.fatal) {
             switch (data.type) {
@@ -324,10 +591,17 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       } else if (mainVideo.canPlayType('application/vnd.apple.mpegurl')) {
         videoPlayer.classList.remove('loading');
-        mainVideo.src = videoSrc;
+        mainVideo.src = resolvedVideoSrc;
         mainVideo.addEventListener('loadedmetadata', function () {
           videoPlayer.classList.remove('loading');
-          resumeSavedProgress();
+          if (seekTime !== null && !isNaN(seekTime) && seekTime > 0) {
+            mainVideo.currentTime = seekTime;
+          } else {
+            resumeSavedProgress();
+          }
+          if (autoPlay) {
+            mainVideo.play().catch(e => { });
+          }
 
           if (mainVideo.audioTracks && mainVideo.audioTracks.length > 0) {
             audioTracks = Array.from(mainVideo.audioTracks);
@@ -397,34 +671,105 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       qualityDropdown.innerHTML = '';
       if (settingsQualitySection) {
-        const autoOption = settingsQualitySection.querySelector('.quality-option[data-quality="auto"]');
-        if (autoOption) {
-          settingsQualitySection.innerHTML = '';
-          settingsQualitySection.appendChild(autoOption.cloneNode(true));
-        }
+        settingsQualitySection.innerHTML = '';
       }
 
+      // Check saved user preference (e.g. 'auto', '1080p', '720p', etc.)
+      const savedPref = localStorage.getItem('infinx_preferred_quality') || 'auto';
+
+      // Auto Option
       const autoOption = document.createElement('div');
-      autoOption.className = 'quality-option active';
+      autoOption.className = 'quality-option' + (savedPref === 'auto' ? ' active' : '');
       autoOption.setAttribute('data-quality', 'auto');
-      autoOption.textContent = 'Auto';
+      autoOption.innerHTML = '<i class="fas fa-magic" style="font-size: 11px; opacity: 0.8; margin-right: 6px;"></i><span>Auto</span><span class="quality-badge badge-auto">Optimal</span>';
       qualityDropdown.appendChild(autoOption);
 
-      qualities.forEach((level, index) => {
+      if (settingsQualitySection) {
+        const settingsAutoOption = document.createElement('div');
+        settingsAutoOption.className = 'quality-option' + (savedPref === 'auto' ? ' active' : '');
+        settingsAutoOption.setAttribute('data-quality', 'auto');
+        settingsAutoOption.textContent = 'Auto';
+        settingsQualitySection.appendChild(settingsAutoOption);
+      }
+
+      if (!qualities || qualities.length === 0) {
+        document.querySelectorAll('.current-quality').forEach(el => { el.textContent = 'Auto'; });
+        return;
+      }
+
+      // Map levels with their original index and compute label + badge
+      const mappedLevels = qualities.map((level, originalIndex) => {
+        let height = level.height;
+        if (!height && level.attrs && level.attrs.RESOLUTION) {
+          const parts = level.attrs.RESOLUTION.split('x');
+          if (parts.length === 2) height = parseInt(parts[1], 10);
+        }
+
+        let badge = '';
+        let badgeClass = '';
+        if (height >= 1080) {
+          badge = 'FHD';
+          badgeClass = 'badge-fhd';
+        } else if (height >= 720) {
+          badge = 'HD';
+          badgeClass = 'badge-hd';
+        } else if (height >= 480) {
+          badge = 'SD';
+          badgeClass = 'badge-sd';
+        } else if (height > 0) {
+          badge = 'SD';
+          badgeClass = 'badge-sd';
+        }
+
+        const label = height ? `${height}p` : (level.name || `Stream ${originalIndex + 1}`);
+
+        return {
+          index: originalIndex,
+          height: height || 0,
+          label: label,
+          badge: badge,
+          badgeClass: badgeClass
+        };
+      });
+
+      // Sort descending by resolution (highest quality first)
+      mappedLevels.sort((a, b) => b.height - a.height);
+
+      let matchedLevelIndex = null;
+
+      mappedLevels.forEach(lvl => {
+        const isSelected = (savedPref !== 'auto' && (savedPref === lvl.label || parseInt(savedPref, 10) === lvl.height));
+        if (isSelected && matchedLevelIndex === null) {
+          matchedLevelIndex = lvl.index;
+        }
+
+        // Quick bar dropdown item
         const option = document.createElement('div');
-        option.className = 'quality-option';
-        option.setAttribute('data-quality', index);
-        option.textContent = level.height + 'p';
+        option.className = 'quality-option' + (isSelected ? ' active' : '');
+        option.setAttribute('data-quality', lvl.index);
+        option.innerHTML = `
+          <i class="fas fa-tv" style="font-size: 11px; opacity: 0.7; margin-right: 6px;"></i>
+          <span>${lvl.label}</span>
+          ${lvl.badge ? `<span class="quality-badge ${lvl.badgeClass}">${lvl.badge}</span>` : ''}
+        `;
         qualityDropdown.appendChild(option);
 
+        // Settings gear dropdown item
         if (settingsQualitySection) {
           const settingsOption = document.createElement('div');
-          settingsOption.className = 'quality-option';
-          settingsOption.setAttribute('data-quality', index);
-          settingsOption.textContent = level.height + 'p';
+          settingsOption.className = 'quality-option' + (isSelected ? ' active' : '');
+          settingsOption.setAttribute('data-quality', lvl.index);
+          settingsOption.textContent = `${lvl.label}${lvl.badge ? ' ' + lvl.badge : ''}`;
           settingsQualitySection.appendChild(settingsOption);
         }
       });
+
+      // Restore user's preferred quality
+      if (savedPref !== 'auto' && matchedLevelIndex !== null) {
+        setQuality(matchedLevelIndex, false);
+      } else {
+        setQuality('auto', false);
+      }
     }
 
     function getFriendlyLanguageName(langCode) {
@@ -515,10 +860,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Close all dropdowns
     function closeAllDropdowns() {
-      document.querySelectorAll('.quality-dropdown, .audio-dropdown, .subtitle-dropdown, .speed-dropdown').forEach(dropdown => {
+      document.querySelectorAll('.server-dropdown, .quality-dropdown, .audio-dropdown, .subtitle-dropdown, .speed-dropdown').forEach(dropdown => {
         dropdown.style.display = 'none';
       });
-      document.querySelectorAll('.quality-selector, .audio-selector, .subtitle-selector, .playback-speed-selector').forEach(selector => {
+      document.querySelectorAll('.server-selector, .quality-selector, .audio-selector, .subtitle-selector, .playback-speed-selector').forEach(selector => {
         selector.classList.remove('active');
       });
     }
@@ -534,28 +879,47 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     // Set video quality
-    function setQuality(qualityLevel) {
+    function setQuality(qualityLevel, shouldCloseMenus = true) {
       if (hls) {
+        let displayLabel = 'Auto';
+
         if (qualityLevel === 'auto') {
           hls.currentLevel = -1;
-          document.querySelectorAll('.current-quality').forEach(el => { el.textContent = 'Auto'; });
+          localStorage.setItem('infinx_preferred_quality', 'auto');
+          displayLabel = 'Auto';
         } else {
-          hls.currentLevel = qualityLevel;
-          const quality = qualities[qualityLevel];
-          document.querySelectorAll('.current-quality').forEach(el => { el.textContent = quality.height + 'p'; });
+          const lvlIdx = parseInt(qualityLevel, 10);
+          hls.currentLevel = lvlIdx;
+          const quality = (qualities && qualities[lvlIdx]) ? qualities[lvlIdx] : null;
+          let height = quality ? quality.height : null;
+          if (!height && quality && quality.attrs && quality.attrs.RESOLUTION) {
+            const parts = quality.attrs.RESOLUTION.split('x');
+            if (parts.length === 2) height = parseInt(parts[1], 10);
+          }
+          displayLabel = height ? `${height}p` : `Stream ${lvlIdx + 1}`;
+          localStorage.setItem('infinx_preferred_quality', displayLabel);
         }
+
+        document.querySelectorAll('.current-quality').forEach(el => {
+          el.textContent = displayLabel;
+        });
 
         document.querySelectorAll('.quality-option').forEach(option => {
           option.classList.remove('active');
           const optionQuality = option.getAttribute('data-quality');
-          if ((qualityLevel === 'auto' && optionQuality === 'auto') ||
-            (qualityLevel !== 'auto' && parseInt(optionQuality) === qualityLevel)) {
-            option.classList.add('active');
+          if (qualityLevel === 'auto') {
+            if (optionQuality === 'auto') option.classList.add('active');
+          } else {
+            if (optionQuality !== 'auto' && parseInt(optionQuality, 10) === parseInt(qualityLevel, 10)) {
+              option.classList.add('active');
+            }
           }
         });
 
-        closeAllDropdowns();
-        closeSettingsDropdown();
+        if (shouldCloseMenus) {
+          closeAllDropdowns();
+          closeSettingsDropdown();
+        }
       }
     }
 
@@ -1378,7 +1742,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (isSettingsMenuOpen && !settingsMenu.contains(event.target) && !settingsBtn.contains(event.target)) {
         closeSettingsDropdown();
       }
-      if (!event.target.closest('.quality-selector') &&
+      if (!event.target.closest('.server-selector') &&
+        !event.target.closest('.quality-selector') &&
         !event.target.closest('.audio-selector') &&
         !event.target.closest('.subtitle-selector') &&
         !event.target.closest('.playback-speed-selector') &&
@@ -1387,7 +1752,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     });
 
-    document.querySelectorAll('.quality-btn, .audio-btn, .speed-btn').forEach(btn => {
+    document.querySelectorAll('.server-btn, .quality-btn, .audio-btn, .speed-btn').forEach(btn => {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         const dropdown = this.nextElementSibling;
@@ -1399,7 +1764,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         if (!isVisible) {
           dropdown.style.display = 'block';
-          const container = this.closest('.quality-selector, .audio-selector, .subtitle-selector, .playback-speed-selector');
+          const container = this.closest('.server-selector, .quality-selector, .audio-selector, .subtitle-selector, .playback-speed-selector');
           if (container) container.classList.add('active');
         }
       });
@@ -2414,6 +2779,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Initialize
     function initializePlayer() {
+      setupServerEventListeners();
       setupQualityEventListeners();
       setupAudioEventListeners();
       setupSubtitleEventListeners();
@@ -2442,7 +2808,11 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
 
       initializePlaylist();
-      initHLS(currentEpisode.videoUrl);
+      updateServerOptions();
+
+      const initialServer = (availableServers && availableServers.find(s => s.id === activeServerId)) || (availableServers && availableServers[0]) || null;
+      const initialVideoUrl = initialServer ? initialServer.url : (currentEpisode.videoUrl || null);
+      initHLS(initialVideoUrl);
 
       if (autoNextCheckbox && autoNextCheckbox.checked) {
         if (autoNextLabel) {

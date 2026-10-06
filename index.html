@@ -1993,7 +1993,7 @@
         </div>
     </section>
 
-   <!--  ====== FILTER & SORT BAR ====== 
+    <!-- ====== FILTER & SORT BAR ====== 
     <div class="container" style="margin-top: 10px;">
         <div class="filter-sort-bar">
             <div class="sort-group">
@@ -2008,9 +2008,10 @@
                 </select>
             </div>
             <div class="genre-quick-pills" id="genreQuickPills">
-                         </div>
+                 Dynamically filled with top genre quick pills 
+            </div>
         </div>
-    </div> -->  
+    </div>-->
 
     <!-- ====== DYNAMIC GENRE & CATEGORY SECTIONS ====== -->
     <div id="homeDynamicSections">
@@ -2124,7 +2125,15 @@
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 
     <script>
-        const DEFAULT_BACKEND = localStorage.getItem('infinx_server_url') || 'http://13.202.95.5:8000';
+        const getLocalBackend = () => {
+            const saved = localStorage.getItem('infinx_server_url');
+            if (saved && !saved.startsWith('file:')) return saved.replace(/\/$/, '');
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                return 'http://localhost:8000';
+            }
+            return 'http://13.202.95.5:8000';
+        };
+        const DEFAULT_BACKEND = getLocalBackend();
         const isHttps = window.location.protocol === 'https:';
         const hasCustomServer = !!localStorage.getItem('infinx_server_url');
         const SERVER_ORIGIN = (isHttps && !hasCustomServer)
@@ -2138,7 +2147,7 @@
             const fallback = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
             if (!url) return fallback;
             if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
-            return url.startsWith('/') ? `${DEFAULT_BACKEND}${url}` : `${DEFAULT_BACKEND}/${url}`;
+            return url.startsWith('/') ? `${SERVER_ORIGIN}${url}` : `${SERVER_ORIGIN}/${url}`;
         };
         let userWatchlist = [];
 
@@ -2384,7 +2393,9 @@
                         container.classList.remove('hidden');
                         let html = '';
                         data.slice(0, 6).forEach(item => {
-                            const percent = (item.progress / item.duration) * 100;
+                            if (!item || !item.episode || !item.episode.show) return;
+                            const duration = item.duration || 1;
+                            const percent = Math.min(100, Math.max(0, (item.progress / duration) * 100));
                             const show = item.episode.show;
                             const fallbackPoster = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
 
@@ -2688,125 +2699,125 @@
         }
 
 
-            // Toggle favorite watchlist item
-            async function toggleWatchlist(btn, showId) {
-                if (!isLoggedIn()) {
-                    openModal('login');
-                    return;
-                }
-                try {
-                    const res = await fetch(`${API_BASE}/user/watchlist`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...getAuthHeader()
-                        },
-                        body: JSON.stringify({ showId })
-                    });
-
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data.status === 'added') {
-                            btn.classList.add('active');
-                            btn.querySelector('i').className = 'fas fa-heart';
-                            userWatchlist.push(showId);
-                        } else {
-                            btn.classList.remove('active');
-                            btn.querySelector('i').className = 'far fa-heart';
-                            userWatchlist = userWatchlist.filter(id => id !== showId);
-                        }
-                        loadWatchlist();
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
+        // Toggle favorite watchlist item
+        async function toggleWatchlist(btn, showId) {
+            if (!isLoggedIn()) {
+                openModal('login');
+                return;
             }
-
-            // Authentication Handlers
-            async function handleLogin(e) {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-
-                try {
-                    const res = await fetch(`${API_BASE}/auth/login`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
-                    });
-
-                    const data = await res.json();
-                    if (res.ok) {
-                        localStorage.setItem('infinx_token', data.token);
-                        localStorage.setItem('infinx_user_email', data.user.email);
-                        localStorage.setItem('infinx_user_role', data.user.role);
-
-                        closeModal('login');
-                        initApp();
-                    } else {
-                        alert(data.error || 'Login failed');
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert('Connection error');
-                }
-            }
-
-            async function handleRegister(e) {
-                e.preventDefault();
-                const email = document.getElementById('registerEmail').value;
-                const password = document.getElementById('registerPassword').value;
-
-                try {
-                    const res = await fetch(`${API_BASE}/auth/register`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
-                    });
-
-                    const data = await res.json();
-                    if (res.ok) {
-                        localStorage.setItem('infinx_token', data.token);
-                        localStorage.setItem('infinx_user_email', data.user.email);
-                        localStorage.setItem('infinx_user_role', data.user.role);
-
-                        closeModal('register');
-                        initApp();
-                    } else {
-                        alert(data.error || 'Registration failed');
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert('Connection error');
-                }
-            }
-
-            function handleLogout(e) {
-                if (e) e.stopPropagation();
-                localStorage.clear();
-                updateAuthHeader();
-                document.getElementById('continueWatchingSection').classList.add('hidden');
-                // Remove active classes from hearts
-                document.querySelectorAll('.btn-watchlist-toggle').forEach(btn => {
-                    btn.classList.remove('active');
-                    btn.querySelector('i').className = 'far fa-heart';
+            try {
+                const res = await fetch(`${API_BASE}/user/watchlist`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeader()
+                    },
+                    body: JSON.stringify({ showId })
                 });
-                userWatchlist = [];
-            }
 
-            // Modal triggers
-            function openModal(type) {
-                document.getElementById(`${type}Modal`).classList.add('active');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.status === 'added') {
+                        btn.classList.add('active');
+                        btn.querySelector('i').className = 'fas fa-heart';
+                        userWatchlist.push(showId);
+                    } else {
+                        btn.classList.remove('active');
+                        btn.querySelector('i').className = 'far fa-heart';
+                        userWatchlist = userWatchlist.filter(id => id !== showId);
+                    }
+                    loadWatchlist();
+                }
+            } catch (e) {
+                console.error(e);
             }
+        }
 
-            function closeModal(type) {
-                document.getElementById(`${type}Modal`).classList.remove('active');
-            }
+        // Authentication Handlers
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
 
-            function switchModal(closeType, openType) {
-                closeModal(closeType);
-                setTimeout(() => openModal(openType), 100);
+            try {
+                const res = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('infinx_token', data.token);
+                    localStorage.setItem('infinx_user_email', data.user.email);
+                    localStorage.setItem('infinx_user_role', data.user.role);
+
+                    closeModal('login');
+                    initApp();
+                } else {
+                    alert(data.error || 'Login failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error');
             }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('infinx_token', data.token);
+                    localStorage.setItem('infinx_user_email', data.user.email);
+                    localStorage.setItem('infinx_user_role', data.user.role);
+
+                    closeModal('register');
+                    initApp();
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error');
+            }
+        }
+
+        function handleLogout(e) {
+            if (e) e.stopPropagation();
+            localStorage.clear();
+            updateAuthHeader();
+            document.getElementById('continueWatchingSection').classList.add('hidden');
+            // Remove active classes from hearts
+            document.querySelectorAll('.btn-watchlist-toggle').forEach(btn => {
+                btn.classList.remove('active');
+                btn.querySelector('i').className = 'far fa-heart';
+            });
+            userWatchlist = [];
+        }
+
+        // Modal triggers
+        function openModal(type) {
+            document.getElementById(`${type}Modal`).classList.add('active');
+        }
+
+        function closeModal(type) {
+            document.getElementById(`${type}Modal`).classList.remove('active');
+        }
+
+        function switchModal(closeType, openType) {
+            closeModal(closeType);
+            setTimeout(() => openModal(openType), 100);
+        }
     </script>
 </body>
 
