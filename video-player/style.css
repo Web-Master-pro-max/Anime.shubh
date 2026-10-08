@@ -585,6 +585,39 @@ video::cue,
   transition: width 0.3s ease;
 }
 
+/* Timeline Skip Zone Markers (Opening & Ending Theme Highlights) */
+.timeline-zone-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  border-radius: 2px;
+  box-sizing: border-box;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.timeline-zone-marker.intro-zone-marker {
+  background: rgba(255, 45, 85, 0.55);
+  border-left: 2px solid #ff2d55;
+  border-right: 2px solid #ff2d55;
+  box-shadow: 0 0 6px rgba(255, 45, 85, 0.45);
+}
+
+.timeline-zone-marker.outro-zone-marker {
+  background: rgba(168, 85, 247, 0.55);
+  border-left: 2px solid #a855f7;
+  border-right: 2px solid #a855f7;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.45);
+}
+
+.progress-bar-container:hover .timeline-zone-marker,
+.progress-bar-container.scrubbing .timeline-zone-marker {
+  opacity: 1;
+}
+
 .progress {
   position: absolute;
   top: 0;
@@ -595,6 +628,7 @@ video::cue,
   border-radius: 4px;
   transition: width 0.1s linear;
   pointer-events: none;
+  z-index: 3;
 }
 
 .progress-bar-container.scrubbing .progress {

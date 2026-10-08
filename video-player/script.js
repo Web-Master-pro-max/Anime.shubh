@@ -1685,6 +1685,47 @@ document.addEventListener('DOMContentLoaded', async function () {
       return { intro, outro };
     }
 
+    function updateTimelineMarkers() {
+      const introMarker = document.getElementById('timeline-intro-marker');
+      const outroMarker = document.getElementById('timeline-outro-marker');
+      if (!introMarker && !outroMarker) return;
+
+      if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration < 120) {
+        if (introMarker) introMarker.style.display = 'none';
+        if (outroMarker) outroMarker.style.display = 'none';
+        return;
+      }
+
+      if (!detectedIntroOutro.intro && !detectedIntroOutro.outro) {
+        detectedIntroOutro = computeIntroOutroWindows();
+      }
+
+      const dur = mainVideo.duration;
+      const { intro, outro } = detectedIntroOutro;
+
+      if (intro && introMarker) {
+        const leftPct = (intro.start / dur) * 100;
+        const widthPct = Math.max(0.75, ((intro.end - intro.start) / dur) * 100);
+        introMarker.style.left = `${leftPct}%`;
+        introMarker.style.width = `${widthPct}%`;
+        introMarker.style.display = 'block';
+        introMarker.setAttribute('title', `Opening (Intro): ${formatTime(intro.start)} - ${formatTime(intro.end)}`);
+      } else if (introMarker) {
+        introMarker.style.display = 'none';
+      }
+
+      if (outro && outroMarker) {
+        const leftPct = (outro.start / dur) * 100;
+        const widthPct = Math.max(0.75, ((outro.end - outro.start) / dur) * 100);
+        outroMarker.style.left = `${leftPct}%`;
+        outroMarker.style.width = `${widthPct}%`;
+        outroMarker.style.display = 'block';
+        outroMarker.setAttribute('title', `Ending (Outro): ${formatTime(outro.start)} - ${formatTime(outro.end)}`);
+      } else if (outroMarker) {
+        outroMarker.style.display = 'none';
+      }
+    }
+
     function showUndoSkipToast() {
       const toast = document.getElementById('undo-skip-toast');
       if (!toast) return;
@@ -1887,6 +1928,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         updateBufferBar();
         reportPlaybackProgress();
         handleSmartIntroOutro(mainVideo.currentTime, mainVideo.duration);
+        updateTimelineMarkers();
       }
     }
 
@@ -1897,9 +1939,16 @@ document.addEventListener('DOMContentLoaded', async function () {
       const targetTime = fraction * mainVideo.duration;
 
       if (progressHoverTime) {
-        progressHoverTime.textContent = formatTime(targetTime);
+        let hoverLabel = formatTime(targetTime);
+        const { intro, outro } = detectedIntroOutro;
+        if (intro && targetTime >= intro.start && targetTime <= intro.end) {
+          hoverLabel += ' • Intro';
+        } else if (outro && targetTime >= outro.start && targetTime <= outro.end) {
+          hoverLabel += ' • Outro';
+        }
+        progressHoverTime.textContent = hoverLabel;
         const percent = fraction * 100;
-        progressHoverTime.style.left = `clamp(30px, ${percent}%, calc(100% - 30px))`;
+        progressHoverTime.style.left = `clamp(35px, ${percent}%, calc(100% - 35px))`;
       }
 
       if (isScrubbing) {
@@ -2163,7 +2212,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     mainVideo.addEventListener('progress', updateBufferBar);
-    mainVideo.addEventListener('loadedmetadata', updateBufferBar);
+    mainVideo.addEventListener('loadedmetadata', function () {
+      updateBufferBar();
+      detectedIntroOutro = computeIntroOutroWindows();
+      updateTimelineMarkers();
+    });
+    mainVideo.addEventListener('durationchange', function () {
+      detectedIntroOutro = computeIntroOutroWindows();
+      updateTimelineMarkers();
+    });
 
     // Toast Feedback function
     function showPlayerToast(message) {
@@ -2688,6 +2745,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           chip.classList.add('active');
           localStorage.setItem('@infinx_skip_intro_duration', val);
           detectedIntroOutro = computeIntroOutroWindows();
+          updateTimelineMarkers();
           const displayLabel = val === 'auto' ? 'Smart Auto' : `${val}s`;
           showPlayerToast(`Skip Duration: ${displayLabel}`);
         });
@@ -3634,6 +3692,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       setupAudioEventListeners();
       setupSubtitleEventListeners();
       setupAutoSkipEventListeners();
+      updateTimelineMarkers();
 
       if (mainVideo.textTracks) {
         mainVideo.textTracks.addEventListener('change', function () {
