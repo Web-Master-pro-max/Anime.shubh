@@ -1163,9 +1163,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     function closeSettingsDropdown() {
       isSettingsMenuOpen = false;
       if (settingsMenu) settingsMenu.classList.remove('active');
+      if (settingsDropdown) settingsDropdown.style.right = '';
       const controls = document.querySelector('.custom-controls');
       if (controls) {
         controls.classList.remove('settings-open');
+      }
+      if (isFullscreen) {
+        clearTimeout(hideControlsTimeout);
+        hideControlsTimeout = setTimeout(hideControls, 3000);
       }
     }
 
@@ -2474,7 +2479,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     function hideControls() {
-      if (isFullscreen) {
+      const modalActive = document.getElementById('caption-settings-modal')?.classList.contains('active');
+      const drawerActive = document.getElementById('in-player-episode-drawer')?.classList.contains('active');
+      if (isFullscreen && !isSettingsMenuOpen && !modalActive && !drawerActive) {
         document.querySelector('.custom-controls').classList.add('hidden');
         document.querySelector('.video-overlay').classList.add('hidden');
       }
@@ -2521,6 +2528,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     mainVideo.addEventListener('timeupdate', updateTime);
 
+    function positionSettingsDropdown() {
+      if (!settingsDropdown || !videoPlayer) return;
+      settingsDropdown.style.right = '';
+      const playerRect = videoPlayer.getBoundingClientRect();
+      const menuRect = settingsDropdown.getBoundingClientRect();
+      if (menuRect.left < playerRect.left + 8) {
+        const overflow = (playerRect.left + 8) - menuRect.left;
+        settingsDropdown.style.right = `-${overflow}px`;
+      } else if (menuRect.right > playerRect.right - 8) {
+        const overflow = menuRect.right - (playerRect.right - 8);
+        settingsDropdown.style.right = `${overflow}px`;
+      }
+    }
+
     // Settings dropdown clicks
     if (settingsBtn) settingsBtn.addEventListener('click', function (e) {
       e.stopPropagation();
@@ -2530,6 +2551,11 @@ document.addEventListener('DOMContentLoaded', async function () {
       const controls = document.querySelector('.custom-controls');
       if (controls) {
         controls.classList.toggle('settings-open', isSettingsMenuOpen);
+      }
+
+      if (isSettingsMenuOpen) {
+        showControls();
+        positionSettingsDropdown();
       }
 
       closeAllDropdowns();
@@ -2752,11 +2778,39 @@ document.addEventListener('DOMContentLoaded', async function () {
       });
     }
 
+    function setupSettingsPanelTabs() {
+      const tabs = document.querySelectorAll('.settings-tab-btn');
+      const contents = document.querySelectorAll('.settings-tab-content');
+      const closeBtn = document.getElementById('settings-panel-close-btn');
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          closeSettingsDropdown();
+        });
+      }
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const targetTab = this.getAttribute('data-tab');
+          tabs.forEach(t => t.classList.remove('active'));
+          contents.forEach(c => c.classList.remove('active'));
+          this.classList.add('active');
+          const targetContent = document.getElementById(`tab-content-${targetTab}`);
+          if (targetContent) {
+            targetContent.classList.add('active');
+          }
+        });
+      });
+    }
+
     // Call dropdown listeners setup
     setupQualityEventListeners();
     setupAudioEventListeners();
     setupSubtitleEventListeners();
     setupAutoSkipEventListeners();
+    setupSettingsPanelTabs();
 
     // Mobile Navigation & Search Wireup
     if (mobileMenuBtn && mobileNav && mobileNavOverlay) {
@@ -3825,7 +3879,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 // Customizable WebVTT Subtitle Engine Preset Handlers
 (function () {
-  document.addEventListener('DOMContentLoaded', function () {
+  function initCaptionSettingsEngine() {
     const openBtn = document.getElementById('open-caption-settings');
     const modal = document.getElementById('caption-settings-modal');
     const doneBtn = document.getElementById('caption-done');
@@ -3879,6 +3933,15 @@ document.addEventListener('DOMContentLoaded', async function () {
           el.style.color = s.textColor || '#ffffff';
         });
       }
+
+      // Update Live Preview Sample in Modal
+      const previewSample = document.getElementById('caption-preview-sample');
+      if (previewSample) {
+        previewSample.classList.remove('style-shadow', 'style-box', 'style-solid');
+        previewSample.classList.add(`style-${s.backdropStyle || 'shadow'}`);
+        previewSample.style.fontSize = fs;
+        previewSample.style.color = s.textColor || '#ffffff';
+      }
     }
 
     function populateControls(s) {
@@ -3888,6 +3951,11 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (positionPreset) positionPreset.value = s.position || defaults.position;
     }
 
+    function closeModal() {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
     const initial = loadSettings();
     applyCaptionSettings(initial);
     populateControls(initial);
@@ -3895,6 +3963,27 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (openBtn) {
       openBtn.addEventListener('click', function (e) {
         e.stopPropagation();
+
+        // Close settings dropdown if open
+        const settingsMenu = document.querySelector('.settings-menu');
+        if (settingsMenu) settingsMenu.classList.remove('active');
+        const controls = document.querySelector('.custom-controls');
+        if (controls) {
+          controls.classList.remove('settings-open');
+          controls.classList.remove('hidden');
+        }
+
+        // In fullscreen mode, ensure modal is inside the active fullscreen element
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+        const targetParent = fsEl || document.querySelector('.video-player') || document.body;
+        if (modal.parentElement !== targetParent) {
+          targetParent.appendChild(modal);
+        }
+
+        const cur = loadSettings();
+        populateControls(cur);
+        applyCaptionSettings(cur);
+
         modal.classList.add('active');
         modal.setAttribute('aria-hidden', 'false');
       });
@@ -3903,13 +3992,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (closeX) {
       closeX.addEventListener('click', function (e) {
         e.stopPropagation();
-        modal.classList.remove('active');
-        modal.setAttribute('aria-hidden', 'true');
+        closeModal();
       });
     }
 
     if (doneBtn) {
-      doneBtn.addEventListener('click', function () {
+      doneBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
         const newS = {
           fontSize: fontSizePreset ? fontSizePreset.value : defaults.fontSize,
           textColor: textColorPreset ? textColorPreset.value : defaults.textColor,
@@ -3918,13 +4007,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         };
         applyCaptionSettings(newS);
         saveSettings(newS);
-        modal.classList.remove('active');
-        modal.setAttribute('aria-hidden', 'true');
+        closeModal();
       });
     }
 
     if (resetBtn) {
-      resetBtn.addEventListener('click', function () {
+      resetBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
         populateControls(defaults);
         applyCaptionSettings(defaults);
         saveSettings(defaults);
@@ -3933,8 +4022,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     modal.addEventListener('click', function (e) {
       if (e.target === modal) {
-        modal.classList.remove('active');
-        modal.setAttribute('aria-hidden', 'true');
+        closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeModal();
       }
     });
 
@@ -3950,5 +4044,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         applyCaptionSettings(tmp);
       });
     });
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCaptionSettingsEngine);
+  } else {
+    initCaptionSettingsEngine();
+  }
 })();
