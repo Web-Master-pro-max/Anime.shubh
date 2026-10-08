@@ -2544,6 +2544,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.mozFullScreenElement ||
         document.msFullscreenElement);
 
+      if (videoPlayer) {
+        videoPlayer.classList.toggle('is-fullscreen', isFullscreen);
+      }
+      document.body.classList.toggle('is-player-fullscreen', isFullscreen);
+      syncSettingsContainer();
+
       if (isFullscreen) {
         lockLandscapeOrientation();
         if (fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
@@ -2567,6 +2573,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
     mainVideo.addEventListener('timeupdate', updateTime);
 
@@ -2574,6 +2582,13 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (!settingsDropdown || !videoPlayer) return;
       settingsDropdown.style.right = '';
       settingsDropdown.style.maxHeight = '';
+
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+      if (fsEl || (videoPlayer && videoPlayer.classList.contains('is-fullscreen'))) {
+        // In fullscreen, layout is controlled entirely by our robust fullscreen CSS rules
+        return;
+      }
+
       if (window.innerWidth <= 768 || window.innerHeight <= 520) {
         // Mobile bottom-sheet / side-sheet is handled by CSS fixed rules
         return;
@@ -2604,19 +2619,27 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (!dropdown) return;
 
       const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-      const isMobile = window.innerWidth <= 768;
+      const isMobile = window.innerWidth <= 768 || window.innerHeight <= 520 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches && window.innerWidth <= 1024);
 
-      if (isMobile) {
-        // Escapes video-player-wrapper overflow:hidden and custom-controls transforms
-        const targetParent = fsEl ? fsEl : document.body;
-        if (dropdown.parentElement !== targetParent) {
-          targetParent.appendChild(dropdown);
+      if (fsEl) {
+        // In FULLSCREEN (both desktop and mobile): append directly to fsEl (video player)
+        // so it escapes custom-controls transforms and is always rendered in the fullscreen tree!
+        if (dropdown.parentElement !== fsEl) {
+          fsEl.appendChild(dropdown);
         }
-        if (backdrop && backdrop.parentElement !== targetParent) {
-          targetParent.appendChild(backdrop);
+        if (backdrop && backdrop.parentElement !== fsEl) {
+          fsEl.appendChild(backdrop);
+        }
+      } else if (isMobile) {
+        // Normal mobile: append to body to escape video-player-wrapper overflow:hidden
+        if (dropdown.parentElement !== document.body) {
+          document.body.appendChild(dropdown);
+        }
+        if (backdrop && backdrop.parentElement !== document.body) {
+          document.body.appendChild(backdrop);
         }
       } else {
-        // Desktop: attach inside settingsMenu to anchor right above gear button
+        // Normal desktop: attach inside settingsMenu to anchor right above gear button
         if (settingsMenuEl && dropdown.parentElement !== settingsMenuEl) {
           settingsMenuEl.appendChild(dropdown);
         }
@@ -2630,7 +2653,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     syncSettingsContainer();
     document.addEventListener('fullscreenchange', syncSettingsContainer);
     document.addEventListener('webkitfullscreenchange', syncSettingsContainer);
+    document.addEventListener('mozfullscreenchange', syncSettingsContainer);
+    document.addEventListener('MSFullscreenChange', syncSettingsContainer);
     window.addEventListener('resize', syncSettingsContainer);
+    window.addEventListener('orientationchange', syncSettingsContainer);
 
     // Settings dropdown clicks
     if (settingsBtn) settingsBtn.addEventListener('click', function (e) {
@@ -2654,7 +2680,8 @@ document.addEventListener('DOMContentLoaded', async function () {
           window.switchSettingsView('main', true);
         }
         positionSettingsDropdown();
-        if (window.innerWidth <= 768) {
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+        if (!fsEl && window.innerWidth <= 768) {
           document.body.style.overflow = 'hidden';
         }
       } else {

@@ -1954,20 +1954,35 @@ input:checked + .slider:before {
     display: none !important;
   }
 
+  .settings-mobile-backdrop.active,
+  .video-player.is-fullscreen .settings-mobile-backdrop.active,
+  .video-player:fullscreen .settings-mobile-backdrop.active,
+  .video-player:-webkit-full-screen .settings-mobile-backdrop.active {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 2147483640 !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
   .settings-dropdown {
     position: fixed !important;
     top: 0 !important;
     bottom: 0 !important;
     right: 0 !important;
     left: auto !important;
-    width: min(320px, 85vw) !important;
-    max-width: 340px !important;
+    width: min(340px, 85vw) !important;
+    max-width: 360px !important;
     height: 100vh !important;
     max-height: 100vh !important;
     border-radius: 18px 0 0 18px !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-right: none !important;
-    background: rgba(13, 14, 23, 0.97) !important;
+    background: rgba(13, 14, 23, 0.98) !important;
     backdrop-filter: blur(28px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
     z-index: 2147483645 !important;
@@ -1983,8 +1998,28 @@ input:checked + .slider:before {
     display: flex !important;
   }
 
+  /* When inside fullscreen video player */
+  .video-player.is-fullscreen .settings-dropdown,
+  .video-player:fullscreen .settings-dropdown,
+  .video-player:-webkit-full-screen .settings-dropdown,
+  .video-player:-moz-full-screen .settings-dropdown,
+  .video-player:-ms-fullscreen .settings-dropdown {
+    position: absolute !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    left: auto !important;
+  }
+
   .settings-dropdown.active,
-  .settings-menu.active .settings-dropdown {
+  .settings-menu.active .settings-dropdown,
+  .video-player.is-fullscreen .settings-dropdown.active,
+  .video-player:fullscreen .settings-dropdown.active,
+  .video-player:-webkit-full-screen .settings-dropdown.active,
+  .video-player:-moz-full-screen .settings-dropdown.active,
+  .video-player:-ms-fullscreen .settings-dropdown.active {
     transform: translateX(0) !important;
     display: flex !important;
     opacity: 1 !important;
@@ -1995,6 +2030,15 @@ input:checked + .slider:before {
   .settings-sub-body {
     max-height: calc(100vh - 65px) !important;
     padding-bottom: 20px !important;
+  }
+
+  .video-player.is-fullscreen .settings-menu-list,
+  .video-player.is-fullscreen .settings-sub-body,
+  .video-player:fullscreen .settings-menu-list,
+  .video-player:fullscreen .settings-sub-body,
+  .video-player:-webkit-full-screen .settings-menu-list,
+  .video-player:-webkit-full-screen .settings-sub-body {
+    max-height: calc(100% - 65px) !important;
   }
 }
 
@@ -3036,6 +3080,137 @@ input:checked + .slider:before {
 :-webkit-full-screen .speed-dropdown,
 :-webkit-full-screen .settings-dropdown {
   z-index: 10000 !important;
+}
+
+/* ========================================================
+   FULLSCREEN PLAYER SETTINGS PANEL (DESKTOP & MOBILE)
+   ======================================================== */
+
+/* Backdrop inside fullscreen player */
+.video-player.is-fullscreen .settings-mobile-backdrop.active,
+.video-player:fullscreen .settings-mobile-backdrop.active,
+.video-player:-webkit-full-screen .settings-mobile-backdrop.active,
+.video-player:-moz-full-screen .settings-mobile-backdrop.active,
+.video-player:-ms-fullscreen .settings-mobile-backdrop.active {
+  display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: rgba(0, 0, 0, 0.55) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  z-index: 2147483640 !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Fullscreen on Desktop / Standard Height (> 520px and > 768px):
+   Elegantly floats above the bottom controls bar, pinned to bottom: 84px and right: 24px */
+@media (min-height: 521px) and (min-width: 769px) {
+  .video-player.is-fullscreen .settings-dropdown,
+  .video-player:fullscreen .settings-dropdown,
+  .video-player:-webkit-full-screen .settings-dropdown,
+  .video-player:-moz-full-screen .settings-dropdown,
+  .video-player:-ms-fullscreen .settings-dropdown {
+    position: absolute !important;
+    bottom: 84px !important;
+    right: 24px !important;
+    top: auto !important;
+    left: auto !important;
+    width: 310px !important;
+    max-width: min(340px, calc(100vw - 32px)) !important;
+    max-height: min(480px, calc(100vh - 105px)) !important;
+    border-radius: 18px !important;
+    background: rgba(13, 14, 23, 0.96) !important;
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9) !important;
+    z-index: 2147483645 !important;
+    transform: translateY(8px) scale(0.97) !important;
+    transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .video-player.is-fullscreen .settings-dropdown.active,
+  .video-player:fullscreen .settings-dropdown.active,
+  .video-player:-webkit-full-screen .settings-dropdown.active,
+  .video-player:-moz-full-screen .settings-dropdown.active,
+  .video-player:-ms-fullscreen .settings-dropdown.active {
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(0) scale(1) !important;
+  }
+
+  .video-player.is-fullscreen .settings-drag-handle,
+  .video-player:fullscreen .settings-drag-handle,
+  .video-player:-webkit-full-screen .settings-drag-handle,
+  .video-player:-moz-full-screen .settings-drag-handle,
+  .video-player:-ms-fullscreen .settings-drag-handle {
+    display: none !important;
+  }
+
+  .video-player.is-fullscreen .settings-menu-list,
+  .video-player:fullscreen .settings-menu-list,
+  .video-player:-webkit-full-screen .settings-menu-list {
+    max-height: calc(min(480px, calc(100vh - 105px)) - 50px) !important;
+  }
+
+  .video-player.is-fullscreen .settings-sub-body,
+  .video-player:fullscreen .settings-sub-body,
+  .video-player:-webkit-full-screen .settings-sub-body {
+    max-height: calc(min(480px, calc(100vh - 105px)) - 50px) !important;
+  }
+}
+
+/* Fullscreen on Portrait Mobile (> 520px and <= 768px):
+   Bottom sheet pinned to bottom: 0, left: 0, right: 0 */
+@media (min-height: 521px) and (max-width: 768px) {
+  .video-player.is-fullscreen .settings-dropdown,
+  .video-player:fullscreen .settings-dropdown,
+  .video-player:-webkit-full-screen .settings-dropdown,
+  .video-player:-moz-full-screen .settings-dropdown,
+  .video-player:-ms-fullscreen .settings-dropdown {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: min(78vh, 560px) !important;
+    border-radius: 22px 22px 0 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-bottom: none !important;
+    background: rgba(13, 14, 23, 0.97) !important;
+    backdrop-filter: blur(32px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+    z-index: 2147483645 !important;
+    box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.95) !important;
+    transform: translateY(105%) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease !important;
+    display: flex !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .video-player.is-fullscreen .settings-dropdown.active,
+  .video-player:fullscreen .settings-dropdown.active,
+  .video-player:-webkit-full-screen .settings-dropdown.active,
+  .video-player:-moz-full-screen .settings-dropdown.active,
+  .video-player:-ms-fullscreen .settings-dropdown.active {
+    transform: translateY(0) !important;
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
 }
 
 /* Orientation specific styles */
