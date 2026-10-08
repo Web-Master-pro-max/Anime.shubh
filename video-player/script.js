@@ -1327,6 +1327,14 @@ document.addEventListener('DOMContentLoaded', async function () {
           subtitleList.appendChild(listOption);
         });
       }
+
+      // Add Subtitle Appearance Style option in footer dropdown
+      const styleBtnDropdown = document.createElement('div');
+      styleBtnDropdown.className = 'subtitle-option subtitle-style-trigger';
+      styleBtnDropdown.setAttribute('role', 'button');
+      styleBtnDropdown.setAttribute('tabindex', '0');
+      styleBtnDropdown.innerHTML = '<i class="fas fa-palette"></i> Customize Subtitle Style...';
+      subtitleDropdown.appendChild(styleBtnDropdown);
     }
 
     // Set subtitle track and render via custom styles
@@ -2593,7 +2601,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     });
 
-    document.querySelectorAll('.server-btn, .quality-btn, .audio-btn, .speed-btn').forEach(btn => {
+    document.querySelectorAll('.server-btn, .quality-btn, .audio-btn, .subtitle-selector .settings-btn, .speed-btn').forEach(btn => {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         const dropdown = this.nextElementSibling;
@@ -2611,9 +2619,9 @@ document.addEventListener('DOMContentLoaded', async function () {
       });
     });
 
-    const subtitleBtn = document.querySelector('.subtitle-btn');
-    if (subtitleBtn) {
-      subtitleBtn.addEventListener('click', function (e) {
+    const playerSubtitleBtn = document.querySelector('.control-btn.subtitle-btn');
+    if (playerSubtitleBtn) {
+      playerSubtitleBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         if (!subtitleTracks || subtitleTracks.length === 0) {
           showPlayerToast('No Subtitles Available');
@@ -2692,23 +2700,17 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function setupSubtitleEventListeners() {
-      const subtitleBtn = document.querySelector('.subtitle-btn');
-      if (subtitleBtn) {
-        subtitleBtn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          if (currentSubtitleTrack >= 0) {
-            setSubtitle(-1);
-          } else {
-            if (subtitleTracks && subtitleTracks.length > 0) {
-              setSubtitle(0);
-            } else {
-              showPlayerToast('No Subtitles Available');
-            }
-          }
-        });
-      }
-
       function handleSubtitleClick(e) {
+        const styleTrigger = e.target.closest('.subtitle-style-trigger');
+        if (styleTrigger) {
+          e.stopPropagation();
+          closeAllDropdowns();
+          closeSettingsDropdown();
+          if (typeof window.openCaptionSettingsModal === 'function') {
+            window.openCaptionSettingsModal();
+          }
+          return;
+        }
         const option = e.target.closest('.subtitle-option');
         if (!option) return;
         e.stopPropagation();
@@ -2722,6 +2724,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           setSubtitle(isNaN(idx) ? -1 : idx);
         }
         closeSettingsDropdown();
+        closeAllDropdowns();
       }
 
       const subtitleContainer = document.querySelector('.subtitle-options');
@@ -2797,6 +2800,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function setupSettingsPanelTabs() {
+      const tabsBar = document.querySelector('.settings-tabs-bar');
       const tabs = document.querySelectorAll('.settings-tab-btn');
       const contents = document.querySelectorAll('.settings-tab-content');
       const closeBtn = document.getElementById('settings-panel-close-btn');
@@ -2808,19 +2812,68 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
       }
 
-      tabs.forEach(tab => {
-        tab.addEventListener('click', function (e) {
-          e.stopPropagation();
-          const targetTab = this.getAttribute('data-tab');
-          tabs.forEach(t => t.classList.remove('active'));
-          contents.forEach(c => c.classList.remove('active'));
-          this.classList.add('active');
-          const targetContent = document.getElementById(`tab-content-${targetTab}`);
-          if (targetContent) {
-            targetContent.classList.add('active');
+      if (tabsBar) {
+        // 1. Mouse wheel horizontal scrolling
+        tabsBar.addEventListener('wheel', function (e) {
+          if (Math.abs(e.deltaY) > Math.abs(e.deltaX) || e.deltaY !== 0) {
+            e.preventDefault();
+            tabsBar.scrollLeft += (e.deltaY || e.deltaX) * 0.9;
+          }
+        }, { passive: false });
+
+        // 2. Mouse click & drag to scroll
+        let isDown = false;
+        let startX = 0;
+        let scrollStart = 0;
+        let didDrag = false;
+
+        tabsBar.addEventListener('mousedown', function (e) {
+          isDown = true;
+          didDrag = false;
+          startX = e.pageX - tabsBar.offsetLeft;
+          scrollStart = tabsBar.scrollLeft;
+          tabsBar.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mouseup', function () {
+          if (isDown) {
+            isDown = false;
+            if (tabsBar) tabsBar.style.cursor = 'grab';
           }
         });
-      });
+
+        tabsBar.addEventListener('mousemove', function (e) {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - tabsBar.offsetLeft;
+          const walk = (x - startX) * 1.4;
+          if (Math.abs(walk) > 4) {
+            didDrag = true;
+          }
+          tabsBar.scrollLeft = scrollStart - walk;
+        });
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', function (e) {
+            if (didDrag) {
+              e.preventDefault();
+              e.stopPropagation();
+              return;
+            }
+            e.stopPropagation();
+            const targetTab = this.getAttribute('data-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            const targetContent = document.getElementById(`tab-content-${targetTab}`);
+            if (targetContent) {
+              targetContent.classList.add('active');
+            }
+            // Auto-center selected tab in view smoothly
+            this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          });
+        });
+      }
     }
 
     // Call dropdown listeners setup
@@ -3978,34 +4031,82 @@ document.addEventListener('DOMContentLoaded', async function () {
     applyCaptionSettings(initial);
     populateControls(initial);
 
+    window.openCaptionSettingsModal = function () {
+      if (!modal) return;
+
+      // Close settings dropdown if open
+      const settingsMenu = document.querySelector('.settings-menu');
+      if (settingsMenu) settingsMenu.classList.remove('active');
+      const settingsDropdown = document.querySelector('.settings-dropdown');
+      if (settingsDropdown) {
+        settingsDropdown.style.right = '';
+        settingsDropdown.style.maxHeight = '';
+      }
+      const controls = document.querySelector('.custom-controls');
+      if (controls) {
+        controls.classList.remove('settings-open');
+        controls.classList.remove('hidden');
+      }
+
+      // Close other dropdowns
+      document.querySelectorAll('.server-dropdown, .quality-dropdown, .audio-dropdown, .subtitle-dropdown, .speed-dropdown').forEach(d => {
+        d.style.display = 'none';
+      });
+      document.querySelectorAll('.server-selector, .quality-selector, .audio-selector, .subtitle-selector, .playback-speed-selector').forEach(s => {
+        s.classList.remove('active');
+      });
+
+      // Target parent: In fullscreen, must be inside fullscreenElement; in normal mode, must be document.body so it isn't clipped by video-player-wrapper overflow: hidden
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+      const targetParent = fsEl ? fsEl : document.body;
+      if (modal.parentElement !== targetParent) {
+        targetParent.appendChild(modal);
+      }
+
+      const cur = loadSettings();
+      populateControls(cur);
+      applyCaptionSettings(cur);
+
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+    };
+
     if (openBtn) {
       openBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-
-        // Close settings dropdown if open
-        const settingsMenu = document.querySelector('.settings-menu');
-        if (settingsMenu) settingsMenu.classList.remove('active');
-        const controls = document.querySelector('.custom-controls');
-        if (controls) {
-          controls.classList.remove('settings-open');
-          controls.classList.remove('hidden');
-        }
-
-        // In fullscreen mode, ensure modal is inside the active fullscreen element
-        const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-        const targetParent = fsEl || document.querySelector('.video-player') || document.body;
-        if (modal.parentElement !== targetParent) {
-          targetParent.appendChild(modal);
-        }
-
-        const cur = loadSettings();
-        populateControls(cur);
-        applyCaptionSettings(cur);
-
-        modal.classList.add('active');
-        modal.setAttribute('aria-hidden', 'false');
+        window.openCaptionSettingsModal();
       });
     }
+
+    // Global delegation for any open-caption-settings triggers
+    document.addEventListener('click', function (e) {
+      const trigger = e.target.closest('#open-caption-settings, .caption-settings-launch-card, .subtitle-style-trigger, [data-action="open-caption-settings"]');
+      if (trigger) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.openCaptionSettingsModal();
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('#open-caption-settings, .caption-settings-launch-card, .subtitle-style-trigger')) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.openCaptionSettingsModal();
+      }
+    });
+
+    // Re-attach modal to appropriate container when fullscreen state changes
+    function syncModalContainer() {
+      if (!modal) return;
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+      const targetParent = fsEl ? fsEl : document.body;
+      if (modal.parentElement !== targetParent) {
+        targetParent.appendChild(modal);
+      }
+    }
+    document.addEventListener('fullscreenchange', syncModalContainer);
+    document.addEventListener('webkitfullscreenchange', syncModalContainer);
 
     if (closeX) {
       closeX.addEventListener('click', function (e) {
@@ -4026,6 +4127,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         applyCaptionSettings(newS);
         saveSettings(newS);
         closeModal();
+        if (typeof showPlayerToast === 'function') {
+          showPlayerToast('Subtitle Appearance Saved');
+        }
       });
     }
 
