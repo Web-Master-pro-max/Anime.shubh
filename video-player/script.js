@@ -1163,7 +1163,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     function closeSettingsDropdown() {
       isSettingsMenuOpen = false;
       if (settingsMenu) settingsMenu.classList.remove('active');
-      if (settingsDropdown) settingsDropdown.style.right = '';
+      if (settingsDropdown) {
+        settingsDropdown.style.right = '';
+        settingsDropdown.style.maxHeight = '';
+      }
       const controls = document.querySelector('.custom-controls');
       if (controls) {
         controls.classList.remove('settings-open');
@@ -2437,6 +2440,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (videoPlayer.requestFullscreen) videoPlayer.requestFullscreen();
         else if (videoPlayer.webkitRequestFullscreen) videoPlayer.webkitRequestFullscreen();
         else if (videoPlayer.msRequestFullscreen) videoPlayer.msRequestFullscreen();
+        else if (mainVideo && mainVideo.webkitEnterFullscreen) mainVideo.webkitEnterFullscreen();
       }
     }
 
@@ -2531,6 +2535,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     function positionSettingsDropdown() {
       if (!settingsDropdown || !videoPlayer) return;
       settingsDropdown.style.right = '';
+      settingsDropdown.style.maxHeight = '';
+      if (window.innerWidth <= 768 || window.innerHeight <= 520) {
+        // Mobile bottom-sheet / side-sheet is handled by CSS fixed rules
+        return;
+      }
       const playerRect = videoPlayer.getBoundingClientRect();
       const menuRect = settingsDropdown.getBoundingClientRect();
       if (menuRect.left < playerRect.left + 8) {
@@ -2539,6 +2548,14 @@ document.addEventListener('DOMContentLoaded', async function () {
       } else if (menuRect.right > playerRect.right - 8) {
         const overflow = menuRect.right - (playerRect.right - 8);
         settingsDropdown.style.right = `${overflow}px`;
+      }
+
+      // Safeguard against extending above video player top
+      if (menuRect.top < playerRect.top + 8) {
+        const availableHeight = menuRect.bottom - (playerRect.top + 12);
+        if (availableHeight > 180) {
+          settingsDropdown.style.maxHeight = `${availableHeight}px`;
+        }
       }
     }
 
@@ -2562,7 +2579,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     document.addEventListener('click', function (event) {
-      if (isSettingsMenuOpen && !settingsMenu.contains(event.target) && !settingsBtn.contains(event.target)) {
+      if (isSettingsMenuOpen && !settingsMenu.contains(event.target) && !settingsBtn.contains(event.target) && !event.target.closest('.settings-dropdown')) {
         closeSettingsDropdown();
       }
       if (!event.target.closest('.server-selector') &&
@@ -2570,7 +2587,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         !event.target.closest('.audio-selector') &&
         !event.target.closest('.subtitle-selector') &&
         !event.target.closest('.playback-speed-selector') &&
-        !event.target.closest('.settings-menu')) {
+        !event.target.closest('.settings-menu') &&
+        !event.target.closest('.settings-dropdown')) {
         closeAllDropdowns();
       }
     });
