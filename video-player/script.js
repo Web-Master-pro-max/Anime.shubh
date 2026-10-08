@@ -836,8 +836,8 @@ document.addEventListener('DOMContentLoaded', async function () {
           <div class="series-progress-card" style="margin: 0; background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08);">
             <div class="series-progress-header">
               <div class="series-progress-title">
-                <i class="fas fa-chart-line" style="color: var(--primary);"></i>
-                <span>Series Watch Progress</span>
+                <i class="fas fa-chart-line"></i>
+                <span>Watch Progress</span>
               </div>
               <span class="series-progress-percent">${overallPercent}%</span>
             </div>
@@ -845,9 +845,27 @@ document.addEventListener('DOMContentLoaded', async function () {
               <div class="series-progress-fill" style="width: ${overallPercent}%;"></div>
             </div>
             <div class="series-progress-stats">
-              <div class="stat-chip"><i class="fas fa-film"></i><span>Total: <strong>${totalEpisodes}</strong></span></div>
-              <div class="stat-chip"><i class="fas fa-check-circle" style="color:#00ff88;"></i><span>Watched: <strong>${completedCount}</strong></span></div>
-              <div class="stat-chip"><i class="fas fa-clock" style="color:var(--secondary);"></i><span>Left: <strong>${remainingCount}</strong></span></div>
+              <div class="stat-chip">
+                <i class="fas fa-layer-group stat-icon stat-total"></i>
+                <div class="stat-content">
+                  <span class="stat-label">Total</span>
+                  <span class="stat-value">${totalEpisodes}</span>
+                </div>
+              </div>
+              <div class="stat-chip">
+                <i class="fas fa-check-circle stat-icon stat-watched"></i>
+                <div class="stat-content">
+                  <span class="stat-label">Watched</span>
+                  <span class="stat-value">${completedCount}</span>
+                </div>
+              </div>
+              <div class="stat-chip">
+                <i class="fas fa-clock stat-icon stat-left"></i>
+                <div class="stat-content">
+                  <span class="stat-label">Left</span>
+                  <span class="stat-value">${remainingCount}</span>
+                </div>
+              </div>
             </div>
           </div>
         `;
@@ -1323,6 +1341,47 @@ document.addEventListener('DOMContentLoaded', async function () {
         return el;
       }
 
+      function formatSubtitleHtml(rawText) {
+        if (!rawText) return '';
+        let s = String(rawText);
+
+        // 1. Strip ASS/SSA override tags like {\an8}, {\pos(..)}, {\i1}, etc.
+        s = s.replace(/\{[^}\n]*\}/g, '');
+
+        // 2. Strip WebVTT timestamp tags like <00:19.000> or <00:01:23.456>
+        s = s.replace(/<\d{1,2}:\d{2}(?::\d{2})?(?:\.\d+)?>/g, '');
+
+        // 3. Strip WebVTT voice/class/lang/ruby/rt/font tags while preserving inner text
+        s = s.replace(/<\/?(?:v|c|lang|ruby|rt|font)(?:\.[^>\s]+|\s+[^>]+)?>/gi, '');
+
+        // 4. Safely escape special HTML characters
+        s = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        // 5. Restore safe formatting tags so <i>, <b>, <u> render properly as styled text
+        // Italics: <i>, </i>, <em>, </em>
+        s = s.replace(/&lt;(\/?)i(?:\s+[^&>]*)?&gt;/gi, '<$1i>');
+        s = s.replace(/&lt;(\/?)em(?:\s+[^&>]*)?&gt;/gi, '<$1em>');
+        // Bold: <b>, </b>, <strong>, </strong>
+        s = s.replace(/&lt;(\/?)b(?:\s+[^&>]*)?&gt;/gi, '<$1b>');
+        s = s.replace(/&lt;(\/?)strong(?:\s+[^&>]*)?&gt;/gi, '<$1strong>');
+        // Underline: <u>, </u>
+        s = s.replace(/&lt;(\/?)u(?:\s+[^&>]*)?&gt;/gi, '<$1u>');
+
+        // 6. Ensure matching closing tags for open formatting tags
+        ['i', 'b', 'u', 'em', 'strong'].forEach(tag => {
+          const openCount = (s.match(new RegExp(`<${tag}>`, 'gi')) || []).length;
+          const closeCount = (s.match(new RegExp(`</${tag}>`, 'gi')) || []).length;
+          if (openCount > closeCount) {
+            s += `</${tag}>`.repeat(openCount - closeCount);
+          }
+        });
+
+        // 7. Convert line breaks
+        s = s.replace(/\r\n|\r|\n/g, '<br>');
+
+        return s;
+      }
+
       function showCaption(text) {
         if (!captionOverlay) return;
         captionOverlay.classList.remove('hidden');
@@ -1339,7 +1398,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         captionOverlay.classList.remove('pos-raised', 'pos-bottom');
         if (presetCfg.position === 'raised') captionOverlay.classList.add('pos-raised');
 
-        captionOverlay.innerHTML = `<div class="caption-text style-${presetCfg.backdropStyle || 'shadow'}" style="font-size: ${fs}; color: ${presetCfg.textColor || '#ffffff'};">${escapeHtml(text).replace(/\n/g, '<br>')}</div>`;
+        captionOverlay.innerHTML = `<div class="caption-text style-${presetCfg.backdropStyle || 'shadow'}" style="font-size: ${fs}; color: ${presetCfg.textColor || '#ffffff'};">${formatSubtitleHtml(text)}</div>`;
       }
 
       function hideCaption() {
@@ -1605,14 +1664,22 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
       }
 
-      // 2. Standard anime OP fallbacks: 15s to 104.5s (89.5s length)
+      // 2. Customizable skip duration (Auto, 60s, 75s, 85s, 90s)
+      const durationPref = localStorage.getItem('@infinx_skip_intro_duration') || 'auto';
+      let standardOpLengthSec = 89.5;
+      if (durationPref === '60') standardOpLengthSec = 60;
+      else if (durationPref === '75') standardOpLengthSec = 75;
+      else if (durationPref === '85') standardOpLengthSec = 85;
+      else if (durationPref === '90') standardOpLengthSec = 90;
+
+      // Anime OP fallbacks
       if (!intro) {
-        intro = { start: 15, end: Math.min(dur - 60, 104.5) };
+        intro = { start: 15, end: Math.min(dur - 60, 15 + standardOpLengthSec) };
       }
 
-      // 3. Standard anime ED fallbacks: last 90s to last 5s
+      // Anime ED fallbacks
       if (!outro) {
-        outro = { start: Math.max(intro ? intro.end + 60 : 60, dur - 95), end: Math.max(0, dur - 5) };
+        outro = { start: Math.max(intro ? intro.end + 60 : 60, dur - standardOpLengthSec - 5), end: Math.max(0, dur - 5) };
       }
 
       return { intro, outro };
@@ -1757,7 +1824,9 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (currentTime >= outro.start && currentTime <= outro.end) {
         const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
         const hasNext = curIndex >= 0 && curIndex < siblingEpisodes.length - 1;
-        if (hasNext && !outroCountdownActive && !outroDismissed) {
+        const autoSkipOutroSetting = localStorage.getItem('@infinx_auto_skip_outro');
+        const autoSkipOutroEnabled = autoSkipOutroSetting === null || autoSkipOutroSetting === 'true';
+        if (hasNext && autoSkipOutroEnabled && !outroCountdownActive && !outroDismissed) {
           startOutroCountdown();
         }
       } else if (currentTime < outro.start) {
@@ -2564,10 +2633,72 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     }
 
+    function setupAutoSkipEventListeners() {
+      const introCheckbox = document.getElementById('setting-auto-skip-intro');
+      const outroCheckbox = document.getElementById('setting-auto-skip-outro');
+      const durationChips = document.querySelectorAll('#skip-duration-options .duration-chip');
+
+      // 1. Initial State from localStorage
+      const introPref = localStorage.getItem('@infinx_auto_skip_intro');
+      if (introCheckbox) {
+        introCheckbox.checked = introPref === null || introPref === 'true';
+        introCheckbox.addEventListener('change', function () {
+          localStorage.setItem('@infinx_auto_skip_intro', introCheckbox.checked ? 'true' : 'false');
+          showPlayerToast(introCheckbox.checked ? 'Auto-Skip Intro: Enabled' : 'Auto-Skip Intro: Disabled');
+          const skipBtn = document.getElementById('skip-intro-btn');
+          if (detectedIntroOutro.intro && mainVideo) {
+            const cur = mainVideo.currentTime;
+            if (cur >= detectedIntroOutro.intro.start && cur < detectedIntroOutro.intro.end) {
+              if (introCheckbox.checked && !introAutoSkipped) {
+                introAutoSkipped = true;
+                skipIntroAction();
+              } else if (!introCheckbox.checked && skipBtn) {
+                skipBtn.classList.remove('hidden');
+              }
+            }
+          }
+        });
+      }
+
+      const outroPref = localStorage.getItem('@infinx_auto_skip_outro');
+      if (outroCheckbox) {
+        outroCheckbox.checked = outroPref === null || outroPref === 'true';
+        outroCheckbox.addEventListener('change', function () {
+          localStorage.setItem('@infinx_auto_skip_outro', outroCheckbox.checked ? 'true' : 'false');
+          showPlayerToast(outroCheckbox.checked ? 'Auto-Skip Outro: Enabled' : 'Auto-Skip Outro: Disabled');
+          if (!outroCheckbox.checked && outroCountdownActive) {
+            cancelOutroCountdown();
+          }
+        });
+      }
+
+      // 2. Skip Duration Chips
+      const currentDuration = localStorage.getItem('@infinx_skip_intro_duration') || 'auto';
+      durationChips.forEach(chip => {
+        const val = chip.getAttribute('data-duration') || 'auto';
+        if (val === currentDuration) {
+          chip.classList.add('active');
+        } else {
+          chip.classList.remove('active');
+        }
+
+        chip.addEventListener('click', function (e) {
+          e.stopPropagation();
+          durationChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          localStorage.setItem('@infinx_skip_intro_duration', val);
+          detectedIntroOutro = computeIntroOutroWindows();
+          const displayLabel = val === 'auto' ? 'Smart Auto' : `${val}s`;
+          showPlayerToast(`Skip Duration: ${displayLabel}`);
+        });
+      });
+    }
+
     // Call dropdown listeners setup
     setupQualityEventListeners();
     setupAudioEventListeners();
     setupSubtitleEventListeners();
+    setupAutoSkipEventListeners();
 
     // Mobile Navigation & Search Wireup
     if (mobileMenuBtn && mobileNav && mobileNavOverlay) {
@@ -3502,6 +3633,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       setupQualityEventListeners();
       setupAudioEventListeners();
       setupSubtitleEventListeners();
+      setupAutoSkipEventListeners();
 
       if (mainVideo.textTracks) {
         mainVideo.textTracks.addEventListener('change', function () {

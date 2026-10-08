@@ -236,6 +236,42 @@
                       <button id="open-caption-settings" class="settings-btn">Caption Settings</button>
                     </div>
                   </div>
+                  <div class="settings-section" id="auto-skip-settings-section">
+                    <div class="settings-title"><i class="fas fa-forward" style="color: var(--primary);"></i> Auto-Skip Preferences</div>
+                    
+                    <div class="setting-toggle-row">
+                      <div class="toggle-text">
+                        <span class="toggle-label">Auto-Skip Opening (Intro)</span>
+                        <span class="toggle-hint">Fast-forward past theme songs</span>
+                      </div>
+                      <label class="switch">
+                        <input type="checkbox" id="setting-auto-skip-intro" checked>
+                        <span class="slider round"></span>
+                      </label>
+                    </div>
+
+                    <div class="setting-toggle-row">
+                      <div class="toggle-text">
+                        <span class="toggle-label">Auto-Skip Ending (Outro)</span>
+                        <span class="toggle-hint">Auto-play next episode when credits roll</span>
+                      </div>
+                      <label class="switch">
+                        <input type="checkbox" id="setting-auto-skip-outro" checked>
+                        <span class="slider round"></span>
+                      </label>
+                    </div>
+
+                    <div class="setting-duration-container">
+                      <div class="setting-sub-label">Intro Skip Duration</div>
+                      <div class="skip-duration-chips" id="skip-duration-options">
+                        <div class="duration-chip active" data-duration="auto">Auto</div>
+                        <div class="duration-chip" data-duration="60">60s</div>
+                        <div class="duration-chip" data-duration="75">75s</div>
+                        <div class="duration-chip" data-duration="85">85s</div>
+                        <div class="duration-chip" data-duration="90">90s</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -478,8 +514,8 @@
       <div class="series-progress-card" id="series-progress-card" style="display: none;">
         <div class="series-progress-header">
           <div class="series-progress-title">
-            <i class="fas fa-chart-line" style="color: var(--primary);"></i>
-            <span>Series Watch Progress</span>
+            <i class="fas fa-chart-line"></i>
+            <span>Watch Progress</span>
           </div>
           <span class="series-progress-percent" id="series-progress-percent">0%</span>
         </div>
@@ -488,16 +524,25 @@
         </div>
         <div class="series-progress-stats">
           <div class="stat-chip">
-            <i class="fas fa-film"></i>
-            <span>Episodes: <strong id="stat-total-episodes">0</strong></span>
+            <i class="fas fa-layer-group stat-icon stat-total"></i>
+            <div class="stat-content">
+              <span class="stat-label">Total</span>
+              <span class="stat-value" id="stat-total-episodes">0</span>
+            </div>
           </div>
           <div class="stat-chip">
-            <i class="fas fa-check-circle" style="color: #00ff88;"></i>
-            <span>Watched: <strong id="stat-watched-episodes">0</strong></span>
+            <i class="fas fa-check-circle stat-icon stat-watched"></i>
+            <div class="stat-content">
+              <span class="stat-label">Watched</span>
+              <span class="stat-value" id="stat-watched-episodes">0</span>
+            </div>
           </div>
           <div class="stat-chip">
-            <i class="fas fa-clock" style="color: var(--secondary);"></i>
-            <span>Remaining: <strong id="stat-remaining-episodes">0</strong></span>
+            <i class="fas fa-clock stat-icon stat-left"></i>
+            <div class="stat-content">
+              <span class="stat-label">Left</span>
+              <span class="stat-value" id="stat-remaining-episodes">0</span>
+            </div>
           </div>
         </div>
       </div>
