@@ -590,8 +590,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
           if (hls.audioTracks && hls.audioTracks.length > 0) {
             audioTracks = hls.audioTracks;
+            const preferredIndex = matchPreferredAudioTrack(audioTracks);
+            hls.audioTrack = preferredIndex;
+            currentAudioTrack = preferredIndex;
             updateAudioOptions();
-            currentAudioTrack = hls.audioTrack >= 0 ? hls.audioTrack : 0;
             updateAudioDisplay(currentAudioTrack);
           } else {
             updateAudioOptions();
@@ -604,9 +606,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             updateSubtitleOptions();
           }
 
-          // Restore position when switching servers or resume saved progress
+          // Restore position when switching servers or resume saved progress (supports ?t=seconds)
+          const urlParams = new URLSearchParams(window.location.search);
+          const paramT = parseFloat(urlParams.get('t'));
           if (seekTime !== null && !isNaN(seekTime) && seekTime > 0) {
             mainVideo.currentTime = seekTime;
+          } else if (!isNaN(paramT) && paramT > 0) {
+            mainVideo.currentTime = paramT;
           } else {
             resumeSavedProgress();
           }
@@ -622,21 +628,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, function (event, data) {
           if (data.audioTracks && data.audioTracks.length > 0) {
             audioTracks = data.audioTracks;
-            updateAudioOptions();
-
-            // Sync active selection state
-            const activeIndex = hls.audioTrack;
-            if (activeIndex >= 0 && activeIndex < audioTracks.length) {
-              currentAudioTrack = activeIndex;
-              updateAudioDisplay(activeIndex);
-              document.querySelectorAll('.audio-option').forEach(option => {
-                option.classList.remove('active');
-                const optionIndex = parseInt(option.getAttribute('data-audio-index'));
-                if (optionIndex === activeIndex) {
-                  option.classList.add('active');
-                }
-              });
+            const preferredIndex = matchPreferredAudioTrack(audioTracks);
+            if (hls.audioTrack !== preferredIndex && preferredIndex >= 0) {
+              hls.audioTrack = preferredIndex;
+              currentAudioTrack = preferredIndex;
+            } else if (hls.audioTrack >= 0 && hls.audioTrack < audioTracks.length) {
+              currentAudioTrack = hls.audioTrack;
             }
+            updateAudioOptions();
+            updateAudioDisplay(currentAudioTrack);
           }
         });
 
@@ -737,7 +737,22 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     // Try resuming user progress
+    // Try resuming user progress with Smart Resume (local first, then API)
     async function resumeSavedProgress() {
+      try {
+        if (showId) {
+          const storageKey = `@infinx_episodes_progress_${showId}`;
+          const localData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+          const epProg = localData.episodes && localData.episodes[episodeId];
+          if (epProg && epProg.positionSeconds > 5 && !epProg.completed) {
+            console.log(`Resuming playback from local progress: ${epProg.positionSeconds}s`);
+            mainVideo.currentTime = epProg.positionSeconds;
+            showPlayerToast(`Resuming at ${formatTime(epProg.positionSeconds)}`);
+            return;
+          }
+        }
+      } catch (e) { }
+
       if (!token) return;
       try {
         const historyRes = await fetch(`${API_BASE}/user/history`, { headers: authHeaders });
@@ -747,6 +762,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           if (savedProgress && savedProgress.progress > 5) {
             console.log(`Resuming playback from: ${savedProgress.progress}s`);
             mainVideo.currentTime = savedProgress.progress;
+            showPlayerToast(`Resuming at ${formatTime(savedProgress.progress)}`);
           }
         }
       } catch (err) {
@@ -754,9 +770,96 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     }
 
-    // Periodically post progress updates to API
+    // Save episode watch progress locally & update series progress card
+    function saveEpisodeWatchProgress(epId, currentSec, durSec) {
+      if (!showId || !epId || isNaN(durSec) || durSec <= 0) return;
+      try {
+        const storageKey = `@infinx_episodes_progress_${showId}`;
+        let data = {};
+        try {
+          data = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        } catch (e) { }
+        if (!data.episodes) data.episodes = {};
+
+        const percent = Math.min(100, Math.max(1, Math.round((currentSec / durSec) * 100)));
+        const isCompleted = percent >= 88;
+
+        data.episodes[epId] = {
+          episodeId: epId,
+          positionSeconds: Math.floor(currentSec),
+          durationSeconds: Math.floor(durSec),
+          progressPercent: percent,
+          completed: isCompleted,
+          lastWatchedAt: Date.now()
+        };
+        data.lastWatched = data.episodes[epId];
+
+        localStorage.setItem(storageKey, JSON.stringify(data));
+        updateSeriesProgressUI(data);
+      } catch (e) { }
+    }
+
+    // Update series watch progress card & In-Player drawer tracker
+    function updateSeriesProgressUI(progressData) {
+      if (!siblingEpisodes || siblingEpisodes.length === 0) return;
+      const totalEpisodes = siblingEpisodes.length;
+      const episodesMap = (progressData && progressData.episodes) ? progressData.episodes : {};
+
+      const completedCount = siblingEpisodes.filter(ep => {
+        const p = episodesMap[ep.id];
+        return p && p.completed;
+      }).length;
+
+      const remainingCount = Math.max(0, totalEpisodes - completedCount);
+      const overallPercent = totalEpisodes > 0 ? Math.round((completedCount / totalEpisodes) * 100) : 0;
+
+      // Update Sidebar Series Progress Card
+      const card = document.getElementById('series-progress-card');
+      if (card) {
+        card.style.display = 'block';
+        const percentEl = document.getElementById('series-progress-percent');
+        if (percentEl) percentEl.textContent = `${overallPercent}%`;
+        const fillEl = document.getElementById('series-progress-fill');
+        if (fillEl) fillEl.style.width = `${overallPercent}%`;
+        const totalEl = document.getElementById('stat-total-episodes');
+        if (totalEl) totalEl.textContent = totalEpisodes;
+        const watchedEl = document.getElementById('stat-watched-episodes');
+        if (watchedEl) watchedEl.textContent = completedCount;
+        const remEl = document.getElementById('stat-remaining-episodes');
+        if (remEl) remEl.textContent = remainingCount;
+      }
+
+      // Update In-Player Drawer Progress
+      const drawerProgress = document.getElementById('drawer-series-progress');
+      if (drawerProgress) {
+        drawerProgress.innerHTML = `
+          <div class="series-progress-card" style="margin: 0; background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08);">
+            <div class="series-progress-header">
+              <div class="series-progress-title">
+                <i class="fas fa-chart-line" style="color: var(--primary);"></i>
+                <span>Series Watch Progress</span>
+              </div>
+              <span class="series-progress-percent">${overallPercent}%</span>
+            </div>
+            <div class="series-progress-track">
+              <div class="series-progress-fill" style="width: ${overallPercent}%;"></div>
+            </div>
+            <div class="series-progress-stats">
+              <div class="stat-chip"><i class="fas fa-film"></i><span>Total: <strong>${totalEpisodes}</strong></span></div>
+              <div class="stat-chip"><i class="fas fa-check-circle" style="color:#00ff88;"></i><span>Watched: <strong>${completedCount}</strong></span></div>
+              <div class="stat-chip"><i class="fas fa-clock" style="color:var(--secondary);"></i><span>Left: <strong>${remainingCount}</strong></span></div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Periodically post progress updates to API & local storage
     async function reportPlaybackProgress() {
-      if (!token || isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
+      if (isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
+      saveEpisodeWatchProgress(episodeId, mainVideo.currentTime, mainVideo.duration);
+
+      if (!token) return;
       const now = Date.now();
       // Report every 8 seconds
       if (now - lastProgressReportTime < 8000) return;
@@ -896,11 +999,14 @@ document.addEventListener('DOMContentLoaded', async function () {
       const languageMap = {
         'hin': 'Hindi',
         'hi': 'Hindi',
+        'hindi': 'Hindi',
         'eng': 'English',
         'en': 'English',
+        'english': 'English',
         'jpn': 'Japanese',
         'ja': 'Japanese',
         'jp': 'Japanese',
+        'japanese': 'Japanese',
         'zho': 'Chinese',
         'zh': 'Chinese',
         'kor': 'Korean',
@@ -922,12 +1028,56 @@ document.addEventListener('DOMContentLoaded', async function () {
       const langCode = track.lang || track.language;
       const friendlyLang = getFriendlyLanguageName(langCode);
       if (friendlyLang) {
-        if (track.name && !track.name.toLowerCase().includes('vegamovies') && track.name !== langCode) {
+        if (track.name && !track.name.toLowerCase().includes('vegamovies') && track.name.toLowerCase() !== (langCode || '').toLowerCase() && track.name.toLowerCase() !== friendlyLang.toLowerCase()) {
           return `${friendlyLang} (${track.name})`;
         }
         return friendlyLang;
       }
       return track.name || (isSub ? `Subtitle ${fallbackIndex + 1}` : `Track ${fallbackIndex + 1}`);
+    }
+
+    // Audio Preference Memory (Global & Per-Series)
+    function getSavedAudioPreference() {
+      try {
+        if (showId) {
+          const showPref = localStorage.getItem(`@infinx_audio_pref_show_${showId}`);
+          if (showPref) return JSON.parse(showPref);
+        }
+        const globalPref = localStorage.getItem('@infinx_audio_pref_global');
+        if (globalPref) return JSON.parse(globalPref);
+      } catch (e) { }
+      return null;
+    }
+
+    function matchPreferredAudioTrack(tracks) {
+      if (!tracks || tracks.length === 0) return 0;
+      const pref = getSavedAudioPreference();
+      if (!pref) return 0;
+
+      const targetLang = (pref.lang || '').toLowerCase().trim();
+      const targetName = (pref.name || '').toLowerCase().trim();
+      const targetDisplay = (pref.displayName || '').toLowerCase().trim();
+
+      // 1. Language code match (e.g. 'hin', 'hi', 'eng', 'en')
+      let matchIdx = tracks.findIndex(t => {
+        const l = (t.lang || t.language || '').toLowerCase().trim();
+        return l && (l === targetLang || (targetLang.startsWith('hi') && l.startsWith('hi')) || (targetLang.startsWith('en') && l.startsWith('en')));
+      });
+      if (matchIdx >= 0) return matchIdx;
+
+      // 2. Name match (e.g. contains 'hindi' or 'english')
+      matchIdx = tracks.findIndex(t => {
+        const n = (t.name || '').toLowerCase().trim();
+        return n && (n.includes(targetName) || (targetDisplay && n.includes(targetDisplay.toLowerCase())));
+      });
+      if (matchIdx >= 0) return matchIdx;
+
+      // 3. Saved index fallback if valid
+      if (typeof pref.index === 'number' && pref.index >= 0 && pref.index < tracks.length) {
+        return pref.index;
+      }
+
+      return 0;
     }
 
     // Update audio options
@@ -942,14 +1092,15 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       if (audioTracks && audioTracks.length > 0) {
         audioTracks.forEach((track, index) => {
+          const isCurrentActive = index === currentAudioTrack;
           const audioOption = document.createElement('div');
-          audioOption.className = `audio-option ${index === 0 ? 'active' : ''}`;
+          audioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
           audioOption.setAttribute('data-audio-index', index);
           audioOption.innerHTML = `<i class="fas fa-volume-up"></i> ${getTrackDisplayName(track, index, false)}`;
           audioDropdown.appendChild(audioOption);
 
           const settingsAudioOption = document.createElement('div');
-          settingsAudioOption.className = `audio-option ${index === 0 ? 'active' : ''}`;
+          settingsAudioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
           settingsAudioOption.setAttribute('data-audio-index', index);
           settingsAudioOption.innerHTML = `${getTrackDisplayName(track, index, false)}`;
           audioList.appendChild(settingsAudioOption);
@@ -971,9 +1122,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
       }
 
-      const firstLabel = audioTracks[0] ? getTrackDisplayName(audioTracks[0], 0, false) : 'Default Stream';
-      document.querySelector('.current-audio').textContent = firstLabel;
-      document.querySelector('.current-audio-display').innerHTML = `<i class="fas fa-volume-up"></i> ${firstLabel}`;
+      const activeTrackObj = (audioTracks && audioTracks[currentAudioTrack]) || (audioTracks && audioTracks[0]);
+      const activeLabel = activeTrackObj ? getTrackDisplayName(activeTrackObj, currentAudioTrack, false) : 'Default Stream';
+      document.querySelectorAll('.current-audio').forEach(el => { el.textContent = activeLabel; });
+      const currentAudioDisp = document.querySelector('.current-audio-display');
+      if (currentAudioDisp) {
+        currentAudioDisp.innerHTML = `<i class="fas fa-volume-up"></i> ${activeLabel}`;
+      }
     }
 
     // Close all dropdowns
@@ -1018,6 +1173,11 @@ document.addEventListener('DOMContentLoaded', async function () {
           localStorage.setItem('infinx_preferred_quality', displayLabel);
         }
 
+        // Keep active audio track locked across quality level switch
+        if (currentAudioTrack >= 0 && hls.audioTracks && currentAudioTrack < hls.audioTracks.length) {
+          hls.audioTrack = currentAudioTrack;
+        }
+
         document.querySelectorAll('.current-quality').forEach(el => {
           el.textContent = displayLabel;
         });
@@ -1044,11 +1204,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Update audio display
     function updateAudioDisplay(trackIndex) {
       const trackName = audioTracks[trackIndex] ? getTrackDisplayName(audioTracks[trackIndex], trackIndex, false) : 'Default Stream';
-      document.querySelector('.current-audio').textContent = trackName;
-      document.querySelector('.current-audio-display').innerHTML = `<i class="fas fa-volume-up"></i> ${trackName}`;
+      document.querySelectorAll('.current-audio').forEach(el => { el.textContent = trackName; });
+      const currentAudioDisp = document.querySelector('.current-audio-display');
+      if (currentAudioDisp) {
+        currentAudioDisp.innerHTML = `<i class="fas fa-volume-up"></i> ${trackName}`;
+      }
     }
 
-    // Set audio track
+    // Set audio track with global and per-series persistence
     function setAudioTrack(trackIndex) {
       if (hls && hls.audioTracks && hls.audioTracks.length > 0) {
         if (trackIndex < hls.audioTracks.length) {
@@ -1065,6 +1228,26 @@ document.addEventListener('DOMContentLoaded', async function () {
           currentAudioTrack = trackIndex;
           updateAudioDisplay(trackIndex);
         }
+      }
+
+      // Persist user audio preference
+      const track = audioTracks[trackIndex];
+      if (track) {
+        const langCode = (track.lang || track.language || '').toLowerCase().trim();
+        const friendlyName = getFriendlyLanguageName(langCode) || track.name;
+        const prefObj = {
+          lang: langCode,
+          name: track.name || '',
+          displayName: friendlyName || '',
+          index: trackIndex
+        };
+        try {
+          localStorage.setItem('@infinx_audio_pref_global', JSON.stringify(prefObj));
+          if (showId) {
+            localStorage.setItem(`@infinx_audio_pref_show_${showId}`, JSON.stringify(prefObj));
+          }
+        } catch (e) { }
+        showPlayerToast(`Audio: ${friendlyName}`);
       }
 
       document.querySelectorAll('.audio-option').forEach(option => {
@@ -1143,7 +1326,20 @@ document.addEventListener('DOMContentLoaded', async function () {
       function showCaption(text) {
         if (!captionOverlay) return;
         captionOverlay.classList.remove('hidden');
-        captionOverlay.innerHTML = `<div class="caption-text">${escapeHtml(text).replace(/\n/g, '<br>')}</div>`;
+
+        let presetCfg = { fontSize: 'medium', textColor: '#ffffff', backdropStyle: 'shadow', position: 'bottom' };
+        try {
+          const raw = localStorage.getItem('@infinx_subtitle_presets');
+          if (raw) presetCfg = Object.assign(presetCfg, JSON.parse(raw));
+        } catch (e) { }
+
+        const sizeMap = { small: '16px', medium: '20px', large: '25px', huge: '30px' };
+        const fs = sizeMap[presetCfg.fontSize] || '20px';
+
+        captionOverlay.classList.remove('pos-raised', 'pos-bottom');
+        if (presetCfg.position === 'raised') captionOverlay.classList.add('pos-raised');
+
+        captionOverlay.innerHTML = `<div class="caption-text style-${presetCfg.backdropStyle || 'shadow'}" style="font-size: ${fs}; color: ${presetCfg.textColor || '#ffffff'};">${escapeHtml(text).replace(/\n/g, '<br>')}</div>`;
       }
 
       function hideCaption() {
@@ -1307,6 +1503,307 @@ document.addEventListener('DOMContentLoaded', async function () {
       } catch (e) { }
     }
 
+    // Seek By
+    function seekBy(seconds) {
+      if (!mainVideo) return;
+      const dur = mainVideo.duration || Infinity;
+      let target = (mainVideo.currentTime || 0) + seconds;
+      if (target < 0) target = 0;
+      if (target > dur) target = dur;
+      mainVideo.currentTime = target;
+      try { updateTime(); } catch (e) { }
+    }
+
+    // YouTube-Style Double-Tap Seek (±10s) with Cumulative Ripple HUD
+    let seekAccumulator = {
+      direction: null,
+      seconds: 0,
+      timer: null
+    };
+
+    function triggerSeekRipple(direction, accumulatedSeconds) {
+      const leftRipple = document.getElementById('left-seek-ripple');
+      const rightRipple = document.getElementById('right-seek-ripple');
+      const leftText = document.getElementById('left-ripple-text');
+      const rightText = document.getElementById('right-ripple-text');
+
+      if (direction === 'rewind') {
+        if (rightRipple) rightRipple.classList.remove('active');
+        if (leftText) leftText.textContent = `${accumulatedSeconds} seconds`;
+        if (leftRipple) {
+          leftRipple.classList.remove('active');
+          void leftRipple.offsetWidth;
+          leftRipple.classList.add('active');
+        }
+      } else {
+        if (leftRipple) leftRipple.classList.remove('active');
+        if (rightText) rightText.textContent = `${accumulatedSeconds} seconds`;
+        if (rightRipple) {
+          rightRipple.classList.remove('active');
+          void rightRipple.offsetWidth;
+          rightRipple.classList.add('active');
+        }
+      }
+    }
+
+    function handleDoubleSeek(direction) {
+      if (!mainVideo) return;
+      if (seekAccumulator.timer) {
+        clearTimeout(seekAccumulator.timer);
+      }
+
+      if (seekAccumulator.direction === direction) {
+        seekAccumulator.seconds += 10;
+      } else {
+        seekAccumulator.direction = direction;
+        seekAccumulator.seconds = 10;
+      }
+
+      const delta = direction === 'rewind' ? -10 : 10;
+      seekBy(delta);
+      triggerSeekRipple(direction, seekAccumulator.seconds);
+
+      seekAccumulator.timer = setTimeout(() => {
+        const leftRipple = document.getElementById('left-seek-ripple');
+        const rightRipple = document.getElementById('right-seek-ripple');
+        if (leftRipple) leftRipple.classList.remove('active');
+        if (rightRipple) rightRipple.classList.remove('active');
+        seekAccumulator = { direction: null, seconds: 0, timer: null };
+      }, 750);
+    }
+
+    // Smart Anime Intro & Outro Detection Engine (Netflix / Crunchyroll Style)
+    let detectedIntroOutro = { intro: null, outro: null };
+    let introAutoSkipped = false;
+    let outroCountdownActive = false;
+    let outroCountdownInterval = null;
+    let outroCountdownSeconds = 5;
+    let outroDismissed = false;
+    let preSkipTime = null;
+    let undoToastTimeout = null;
+
+    function computeIntroOutroWindows() {
+      if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration < 120) {
+        return { intro: null, outro: null };
+      }
+      const dur = mainVideo.duration;
+      let intro = null;
+      let outro = null;
+
+      // 1. Metadata from episode
+      if (currentEpisode) {
+        const iStart = currentEpisode.introStart ?? currentEpisode.skipIntroStart;
+        const iEnd = currentEpisode.introEnd ?? currentEpisode.skipIntroEnd;
+        if (iStart !== undefined && iEnd !== undefined && Number(iEnd) > Number(iStart)) {
+          intro = { start: Math.max(0, Number(iStart)), end: Math.min(dur, Number(iEnd)) };
+        }
+
+        const oStart = currentEpisode.outroStart ?? currentEpisode.skipOutroStart;
+        const oEnd = currentEpisode.outroEnd ?? currentEpisode.skipOutroEnd;
+        if (oStart !== undefined && oEnd !== undefined && Number(oEnd) > Number(oStart)) {
+          outro = { start: Math.max(0, Number(oStart)), end: Math.min(dur, Number(oEnd)) };
+        }
+      }
+
+      // 2. Standard anime OP fallbacks: 15s to 104.5s (89.5s length)
+      if (!intro) {
+        intro = { start: 15, end: Math.min(dur - 60, 104.5) };
+      }
+
+      // 3. Standard anime ED fallbacks: last 90s to last 5s
+      if (!outro) {
+        outro = { start: Math.max(intro ? intro.end + 60 : 60, dur - 95), end: Math.max(0, dur - 5) };
+      }
+
+      return { intro, outro };
+    }
+
+    function showUndoSkipToast() {
+      const toast = document.getElementById('undo-skip-toast');
+      if (!toast) return;
+      if (undoToastTimeout) clearTimeout(undoToastTimeout);
+      toast.classList.remove('hidden');
+      undoToastTimeout = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 6000);
+    }
+
+    function skipIntroAction() {
+      if (!detectedIntroOutro.intro || !mainVideo) return;
+      preSkipTime = mainVideo.currentTime;
+      mainVideo.currentTime = detectedIntroOutro.intro.end;
+      const skipBtn = document.getElementById('skip-intro-btn');
+      if (skipBtn) skipBtn.classList.add('hidden');
+      showUndoSkipToast();
+    }
+
+    const undoSkipBtn = document.getElementById('undo-skip-btn');
+    if (undoSkipBtn) {
+      undoSkipBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (preSkipTime !== null && mainVideo) {
+          mainVideo.currentTime = preSkipTime;
+          preSkipTime = null;
+        }
+        const toast = document.getElementById('undo-skip-toast');
+        if (toast) toast.classList.add('hidden');
+        showPlayerToast('Skip Undone');
+      });
+    }
+
+    const skipIntroBtn = document.getElementById('skip-intro-btn');
+    if (skipIntroBtn) {
+      skipIntroBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        skipIntroAction();
+      });
+    }
+
+    function startOutroCountdown() {
+      const card = document.getElementById('outro-countdown-card');
+      const textEl = document.getElementById('outro-countdown-text');
+      const fillEl = document.getElementById('outro-progress-fill');
+      const thumbEl = document.getElementById('outro-next-thumbnail');
+      const titleEl = document.getElementById('outro-next-title');
+
+      const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
+      if (curIndex < 0 || curIndex >= siblingEpisodes.length - 1) return;
+      const nextEp = siblingEpisodes[curIndex + 1];
+
+      if (thumbEl) {
+        thumbEl.src = resolveAssetUrl(currentEpisode?.show?.poster) || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
+      }
+      if (titleEl) {
+        titleEl.textContent = `Episode ${nextEp.episodeNumber}: ${nextEp.title}`;
+      }
+
+      outroCountdownActive = true;
+      outroCountdownSeconds = 5;
+      if (card) card.classList.remove('hidden');
+      if (textEl) textEl.textContent = `in 5s`;
+      if (fillEl) {
+        fillEl.style.transition = 'none';
+        fillEl.style.width = '100%';
+        void fillEl.offsetWidth;
+        fillEl.style.transition = 'width 5s linear';
+        fillEl.style.width = '0%';
+      }
+
+      if (outroCountdownInterval) clearInterval(outroCountdownInterval);
+      outroCountdownInterval = setInterval(() => {
+        outroCountdownSeconds--;
+        if (textEl) textEl.textContent = `in ${outroCountdownSeconds}s`;
+        if (outroCountdownSeconds <= 0) {
+          clearInterval(outroCountdownInterval);
+          outroCountdownInterval = null;
+          outroCountdownActive = false;
+          playNextVideo();
+        }
+      }, 1000);
+    }
+
+    function cancelOutroCountdown() {
+      outroDismissed = true;
+      outroCountdownActive = false;
+      if (outroCountdownInterval) {
+        clearInterval(outroCountdownInterval);
+        outroCountdownInterval = null;
+      }
+      const card = document.getElementById('outro-countdown-card');
+      if (card) card.classList.add('hidden');
+    }
+
+    const outroPlayBtn = document.getElementById('outro-play-btn');
+    if (outroPlayBtn) {
+      outroPlayBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        cancelOutroCountdown();
+        playNextVideo();
+      });
+    }
+
+    const outroCancelBtn = document.getElementById('outro-cancel-btn');
+    if (outroCancelBtn) {
+      outroCancelBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        cancelOutroCountdown();
+      });
+    }
+
+    function handleSmartIntroOutro(currentTime, duration) {
+      if (!detectedIntroOutro.intro || !detectedIntroOutro.outro) {
+        detectedIntroOutro = computeIntroOutroWindows();
+      }
+      const { intro, outro } = detectedIntroOutro;
+      if (!intro || !outro) return;
+
+      // 1. INTRO WINDOW
+      const skipIntroFloatingBtn = document.getElementById('skip-intro-btn');
+      if (currentTime >= intro.start && currentTime < intro.end) {
+        const autoSkipSetting = localStorage.getItem('@infinx_auto_skip_intro');
+        const autoSkipEnabled = autoSkipSetting === null || autoSkipSetting === 'true';
+
+        if (autoSkipEnabled && !introAutoSkipped) {
+          introAutoSkipped = true;
+          skipIntroAction();
+        } else if (!autoSkipEnabled && skipIntroFloatingBtn) {
+          skipIntroFloatingBtn.classList.remove('hidden');
+        }
+      } else {
+        if (skipIntroFloatingBtn) skipIntroFloatingBtn.classList.add('hidden');
+      }
+
+      // 2. OUTRO WINDOW
+      if (currentTime >= outro.start && currentTime <= outro.end) {
+        const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
+        const hasNext = curIndex >= 0 && curIndex < siblingEpisodes.length - 1;
+        if (hasNext && !outroCountdownActive && !outroDismissed) {
+          startOutroCountdown();
+        }
+      } else if (currentTime < outro.start) {
+        outroDismissed = false;
+        if (outroCountdownActive) {
+          cancelOutroCountdown();
+        }
+      }
+    }
+
+    // In-Player Episode Drawer Toggle
+    const inPlayerEpisodeDrawer = document.getElementById('in-player-episode-drawer');
+    const episodeDrawerBtn = document.getElementById('episode-drawer-btn');
+    const inPlayerDrawerBackdrop = document.getElementById('in-player-drawer-backdrop');
+    const drawerCloseBtn = document.getElementById('drawer-close-btn');
+
+    function toggleEpisodeDrawer(open) {
+      if (!inPlayerEpisodeDrawer) return;
+      const isOpen = typeof open === 'boolean' ? open : !inPlayerEpisodeDrawer.classList.contains('active');
+      inPlayerEpisodeDrawer.classList.toggle('active', isOpen);
+      inPlayerEpisodeDrawer.setAttribute('aria-hidden', (!isOpen).toString());
+      if (isOpen) {
+        try {
+          const rawProg = localStorage.getItem(`@infinx_episodes_progress_${showId}`);
+          updateSeriesProgressUI(rawProg ? JSON.parse(rawProg) : null);
+        } catch (e) { }
+      }
+    }
+
+    if (episodeDrawerBtn) {
+      episodeDrawerBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleEpisodeDrawer();
+      });
+    }
+    if (inPlayerDrawerBackdrop) {
+      inPlayerDrawerBackdrop.addEventListener('click', function () {
+        toggleEpisodeDrawer(false);
+      });
+    }
+    if (drawerCloseBtn) {
+      drawerCloseBtn.addEventListener('click', function () {
+        toggleEpisodeDrawer(false);
+      });
+    }
+
     // Update video time & timeline bar
     function updateTime() {
       if (!isNaN(mainVideo.duration) && mainVideo.duration > 0) {
@@ -1320,6 +1817,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         updateBufferBar();
         reportPlaybackProgress();
+        handleSmartIntroOutro(mainVideo.currentTime, mainVideo.duration);
       }
     }
 
@@ -1359,30 +1857,76 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     playPauseBtn.addEventListener('click', togglePlayPause);
 
-    // Mobile touch controls
-    mobileTouchControls.forEach(control => {
-      control.addEventListener('click', function (e) {
+    // Mobile & Desktop Double-Tap Seek and Touch Control listeners
+    let lastLeftTapTime = 0;
+    let lastRightTapTime = 0;
+    let singleTapTimeout = null;
+
+    const touchLeft = document.querySelector('.touch-left');
+    const touchCenter = document.querySelector('.touch-center');
+    const touchRight = document.querySelector('.touch-right');
+
+    if (touchLeft) {
+      touchLeft.addEventListener('click', function (e) {
         e.stopPropagation();
-        const action = this.getAttribute('data-action');
-
-        switch (action) {
-          case 'play-pause':
-            togglePlayPause();
-            break;
-          case 'rewind':
-            mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10);
-            break;
-          case 'forward':
-            mainVideo.currentTime = Math.min(mainVideo.duration, mainVideo.currentTime + 10);
-            break;
+        const now = Date.now();
+        if (now - lastLeftTapTime < 380) {
+          clearTimeout(singleTapTimeout);
+          lastLeftTapTime = 0;
+          handleDoubleSeek('rewind');
+        } else {
+          lastLeftTapTime = now;
+          singleTapTimeout = setTimeout(() => {
+            showControls();
+          }, 320);
         }
-
-        this.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-        setTimeout(() => {
-          this.style.backgroundColor = '';
-        }, 200);
       });
-    });
+    }
+
+    if (touchRight) {
+      touchRight.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const now = Date.now();
+        if (now - lastRightTapTime < 380) {
+          clearTimeout(singleTapTimeout);
+          lastRightTapTime = 0;
+          handleDoubleSeek('forward');
+        } else {
+          lastRightTapTime = now;
+          singleTapTimeout = setTimeout(() => {
+            showControls();
+          }, 320);
+        }
+      });
+    }
+
+    if (touchCenter) {
+      touchCenter.addEventListener('click', function (e) {
+        e.stopPropagation();
+        togglePlayPause();
+      });
+    }
+
+    // Desktop double-click seek on video player
+    if (videoPlayer) {
+      videoPlayer.addEventListener('dblclick', function (e) {
+        if (e.target.closest('.custom-controls') || e.target.closest('.settings-dropdown') || e.target.closest('.in-player-drawer') || e.target.closest('.outro-countdown-card') || e.target.closest('.skip-intro-btn')) {
+          return;
+        }
+        e.preventDefault();
+        const rect = videoPlayer.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const width = rect.width;
+
+        if (clickX < width * 0.42) {
+          handleDoubleSeek('rewind');
+        } else if (clickX > width * 0.58) {
+          handleDoubleSeek('forward');
+        } else {
+          togglePlayPause();
+        }
+      });
+    }
 
     // Video end handler for auto-next
     mainVideo.addEventListener('ended', function () {
@@ -2309,6 +2853,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
 
       playlistContainer.innerHTML = '';
+      const drawerEpisodesList = document.getElementById('drawer-episodes-list');
+      if (drawerEpisodesList) drawerEpisodesList.innerHTML = '';
 
       // Update UI title and description for current playing episode
       if (videoTitle) videoTitle.textContent = currentEpisode.title;
@@ -2318,36 +2864,82 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       const totalEpisodes = siblingEpisodes.length;
       document.querySelector('.episode-count').textContent = `(${totalEpisodes} episodes)`;
+      const drawerCountEl = document.getElementById('drawer-episode-count');
+      if (drawerCountEl) drawerCountEl.textContent = `(${totalEpisodes})`;
 
-      // Load all sibling episodes (no slice limitation)
+      // Load progress data from local storage
+      let showProgData = { episodes: {}, lastWatched: null };
+      try {
+        const rawProg = localStorage.getItem(`@infinx_episodes_progress_${showId}`);
+        if (rawProg) showProgData = JSON.parse(rawProg);
+      } catch (e) { }
+
+      // Update series progress cards
+      updateSeriesProgressUI(showProgData);
+
+      // Load all sibling episodes
       siblingEpisodes.forEach((ep) => {
-        const playlistItem = document.createElement('div');
-        playlistItem.className = `playlist-item ${ep.id === episodeId ? 'active' : ''}`;
+        const epProg = (showProgData.episodes && showProgData.episodes[ep.id]) || null;
+        const isCurrentActive = ep.id === episodeId;
+        const isCompleted = epProg?.completed;
+        const isInProgress = epProg && epProg.positionSeconds > 10 && !isCompleted;
 
         const fallbackPoster = resolveAssetUrl(currentEpisode.show?.poster) || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
 
-        playlistItem.innerHTML = `
-          <div class="item-thumbnail">
+        let badgeHtml = '';
+        let progressTrackHtml = '';
+
+        if (isCurrentActive) {
+          badgeHtml = '<div class="item-status"><span class="item-watched"><i class="fas fa-play-circle"></i> Watching</span></div>';
+        } else if (isCompleted) {
+          badgeHtml = '<div class="item-status"><span class="badge-watched"><i class="fas fa-check-circle"></i> Watched</span></div>';
+          progressTrackHtml = '<div class="item-progress-track"><div class="item-progress-fill" style="width: 100%; background: #00ff88;"></div></div>';
+        } else if (isInProgress) {
+          badgeHtml = `<div class="item-status"><span class="badge-in-progress">${epProg.progressPercent}% · Left at ${formatTime(epProg.positionSeconds)}</span></div>`;
+          progressTrackHtml = `<div class="item-progress-track"><div class="item-progress-fill" style="width: ${epProg.progressPercent}%; background: var(--primary);"></div></div>`;
+        }
+
+        const buildItemHtml = () => `
+          <div class="item-thumbnail" style="position: relative; overflow: hidden;">
             <img class="playlist-item-img" src="${fallbackPoster}" alt="${ep.title}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
             <div class="item-overlay"><i class="fas fa-play"></i></div>
             <div class="item-duration">Ep ${ep.episodeNumber}</div>
+            ${progressTrackHtml}
           </div>
           <div class="item-info">
             <h4 class="item-title">Episode ${ep.episodeNumber}: ${ep.title}</h4>
             <div class="item-meta">
-              <span class="item-duration">HD Streaming</span>
+              <span class="item-duration">${ep.duration || '24m'} • HD Streaming</span>
             </div>
-            ${ep.id === episodeId ? '<div class="item-status"><span class="item-watched"><i class="fas fa-check-circle"></i> Watching</span></div>' : ''}
+            ${badgeHtml}
           </div>
         `;
 
-        playlistItem.addEventListener('click', function () {
-          window.location.href = `/video-player/index.html?episodeId=${ep.id}`;
-        });
+        const playAction = function () {
+          const seekParam = (epProg && epProg.positionSeconds > 10 && !epProg.completed) ? `&t=${epProg.positionSeconds}` : '';
+          window.location.href = `/video-player/index.html?episodeId=${ep.id}${seekParam}`;
+        };
 
+        // 1. Sidebar Playlist item
+        const playlistItem = document.createElement('div');
+        playlistItem.className = `playlist-item ${isCurrentActive ? 'active' : ''}`;
+        playlistItem.innerHTML = buildItemHtml();
+        playlistItem.addEventListener('click', playAction);
         playlistContainer.appendChild(playlistItem);
 
-        // Asynchronously request frame extraction from its videoUrl, fallback to poster
+        // 2. In-Player Drawer item
+        if (drawerEpisodesList) {
+          const drawerItem = document.createElement('div');
+          drawerItem.className = `playlist-item drawer-item ${isCurrentActive ? 'active' : ''}`;
+          drawerItem.innerHTML = buildItemHtml();
+          drawerItem.addEventListener('click', function () {
+            toggleEpisodeDrawer(false);
+            playAction();
+          });
+          drawerEpisodesList.appendChild(drawerItem);
+        }
+
+        // Asynchronously request frame extraction from videoUrl, fallback to poster
         const imgEl = playlistItem.querySelector('.playlist-item-img');
         if (imgEl) {
           queueThumbnailExtraction(ep, imgEl);
@@ -3040,78 +3632,69 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 });
 
-// Caption settings handlers (standalone init) - applies CSS variables and persists settings
+// Customizable WebVTT Subtitle Engine Preset Handlers
 (function () {
   document.addEventListener('DOMContentLoaded', function () {
     const openBtn = document.getElementById('open-caption-settings');
     const modal = document.getElementById('caption-settings-modal');
     const doneBtn = document.getElementById('caption-done');
     const resetBtn = document.getElementById('caption-reset');
+    const closeX = document.getElementById('caption-close-x');
 
     if (!modal) return;
 
-    const textColorSel = document.getElementById('caption-text-color');
-    const textBgColorInput = document.getElementById('caption-text-bg-color');
-    const textBgOpacitySel = document.getElementById('caption-text-bg-opacity');
-    const areaBgColorInput = document.getElementById('caption-area-bg-color');
-    const areaBgOpacitySel = document.getElementById('caption-area-bg-opacity');
-    const fontSizeSel = document.getElementById('caption-font-size');
-    const textEdgeSel = document.getElementById('caption-text-edge');
-    const fontFamilySel = document.getElementById('caption-font-family');
+    const fontSizePreset = document.getElementById('caption-font-size-preset');
+    const textColorPreset = document.getElementById('caption-text-color-preset');
+    const backdropPreset = document.getElementById('caption-backdrop-style-preset');
+    const positionPreset = document.getElementById('caption-position-preset');
 
-    const STORAGE_KEY = 'captionSettings_v1';
-
+    const STORAGE_KEY = '@infinx_subtitle_presets';
     const defaults = {
+      fontSize: 'medium',
       textColor: '#ffffff',
-      textBgColor: '#000000',
-      textBgOpacity: 0.6,
-      areaBgColor: '#000000',
-      areaBgOpacity: 0,
-      fontSize: '16px',
-      textEdge: 'none',
-      fontFamily: "'Proportional Sans-Serif', Poppins, Roboto, sans-serif"
+      backdropStyle: 'shadow',
+      position: 'bottom'
     };
-
-    function hexToRgb(hex) {
-      if (!hex) return [0, 0, 0];
-      const h = hex.replace('#', '');
-      const bigint = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
-      return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
-    }
-
-    function applyCaptionSettings(s) {
-      document.documentElement.style.setProperty('--caption-text-color', s.textColor);
-      const tRgb = hexToRgb(s.textBgColor || defaults.textBgColor);
-      const aRgb = hexToRgb(s.areaBgColor || defaults.areaBgColor);
-      document.documentElement.style.setProperty('--caption-bg', `rgba(${tRgb[0]},${tRgb[1]},${tRgb[2]},${s.textBgOpacity})`);
-      document.documentElement.style.setProperty('--caption-area-bg', `rgba(${aRgb[0]},${aRgb[1]},${aRgb[2]},${s.areaBgOpacity})`);
-      document.documentElement.style.setProperty('--caption-font-size', s.fontSize);
-      document.documentElement.style.setProperty('--caption-font-family', s.fontFamily);
-      document.documentElement.style.setProperty('--caption-text-edge', s.textEdge);
-    }
 
     function loadSettings() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (e) { console.warn('caption load error', e); }
+        if (raw) return Object.assign({}, defaults, JSON.parse(raw));
+      } catch (e) { }
       return Object.assign({}, defaults);
     }
 
     function saveSettings(s) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch (e) { console.warn('caption save error', e); }
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch (e) { }
+    }
+
+    function applyCaptionSettings(s) {
+      const overlay = document.getElementById('caption-overlay');
+      const sizeMap = { small: '16px', medium: '20px', large: '25px', huge: '30px' };
+      const fs = sizeMap[s.fontSize] || '20px';
+
+      document.documentElement.style.setProperty('--caption-font-size', fs);
+      document.documentElement.style.setProperty('--caption-text-color', s.textColor || '#ffffff');
+
+      if (overlay) {
+        overlay.classList.remove('pos-raised', 'pos-bottom');
+        if (s.position === 'raised') overlay.classList.add('pos-raised');
+
+        const captionTexts = overlay.querySelectorAll('.caption-text');
+        captionTexts.forEach(el => {
+          el.classList.remove('style-shadow', 'style-box', 'style-solid');
+          el.classList.add(`style-${s.backdropStyle || 'shadow'}`);
+          el.style.fontSize = fs;
+          el.style.color = s.textColor || '#ffffff';
+        });
+      }
     }
 
     function populateControls(s) {
-      if (!textColorSel) return;
-      textColorSel.value = s.textColor || defaults.textColor;
-      textBgColorInput.value = s.textBgColor || defaults.textBgColor;
-      textBgOpacitySel.value = (s.textBgOpacity !== undefined) ? s.textBgOpacity : defaults.textBgOpacity;
-      areaBgColorInput.value = s.areaBgColor || defaults.areaBgColor;
-      areaBgOpacitySel.value = (s.areaBgOpacity !== undefined) ? s.areaBgOpacity : defaults.areaBgOpacity;
-      fontSizeSel.value = s.fontSize || defaults.fontSize;
-      textEdgeSel.value = s.textEdge || defaults.textEdge;
-      fontFamilySel.value = s.fontFamily || defaults.fontFamily;
+      if (fontSizePreset) fontSizePreset.value = s.fontSize || defaults.fontSize;
+      if (textColorPreset) textColorPreset.value = s.textColor || defaults.textColor;
+      if (backdropPreset) backdropPreset.value = s.backdropStyle || defaults.backdropStyle;
+      if (positionPreset) positionPreset.value = s.position || defaults.position;
     }
 
     const initial = loadSettings();
@@ -3126,17 +3709,21 @@ document.addEventListener('DOMContentLoaded', async function () {
       });
     }
 
+    if (closeX) {
+      closeX.addEventListener('click', function (e) {
+        e.stopPropagation();
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+      });
+    }
+
     if (doneBtn) {
       doneBtn.addEventListener('click', function () {
         const newS = {
-          textColor: textColorSel.value,
-          textBgColor: textBgColorInput.value,
-          textBgOpacity: parseFloat(textBgOpacitySel.value),
-          areaBgColor: areaBgColorInput.value,
-          areaBgOpacity: parseFloat(areaBgOpacitySel.value),
-          fontSize: fontSizeSel.value,
-          textEdge: textEdgeSel.value,
-          fontFamily: fontFamilySel.value
+          fontSize: fontSizePreset ? fontSizePreset.value : defaults.fontSize,
+          textColor: textColorPreset ? textColorPreset.value : defaults.textColor,
+          backdropStyle: backdropPreset ? backdropPreset.value : defaults.backdropStyle,
+          position: positionPreset ? positionPreset.value : defaults.position
         };
         applyCaptionSettings(newS);
         saveSettings(newS);
@@ -3160,18 +3747,14 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     });
 
-    [textColorSel, textBgColorInput, textBgOpacitySel, areaBgColorInput, areaBgOpacitySel, fontSizeSel, textEdgeSel, fontFamilySel].forEach(el => {
+    [fontSizePreset, textColorPreset, backdropPreset, positionPreset].forEach(el => {
       if (!el) return;
-      el.addEventListener('input', function () {
+      el.addEventListener('change', function () {
         const tmp = {
-          textColor: textColorSel.value,
-          textBgColor: textBgColorInput.value,
-          textBgOpacity: parseFloat(textBgOpacitySel.value),
-          areaBgColor: areaBgColorInput.value,
-          areaBgOpacity: parseFloat(areaBgOpacitySel.value),
-          fontSize: fontSizeSel.value,
-          textEdge: textEdgeSel.value,
-          fontFamily: fontFamilySel.value
+          fontSize: fontSizePreset ? fontSizePreset.value : defaults.fontSize,
+          textColor: textColorPreset ? textColorPreset.value : defaults.textColor,
+          backdropStyle: backdropPreset ? backdropPreset.value : defaults.backdropStyle,
+          position: positionPreset ? positionPreset.value : defaults.position
         };
         applyCaptionSettings(tmp);
       });

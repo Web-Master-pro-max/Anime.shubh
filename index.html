@@ -2011,8 +2011,8 @@
                  Dynamically filled with top genre quick pills 
             </div>
         </div>
-    </div>
-            -->
+    </div> -->
+
     <!-- ====== DYNAMIC GENRE & CATEGORY SECTIONS ====== -->
     <div id="homeDynamicSections">
         <!-- Loaded dynamically via loadCategories() -->
@@ -2465,7 +2465,7 @@
                                 <p>${show.description}</p>
                                 <div class="banner-actions">
                                     <a href="${playLink}" class="btn-banner-play" onclick="return window.requireAuthPlay(event, '${playLink}')"><i class="fas fa-play"></i> Watch Now</a>
-                                    <a href="${playLink}" class="btn-banner-details" onclick="return window.requireAuthPlay(event, '${playLink}')">Details <i class="fas fa-chevron-right"></i></a>
+                                    <button type="button" class="btn-banner-details" onclick="window.openShowDetails(${show.id})">Details <i class="fas fa-chevron-right"></i></button>
                                 </div>
                             </div>
                         `;
@@ -2650,7 +2650,7 @@
                         const btnDisabled = !hasEpisodes ? 'disabled style="opacity: 0.5; pointer-events: none;"' : '';
 
                         cardsHtml += `
-                            <div class="movie-card">
+                            <div class="movie-card" onclick="if(!event.target.closest('.movie-actions')) window.openShowDetails(${show.id})" style="cursor: pointer;">
                                 <div class="movie-poster">
                                     <div class="movie-badge">${show.badge || 'HD'}</div>
                                     ${show.dubsub ? '<div class="dubsub">Sub/Dub</div>' : ''}
@@ -2853,6 +2853,7 @@
             setTimeout(() => openModal(openType), 100);
         }
     </script>
+    <script src="/show-details-modal.js"></script>
 </body>
 
 </html>

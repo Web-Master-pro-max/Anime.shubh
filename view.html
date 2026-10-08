@@ -1658,7 +1658,7 @@
                     }
 
                     gridHtml += `
-                    <div class="movie-card">
+                    <div class="movie-card" onclick="if(!event.target.closest('.movie-actions')) window.openShowDetails(${m.id})" style="cursor: pointer;">
                         <div class="movie-poster">
                             <div class="movie-badge">${m.badge || 'HD'}</div>
                             ${m.dubsub ? `<div class="dubsub">Sub/Dub</div>` : ''}
@@ -1831,6 +1831,7 @@
             });
         })();
     </script>
+    <script src="/show-details-modal.js"></script>
 </body>
 
 </html>
