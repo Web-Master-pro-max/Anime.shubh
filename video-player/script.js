@@ -4023,6 +4023,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function closeModal() {
+      modal.style.display = 'none';
       modal.classList.remove('active');
       modal.setAttribute('aria-hidden', 'true');
     }
@@ -4067,6 +4068,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       populateControls(cur);
       applyCaptionSettings(cur);
 
+      modal.style.display = 'flex';
       modal.classList.add('active');
       modal.setAttribute('aria-hidden', 'false');
     };
