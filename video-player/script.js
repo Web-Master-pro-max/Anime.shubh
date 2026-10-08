@@ -362,6 +362,10 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (curDisplay && match) {
         curDisplay.textContent = match.shortName || match.name;
       }
+      const miniServerDisp = document.getElementById('current-server-mini-display');
+      if (miniServerDisp && match) {
+        miniServerDisp.textContent = match.shortName || match.name;
+      }
 
       const hasS3 = availableServers.some(s => s.id === 's3');
       const hasLocal = availableServers.some(s => s.id === 'local');
@@ -430,13 +434,19 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (curDisplay) {
         curDisplay.textContent = target.shortName || target.name;
       }
+      const miniServerDisp = document.getElementById('current-server-mini-display');
+      if (miniServerDisp) {
+        miniServerDisp.textContent = target.shortName || target.name;
+      }
 
       document.querySelectorAll('.server-option').forEach(opt => {
         opt.classList.toggle('active', opt.getAttribute('data-server-id') === target.id);
       });
 
       closeAllDropdowns();
-      closeSettingsDropdown();
+      if (typeof window.switchSettingsView === 'function') {
+        window.switchSettingsView('main', true);
+      }
 
       const savedTime = (preserveTime && !isNaN(mainVideo.currentTime)) ? mainVideo.currentTime : null;
       const wasPlaying = !mainVideo.paused;
@@ -1222,7 +1232,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         if (shouldCloseMenus) {
           closeAllDropdowns();
-          closeSettingsDropdown();
+          if (typeof window.switchSettingsView === 'function') {
+            window.switchSettingsView('main', true);
+          }
         }
       }
     }
@@ -1285,7 +1297,9 @@ document.addEventListener('DOMContentLoaded', async function () {
       });
 
       closeAllDropdowns();
-      closeSettingsDropdown();
+      if (typeof window.switchSettingsView === 'function') {
+        window.switchSettingsView('main', true);
+      }
     }
 
     // Update subtitle options
@@ -2329,6 +2343,12 @@ document.addEventListener('DOMContentLoaded', async function () {
       document.querySelectorAll('.crop-option').forEach(opt => {
         opt.classList.toggle('active', opt.getAttribute('data-crop') === currentCropMode);
       });
+
+      const fitLabels = { contain: 'Fit', cover: 'Fill Notch', fill: 'Stretch' };
+      const fitDisplay = document.getElementById('current-fit-display');
+      if (fitDisplay) {
+        fitDisplay.textContent = currentAspectRatio !== 'default' ? currentAspectRatio : (fitLabels[currentFitMode] || 'Fit');
+      }
     }
 
     // Handler for Screen Fit Button (`.fit-screen-btn`)
@@ -2372,7 +2392,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         applyVideoTransform();
         showPlayerToast(`Screen Fit: ${currentFitMode}`);
         closeAllDropdowns();
-        closeSettingsDropdown();
+        if (typeof window.switchSettingsView === 'function') {
+          window.switchSettingsView('main', true);
+        }
       });
     });
 
@@ -2387,7 +2409,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         applyVideoTransform();
         showPlayerToast(`Aspect Ratio: ${currentAspectRatio === 'default' ? 'Default' : currentAspectRatio}`);
         closeAllDropdowns();
-        closeSettingsDropdown();
+        if (typeof window.switchSettingsView === 'function') {
+          window.switchSettingsView('main', true);
+        }
       });
     });
 
@@ -2402,7 +2426,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         applyVideoTransform();
         showPlayerToast(`Crop: ${currentCropMode === 'default' ? 'Default' : currentCropMode}`);
         closeAllDropdowns();
-        closeSettingsDropdown();
+        if (typeof window.switchSettingsView === 'function') {
+          window.switchSettingsView('main', true);
+        }
       });
     });
 
@@ -2580,6 +2606,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       if (isSettingsMenuOpen) {
         showControls();
+        if (typeof window.switchSettingsView === 'function') {
+          window.switchSettingsView('main', true);
+        }
         positionSettingsDropdown();
       }
 
@@ -2648,7 +2677,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.querySelectorAll('.speed-option').forEach(opt => opt.classList.remove('active'));
         this.classList.add('active');
         closeAllDropdowns();
-        closeSettingsDropdown();
+        if (typeof window.switchSettingsView === 'function') {
+          window.switchSettingsView('main', true);
+        }
       });
     });
 
@@ -2723,7 +2754,9 @@ document.addEventListener('DOMContentLoaded', async function () {
           const idx = trackIdxAttr !== null ? parseInt(trackIdxAttr) : parseInt(subtitleAttr);
           setSubtitle(isNaN(idx) ? -1 : idx);
         }
-        closeSettingsDropdown();
+        if (typeof window.switchSettingsView === 'function') {
+          window.switchSettingsView('main', true);
+        }
         closeAllDropdowns();
       }
 
@@ -2742,6 +2775,22 @@ document.addEventListener('DOMContentLoaded', async function () {
       const outroCheckbox = document.getElementById('setting-auto-skip-outro');
       const durationChips = document.querySelectorAll('#skip-duration-options .duration-chip');
 
+      function updateAutoskipBadge() {
+        const introOn = introCheckbox ? introCheckbox.checked : true;
+        const outroOn = outroCheckbox ? outroCheckbox.checked : true;
+        const badge = document.getElementById('current-autoskip-display');
+        if (!badge) return;
+        if (introOn && outroOn) {
+          badge.textContent = 'Smart Auto';
+        } else if (introOn) {
+          badge.textContent = 'Intro Only';
+        } else if (outroOn) {
+          badge.textContent = 'Outro Only';
+        } else {
+          badge.textContent = 'Off';
+        }
+      }
+
       // 1. Initial State from localStorage
       const introPref = localStorage.getItem('@infinx_auto_skip_intro');
       if (introCheckbox) {
@@ -2749,6 +2798,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         introCheckbox.addEventListener('change', function () {
           localStorage.setItem('@infinx_auto_skip_intro', introCheckbox.checked ? 'true' : 'false');
           showPlayerToast(introCheckbox.checked ? 'Auto-Skip Intro: Enabled' : 'Auto-Skip Intro: Disabled');
+          updateAutoskipBadge();
           const skipBtn = document.getElementById('skip-intro-btn');
           if (detectedIntroOutro.intro && mainVideo) {
             const cur = mainVideo.currentTime;
@@ -2770,11 +2820,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         outroCheckbox.addEventListener('change', function () {
           localStorage.setItem('@infinx_auto_skip_outro', outroCheckbox.checked ? 'true' : 'false');
           showPlayerToast(outroCheckbox.checked ? 'Auto-Skip Outro: Enabled' : 'Auto-Skip Outro: Disabled');
+          updateAutoskipBadge();
           if (!outroCheckbox.checked && outroCountdownActive) {
             cancelOutroCountdown();
           }
         });
       }
+
+      updateAutoskipBadge();
 
       // 2. Skip Duration Chips
       const currentDuration = localStorage.getItem('@infinx_skip_intro_duration') || 'auto';
@@ -2799,10 +2852,29 @@ document.addEventListener('DOMContentLoaded', async function () {
       });
     }
 
-    function setupSettingsPanelTabs() {
-      const tabsBar = document.querySelector('.settings-tabs-bar');
-      const tabs = document.querySelectorAll('.settings-tab-btn');
-      const contents = document.querySelectorAll('.settings-tab-content');
+    let currentSettingsView = 'main';
+    function switchSettingsView(targetView, isBack = false) {
+      const views = document.querySelectorAll('.settings-dropdown .settings-view');
+      const targetEl = document.getElementById(`settings-view-${targetView}`);
+      if (!targetEl) return;
+
+      views.forEach(v => {
+        v.classList.remove('active', 'slide-in-right', 'slide-in-left');
+      });
+
+      targetEl.classList.add('active');
+      if (targetView !== 'main' && !isBack) {
+        targetEl.classList.add('slide-in-right');
+      } else if (isBack) {
+        targetEl.classList.add('slide-in-left');
+      }
+
+      currentSettingsView = targetView;
+      positionSettingsDropdown();
+    }
+    window.switchSettingsView = switchSettingsView;
+
+    function setupHierarchicalSettingsMenu() {
       const closeBtn = document.getElementById('settings-panel-close-btn');
 
       if (closeBtn) {
@@ -2812,68 +2884,25 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
       }
 
-      if (tabsBar) {
-        // 1. Mouse wheel horizontal scrolling
-        tabsBar.addEventListener('wheel', function (e) {
-          if (Math.abs(e.deltaY) > Math.abs(e.deltaX) || e.deltaY !== 0) {
-            e.preventDefault();
-            tabsBar.scrollLeft += (e.deltaY || e.deltaX) * 0.9;
-          }
-        }, { passive: false });
-
-        // 2. Mouse click & drag to scroll
-        let isDown = false;
-        let startX = 0;
-        let scrollStart = 0;
-        let didDrag = false;
-
-        tabsBar.addEventListener('mousedown', function (e) {
-          isDown = true;
-          didDrag = false;
-          startX = e.pageX - tabsBar.offsetLeft;
-          scrollStart = tabsBar.scrollLeft;
-          tabsBar.style.cursor = 'grabbing';
-        });
-
-        window.addEventListener('mouseup', function () {
-          if (isDown) {
-            isDown = false;
-            if (tabsBar) tabsBar.style.cursor = 'grab';
+      // Root menu row clicks to open submenus
+      document.querySelectorAll('.settings-menu-item[data-target-view]').forEach(item => {
+        item.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const target = this.getAttribute('data-target-view');
+          if (target) {
+            switchSettingsView(target, false);
           }
         });
+      });
 
-        tabsBar.addEventListener('mousemove', function (e) {
-          if (!isDown) return;
-          e.preventDefault();
-          const x = e.pageX - tabsBar.offsetLeft;
-          const walk = (x - startX) * 1.4;
-          if (Math.abs(walk) > 4) {
-            didDrag = true;
-          }
-          tabsBar.scrollLeft = scrollStart - walk;
+      // Submenu back buttons
+      document.querySelectorAll('.settings-back-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const backTarget = this.getAttribute('data-back') || 'main';
+          switchSettingsView(backTarget, true);
         });
-
-        tabs.forEach(tab => {
-          tab.addEventListener('click', function (e) {
-            if (didDrag) {
-              e.preventDefault();
-              e.stopPropagation();
-              return;
-            }
-            e.stopPropagation();
-            const targetTab = this.getAttribute('data-tab');
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
-            this.classList.add('active');
-            const targetContent = document.getElementById(`tab-content-${targetTab}`);
-            if (targetContent) {
-              targetContent.classList.add('active');
-            }
-            // Auto-center selected tab in view smoothly
-            this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-          });
-        });
-      }
+      });
     }
 
     // Call dropdown listeners setup
@@ -2881,7 +2910,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     setupAudioEventListeners();
     setupSubtitleEventListeners();
     setupAutoSkipEventListeners();
-    setupSettingsPanelTabs();
+    setupHierarchicalSettingsMenu();
 
     // Mobile Navigation & Search Wireup
     if (mobileMenuBtn && mobileNav && mobileNavOverlay) {
