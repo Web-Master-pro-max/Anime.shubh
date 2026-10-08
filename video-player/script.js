@@ -1174,9 +1174,13 @@ document.addEventListener('DOMContentLoaded', async function () {
       isSettingsMenuOpen = false;
       if (settingsMenu) settingsMenu.classList.remove('active');
       if (settingsDropdown) {
+        settingsDropdown.classList.remove('active');
         settingsDropdown.style.right = '';
         settingsDropdown.style.maxHeight = '';
       }
+      const backdrop = document.getElementById('settings-mobile-backdrop');
+      if (backdrop) backdrop.classList.remove('active');
+      document.body.style.overflow = '';
       const controls = document.querySelector('.custom-controls');
       if (controls) {
         controls.classList.remove('settings-open');
@@ -2593,11 +2597,51 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     }
 
+    function syncSettingsContainer() {
+      const dropdown = document.getElementById('player-settings-dropdown');
+      const backdrop = document.getElementById('settings-mobile-backdrop');
+      const settingsMenuEl = document.getElementById('player-settings-menu');
+      if (!dropdown) return;
+
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+      const isMobile = window.innerWidth <= 768;
+
+      if (isMobile) {
+        // Escapes video-player-wrapper overflow:hidden and custom-controls transforms
+        const targetParent = fsEl ? fsEl : document.body;
+        if (dropdown.parentElement !== targetParent) {
+          targetParent.appendChild(dropdown);
+        }
+        if (backdrop && backdrop.parentElement !== targetParent) {
+          targetParent.appendChild(backdrop);
+        }
+      } else {
+        // Desktop: attach inside settingsMenu to anchor right above gear button
+        if (settingsMenuEl && dropdown.parentElement !== settingsMenuEl) {
+          settingsMenuEl.appendChild(dropdown);
+        }
+        if (backdrop && settingsMenuEl && backdrop.parentElement !== settingsMenuEl) {
+          settingsMenuEl.appendChild(backdrop);
+        }
+      }
+    }
+
+    // Initial container sync
+    syncSettingsContainer();
+    document.addEventListener('fullscreenchange', syncSettingsContainer);
+    document.addEventListener('webkitfullscreenchange', syncSettingsContainer);
+    window.addEventListener('resize', syncSettingsContainer);
+
     // Settings dropdown clicks
     if (settingsBtn) settingsBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       isSettingsMenuOpen = !isSettingsMenuOpen;
+      syncSettingsContainer();
+
       if (settingsMenu) settingsMenu.classList.toggle('active', isSettingsMenuOpen);
+      if (settingsDropdown) settingsDropdown.classList.toggle('active', isSettingsMenuOpen);
+      const backdrop = document.getElementById('settings-mobile-backdrop');
+      if (backdrop) backdrop.classList.toggle('active', isSettingsMenuOpen);
 
       const controls = document.querySelector('.custom-controls');
       if (controls) {
@@ -2610,10 +2654,45 @@ document.addEventListener('DOMContentLoaded', async function () {
           window.switchSettingsView('main', true);
         }
         positionSettingsDropdown();
+        if (window.innerWidth <= 768) {
+          document.body.style.overflow = 'hidden';
+        }
+      } else {
+        document.body.style.overflow = '';
       }
 
       closeAllDropdowns();
     });
+
+    const mobileBackdrop = document.getElementById('settings-mobile-backdrop');
+    if (mobileBackdrop) {
+      mobileBackdrop.addEventListener('click', function (e) {
+        e.stopPropagation();
+        closeSettingsDropdown();
+      });
+    }
+
+    const dragHandle = document.querySelector('.settings-drag-handle');
+    if (dragHandle) {
+      dragHandle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        closeSettingsDropdown();
+      });
+
+      let startTouchY = 0;
+      dragHandle.addEventListener('touchstart', function (e) {
+        if (e.touches && e.touches[0]) startTouchY = e.touches[0].clientY;
+      }, { passive: true });
+
+      dragHandle.addEventListener('touchmove', function (e) {
+        if (e.touches && e.touches[0]) {
+          const deltaY = e.touches[0].clientY - startTouchY;
+          if (deltaY > 40) {
+            closeSettingsDropdown();
+          }
+        }
+      }, { passive: true });
+    }
 
     document.addEventListener('click', function (event) {
       if (isSettingsMenuOpen && !settingsMenu.contains(event.target) && !settingsBtn.contains(event.target) && !event.target.closest('.settings-dropdown')) {
