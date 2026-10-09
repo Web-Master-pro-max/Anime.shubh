@@ -24,7 +24,7 @@
     },
     {
       "src": "/laptop-api/(.*)",
-      "dest": "https://skirt-guided-dressing-fantastic.trycloudflare.com/api/$1",
+      "dest": "https://occurs-proteins-briefs-eric.trycloudflare.com/api/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -35,7 +35,7 @@
     },
     {
       "src": "/uploads/(.*)",
-      "dest": "https://skirt-guided-dressing-fantastic.trycloudflare.com/uploads/$1",
+      "dest": "https://occurs-proteins-briefs-eric.trycloudflare.com/uploads/$1",
       "continue": false
     },
     {
