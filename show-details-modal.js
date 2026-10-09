@@ -4,6 +4,23 @@
  */
 
 (function () {
+  // Sanitize raw HTML tags like <br> and <i> from descriptions
+  function cleanHtmlText(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&')
+      .replace(/&#039;/g, "'")
+      .replace(/&apos;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
   // Ensure styles are injected
   function injectShowDetailsStyles() {
     if (document.getElementById('infinx-show-details-styles')) return;
@@ -343,6 +360,271 @@
         background: var(--primary, #ff0055);
         transform: scale(1.1);
       }
+      .ep-thumbnail-box {
+        width: 80px;
+        height: 48px;
+        border-radius: 6px;
+        overflow: hidden;
+        flex-shrink: 0;
+        position: relative;
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .ep-thumbnail-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .show-artworks-section {
+        margin: 20px 0;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 14px;
+        padding: 16px;
+      }
+      .artworks-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .artworks-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .artworks-tabs {
+        display: flex;
+        gap: 6px;
+      }
+      .artwork-tab-btn {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #a0a5b9;
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .artwork-tab-btn.active, .artwork-tab-btn:hover {
+        background: var(--primary, #ff0055);
+        color: #fff;
+        border-color: transparent;
+      }
+      .artworks-carousel {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        scroll-behavior: smooth;
+      }
+      .artworks-carousel::-webkit-scrollbar {
+        height: 4px;
+      }
+      .artworks-carousel::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+      }
+      .artwork-card {
+        flex-shrink: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        position: relative;
+      }
+      .artwork-card:hover {
+        border-color: var(--primary, #ff0055);
+        transform: translateY(-2px);
+      }
+      .artwork-card.banner-type {
+        width: 220px;
+        height: 65px;
+      }
+      .artwork-card.poster-type {
+        width: 80px;
+        height: 115px;
+      }
+      .artwork-card.fanart-type {
+        width: 180px;
+        height: 100px;
+      }
+      .artwork-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Seasons & Franchise Section */
+      .show-seasons-section {
+        margin-bottom: 26px;
+      }
+      .seasons-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .seasons-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+      }
+      .seasons-badge {
+        background: rgba(255, 0, 85, 0.18);
+        border: 1px solid rgba(255, 0, 85, 0.4);
+        color: #ff3377;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-weight: 700;
+      }
+      .seasons-subtitle {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .seasons-carousel {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 4px 2px 14px 2px;
+        scroll-behavior: smooth;
+      }
+      .seasons-carousel::-webkit-scrollbar {
+        height: 6px;
+      }
+      .seasons-carousel::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+      }
+      .seasons-carousel::-webkit-scrollbar-thumb:hover {
+        background: var(--primary, #ff0055);
+      }
+      .season-card {
+        flex: 0 0 165px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        text-align: left;
+      }
+      .season-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 0, 85, 0.5);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), 0 0 20px rgba(255, 0, 85, 0.3);
+      }
+      .season-card.current {
+        border: 2px solid var(--primary, #ff0055);
+        background: rgba(255, 0, 85, 0.12);
+        box-shadow: 0 0 22px rgba(255, 0, 85, 0.45);
+      }
+      .season-poster-wrapper {
+        position: relative;
+        width: 100%;
+        height: 105px;
+        overflow: hidden;
+        background: #0a0a16;
+      }
+      .season-poster-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+      .season-card:hover .season-poster-img {
+        transform: scale(1.08);
+      }
+      .season-badge-pill {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        font-size: 0.68rem;
+        font-weight: 800;
+        padding: 3px 7px;
+        border-radius: 6px;
+        background: rgba(8, 8, 16, 0.8);
+        color: #fff;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        letter-spacing: 0.3px;
+      }
+      .season-card.current .season-badge-pill {
+        background: var(--primary, #ff0055);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 2px 8px rgba(255, 0, 85, 0.5);
+      }
+      .season-rating-pill {
+        position: absolute;
+        bottom: 6px;
+        right: 6px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.75);
+        color: #ffd700;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        backdrop-filter: blur(4px);
+      }
+      .season-card-content {
+        padding: 10px 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        flex: 1;
+      }
+      .season-card-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .season-card-meta {
+        font-size: 0.75rem;
+        color: #8c92a5;
+        margin-top: auto;
+      }
+      .episodes-season-select {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 12px;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .episodes-season-select:hover, .episodes-season-select:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: var(--primary, #ff0055);
+      }
+      .episodes-season-select option {
+        background: #14142b;
+        color: #fff;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -409,8 +691,8 @@
           <div class="series-progress-card" id="showModalProgressCard" style="margin-bottom: 24px;">
             <div class="series-progress-header">
               <div class="series-progress-title">
-                <i class="fas fa-chart-line" style="color: var(--primary, #ff0055);"></i>
-                <span>Series Watch Progress</span>
+                <i class="fas fa-chart-line"></i>
+                <span>Watch Progress</span>
               </div>
               <span class="series-progress-percent" id="showModalProgressPercent">0%</span>
             </div>
@@ -418,9 +700,27 @@
               <div class="series-progress-fill" id="showModalProgressFill" style="width: 0%;"></div>
             </div>
             <div class="series-progress-stats">
-              <div class="stat-chip"><i class="fas fa-film"></i><span>Total: <strong id="showModalTotalEpisodes">0</strong></span></div>
-              <div class="stat-chip"><i class="fas fa-check-circle" style="color:#00ff88;"></i><span>Watched: <strong id="showModalWatchedEpisodes">0</strong></span></div>
-              <div class="stat-chip"><i class="fas fa-clock" style="color:var(--secondary, #00f0ff);"></i><span>Left: <strong id="showModalRemainingEpisodes">0</strong></span></div>
+              <div class="stat-chip">
+                <i class="fas fa-layer-group stat-icon stat-total"></i>
+                <div class="stat-content">
+                  <span class="stat-label">Total</span>
+                  <span class="stat-value" id="showModalTotalEpisodes">0</span>
+                </div>
+              </div>
+              <div class="stat-chip">
+                <i class="fas fa-check-circle stat-icon stat-watched"></i>
+                <div class="stat-content">
+                  <span class="stat-label">Watched</span>
+                  <span class="stat-value" id="showModalWatchedEpisodes">0</span>
+                </div>
+              </div>
+              <div class="stat-chip">
+                <i class="fas fa-clock stat-icon stat-left"></i>
+                <div class="stat-content">
+                  <span class="stat-label">Left</span>
+                  <span class="stat-value" id="showModalRemainingEpisodes">0</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -428,9 +728,44 @@
           <h3 class="show-synopsis-title">Synopsis</h3>
           <p class="show-synopsis-p" id="showModalSynopsis">...</p>
 
+          <!-- Artworks Gallery Section (Posters, Banners, Fanarts) -->
+          <div class="show-artworks-section" id="showModalArtworksSection" style="display: none;">
+            <div class="artworks-header">
+              <div class="artworks-title">
+                <i class="fas fa-images" style="color: var(--primary, #ff0055);"></i>
+                <span>Artworks & Media</span>
+              </div>
+              <div class="artworks-tabs" id="showModalArtworkTabs">
+                <button class="artwork-tab-btn active" data-tab="all">All</button>
+                <button class="artwork-tab-btn" data-tab="banners">Banners</button>
+                <button class="artwork-tab-btn" data-tab="posters">Posters</button>
+                <button class="artwork-tab-btn" data-tab="fanarts">Fanarts</button>
+              </div>
+            </div>
+            <div class="artworks-carousel" id="showModalArtworksCarousel"></div>
+          </div>
+
+          <!-- Seasons & Sequels Section (Multi-Season Anime Switcher) -->
+          <div class="show-seasons-section" id="showModalSeasonsSection" style="display: none;">
+            <div class="seasons-header">
+              <div class="seasons-title">
+                <i class="fas fa-layer-group" style="color: var(--primary, #ff0055);"></i>
+                <span>All Seasons & Sequels</span>
+                <span class="seasons-badge" id="showModalSeasonsBadge">0</span>
+              </div>
+              <span class="seasons-subtitle">Switch to watch any season</span>
+            </div>
+            <div class="seasons-carousel" id="showModalSeasonsCarousel"></div>
+          </div>
+
           <!-- Episodes Section -->
           <div class="episodes-section-header">
-            <h3 class="episodes-section-title">Episodes</h3>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <h3 class="episodes-section-title">Episodes</h3>
+              <div class="episodes-season-selector-wrapper" id="episodesSeasonDropdownWrapper" style="display: none;">
+                <select id="episodesSeasonSelect" class="episodes-season-select" aria-label="Select season"></select>
+              </div>
+            </div>
             <span class="episodes-section-stats" id="showModalEpisodesStats">0 Watched • 0 Left</span>
           </div>
           <div class="episodes-card-list" id="showModalEpisodesList"></div>
@@ -483,20 +818,61 @@
       showId = showInput;
     }
 
-    if (!showId) return;
+    if (!showId && !showInput?.anilistId) return;
 
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    // Fetch full details if needed
     const apiBase = window.API_BASE || '/api';
-    try {
-      const res = await fetch(`${apiBase}/shows/${showId}`);
-      if (res.ok) {
-        show = await res.json();
+    const isLunarShow = (typeof showInput === 'object' && (showInput.isLunar || showInput.anilistId)) ||
+      (typeof showId === 'string' && showId.startsWith('lunar-'));
+    const anilistId = (typeof showInput === 'object' && showInput.anilistId) ||
+      (typeof showId === 'string' && showId.startsWith('lunar-') ? showId.replace('lunar-', '') : null);
+
+    if (isLunarShow && anilistId) {
+      try {
+        const res = await fetch(`${apiBase}/lunarx/all/${anilistId}`);
+        if (res.ok) {
+          const lData = await res.json();
+          show = {
+            id: `lunar-${anilistId}`,
+            anilistId: anilistId,
+            isLunar: true,
+            title: lData.title || (show && show.title),
+            description: cleanHtmlText(lData.description || (show && show.description)),
+            rating: lData.rating || (show && show.rating) || '8.8',
+            year: lData.year || (show && show.year) || '2024',
+            poster: lData.poster || (show && show.poster),
+            banner: lData.banner || (show && show.banner),
+            artworks: lData.artworks || (show && show.artworks),
+            seasons: lData.seasons || [],
+            relations: lData.relations || [],
+            categories: (lData.genres || []).map(g => ({ name: g })),
+            episodes: (lData.episodes || []).map(e => ({
+              id: e.id,
+              number: e.number,
+              episodeNumber: e.number,
+              title: e.title,
+              description: cleanHtmlText(e.description),
+              thumbnail: e.thumbnail,
+              duration: `${e.runtime || 24}m`,
+              isLunar: true,
+              anilistId: anilistId
+            }))
+          };
+        }
+      } catch (err) {
+        console.warn('Failed to load anime details:', err);
       }
-    } catch (e) {
-      console.warn('Could not fetch full show details:', e);
+    } else {
+      try {
+        const res = await fetch(`${apiBase}/shows/${showId}`);
+        if (res.ok) {
+          show = await res.json();
+        }
+      } catch (e) {
+        console.warn('Could not fetch full show details:', e);
+      }
     }
 
     if (!show) return;
@@ -515,7 +891,7 @@
     if (titleEl) titleEl.textContent = show.title;
     if (ratingEl) ratingEl.innerHTML = `<i class="fas fa-star"></i> ${show.rating ? parseFloat(show.rating).toFixed(1) : '4.9'}`;
     if (yearEl) yearEl.textContent = show.year || '2024';
-    if (synopsisEl) synopsisEl.textContent = show.description || 'No synopsis available for this show.';
+    if (synopsisEl) synopsisEl.textContent = cleanHtmlText(show.description) || 'No synopsis available for this show.';
 
     const rawBanner = show.banner || show.poster;
     const bannerUrl = (typeof window.formatMediaUrl === 'function')
@@ -531,6 +907,113 @@
         `).join('');
       } else {
         genresEl.innerHTML = '<span class="show-genre-tag">Anime</span><span class="show-genre-tag">Action</span>';
+      }
+    }
+
+    // Artworks Gallery
+    const artworksSec = document.getElementById('showModalArtworksSection');
+    const artworksCarousel = document.getElementById('showModalArtworksCarousel');
+    const artworkTabs = document.getElementById('showModalArtworkTabs');
+    if (artworksSec && artworksCarousel && show.artworks) {
+      const { banners = [], posters = [], fanarts = [] } = show.artworks;
+      const allArts = [
+        ...banners.map(u => ({ url: u, type: 'banner' })),
+        ...posters.map(u => ({ url: u, type: 'poster' })),
+        ...fanarts.map(u => ({ url: u, type: 'fanart' }))
+      ];
+
+      if (allArts.length > 0) {
+        artworksSec.style.display = 'block';
+
+        const renderArtworks = (filterType = 'all') => {
+          const list = filterType === 'all'
+            ? allArts
+            : (filterType === 'banners' ? banners.map(u => ({ url: u, type: 'banner' }))
+              : (filterType === 'posters' ? posters.map(u => ({ url: u, type: 'poster' }))
+                : fanarts.map(u => ({ url: u, type: 'fanart' }))));
+
+          artworksCarousel.innerHTML = list.map(art => `
+            <div class="artwork-card ${art.type}-type" onclick="document.getElementById('showModalBackdropImg').src='${art.url}'" title="Click to preview backdrop">
+              <img src="${art.url}" alt="Artwork" loading="lazy">
+            </div>
+          `).join('');
+        };
+
+        renderArtworks('all');
+
+        if (artworkTabs) {
+          artworkTabs.onclick = (e) => {
+            const btn = e.target.closest('.artwork-tab-btn');
+            if (!btn) return;
+            artworkTabs.querySelectorAll('.artwork-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderArtworks(btn.getAttribute('data-tab'));
+          };
+        }
+      } else {
+        artworksSec.style.display = 'none';
+      }
+    }
+
+    // Render Seasons & Sequels Section (Multi-Season Anime Switcher)
+    const seasonsSec = document.getElementById('showModalSeasonsSection');
+    const seasonsCarousel = document.getElementById('showModalSeasonsCarousel');
+    const seasonsBadge = document.getElementById('showModalSeasonsBadge');
+    const seasonSelectWrapper = document.getElementById('episodesSeasonDropdownWrapper');
+    const seasonSelect = document.getElementById('episodesSeasonSelect');
+
+    const seasonsList = (show.seasons && show.seasons.length > 0) ? show.seasons : [];
+    if (seasonsSec && seasonsCarousel) {
+      if (seasonsList.length > 1) {
+        seasonsSec.style.display = 'block';
+        if (seasonsBadge) seasonsBadge.textContent = `${seasonsList.length} Seasons`;
+
+        seasonsCarousel.innerHTML = seasonsList.map((s, idx) => {
+          const isCurrent = s.isCurrent || (s.anilistId && parseInt(s.anilistId) === parseInt(show.anilistId));
+          const seasonNum = s.seasonNumber || idx + 1;
+          const posterImg = s.poster || s.banner || show.poster || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400';
+          const typeLabel = s.type || 'TV';
+          const yearLabel = s.year ? ` • ${s.year}` : '';
+          const epLabel = s.episodes ? ` • ${s.episodes} Ep` : '';
+          const displayTitle = s.titleEnglish || s.title || `Season ${seasonNum}`;
+          const badgeText = isCurrent ? 'CURRENT' : (s.relation || `S${seasonNum}`);
+
+          return `
+            <div class="season-card ${isCurrent ? 'current' : ''}" 
+                 role="button" 
+                 tabindex="0" 
+                 title="${displayTitle}"
+                 onclick="window.switchShowSeason('${s.anilistId || s.id}')">
+              <div class="season-poster-wrapper">
+                <img src="${posterImg}" alt="${displayTitle}" class="season-poster-img" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400'">
+                <span class="season-badge-pill">${badgeText}</span>
+                ${s.rating ? `<span class="season-rating-pill"><i class="fas fa-star"></i> ${s.rating}</span>` : ''}
+              </div>
+              <div class="season-card-content">
+                <span class="season-card-title">${displayTitle}</span>
+                <span class="season-card-meta">${typeLabel}${yearLabel}${epLabel}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Populate inline quick season selector dropdown in episodes header
+        if (seasonSelectWrapper && seasonSelect) {
+          seasonSelectWrapper.style.display = 'block';
+          seasonSelect.innerHTML = seasonsList.map((s, idx) => {
+            const isCurrent = s.isCurrent || (s.anilistId && parseInt(s.anilistId) === parseInt(show.anilistId));
+            const displayTitle = s.titleEnglish || s.title || `Season ${idx + 1}`;
+            return `<option value="${s.anilistId || s.id}" ${isCurrent ? 'selected' : ''}>${displayTitle}</option>`;
+          }).join('');
+
+          seasonSelect.onchange = (e) => {
+            const targetId = e.target.value;
+            if (targetId) window.switchShowSeason(targetId);
+          };
+        }
+      } else {
+        seasonsSec.style.display = 'none';
+        if (seasonSelectWrapper) seasonSelectWrapper.style.display = 'none';
       }
     }
 
@@ -612,17 +1095,22 @@
     const primaryPlayText = document.getElementById('showModalPrimaryPlayText');
 
     if (primaryPlayText && resumeEpisode) {
+      const epNumDisplay = resumeEpisode.episodeNumber || resumeEpisode.number || 1;
       if (hasResumeProgress) {
-        primaryPlayText.textContent = `RESUME EPISODE ${resumeEpisode.episodeNumber} (${formatDuration(resumePosition)})`;
+        primaryPlayText.textContent = `RESUME EPISODE ${epNumDisplay} (${formatDuration(resumePosition)})`;
       } else {
-        primaryPlayText.textContent = `PLAY EPISODE ${resumeEpisode.episodeNumber || 1}`;
+        primaryPlayText.textContent = `PLAY EPISODE ${epNumDisplay}`;
       }
     }
 
     if (primaryPlayBtn && resumeEpisode) {
       primaryPlayBtn.onclick = (e) => {
         const seekParam = (hasResumeProgress && resumePosition > 0) ? `&t=${resumePosition}` : '';
-        const playUrl = `/video-player/index.html?episodeId=${resumeEpisode.id}${seekParam}`;
+        const epNum = resumeEpisode.episodeNumber || resumeEpisode.number || 1;
+        const playUrl = show.isLunar
+          ? `/video-player/index.html?lunarId=${show.anilistId || anilistId}&ep=${epNum}${seekParam}`
+          : `/video-player/index.html?episodeId=${resumeEpisode.id}${seekParam}`;
+
         if (typeof window.requireAuthPlay === 'function') {
           if (!window.requireAuthPlay(e, playUrl)) return;
         }
@@ -654,14 +1142,24 @@
           }
 
           const seekParam = (isInProgress && epProg.positionSeconds > 0) ? `&t=${epProg.positionSeconds}` : '';
-          const epPlayUrl = `/video-player/index.html?episodeId=${ep.id}${seekParam}`;
+          const epNum = ep.episodeNumber || ep.number;
+          const epPlayUrl = show.isLunar
+            ? `/video-player/index.html?lunarId=${show.anilistId || anilistId}&ep=${epNum}${seekParam}`
+            : `/video-player/index.html?episodeId=${ep.id}${seekParam}`;
+
+          const thumbHtml = ep.thumbnail ? `
+            <div class="ep-thumbnail-box">
+              <img src="${ep.thumbnail}" alt="Ep ${epNum}" loading="lazy" onerror="this.style.display='none'">
+            </div>
+          ` : '';
 
           return `
             <div class="ep-row-card ${isCompleted ? 'completed' : ''} ${isCurrentResume ? 'current' : ''}" 
                  onclick="window.playModalEpisode(event, '${epPlayUrl}')">
+              ${thumbHtml}
               <div class="ep-row-num-badge">
                 <span>EP</span>
-                <span>${ep.episodeNumber}</span>
+                <span>${epNum}</span>
               </div>
               <div class="ep-row-info">
                 <div class="ep-row-title-line">
@@ -670,6 +1168,7 @@
                 </div>
                 <div class="ep-row-meta">
                   <span>${ep.duration || '24m'} • HD</span>
+                  ${ep.airDate ? `<span>• ${ep.airDate}</span>` : ''}
                   ${isInProgress ? `<span>• Left at ${formatDuration(epProg.positionSeconds)}</span>` : ''}
                 </div>
               </div>
@@ -687,5 +1186,20 @@
       if (!window.requireAuthPlay(event, playUrl)) return;
     }
     window.location.href = playUrl;
+  };
+
+  window.switchShowSeason = async function (targetId) {
+    if (!targetId) return;
+    const epList = document.getElementById('showModalEpisodesList');
+    if (epList) {
+      epList.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: #a0a5b9; gap: 12px;">
+          <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--primary, #ff0055);"></i>
+          <span>Loading season...</span>
+        </div>
+      `;
+    }
+    const cleanId = typeof targetId === 'string' && targetId.startsWith('lunar-') ? targetId.replace('lunar-', '') : targetId;
+    await window.openShowDetails({ anilistId: cleanId, isLunar: true });
   };
 })();

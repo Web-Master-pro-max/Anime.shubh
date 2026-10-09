@@ -445,6 +445,126 @@
             color: var(--primary);
         }
 
+        /* Live Search Auto-Suggest Dropdown */
+        .live-search-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 380px;
+            max-height: 480px;
+            overflow-y: auto;
+            background: rgba(12, 12, 24, 0.96);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.85), 0 0 25px rgba(255, 0, 85, 0.2);
+            z-index: 10000;
+            padding: 8px;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .live-search-dropdown {
+                width: 300px;
+                right: -20px;
+            }
+        }
+
+        .live-search-dropdown::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .live-search-dropdown::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .live-search-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: #fff;
+            border: 1px solid transparent;
+        }
+
+        .live-search-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 0, 85, 0.3);
+            transform: translateX(3px);
+        }
+
+        .live-search-thumb {
+            width: 44px;
+            height: 60px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .live-search-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .live-search-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .live-search-meta {
+            font-size: 1.15rem;
+            color: #989eb2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 3px;
+        }
+
+        .live-search-rating {
+            color: #ffaa00;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .live-search-badge {
+            background: rgba(0, 240, 255, 0.15);
+            color: #00f0ff;
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            padding: 1px 7px;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .live-search-footer {
+            padding: 12px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 1.25rem;
+            color: var(--primary, #ff0055);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+
+        .live-search-footer:hover {
+            color: var(--secondary, #00f0ff);
+        }
+
         /* Auth buttons in header */
         .auth-buttons {
             display: flex;
@@ -1886,6 +2006,7 @@
         <nav class="navbar">
             <div class="drawer-close" id="closeDrawer"><i class="fas fa-times"></i></div>
             <a href="#home" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+            <a href="anime.html" class="nav-link"><i class="fas fa-tv"></i> Anime</a>
 
             <!-- Genres Dropdown -->
             <div class="nav-item-dropdown">
@@ -1925,8 +2046,8 @@
                             Movies</a>
                         <a href="view.html#bollywood" class="dropdown-item"><i class="fas fa-clapperboard"></i>
                             Bollywood Movies</a>
-                        <a href="view.html#anime" class="dropdown-item"><i class="fas fa-play-circle"></i> Anime
-                            Series</a>
+                        <a href="anime.html" class="dropdown-item"><i class="fas fa-play-circle"></i> Anime
+                            Hub</a>
                         <a href="view.html#web-series" class="dropdown-item"><i class="fas fa-tv"></i> Web Series</a>
                         <a href="view.html#kids" class="dropdown-item"><i class="fas fa-child"></i> Kids & Family</a>
                         <a href="view.html#kdrama" class="dropdown-item"><i class="fas fa-video"></i> Korean Drama</a>
@@ -1943,8 +2064,9 @@
             <div class="search-container">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search anime...">
+                    <input type="text" id="searchInput" placeholder="Search anime, shows, movies..." autocomplete="off">
                 </div>
+                <div class="live-search-dropdown" id="liveSearchDropdown"></div>
             </div>
 
             <!-- Dynamic Authentication Header Section -->
@@ -2011,7 +2133,12 @@
                  Dynamically filled with top genre quick pills 
             </div>
         </div>
-    </div> -->
+    </div>-->
+
+    <!-- ====== LUNARX ANIME STREAMING SECTION ====== -->
+    <div id="lunarAnimeSection">
+        <!-- Loaded dynamically via loadLunarTrending() -->
+    </div>
 
     <!-- ====== DYNAMIC GENRE & CATEGORY SECTIONS ====== -->
     <div id="homeDynamicSections">
@@ -2114,6 +2241,7 @@
     <!-- ====== MOBILE BOTTOM TAB BAR ====== -->
     <nav class="mobile-tab-bar">
         <a href="index.html" class="tab-item active" id="tabHome"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="anime.html" class="tab-item" id="tabAnime"><i class="fas fa-tv"></i><span>Anime</span></a>
         <a href="#" class="tab-item" id="tabSearch"><i class="fas fa-search"></i><span>Search</span></a>
         <a href="view.html#watchlist" class="tab-item" id="tabWatchlist"><i
                 class="fas fa-heart"></i><span>Watchlist</span></a>
@@ -2226,16 +2354,104 @@
                 });
             });
 
-            // Search logic (redirect to unified search results page)
+            // Search logic with live auto-suggest
             const searchInput = document.getElementById('searchInput');
-            searchInput.addEventListener('keyup', function (e) {
-                if (e.key === 'Enter') {
-                    const term = this.value.trim();
-                    if (term) {
-                        window.location.href = `view.html#search?q=${encodeURIComponent(term)}`;
-                    }
+            const liveDropdown = document.getElementById('liveSearchDropdown');
+            let searchDebounceTimeout = null;
+
+            async function performLiveSearch(query, targetContainer) {
+                if (!query || query.length < 2) {
+                    targetContainer.innerHTML = '';
+                    targetContainer.style.display = 'none';
+                    return;
                 }
-            });
+
+                try {
+                    const res = await fetch(`${API_BASE}/shows/search?q=${encodeURIComponent(query)}`);
+                    if (!res.ok) return;
+                    const results = await res.json();
+
+                    if (!results || results.length === 0) {
+                        targetContainer.innerHTML = `
+                            <div style="padding: 16px; text-align: center; color: var(--gray-text); font-size: 1.3rem;">
+                                No matching anime or shows found for "${query}"
+                            </div>
+                        `;
+                        targetContainer.style.display = 'block';
+                        return;
+                    }
+
+                    const itemsHtml = results.slice(0, 7).map(item => {
+                        const posterUrl = (item.poster && (item.poster.startsWith('http://') || item.poster.startsWith('https://')))
+                            ? item.poster
+                            : window.formatMediaUrl(item.poster);
+                        const isAnime = item.isLunar || (typeof item.id === 'string' && item.id.startsWith('lunar-')) || item.anilistId;
+                        const badge = isAnime ? 'Anime' : (item.badge || 'HD');
+                        const anilistId = item.anilistId || (typeof item.id === 'string' ? item.id.replace('lunar-', '') : item.id);
+                        const safeTitle = (item.title || '').replace(/'/g, "\\'");
+                        const safePoster = (item.poster || '').replace(/'/g, "\\'");
+                        const safeBanner = (item.banner || '').replace(/'/g, "\\'");
+
+                        return `
+                            <div class="live-search-item" onclick="if(window.openShowDetails) window.openShowDetails({ id: '${item.id}', anilistId: ${anilistId || 'null'}, title: '${safeTitle}', poster: '${safePoster}', banner: '${safeBanner}', isLunar: ${isAnime ? 'true' : 'false'} })">
+                                <img src="${posterUrl}" alt="${item.title}" class="live-search-thumb" onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=100';">
+                                <div class="live-search-info">
+                                    <div class="live-search-title">${item.title}</div>
+                                    <div class="live-search-meta">
+                                        <span class="live-search-rating"><i class="fas fa-star"></i> ${item.rating || '4.9'}</span>
+                                        <span>•</span>
+                                        <span>${item.year || '2024'}</span>
+                                        <span class="live-search-badge">${badge}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    const viewAllUrl = `view.html#search?q=${encodeURIComponent(query)}`;
+                    targetContainer.innerHTML = `
+                        ${itemsHtml}
+                        <div class="live-search-footer" onclick="window.location.href='${viewAllUrl}'">
+                            View all results for "${query}" <i class="fas fa-arrow-right"></i>
+                        </div>
+                    `;
+                    targetContainer.style.display = 'block';
+                } catch (err) {
+                    console.warn('Live search error:', err);
+                }
+            }
+
+            if (searchInput && liveDropdown) {
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(searchDebounceTimeout);
+                    const term = this.value.trim();
+                    searchDebounceTimeout = setTimeout(() => {
+                        performLiveSearch(term, liveDropdown);
+                    }, 220);
+                });
+
+                searchInput.addEventListener('keyup', function (e) {
+                    if (e.key === 'Enter') {
+                        const term = this.value.trim();
+                        if (term) {
+                            if (liveDropdown) liveDropdown.style.display = 'none';
+                            window.location.href = `view.html#search?q=${encodeURIComponent(term)}`;
+                        }
+                    }
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!searchInput.contains(e.target) && !liveDropdown.contains(e.target)) {
+                        liveDropdown.style.display = 'none';
+                    }
+                });
+
+                searchInput.addEventListener('focus', function () {
+                    if (this.value.trim().length >= 2) {
+                        liveDropdown.style.display = 'block';
+                    }
+                });
+            }
 
             // Mobile Search Overlay listeners
             const tabSearch = document.getElementById('tabSearch');
@@ -2243,6 +2459,7 @@
             const closeSearchOverlay = document.getElementById('closeSearchOverlay');
             const clearMobileSearch = document.getElementById('clearMobileSearch');
             const mobileSearchInput = document.getElementById('mobileSearchInput');
+            const mobileSearchResults = document.getElementById('mobileSearchResults');
 
             tabSearch.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -2254,17 +2471,26 @@
                 mobileSearchOverlay.classList.remove('active');
             });
 
+            let mobileSearchDebounce = null;
             mobileSearchInput.addEventListener('input', function () {
-                if (this.value.trim()) {
+                const q = this.value.trim();
+                if (q) {
                     clearMobileSearch.style.display = 'flex';
                 } else {
                     clearMobileSearch.style.display = 'none';
                 }
+
+                clearTimeout(mobileSearchDebounce);
+                mobileSearchDebounce = setTimeout(() => {
+                    performLiveSearch(q, mobileSearchResults);
+                }, 220);
             });
 
             clearMobileSearch.addEventListener('click', () => {
                 mobileSearchInput.value = '';
                 clearMobileSearch.style.display = 'none';
+                mobileSearchResults.innerHTML = '';
+                mobileSearchResults.style.display = 'none';
                 mobileSearchInput.focus();
             });
 
@@ -2284,9 +2510,93 @@
         });
 
         // Initialize user status & catalog content
+        let globalLunarData = null;
+        let currentLunarTab = 'popularThisSeason';
+
+        async function loadLunarTrending() {
+            const container = document.getElementById('lunarAnimeSection');
+            if (!container) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/lunarx/trending`);
+                if (!res.ok) return;
+                const data = await res.json();
+                globalLunarData = data;
+                renderLunarSection();
+            } catch (err) {
+                console.warn('Lunar trending fetch failed:', err);
+            }
+        }
+
+        function switchLunarTab(tabName) {
+            currentLunarTab = tabName;
+            renderLunarSection();
+        }
+
+        function renderLunarSection() {
+            const container = document.getElementById('lunarAnimeSection');
+            if (!container || !globalLunarData) return;
+
+            const list = globalLunarData[currentLunarTab] || [];
+            if (list.length === 0) return;
+
+            const cardsHtml = list.slice(0, 10).map(show => {
+                const playUrl = `/video-player/index.html?lunarId=${show.anilistId}&ep=1`;
+                const posterUrl = show.poster || 'Postes/spyfamS3p.jpg';
+                const safeTitle = (show.title || '').replace(/'/g, "\\'");
+                const safePoster = (show.poster || '').replace(/'/g, "\\'");
+                const safeBanner = (show.banner || '').replace(/'/g, "\\'");
+                return `
+                    <div class="movie-card" onclick="window.openShowDetails({ id: 'lunar-${show.anilistId}', anilistId: ${show.anilistId}, title: '${safeTitle}', poster: '${safePoster}', banner: '${safeBanner}', isLunar: true })">
+                        <div class="movie-poster">
+                            <img src="${posterUrl}" alt="${show.title}" loading="lazy" onerror="this.onerror=null; this.src='Postes/spyfamS3p.jpg'">
+                            <span class="badge" style="background: linear-gradient(135deg, #00f0ff, #7000ff);"><i class="fas fa-bolt"></i> 1080p Ultra</span>
+                            <div class="movie-overlay">
+                                <a href="${playUrl}" class="btn-play" onclick="event.stopPropagation(); return window.requireAuthPlay(event, '${playUrl}')"><i class="fas fa-play"></i></a>
+                            </div>
+                        </div>
+                        <div class="movie-info">
+                            <h3 class="movie-title">${show.title}</h3>
+                            <div class="movie-meta">
+                                <span class="rating"><i class="fas fa-star"></i> 4.9</span>
+                                <span class="year">${show.year || 'Anime Series'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <section class="section" style="padding-top: 15px; padding-bottom: 25px;">
+                    <div class="container">
+                        <div class="section-header" style="flex-wrap: wrap; gap: 14px;">
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <h2 class="section-title" style="margin-bottom: 0;">
+                                    <i class="fas fa-fire" style="color: #ff0055; margin-right: 8px;"></i>Featured Anime Series
+                                </h2>
+                                <span style="background: linear-gradient(135deg, rgba(0,240,255,0.2), rgba(112,0,255,0.2)); color: #00f0ff; border: 1px solid rgba(0,240,255,0.4); padding: 3px 10px; border-radius: 20px; font-size: 1.15rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                                    <i class="fas fa-bolt"></i> Ultra HD 1080p
+                                </span>
+                            </div>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                                <button class="pill-btn ${currentLunarTab === 'popularThisSeason' ? 'active' : ''}" onclick="switchLunarTab('popularThisSeason')">Popular This Season</button>
+                                <button class="pill-btn ${currentLunarTab === 'trendingNow' ? 'active' : ''}" onclick="switchLunarTab('trendingNow')">Trending Now</button>
+                                <button class="pill-btn ${currentLunarTab === 'upcomingNextSeason' ? 'active' : ''}" onclick="switchLunarTab('upcomingNextSeason')">Upcoming</button>
+                                <a href="anime.html" class="view-all" style="margin-left: 10px;">Explore Anime Hub <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="movies-grid">
+                            ${cardsHtml}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
         async function initApp() {
             updateAuthHeader();
             await loadCarousel();
+            await loadLunarTrending();
             await loadCategories();
 
             if (isLoggedIn()) {
@@ -2376,59 +2686,127 @@
             }
         }
 
-        // Fetch Continue Watching List
+        // Fetch Continue Watching List (Unified for Shows & Anime)
         async function loadContinueWatching() {
             try {
-                const res = await fetch(`${API_BASE}/user/history`, { headers: getAuthHeader() });
-                if (res.status === 401) {
-                    handleLogout();
-                    return;
+                let serverHistory = [];
+                const token = localStorage.getItem('infinx_token');
+                if (token) {
+                    try {
+                        const res = await fetch(`${API_BASE}/user/history`, { headers: getAuthHeader() });
+                        if (res.ok) {
+                            serverHistory = await res.json();
+                        }
+                    } catch (e) { }
                 }
-                if (res.ok) {
-                    const data = await res.json();
-                    const container = document.getElementById('continueWatchingSection');
-                    const grid = document.getElementById('continueWatchingGrid');
 
-                    if (data && data.length > 0) {
-                        container.classList.remove('hidden');
-                        let html = '';
-                        data.slice(0, 6).forEach(item => {
-                            if (!item || !item.episode || !item.episode.show) return;
-                            const duration = item.duration || 1;
-                            const percent = Math.min(100, Math.max(0, (item.progress / duration) * 100));
+                // Also load local continue watching (covers guests, offline, and immediate updates)
+                let localHistory = [];
+                try {
+                    const raw = localStorage.getItem('@infinx_continue_watching');
+                    if (raw) localHistory = JSON.parse(raw);
+                    if (!Array.isArray(localHistory)) localHistory = [];
+                } catch (e) { localHistory = []; }
+
+                // Merge server and local history, deduplicating by show/anime ID
+                const mergedMap = new Map();
+
+                // Add local history first
+                localHistory.forEach(item => {
+                    if (!item) return;
+                    const key = item.isLunar ? `lunar-${item.lunarId || item.anilistId}` : `show-${item.showId || item.id}`;
+                    mergedMap.set(key, { ...item, source: 'local' });
+                });
+
+                // Merge server history
+                serverHistory.forEach(item => {
+                    if (!item) return;
+                    const isLunar = !!(item.isLunar || (item.episode?.show?.isLunar));
+                    const anilistId = item.lunarId || item.episode?.show?.anilistId;
+                    const key = isLunar ? `lunar-${anilistId}` : `show-${item.episode?.show?.id || item.episodeId}`;
+
+                    if (!mergedMap.has(key)) {
+                        mergedMap.set(key, item);
+                    } else {
+                        const existing = mergedMap.get(key);
+                        const existingTime = existing.lastWatchedAt || (existing.watchedAt ? new Date(existing.watchedAt).getTime() : 0);
+                        const serverTime = item.watchedAt ? new Date(item.watchedAt).getTime() : 0;
+                        if (serverTime > existingTime) {
+                            mergedMap.set(key, item);
+                        }
+                    }
+                });
+
+                const allItems = Array.from(mergedMap.values());
+                const container = document.getElementById('continueWatchingSection');
+                const grid = document.getElementById('continueWatchingGrid');
+
+                if (allItems.length > 0) {
+                    container.classList.remove('hidden');
+                    let html = '';
+                    allItems.slice(0, 10).forEach(item => {
+                        const isLunar = !!(item.isLunar || (item.episode?.show?.isLunar) || item.lunarId);
+                        const duration = item.duration || 1;
+                        const progress = item.progress || 0;
+                        const percent = item.percent !== undefined ? item.percent : Math.min(100, Math.max(0, (progress / duration) * 100));
+
+                        let showTitle = '';
+                        let posterUrl = '';
+                        let epNum = 1;
+                        let resumeUrl = '';
+
+                        if (isLunar) {
+                            const anilistId = item.lunarId || item.anilistId || item.episode?.show?.anilistId;
+                            epNum = item.episodeNumber || item.episode?.episodeNumber || 1;
+                            showTitle = item.title || item.showTitle || item.episode?.show?.title || 'Anime Series';
+                            posterUrl = item.poster || item.episode?.show?.poster || 'Postes/spyfamS3p.jpg';
+                            const seekParam = progress > 5 ? `&t=${Math.floor(progress)}` : '';
+                            resumeUrl = `/video-player/index.html?lunarId=${anilistId}&ep=${epNum}${seekParam}`;
+                        } else {
+                            if (!item.episode || !item.episode.show) return;
                             const show = item.episode.show;
-                            const fallbackPoster = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
+                            showTitle = show.title;
+                            posterUrl = window.formatMediaUrl(show.poster);
+                            epNum = item.episode.episodeNumber;
+                            const seekParam = progress > 5 ? `&t=${Math.floor(progress)}` : '';
+                            resumeUrl = `/video-player/index.html?episodeId=${item.episodeId}${seekParam}`;
+                        }
 
-                            html += `
-                                <div class="movie-card">
-                                    <div class="movie-poster">
-                                        <img src="${window.formatMediaUrl(show.poster)}" alt="${show.title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
-                                    </div>
-                                    <div class="movie-info">
-                                        <h3 class="movie-title">${show.title}</h3>
-                                        <div class="movie-meta">
-                                            <span>Ep ${item.episode.episodeNumber}</span>
-                                            <span>${Math.round(percent)}% watched</span>
-                                        </div>
-                                        <div class="progress-container">
-                                            <div class="progress-bar-fill" style="width: ${percent}%"></div>
-                                        </div>
-                                        <div class="movie-actions" style="margin-top: 15px;">
-                                            <a href="/video-player/index.html?episodeId=${item.episodeId}" class="btn btn-primary btn-small" style="width: 100%;" onclick="return window.requireAuthPlay(event, '/video-player/index.html?episodeId=${item.episodeId}')">
-                                                <i class="fas fa-play"></i> Resume
-                                            </a>
-                                        </div>
+                        html += `
+                            <div class="movie-card">
+                                <div class="movie-poster">
+                                    <img src="${posterUrl}" alt="${showTitle}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
+                                    <span class="badge" style="background: linear-gradient(135deg, #ff0055, #b800ff);">${isLunar ? 'Anime' : 'HD'}</span>
+                                    <div class="movie-overlay">
+                                        <a href="${resumeUrl}" class="btn-play" onclick="event.stopPropagation(); return window.requireAuthPlay(event, '${resumeUrl}')">
+                                            <i class="fas fa-play"></i>
+                                        </a>
                                     </div>
                                 </div>
-                            `;
-                        });
-                        grid.innerHTML = html;
-                    } else {
-                        container.classList.add('hidden');
-                    }
+                                <div class="movie-info">
+                                    <h3 class="movie-title">${showTitle}</h3>
+                                    <div class="movie-meta">
+                                        <span>Ep ${epNum}</span>
+                                        <span>${Math.round(percent)}% watched</span>
+                                    </div>
+                                    <div class="progress-container">
+                                        <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                                    </div>
+                                    <div class="movie-actions" style="margin-top: 15px;">
+                                        <a href="${resumeUrl}" class="btn btn-primary btn-small" style="width: 100%;" onclick="return window.requireAuthPlay(event, '${resumeUrl}')">
+                                            <i class="fas fa-play"></i> Resume
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    grid.innerHTML = html;
+                } else {
+                    container.classList.add('hidden');
                 }
             } catch (e) {
-                console.error(e);
+                console.error('Error loading continue watching:', e);
             }
         }
 

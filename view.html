@@ -1210,6 +1210,7 @@
         <nav class="navbar" id="categoryNav">
             <div class="drawer-close" id="closeDrawer"><i class="fas fa-times"></i></div>
             <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+            <a href="anime.html" class="nav-link"><i class="fas fa-tv"></i> Anime</a>
 
             <!-- Genres Dropdown -->
             <div class="nav-item-dropdown">
@@ -1249,8 +1250,8 @@
                             Movies</a>
                         <a href="view.html#bollywood" class="dropdown-item"><i class="fas fa-clapperboard"></i>
                             Bollywood Movies</a>
-                        <a href="view.html#anime" class="dropdown-item"><i class="fas fa-play-circle"></i> Anime
-                            Series</a>
+                        <a href="anime.html" class="dropdown-item"><i class="fas fa-play-circle"></i> Anime
+                            Hub</a>
                         <a href="view.html#web-series" class="dropdown-item"><i class="fas fa-tv"></i> Web Series</a>
                         <a href="view.html#kids" class="dropdown-item"><i class="fas fa-child"></i> Kids & Family</a>
                         <a href="view.html#kdrama" class="dropdown-item"><i class="fas fa-video"></i> Korean Drama</a>
@@ -1313,6 +1314,7 @@
     <!-- ====== MOBILE BOTTOM TAB BAR ====== -->
     <nav class="mobile-tab-bar">
         <a href="index.html" class="tab-item" id="tabHome"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="anime.html" class="tab-item" id="tabAnime"><i class="fas fa-tv"></i><span>Anime</span></a>
         <a href="#" class="tab-item" id="tabSearch"><i class="fas fa-search"></i><span>Search</span></a>
         <a href="#watchlist" class="tab-item" id="tabWatchlist"><i class="fas fa-heart"></i><span>Watchlist</span></a>
         <a href="#history" class="tab-item" id="tabHistory"><i class="fas fa-history"></i><span>History</span></a>
@@ -1541,30 +1543,75 @@
                     if (!res.ok) throw new Error('Watchlist request failed');
                     categoryMovies = await res.json();
                 } else if (currentCategory === 'history') {
-                    if (!token) {
-                        document.getElementById('catResultCount').innerText = '0 titles';
-                        document.getElementById('categoryGrid').innerHTML = `
-                            <div class="no-results">
-                                <i class="fas fa-lock" style="color: var(--primary); font-size: 3rem; margin-bottom: 15px;"></i><br />
-                                Please log in from the home page to view your Watch History.
-                            </div>`;
-                        return;
+                    let historyData = [];
+                    if (token) {
+                        try {
+                            const res = await fetch(`${API_BASE}/user/history`, { headers });
+                            if (res.ok) historyData = await res.json();
+                        } catch (e) { }
                     }
-                    const res = await fetch(`${API_BASE}/user/history`, { headers });
-                    if (!res.ok) throw new Error('History request failed');
-                    const historyData = await res.json();
+
+                    // Also incorporate local continue watching items
+                    let localHistory = [];
+                    try {
+                        const raw = localStorage.getItem('@infinx_continue_watching');
+                        if (raw) localHistory = JSON.parse(raw);
+                        if (!Array.isArray(localHistory)) localHistory = [];
+                    } catch (e) { }
+
+                    const mergedMap = new Map();
+                    // Add local first
+                    localHistory.forEach(item => {
+                        if (!item) return;
+                        const key = item.isLunar ? `lunar-${item.lunarId || item.anilistId}` : `show-${item.showId || item.id}`;
+                        mergedMap.set(key, item);
+                    });
+                    // Merge server history
+                    (historyData || []).forEach(item => {
+                        if (!item) return;
+                        const isLunar = !!(item.isLunar || item.lunarId || item.episode?.show?.isLunar);
+                        const anilistId = item.lunarId || item.episode?.show?.anilistId;
+                        const key = isLunar ? `lunar-${anilistId}` : `show-${item.episode?.show?.id || item.episodeId}`;
+                        mergedMap.set(key, item);
+                    });
 
                     // We map history items so they can be rendered as movie cards!
-                    categoryMovies = historyData.map(item => {
-                        const show = item.episode.show;
-                        const percent = (item.progress / item.duration) * 100;
-                        return {
-                            ...show,
-                            historyPercent: percent,
-                            episodeId: item.episodeId,
-                            episodeNumber: item.episode.episodeNumber
-                        };
-                    });
+                    categoryMovies = Array.from(mergedMap.values()).map(item => {
+                        if (!item) return null;
+                        const isLunar = !!(item.isLunar || item.lunarId || item.episode?.show?.isLunar);
+                        const duration = item.duration || 1;
+                        const progress = item.progress || 0;
+                        const percent = item.percent !== undefined ? item.percent : Math.min(100, Math.max(0, (progress / duration) * 100));
+
+                        if (isLunar) {
+                            const anilistId = item.lunarId || item.anilistId || item.episode?.show?.anilistId;
+                            const epNum = item.episodeNumber || item.episode?.episodeNumber || 1;
+                            const title = item.title || item.showTitle || item.episode?.show?.title || 'Anime Series';
+                            const poster = item.poster || item.episode?.show?.poster || 'Postes/spyfamS3p.jpg';
+                            return {
+                                id: `lunar-${anilistId}`,
+                                isLunar: true,
+                                lunarId: anilistId,
+                                title: title,
+                                poster: poster,
+                                historyPercent: percent,
+                                episodeId: `lunar-${anilistId}-${epNum}`,
+                                episodeNumber: epNum,
+                                rating: '9.0',
+                                releaseYear: 2024,
+                                genres: ['Anime']
+                            };
+                        } else if (item.episode && item.episode.show) {
+                            const show = item.episode.show;
+                            return {
+                                ...show,
+                                historyPercent: percent,
+                                episodeId: item.episodeId,
+                                episodeNumber: item.episode.episodeNumber
+                            };
+                        }
+                        return null;
+                    }).filter(Boolean);
                 } else {
                     const res = await fetch(`${API_BASE}/shows/categories`);
                     if (!res.ok) throw new Error('API request failed');
@@ -1634,8 +1681,18 @@
                     let watchDisabled = '';
 
                     if (currentCategory === 'history') {
-                        watchLink = `/video-player/index.html?episodeId=${m.episodeId}`;
+                        if (m.isLunar) {
+                            const aId = m.anilistId || (typeof m.id === 'string' ? m.id.replace('lunar-', '') : m.id);
+                            watchLink = `/video-player/index.html?lunarId=${aId}&ep=${m.episodeNumber || 1}`;
+                        } else {
+                            watchLink = `/video-player/index.html?episodeId=${m.episodeId}`;
+                        }
                         playBtnText = '<i class="fas fa-play"></i> Resume';
+                    } else if (m.isLunar || (typeof m.id === 'string' && m.id.startsWith('lunar-')) || m.anilistId) {
+                        const aId = m.anilistId || (typeof m.id === 'string' ? m.id.replace('lunar-', '') : m.id);
+                        watchLink = `/video-player/index.html?lunarId=${aId}&ep=1`;
+                        playBtnText = '<i class="fas fa-play"></i> Watch';
+                        watchDisabled = '';
                     } else {
                         const hasEpisodes = m.episodes && m.episodes.length > 0;
                         watchLink = hasEpisodes ? `/video-player/index.html?episodeId=${m.episodes[0].id}` : '#';
@@ -1643,7 +1700,7 @@
                         playBtnText = hasEpisodes ? '<i class="fas fa-play"></i> Watch' : 'Soon';
                     }
 
-                    const isFav = userWatchlist.includes(m.id) ? 'active' : '';
+                    const isFav = userWatchlist.includes(String(m.id)) || userWatchlist.includes(m.id) ? 'active' : '';
 
                     let progressHtml = '';
                     if (m.historyPercent !== undefined) {
@@ -1657,26 +1714,30 @@
                         `;
                     }
 
+                    const posterImgUrl = (m.poster && (m.poster.startsWith('http://') || m.poster.startsWith('https://')))
+                        ? m.poster
+                        : window.formatMediaUrl(m.poster);
+
                     gridHtml += `
-                    <div class="movie-card" onclick="if(!event.target.closest('.movie-actions')) window.openShowDetails(${m.id})" style="cursor: pointer;">
+                    <div class="movie-card" onclick="if(!event.target.closest('.movie-actions')) window.openShowDetails('${m.id}')" style="cursor: pointer;">
                         <div class="movie-poster">
-                            <div class="movie-badge">${m.badge || 'HD'}</div>
+                            <div class="movie-badge">${m.badge || (m.isLunar ? '1080p Ultra' : 'HD')}</div>
                             ${m.dubsub ? `<div class="dubsub">Sub/Dub</div>` : ''}
                             <div class="movie-rating"><i class="fas fa-star"></i> ${m.rating}</div>
-                            <img src="${window.formatMediaUrl(m.poster)}" alt="${m.title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
+                            <img src="${posterImgUrl}" alt="${m.title}" loading="lazy" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
                         </div>
                         <div class="movie-info">
                             <h3 class="movie-title">${m.title}</h3>
                             <div class="movie-meta">
-                                <span>${m.year}</span>
-                                <span>${m.runtime}</span>
+                                <span>${m.year || 2024}</span>
+                                <span>${m.runtime || (m.episodes?.length ? m.episodes.length + ' eps' : 'Series')}</span>
                             </div>
-                            <p class="movie-desc">${m.description}</p>
+                            <p class="movie-desc">${m.description || ''}</p>
                             ${progressHtml}
                             <div class="movie-actions" style="margin-top: auto; padding-top: 10px;">
                                 <a href="${watchLink}" class="btn-small" ${watchDisabled} onclick="return window.requireAuthPlay(event, '${watchLink}')">${playBtnText}</a>
-                                <button class="btn-watchlist-toggle ${isFav}" onclick="toggleWatchlistItem(this, ${m.id})">
-                                    <i class="${userWatchlist.includes(m.id) ? 'fas fa-heart' : 'far fa-heart'}"></i>
+                                <button class="btn-watchlist-toggle ${isFav}" onclick="toggleWatchlistItem(this, '${m.id}')">
+                                    <i class="${userWatchlist.includes(String(m.id)) || userWatchlist.includes(m.id) ? 'fas fa-heart' : 'far fa-heart'}"></i>
                                 </button>
                             </div>
                         </div>

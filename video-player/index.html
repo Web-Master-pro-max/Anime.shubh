@@ -98,8 +98,10 @@
               <div class="progress-bar">
                 <div class="progress-buffered"></div>
                 <!-- Timeline Skip Zone Markers (Opening & Ending Theme Highlights) -->
-                <div class="timeline-zone-marker intro-zone-marker" id="timeline-intro-marker" style="display: none;"></div>
-                <div class="timeline-zone-marker outro-zone-marker" id="timeline-outro-marker" style="display: none;"></div>
+                <div class="timeline-zone-marker intro-zone-marker" id="timeline-intro-marker" style="display: none;">
+                </div>
+                <div class="timeline-zone-marker outro-zone-marker" id="timeline-outro-marker" style="display: none;">
+                </div>
                 <div class="progress">
                   <div class="progress-knob"></div>
                 </div>
@@ -152,7 +154,8 @@
               </div>
 
               <div class="settings-menu" id="player-settings-menu">
-                <button class="control-btn settings-btn" id="player-settings-btn" aria-label="Settings" title="Playback Settings">
+                <button class="control-btn settings-btn" id="player-settings-btn" aria-label="Settings"
+                  title="Playback Settings">
                   <i class="fas fa-cog"></i>
                 </button>
                 <div class="settings-mobile-backdrop" id="settings-mobile-backdrop"></div>
@@ -166,7 +169,8 @@
                         <i class="fas fa-sliders-h" style="color: var(--primary);"></i>
                         <span>Settings</span>
                       </div>
-                      <button class="settings-panel-close-btn" id="settings-panel-close-btn" aria-label="Close Settings">
+                      <button class="settings-panel-close-btn" id="settings-panel-close-btn"
+                        aria-label="Close Settings">
                         <i class="fas fa-times"></i>
                       </button>
                     </div>
@@ -227,7 +231,8 @@
                           <span>Intro / Outro</span>
                         </div>
                         <div class="settings-menu-item-right">
-                          <span class="settings-row-value current-autoskip" id="current-autoskip-display">Smart Auto</span>
+                          <span class="settings-row-value current-autoskip" id="current-autoskip-display">Smart
+                            Auto</span>
                           <i class="fas fa-chevron-right"></i>
                         </div>
                       </div>
@@ -245,25 +250,29 @@
                       </div>
 
                       <!-- Streaming Server -->
-                      <div class="settings-menu-item" data-target-view="server" id="player-server-section" role="button" tabindex="0">
+                      <div class="settings-menu-item" data-target-view="server" id="player-server-section" role="button"
+                        tabindex="0">
                         <div class="settings-menu-item-left">
                           <i class="fas fa-server"></i>
                           <span>Server</span>
                         </div>
                         <div class="settings-menu-item-right">
-                          <span class="settings-row-value current-server" id="current-server-mini-display">Server 1</span>
+                          <span class="settings-row-value current-server" id="current-server-mini-display">Server
+                            1</span>
                           <i class="fas fa-chevron-right"></i>
                         </div>
                       </div>
 
                       <!-- Caption Appearance Modal Launcher -->
-                      <div class="settings-menu-item caption-style-launcher" id="open-caption-settings" role="button" tabindex="0" onclick="if(window.openCaptionSettingsModal)window.openCaptionSettingsModal();">
+                      <div class="settings-menu-item caption-style-launcher" id="open-caption-settings" role="button"
+                        tabindex="0" onclick="if(window.openCaptionSettingsModal)window.openCaptionSettingsModal();">
                         <div class="settings-menu-item-left">
                           <i class="fas fa-palette" style="color: var(--primary);"></i>
                           <span>Caption Style</span>
                         </div>
                         <div class="settings-menu-item-right">
-                          <span class="settings-row-value" style="color: var(--primary); font-weight: 700;">Customize</span>
+                          <span class="settings-row-value"
+                            style="color: var(--primary); font-weight: 700;">Customize</span>
                           <i class="fas fa-chevron-right" style="color: var(--primary);"></i>
                         </div>
                       </div>
@@ -328,7 +337,8 @@
                         <!-- Dynamically populated -->
                       </div>
                       <div class="settings-action-divider"></div>
-                      <div class="caption-settings-launch-card" id="open-caption-settings-from-subview" role="button" tabindex="0" onclick="if(window.openCaptionSettingsModal)window.openCaptionSettingsModal();">
+                      <div class="caption-settings-launch-card" id="open-caption-settings-from-subview" role="button"
+                        tabindex="0" onclick="if(window.openCaptionSettingsModal)window.openCaptionSettingsModal();">
                         <div class="caption-launch-icon">
                           <i class="fas fa-palette"></i>
                         </div>
@@ -425,7 +435,8 @@
                       <span>Streaming Server</span>
                     </div>
                     <div class="settings-sub-body">
-                      <div class="server-options" id="player-server-options" style="display: flex; flex-direction: column; gap: 6px;">
+                      <div class="server-options" id="player-server-options"
+                        style="display: flex; flex-direction: column; gap: 6px;">
                         <!-- Populated dynamically -->
                       </div>
                     </div>
@@ -433,15 +444,18 @@
                 </div>
               </div>
 
-              <button class="control-btn subtitle-btn" id="player-subtitle-btn" aria-label="Toggle Subtitles" title="Subtitles (CC)">
+              <button class="control-btn subtitle-btn" id="player-subtitle-btn" aria-label="Toggle Subtitles"
+                title="Subtitles (CC)">
                 <i class="far fa-closed-captioning"></i>
               </button>
 
-              <button class="control-btn fit-screen-btn" id="aspect-ratio-toggle-btn" aria-label="Toggle Screen Fit/Fill" title="Screen Fit: Contain / Cover / Stretch">
+              <button class="control-btn fit-screen-btn" id="aspect-ratio-toggle-btn"
+                aria-label="Toggle Screen Fit/Fill" title="Screen Fit: Contain / Cover / Stretch">
                 <i class="fas fa-expand-arrows-alt"></i>
               </button>
 
-              <button class="control-btn episode-drawer-btn" id="episode-drawer-btn" aria-label="Episodes Drawer" title="Episode Playlist Drawer">
+              <button class="control-btn episode-drawer-btn" id="episode-drawer-btn" aria-label="Episodes Drawer"
+                title="Episode Playlist Drawer">
                 <i class="fas fa-list-ul"></i>
               </button>
 
@@ -521,7 +535,8 @@
                 <div class="outro-progress-fill" id="outro-progress-fill"></div>
               </div>
               <div class="outro-ep-info">
-                <img id="outro-next-thumbnail" src="" alt="Next Episode" class="outro-thumbnail" onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
+                <img id="outro-next-thumbnail" src="" alt="Next Episode" class="outro-thumbnail"
+                  onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
                 <div class="outro-ep-details">
                   <h4 id="outro-next-title">Episode 2</h4>
                   <span id="outro-next-sub">Starting automatically...</span>
@@ -539,10 +554,14 @@
             <div class="in-player-drawer-backdrop" id="in-player-drawer-backdrop"></div>
             <div class="in-player-drawer-panel">
               <div class="drawer-header">
-                <div class="drawer-title-group">
+                <div class="drawer-title-group" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                   <i class="fas fa-list-ol drawer-icon"></i>
                   <h3>Episodes</h3>
                   <span class="drawer-count" id="drawer-episode-count">(0)</span>
+                  <div class="drawer-season-selector-wrapper" id="drawerSeasonSelectorWrapper"
+                    style="display: none; margin-left: 6px;">
+                    <select id="drawerSeasonSelect" class="player-season-select" aria-label="Select Season"></select>
+                  </div>
                 </div>
                 <button class="drawer-close-btn" id="drawer-close-btn" aria-label="Close drawer">
                   <i class="fas fa-times"></i>
@@ -570,7 +589,8 @@
               <div class="caption-live-preview-box">
                 <div class="caption-preview-label">Live Preview</div>
                 <div class="caption-preview-stage" id="caption-preview-stage">
-                  <span class="caption-text style-shadow" id="caption-preview-sample">[Denji] <i>This is how subtitles will look on screen.</i></span>
+                  <span class="caption-text style-shadow" id="caption-preview-sample">[Denji] <i>This is how subtitles
+                      will look on screen.</i></span>
                 </div>
               </div>
 
@@ -661,20 +681,12 @@
             </div>
 
             <div class="audio-selector">
-              <button class="settings-btn audio-btn">
-                <i class="fas fa-closed-captioning"></i> <span class="btn-text">Audio</span> <span
+              <button class="settings-btn audio-btn" title="Audio Language / Dubbing">
+                <i class="fas fa-volume-up"></i> <span class="btn-text">Audio</span> <span
                   class="current-audio">Japanese</span> <i class="fas fa-chevron-down"></i>
               </button>
               <div class="audio-dropdown" id="audio-dropdown">
-                <div class="audio-option active" data-audio="Hindi">
-                  <i class="fas fa-volume-up"></i> Hindi (Hindi)
-                </div>
-                <div class="audio-option" data-audio="english">
-                  <i class="fas fa-volume-up"></i> English (Dub)
-                </div>
-                <div class="audio-option" data-audio="japanese">
-                  <i class="fas fa-volume-up"></i> Japanese (Dub)
-                </div>
+                <!-- Dynamically populated -->
               </div>
             </div>
 
@@ -687,7 +699,8 @@
                 <div class="subtitle-option active" data-subtitle="off">
                   <i class="fas fa-ban"></i> Off
                 </div>
-                <div class="subtitle-option subtitle-style-trigger" id="footer-caption-style-trigger" role="button" tabindex="0">
+                <div class="subtitle-option subtitle-style-trigger" id="footer-caption-style-trigger" role="button"
+                  tabindex="0">
                   <i class="fas fa-palette"></i> Customize Subtitle Style...
                 </div>
               </div>
@@ -743,7 +756,12 @@
     <!-- Video Playlist -->
     <div class="video-playlist">
       <div class="playlist-header">
-        <h3><i class="fas fa-list-ol"></i> Playlist <span class="episode-count">(16 episodes)</span></h3>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <h3><i class="fas fa-list-ol"></i> Playlist <span class="episode-count">(16 episodes)</span></h3>
+          <div class="player-season-selector-wrapper" id="playerSeasonSelectorWrapper" style="display: none;">
+            <select id="playerSeasonSelect" class="player-season-select" aria-label="Select Season"></select>
+          </div>
+        </div>
         <div class="playlist-actions">
           <button class="playlist-btn shuffle-btn" title="Shuffle">
             <i class="fas fa-random"></i>
@@ -956,17 +974,21 @@
   <script src="script.js"></script>
 
   <!-- Player Authentication Lock Modal (Strict Gate) -->
-  <div id="playerAuthModal" class="player-auth-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="playerAuthTitle">
+  <div id="playerAuthModal" class="player-auth-overlay" style="display: none;" role="dialog" aria-modal="true"
+    aria-labelledby="playerAuthTitle">
     <div class="player-auth-card">
       <div class="player-auth-badge">
         <i class="fas fa-lock"></i>
       </div>
       <h2 class="player-auth-title" id="playerAuthTitle">Sign Up to Start Watching</h2>
-      <p class="player-auth-subtitle">Full access to 1080p anime streaming, multiple audio tracks, and watch history requires an account.</p>
+      <p class="player-auth-subtitle">Full access to 1080p anime streaming, multiple audio tracks, and watch history
+        requires an account.</p>
 
       <div class="player-auth-tabs">
-        <button type="button" class="player-auth-tab active" id="playerTabRegister" onclick="switchPlayerAuthTab('register')">Create Account</button>
-        <button type="button" class="player-auth-tab" id="playerTabLogin" onclick="switchPlayerAuthTab('login')">Sign In</button>
+        <button type="button" class="player-auth-tab active" id="playerTabRegister"
+          onclick="switchPlayerAuthTab('register')">Create Account</button>
+        <button type="button" class="player-auth-tab" id="playerTabLogin" onclick="switchPlayerAuthTab('login')">Sign
+          In</button>
       </div>
 
       <div id="playerAuthError" class="player-auth-error" style="display: none;"></div>
@@ -979,7 +1001,8 @@
 
         <div class="player-auth-input-group">
           <label for="playerAuthPassword"><i class="fas fa-lock"></i> Password</label>
-          <input type="password" id="playerAuthPassword" placeholder="••••••••" required autocomplete="current-password">
+          <input type="password" id="playerAuthPassword" placeholder="••••••••" required
+            autocomplete="current-password">
         </div>
 
         <button type="submit" id="playerAuthSubmitBtn" class="player-auth-submit-btn">

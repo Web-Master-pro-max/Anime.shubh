@@ -15,18 +15,41 @@ document.addEventListener('DOMContentLoaded', async function () {
     };
     const isHttps = window.location.protocol === 'https:';
     const savedServer = getSavedServer();
+    const isLocalFrontendPort = ['5000', '5500', '3000', '5173'].includes(window.location.port);
     const SERVER_ORIGIN = (isHttps && !savedServer)
       ? ''
-      : ((window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':'))
-        ? (savedServer || 'http://13.202.95.5:8000')
-        : '');
+      : (isLocalFrontendPort
+        ? (savedServer || 'http://localhost:8000')
+        : ((window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':'))
+          ? (savedServer || 'http://13.202.95.5:8000')
+          : ''));
     const API_BASE = `${SERVER_ORIGIN}/api`;
 
-    // Get episode ID from URL params
+    // Clean HTML tags from anime descriptions for clean text presentation
+    function stripHtmlTags(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+        .replace(/&#039;/g, "'")
+        .replace(/&apos;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+    }
+
+
+    // Get episode ID or Lunar Anime ID from URL params
     const urlParams = new URLSearchParams(window.location.search);
     const episodeId = parseInt(urlParams.get('episodeId'));
+    const lunarId = urlParams.get('lunarId') || urlParams.get('anilistId');
+    const epNum = parseInt(urlParams.get('ep') || urlParams.get('epNum') || '1', 10);
 
-    if (!episodeId) {
+    if (!episodeId && !lunarId) {
       alert('No episode selected to watch. Redirecting to home.');
       window.location.href = '/index.html';
       return;
@@ -202,49 +225,126 @@ document.addEventListener('DOMContentLoaded', async function () {
     let showId = null;
 
     try {
-      // 1. Fetch current episode info with resilient handling
-      const epRes = await fetch(`${API_BASE}/shows/episodes/${episodeId}`);
-      if (!epRes.ok) {
-        throw new Error(`Server returned HTTP ${epRes.status}`);
-      }
-      const rawData = await epRes.json();
-
-      // Normalize if response has nested episode or flat structure
-      if (rawData.episode) {
-        currentEpisode = {
-          ...rawData.episode,
-          show: rawData.show || rawData.episode.show,
-          servers: rawData.servers || rawData.episode.servers
+      if (lunarId) {
+        // Fetch complete anime metadata and episodes from Stream API
+        const allRes = await fetch(`${API_BASE}/lunarx/all/${lunarId}`);
+        if (!allRes.ok) throw new Error(`Stream API returned ${allRes.status}`);
+        const animeData = await allRes.json();
+        const eps = animeData.episodes || [];
+        const thisEp = eps.find(e => (e.number || e.episodeNumber) === epNum) || eps[0] || {
+          number: epNum,
+          title: `Episode ${epNum}`,
+          description: stripHtmlTags(animeData.description)
         };
+
+        const resolvedEpNum = thisEp.number || thisEp.episodeNumber || epNum;
+
+        currentEpisode = {
+          id: `lunar-${lunarId}-${resolvedEpNum}`,
+          episodeNumber: resolvedEpNum,
+          title: thisEp.title || `Episode ${resolvedEpNum}`,
+          description: stripHtmlTags(thisEp.description || animeData.description),
+          thumbnail: thisEp.thumbnail || animeData.poster,
+          isLunar: true,
+          anilistId: lunarId,
+          show: {
+            id: `lunar-${lunarId}`,
+            title: animeData.title,
+            description: stripHtmlTags(animeData.description),
+            poster: animeData.poster,
+            banner: animeData.banner,
+            artworks: animeData.artworks,
+            seasons: animeData.seasons || [],
+            relations: animeData.relations || [],
+            rating: animeData.rating,
+            year: animeData.year,
+            categories: (animeData.genres || []).map(g => ({
+              name: g,
+              slug: g.toLowerCase().replace(/\s+/g, '-'),
+              category: { name: g, slug: g.toLowerCase().replace(/\s+/g, '-') }
+            })),
+            episodes: eps
+          },
+          servers: [
+            { id: 'server-1', name: 'Server 1 (1080p Ultra)', shortName: 'Server 1', badge: '1080p HD', host: 'zuna', type: 'hls' },
+            { id: 'server-2', name: 'Server 2 (English Dub / Fast)', shortName: 'Server 2', badge: 'English Dub', host: 'yuki', type: 'hls' },
+            { id: 'server-3', name: 'Server 3 (HD Backup)', shortName: 'Server 3', badge: '1080p Backup', host: 'sora', type: 'hls' },
+            { id: 'server-4', name: 'Server 4 (Backup 2)', shortName: 'Server 4', badge: 'Fast Stream', host: 'zuna', type: 'hls' }
+          ]
+        };
+
+        siblingEpisodes = (eps && eps.length > 0) ? eps.map(e => ({
+          ...e,
+          id: e.id || `lunar-${lunarId}-${e.number || e.episodeNumber}`,
+          episodeNumber: e.number || e.episodeNumber,
+          videoUrl: ''
+        })) : [{
+          id: `lunar-${lunarId}-${resolvedEpNum}`,
+          number: resolvedEpNum,
+          episodeNumber: resolvedEpNum,
+          title: thisEp.title || `Episode ${resolvedEpNum}`,
+          thumbnail: thisEp.thumbnail || animeData.poster || '',
+          videoUrl: ''
+        }];
+        showId = `lunar-${lunarId}`;
       } else {
-        currentEpisode = rawData;
-      }
+        // 1. Fetch current episode info with resilient handling
+        const epRes = await fetch(`${API_BASE}/shows/episodes/${episodeId}`);
+        if (!epRes.ok) {
+          throw new Error(`Server returned HTTP ${epRes.status}`);
+        }
+        const rawData = await epRes.json();
 
-      showId = currentEpisode.showId || (currentEpisode.show && currentEpisode.show.id);
+        // Normalize if response has nested episode or flat structure
+        if (rawData.episode) {
+          currentEpisode = {
+            ...rawData.episode,
+            show: rawData.show || rawData.episode.show,
+            servers: rawData.servers || rawData.episode.servers
+          };
+        } else {
+          currentEpisode = rawData;
+        }
 
-      // Sibling episodes from embedded show object if present
-      if (currentEpisode.show && Array.isArray(currentEpisode.show.episodes) && currentEpisode.show.episodes.length > 0) {
-        siblingEpisodes = currentEpisode.show.episodes;
-      } else if (showId) {
-        try {
-          const showRes = await fetch(`${API_BASE}/shows/${showId}`);
-          if (showRes.ok) {
-            const showData = await showRes.json();
-            siblingEpisodes = showData.episodes || [];
+        showId = currentEpisode.showId || (currentEpisode.show && currentEpisode.show.id);
+
+        // Sibling episodes from embedded show object if present
+        if (currentEpisode.show && Array.isArray(currentEpisode.show.episodes) && currentEpisode.show.episodes.length > 0) {
+          siblingEpisodes = currentEpisode.show.episodes;
+        } else if (showId) {
+          try {
+            const showRes = await fetch(`${API_BASE}/shows/${showId}`);
+            if (showRes.ok) {
+              const showData = await showRes.json();
+              siblingEpisodes = showData.episodes || [];
+            }
+          } catch (showErr) {
+            console.warn('Could not load sibling episodes for showId:', showId, showErr);
           }
-        } catch (showErr) {
-          console.warn('Could not load sibling episodes for showId:', showId, showErr);
         }
       }
     } catch (err) {
       console.error('Failed to load episode metadata:', err);
       // Attempt recovery: fallback to dummy object so player doesn't hard-crash if partial data exists
       currentEpisode = currentEpisode || {
-        id: episodeId,
-        title: `Episode ${episodeId}`,
-        episodeNumber: 1,
+        id: lunarId ? `lunar-${lunarId}-${epNum}` : episodeId,
+        title: `Episode ${lunarId ? epNum : episodeId}`,
+        episodeNumber: lunarId ? epNum : 1,
         videoUrl: '',
-        servers: []
+        isLunar: !!lunarId,
+        anilistId: lunarId,
+        show: {
+          id: lunarId ? `lunar-${lunarId}` : `show-${episodeId}`,
+          title: `Episode ${lunarId ? epNum : episodeId}`,
+          categories: [],
+          episodes: []
+        },
+        servers: [
+          { id: 'server-1', name: 'Server 1 (1080p Ultra)', shortName: 'Server 1', badge: '1080p HD', host: 'zuna', type: 'hls' },
+          { id: 'server-2', name: 'Server 2 (English Dub / Fast)', shortName: 'Server 2', badge: 'English Dub', host: 'yuki', type: 'hls' },
+          { id: 'server-3', name: 'Server 3 (HD Backup)', shortName: 'Server 3', badge: '1080p Backup', host: 'sora', type: 'hls' },
+          { id: 'server-4', name: 'Server 4 (Backup 2)', shortName: 'Server 4', badge: 'Fast Stream', host: 'zuna', type: 'hls' }
+        ]
       };
       // Show user-friendly notification inside the UI instead of hard-killing the tab
       const errorBanner = document.createElement('div');
@@ -262,6 +362,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     let hls = null; // HLS.js instance
     let audioTracks = []; // Available audio tracks
     let currentAudioTrack = 0;
+    let currentAudioType = localStorage.getItem('infinx_preferred_audio_type') || 'sub'; // 'sub' (Japanese) or 'dub' (English)
+    // Clear stale server preferences to ensure crystal-clear 1080p and studio audio
+    if (localStorage.getItem('infinx_preferred_server') === 'server-3') {
+      localStorage.setItem('infinx_preferred_server', 'server-1');
+    }
     let subtitleTracks = []; // Available subtitle tracks
     let currentSubtitleTrack = -1; // -1 means no subtitle
     let qualities = []; // Available quality levels
@@ -451,8 +556,63 @@ document.addEventListener('DOMContentLoaded', async function () {
       const savedTime = (preserveTime && !isNaN(mainVideo.currentTime)) ? mainVideo.currentTime : null;
       const wasPlaying = !mainVideo.paused;
 
-      showPlayerToast(`Switched to ${target.name}`);
-      initHLS(target.url, savedTime, wasPlaying);
+      async function executeSwitch() {
+        if (currentEpisode && currentEpisode.isLunar && target.host) {
+          try {
+            const epNumVal = currentEpisode.episodeNumber || epNum || 1;
+            const isDubServer = target.id === 'server-2' || (target.badge && target.badge.toLowerCase().includes('dub'));
+            if (isDubServer) {
+              currentAudioType = 'dub';
+              localStorage.setItem('infinx_preferred_audio_type', 'dub');
+              updateAudioOptions();
+            } else if (target.id === 'server-1' || target.id === 'server-3') {
+              currentAudioType = 'sub';
+              localStorage.setItem('infinx_preferred_audio_type', 'sub');
+              updateAudioOptions();
+            }
+            const hostParam = (currentAudioType === 'dub' && target.host === 'zuna') ? 'yuki' : target.host;
+            const sRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${hostParam}&type=${currentAudioType}`);
+            if (sRes.ok) {
+              const sData = await sRes.json();
+              if (sData.streamUrl) {
+                target.url = sData.streamUrl;
+                if (sData.intro || sData.outro) {
+                  detectedIntroOutro = { intro: sData.intro, outro: sData.outro };
+                  updateTimelineMarkers();
+                }
+                if (sData.subtitles && sData.subtitles.length > 0) {
+                  subtitleTracks = sData.subtitles;
+                  updateSubtitleOptions();
+                }
+                if (sData.isFallbackSub && currentAudioType === 'dub') {
+                  showPlayerToast('English Dub not available for this episode. Playing Japanese Sub.');
+                }
+              }
+            }
+            if (!target.url && currentAudioType === 'dub') {
+              console.log('[Player] Dub unavailable on server switch, falling back to Japanese Sub...');
+              try {
+                const fbRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=zuna&type=sub`);
+                if (fbRes.ok) {
+                  const fbData = await fbRes.json();
+                  if (fbData.streamUrl) {
+                    target.url = fbData.streamUrl;
+                    currentAudioType = 'sub';
+                    localStorage.setItem('infinx_preferred_audio_type', 'sub');
+                    updateAudioOptions();
+                    showPlayerToast('English Dub not available on this server. Playing Japanese Sub.');
+                  }
+                }
+              } catch (fbErr) {}
+            }
+          } catch (e) {
+            console.warn('Switch lunar stream failed:', e);
+          }
+        }
+        showPlayerToast(`Switched to ${target.name}`);
+        initHLS(target.url, savedTime, wasPlaying);
+      }
+      executeSwitch();
     }
 
     function setupServerEventListeners() {
@@ -508,11 +668,26 @@ document.addEventListener('DOMContentLoaded', async function () {
           overlay.style.padding = '20px';
           overlay.style.textAlign = 'center';
           overlay.innerHTML = `
-            <div style="font-size: 5rem; margin-bottom: 20px; color: var(--primary); animation: fa-spin 4s linear infinite;"><i class="fas fa-server"></i></div>
+            <div style="font-size: 4.5rem; margin-bottom: 16px; color: var(--primary);"><i class="fas fa-server"></i></div>
             <h2 style="font-size: 2.2rem; font-family: 'Outfit'; color: white; margin-bottom: 10px;">Stream Not Available on This Server</h2>
-            <p style="font-size: 1.4rem; color: var(--gray-text); max-width: 420px; line-height: 1.6;">This episode is not hosted on the selected server. Please switch to the other server using the Server selector button below!</p>
+            <p style="font-size: 1.4rem; color: var(--gray-text); max-width: 440px; line-height: 1.6; margin-bottom: 22px;">This episode stream is not accessible on the selected server. Try switching to Server 1 (Sub) or reload.</p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+              <button id="retry-server-1-btn" style="background: var(--primary); color: white; border: none; padding: 10px 22px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1.3rem; transition: transform 0.2s;">Try Server 1 (Sub)</button>
+              <button id="retry-reload-btn" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 10px 22px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1.3rem;">Retry</button>
+            </div>
           `;
           container.appendChild(overlay);
+          const btn1 = document.getElementById('retry-server-1-btn');
+          if (btn1) {
+            btn1.onclick = () => {
+              if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+              switchServer('server-1', true);
+            };
+          }
+          const btnReload = document.getElementById('retry-reload-btn');
+          if (btnReload) {
+            btnReload.onclick = () => window.location.reload();
+          }
         }
         return;
       }
@@ -652,11 +827,27 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         hls.on(Hls.Events.AUDIO_TRACK_SWITCHED, function (event, data) {
           currentAudioTrack = data.id;
+          if (currentEpisode && currentEpisode.isLunar && hls.audioTracks && hls.audioTracks.length > 1 && hls.audioTracks[data.id]) {
+            const trackObj = hls.audioTracks[data.id];
+            const l = (trackObj.lang || trackObj.language || '').toLowerCase().trim();
+            const n = (trackObj.name || '').toLowerCase().trim();
+            if (l.startsWith('en') || n.includes('english') || n.includes('dub')) {
+              currentAudioType = 'dub';
+              localStorage.setItem('infinx_preferred_audio_type', 'dub');
+            } else if (l.startsWith('jp') || l.startsWith('ja') || n.includes('japan')) {
+              currentAudioType = 'sub';
+              localStorage.setItem('infinx_preferred_audio_type', 'sub');
+            }
+            updateAudioOptions();
+          }
           updateAudioDisplay(data.id);
           document.querySelectorAll('.audio-option').forEach(option => {
             option.classList.remove('active');
             const optionIndex = parseInt(option.getAttribute('data-audio-index'));
-            if (optionIndex === data.id) {
+            const optionType = option.getAttribute('data-audio-type');
+            if (optionType && optionType === currentAudioType) {
+              option.classList.add('active');
+            } else if (!isNaN(optionIndex) && optionIndex === data.id) {
               option.classList.add('active');
             }
           });
@@ -753,7 +944,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (showId) {
           const storageKey = `@infinx_episodes_progress_${showId}`;
           const localData = JSON.parse(localStorage.getItem(storageKey) || '{}');
-          const epProg = localData.episodes && localData.episodes[episodeId];
+          const currentKey = currentEpisode?.id || episodeId;
+          const epProg = localData.episodes && (localData.episodes[currentKey] || localData.episodes[episodeId]);
           if (epProg && epProg.positionSeconds > 5 && !epProg.completed) {
             console.log(`Resuming playback from local progress: ${epProg.positionSeconds}s`);
             mainVideo.currentTime = epProg.positionSeconds;
@@ -763,12 +955,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
       } catch (e) { }
 
-      if (!token) return;
+      if (!token || currentEpisode?.isLunar || isNaN(parseInt(episodeId))) return;
       try {
         const historyRes = await fetch(`${API_BASE}/user/history`, { headers: authHeaders });
         if (historyRes.ok) {
           const historyList = await historyRes.json();
-          const savedProgress = historyList.find(h => h.episodeId === episodeId);
+          const savedProgress = historyList.find(h => h.episodeId === parseInt(episodeId));
           if (savedProgress && savedProgress.progress > 5) {
             console.log(`Resuming playback from: ${savedProgress.progress}s`);
             mainVideo.currentTime = savedProgress.progress;
@@ -806,6 +998,52 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         localStorage.setItem(storageKey, JSON.stringify(data));
         updateSeriesProgressUI(data);
+
+        // Update unified continue watching list for Home Page & Catalog
+        try {
+          const cwKey = '@infinx_continue_watching';
+          let cwList = [];
+          try {
+            cwList = JSON.parse(localStorage.getItem(cwKey) || '[]');
+            if (!Array.isArray(cwList)) cwList = [];
+          } catch (e) { cwList = []; }
+
+          const isLunarShow = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
+          const anilistIdVal = currentEpisode?.anilistId || lunarId || null;
+          const resolvedShowId = isLunarShow ? `lunar-${anilistIdVal}` : (showId || `show-${episodeId}`);
+          const epNumVal = currentEpisode?.episodeNumber || epNum || 1;
+          const showTitle = currentEpisode?.show?.title || currentEpisode?.title || 'Anime Series';
+          const posterUrl = currentEpisode?.show?.poster || currentEpisode?.thumbnail || '';
+          const bannerUrl = currentEpisode?.show?.banner || '';
+
+          const cwItem = {
+            id: resolvedShowId,
+            showId: resolvedShowId,
+            isLunar: isLunarShow,
+            lunarId: anilistIdVal,
+            anilistId: anilistIdVal,
+            episodeId: epId,
+            episodeNumber: epNumVal,
+            episodeTitle: currentEpisode?.title || `Episode ${epNumVal}`,
+            title: showTitle,
+            poster: posterUrl,
+            banner: bannerUrl,
+            progress: Math.floor(currentSec),
+            duration: Math.floor(durSec),
+            percent: percent,
+            lastWatchedAt: Date.now()
+          };
+
+          cwList = cwList.filter(item => {
+            if (!item) return false;
+            if (isLunarShow && item.isLunar && String(item.lunarId || item.anilistId) === String(anilistIdVal)) return false;
+            return item.showId !== resolvedShowId;
+          });
+
+          cwList.unshift(cwItem);
+          if (cwList.length > 25) cwList = cwList.slice(0, 25);
+          localStorage.setItem(cwKey, JSON.stringify(cwList));
+        } catch (cwErr) { }
       } catch (e) { }
     }
 
@@ -815,13 +1053,28 @@ document.addEventListener('DOMContentLoaded', async function () {
       const totalEpisodes = siblingEpisodes.length;
       const episodesMap = (progressData && progressData.episodes) ? progressData.episodes : {};
 
-      const completedCount = siblingEpisodes.filter(ep => {
-        const p = episodesMap[ep.id];
-        return p && p.completed;
-      }).length;
+      let completedCount = 0;
+      let totalWeightedProgress = 0;
+
+      siblingEpisodes.forEach(ep => {
+        const epNumVal = ep.episodeNumber || ep.number;
+        const p = episodesMap[ep.id] ||
+          (epNumVal && episodesMap[epNumVal]) ||
+          (epNumVal && episodesMap[String(epNumVal)]) ||
+          (lunarId && epNumVal && episodesMap[`lunar-${lunarId}-${epNumVal}`]);
+        if (p) {
+          if (p.completed || (p.progressPercent && p.progressPercent >= 88)) {
+            completedCount++;
+            totalWeightedProgress += 1;
+          } else if (p.progressPercent && p.progressPercent > 0) {
+            totalWeightedProgress += Math.min(0.99, p.progressPercent / 100);
+          }
+        }
+      });
 
       const remainingCount = Math.max(0, totalEpisodes - completedCount);
-      const overallPercent = totalEpisodes > 0 ? Math.round((completedCount / totalEpisodes) * 100) : 0;
+      // Incorporates completed episodes and partial progress so active watching is visible
+      const overallPercent = totalEpisodes > 0 ? Math.min(100, Math.round((totalWeightedProgress / totalEpisodes) * 100)) : 0;
 
       // Update Sidebar Series Progress Card
       const card = document.getElementById('series-progress-card');
@@ -880,12 +1133,36 @@ document.addEventListener('DOMContentLoaded', async function () {
           </div>
         `;
       }
+
+      // Live update currently playing playlist item thumbnail progress bar
+      try {
+        const activeItems = document.querySelectorAll('.playlist-item.active, .drawer-episode-card.active');
+        activeItems.forEach(activeItem => {
+          const thumb = activeItem.querySelector('.item-thumbnail') || activeItem.querySelector('.drawer-ep-thumb');
+          if (thumb && mainVideo && mainVideo.duration > 0) {
+            let track = thumb.querySelector('.item-progress-track');
+            if (!track) {
+              track = document.createElement('div');
+              track.className = 'item-progress-track';
+              track.innerHTML = '<div class="item-progress-fill" style="width: 0%; background: var(--primary);"></div>';
+              thumb.appendChild(track);
+            }
+            const fill = track.querySelector('.item-progress-fill');
+            if (fill) {
+              const livePercent = Math.min(100, Math.max(1, Math.round((mainVideo.currentTime / mainVideo.duration) * 100)));
+              fill.style.width = `${livePercent}%`;
+              if (livePercent >= 88) fill.style.background = '#00ff88';
+            }
+          }
+        });
+      } catch (domErr) { }
     }
 
     // Periodically post progress updates to API & local storage
     async function reportPlaybackProgress() {
       if (isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
-      saveEpisodeWatchProgress(episodeId, mainVideo.currentTime, mainVideo.duration);
+      const effectiveEpId = currentEpisode?.id || episodeId;
+      saveEpisodeWatchProgress(effectiveEpId, mainVideo.currentTime, mainVideo.duration);
 
       if (!token) return;
       const now = Date.now();
@@ -894,17 +1171,32 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       lastProgressReportTime = now;
       try {
+        const isLunar = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
+        const payload = isLunar ? {
+          isLunar: true,
+          lunarId: currentEpisode?.anilistId || lunarId,
+          episodeId: effectiveEpId,
+          episodeNumber: currentEpisode?.episodeNumber || epNum || 1,
+          episodeTitle: currentEpisode?.title,
+          showTitle: currentEpisode?.show?.title,
+          poster: currentEpisode?.show?.poster || currentEpisode?.thumbnail,
+          progress: Math.floor(mainVideo.currentTime),
+          duration: Math.floor(mainVideo.duration)
+        } : {
+          episodeId: parseInt(episodeId),
+          progress: Math.floor(mainVideo.currentTime),
+          duration: Math.floor(mainVideo.duration)
+        };
+
+        if (!isLunar && isNaN(payload.episodeId)) return;
+
         await fetch(`${API_BASE}/user/history`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             ...authHeaders
           },
-          body: JSON.stringify({
-            episodeId: episodeId,
-            progress: Math.floor(mainVideo.currentTime),
-            duration: Math.floor(mainVideo.duration)
-          })
+          body: JSON.stringify(payload)
         });
       } catch (e) {
         console.warn('Failed to save playback progress:', e);
@@ -1079,6 +1371,26 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function matchPreferredAudioTrack(tracks) {
       if (!tracks || tracks.length === 0) return 0;
+
+      // Special handling for anime shows with sub/dub audio selection
+      if (currentEpisode && currentEpisode.isLunar) {
+        if (currentAudioType === 'dub') {
+          const engIdx = tracks.findIndex(t => {
+            const l = (t.lang || t.language || '').toLowerCase().trim();
+            const n = (t.name || '').toLowerCase().trim();
+            return l.startsWith('en') || n.includes('english') || n.includes('dub');
+          });
+          if (engIdx >= 0) return engIdx;
+        } else {
+          const jpnIdx = tracks.findIndex(t => {
+            const l = (t.lang || t.language || '').toLowerCase().trim();
+            const n = (t.name || '').toLowerCase().trim();
+            return l.startsWith('jp') || l.startsWith('ja') || n.includes('japan') || n.includes('native') || n.includes('original');
+          });
+          if (jpnIdx >= 0) return jpnIdx;
+        }
+      }
+
       const pref = getSavedAudioPreference();
       if (!pref) return 0;
 
@@ -1118,6 +1430,38 @@ document.addEventListener('DOMContentLoaded', async function () {
       audioDropdown.innerHTML = '';
       audioList.innerHTML = '';
 
+      if (currentEpisode && currentEpisode.isLunar) {
+        // Anime catalog: Switch between Japanese (Original Audio / Sub) and English (Dub)
+        const animeAudioOptions = [
+          { type: 'sub', label: 'Japanese (Original Audio)', shortLabel: 'Japanese' },
+          { type: 'dub', label: 'English (Dub)', shortLabel: 'English (Dub)' }
+        ];
+
+        animeAudioOptions.forEach(opt => {
+          const isCurrentActive = opt.type === currentAudioType;
+
+          const audioOption = document.createElement('div');
+          audioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
+          audioOption.setAttribute('data-audio-type', opt.type);
+          audioOption.innerHTML = `<i class="fas fa-volume-up"></i> ${opt.label}`;
+          audioDropdown.appendChild(audioOption);
+
+          const settingsAudioOption = document.createElement('div');
+          settingsAudioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
+          settingsAudioOption.setAttribute('data-audio-type', opt.type);
+          settingsAudioOption.innerHTML = `${opt.label}`;
+          audioList.appendChild(settingsAudioOption);
+        });
+
+        const activeOpt = animeAudioOptions.find(o => o.type === currentAudioType) || animeAudioOptions[0];
+        document.querySelectorAll('.current-audio').forEach(el => { el.textContent = activeOpt.shortLabel; });
+        const currentAudioDisp = document.querySelector('.current-audio-display');
+        if (currentAudioDisp) {
+          currentAudioDisp.innerHTML = `<i class="fas fa-volume-up"></i> ${activeOpt.label}`;
+        }
+        return;
+      }
+
       if (audioTracks && audioTracks.length > 0) {
         audioTracks.forEach((track, index) => {
           const isCurrentActive = index === currentAudioTrack;
@@ -1156,6 +1500,117 @@ document.addEventListener('DOMContentLoaded', async function () {
       const currentAudioDisp = document.querySelector('.current-audio-display');
       if (currentAudioDisp) {
         currentAudioDisp.innerHTML = `<i class="fas fa-volume-up"></i> ${activeLabel}`;
+      }
+    }
+
+    // Switch between Japanese (Sub) and English (Dub) audio streams seamlessly
+    async function switchAudioType(targetType) {
+      if (!currentEpisode || !currentEpisode.isLunar) return;
+
+      const previousAudioType = currentAudioType;
+      currentAudioType = targetType;
+      localStorage.setItem('infinx_preferred_audio_type', targetType);
+      const targetLabel = targetType === 'dub' ? 'English (Dub)' : 'Japanese (Original Audio)';
+
+      // 1. Instant track switch if currently loaded HLS stream already contains multiple tracks
+      if (hls && hls.audioTracks && hls.audioTracks.length > 1) {
+        let matchingTrackIdx = -1;
+        if (targetType === 'dub') {
+          matchingTrackIdx = hls.audioTracks.findIndex(t => {
+            const l = (t.lang || t.language || '').toLowerCase().trim();
+            const n = (t.name || '').toLowerCase().trim();
+            return l.startsWith('en') || n.includes('english') || n.includes('dub');
+          });
+        } else {
+          matchingTrackIdx = hls.audioTracks.findIndex(t => {
+            const l = (t.lang || t.language || '').toLowerCase().trim();
+            const n = (t.name || '').toLowerCase().trim();
+            return l.startsWith('jp') || l.startsWith('ja') || n.includes('japan') || n.includes('native') || n.includes('original');
+          });
+        }
+
+        if (matchingTrackIdx >= 0) {
+          hls.audioTrack = matchingTrackIdx;
+          currentAudioTrack = matchingTrackIdx;
+          updateAudioOptions();
+          updateAudioDisplay(matchingTrackIdx);
+          showPlayerToast(`Audio: ${targetLabel}`);
+          closeAllDropdowns();
+          closeSettingsDropdown();
+          return;
+        }
+      }
+
+      // 2. Otherwise load stream from provider supporting dub (prefer 3rdprovider)
+      updateAudioOptions();
+
+      const savedTime = (mainVideo && !isNaN(mainVideo.currentTime) && mainVideo.currentTime > 0) ? mainVideo.currentTime : null;
+      const wasPlaying = mainVideo && !mainVideo.paused;
+
+      showPlayerToast(`Switching to ${targetLabel}...`);
+      if (videoPlayer) videoPlayer.classList.add('loading');
+
+      try {
+        const epNumVal = currentEpisode.episodeNumber || epNum || 1;
+        const hostParam = targetType === 'dub' ? 'yuki' : 'zuna';
+        const res = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${hostParam}&type=${targetType}`);
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.streamUrl) {
+            // Also sync active server indicator with the chosen audio
+            if (targetType === 'dub') {
+              activeServerId = 'server-2';
+              const curDisplay = document.getElementById('current-server-display');
+              if (curDisplay) curDisplay.textContent = 'Server 2';
+              const miniServerDisp = document.getElementById('current-server-mini-display');
+              if (miniServerDisp) miniServerDisp.textContent = 'Server 2';
+              document.querySelectorAll('.server-option').forEach(opt => {
+                opt.classList.toggle('active', opt.getAttribute('data-server-id') === 'server-2');
+              });
+            } else {
+              activeServerId = 'server-1';
+              const curDisplay = document.getElementById('current-server-display');
+              if (curDisplay) curDisplay.textContent = 'Server 1';
+              const miniServerDisp = document.getElementById('current-server-mini-display');
+              if (miniServerDisp) miniServerDisp.textContent = 'Server 1';
+              document.querySelectorAll('.server-option').forEach(opt => {
+                opt.classList.toggle('active', opt.getAttribute('data-server-id') === 'server-1');
+              });
+            }
+
+            const activeServer = (availableServers && availableServers.find(s => s.id === activeServerId)) || (availableServers && availableServers[0]);
+            if (activeServer) activeServer.url = data.streamUrl;
+            if (data.intro || data.outro) {
+              detectedIntroOutro = { intro: data.intro, outro: data.outro };
+              updateTimelineMarkers();
+            }
+            if (data.subtitles && data.subtitles.length > 0) {
+              subtitleTracks = data.subtitles;
+              updateSubtitleOptions();
+            }
+            updateAudioOptions();
+            initHLS(data.streamUrl, savedTime, wasPlaying);
+            if (data.isFallbackSub && targetType === 'dub') {
+              showPlayerToast(`English Dub not available for this episode. Playing Japanese.`);
+            } else {
+              showPlayerToast(`Audio: ${targetLabel}`);
+            }
+            closeAllDropdowns();
+            closeSettingsDropdown();
+            return;
+          }
+        }
+        throw new Error('Stream response lacked streamUrl');
+      } catch (err) {
+        console.warn(`Could not switch audio to ${targetType}:`, err);
+        currentAudioType = previousAudioType;
+        localStorage.setItem('infinx_preferred_audio_type', previousAudioType);
+        updateAudioOptions();
+        showPlayerToast(`English Dub not available for this episode. Staying on Japanese.`);
+        if (videoPlayer) videoPlayer.classList.remove('loading');
+        closeAllDropdowns();
+        closeSettingsDropdown();
       }
     }
 
@@ -1245,8 +1700,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Update audio display
     function updateAudioDisplay(trackIndex) {
-      const trackName = audioTracks[trackIndex] ? getTrackDisplayName(audioTracks[trackIndex], trackIndex, false) : 'Default Stream';
-      document.querySelectorAll('.current-audio').forEach(el => { el.textContent = trackName; });
+      let trackName;
+      let shortName;
+      if (currentEpisode && currentEpisode.isLunar) {
+        trackName = currentAudioType === 'dub' ? 'English (Dub)' : 'Japanese (Original Audio)';
+        shortName = currentAudioType === 'dub' ? 'English (Dub)' : 'Japanese';
+      } else {
+        trackName = audioTracks[trackIndex] ? getTrackDisplayName(audioTracks[trackIndex], trackIndex, false) : 'Default Stream';
+        shortName = trackName;
+      }
+      document.querySelectorAll('.current-audio').forEach(el => { el.textContent = shortName; });
       const currentAudioDisp = document.querySelector('.current-audio-display');
       if (currentAudioDisp) {
         currentAudioDisp.innerHTML = `<i class="fas fa-volume-up"></i> ${trackName}`;
@@ -1808,15 +2271,24 @@ document.addEventListener('DOMContentLoaded', async function () {
       const thumbEl = document.getElementById('outro-next-thumbnail');
       const titleEl = document.getElementById('outro-next-title');
 
-      const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
-      if (curIndex < 0 || curIndex >= siblingEpisodes.length - 1) return;
-      const nextEp = siblingEpisodes[curIndex + 1];
+      let nextEp = null;
+      if (lunarId) {
+        const curEp = currentEpisode?.episodeNumber || epNum;
+        nextEp = siblingEpisodes.find(e => (e.episodeNumber || e.number) === curEp + 1);
+      } else {
+        const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
+        if (curIndex >= 0 && curIndex < siblingEpisodes.length - 1) {
+          nextEp = siblingEpisodes[curIndex + 1];
+        }
+      }
+      if (!nextEp) return;
 
       if (thumbEl) {
-        thumbEl.src = resolveAssetUrl(currentEpisode?.show?.poster) || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
+        const thumbUrl = nextEp.thumbnail || nextEp.img || resolveAssetUrl(currentEpisode?.show?.poster) || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
+        thumbEl.src = thumbUrl;
       }
       if (titleEl) {
-        titleEl.textContent = `Episode ${nextEp.episodeNumber}: ${nextEp.title}`;
+        titleEl.textContent = `Episode ${nextEp.episodeNumber || nextEp.number}: ${nextEp.title}`;
       }
 
       outroCountdownActive = true;
@@ -2089,6 +2561,15 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Sibling-based Next/Prev Episode navigation
     function playPreviousVideo() {
+      if (lunarId) {
+        const curEp = currentEpisode?.episodeNumber || epNum;
+        if (curEp > 1) {
+          window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${curEp - 1}`;
+        } else {
+          showPlayerToast('This is the first episode!');
+        }
+        return;
+      }
       const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
       if (curIndex > 0) {
         const prevEp = siblingEpisodes[curIndex - 1];
@@ -2099,6 +2580,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function playNextVideo() {
+      if (lunarId) {
+        const curEp = currentEpisode?.episodeNumber || epNum;
+        if (curEp < siblingEpisodes.length) {
+          window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${curEp + 1}`;
+        } else {
+          showPlayerToast('This is the final episode!');
+        }
+        return;
+      }
       const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
       if (curIndex >= 0 && curIndex < siblingEpisodes.length - 1) {
         const nextEp = siblingEpisodes[curIndex + 1];
@@ -2816,23 +3306,30 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function setupAudioEventListeners() {
+      const handleAudioClick = function (e) {
+        const option = e.target.closest('.audio-option');
+        if (!option) return;
+        e.stopPropagation();
+
+        const audioType = option.getAttribute('data-audio-type');
+        if (audioType) {
+          switchAudioType(audioType);
+          return;
+        }
+
+        const audioIdx = option.getAttribute('data-audio-index');
+        if (audioIdx !== null && !isNaN(parseInt(audioIdx, 10))) {
+          setAudioTrack(parseInt(audioIdx, 10));
+        }
+      };
+
       const audioContainer = document.getElementById('audio-track-list');
       if (audioContainer) {
-        audioContainer.addEventListener('click', function (e) {
-          const option = e.target.closest('.audio-option');
-          if (!option) return;
-          e.stopPropagation();
-          setAudioTrack(parseInt(option.getAttribute('data-audio-index')));
-        });
+        audioContainer.addEventListener('click', handleAudioClick);
       }
       const audioDropdown = document.getElementById('audio-dropdown');
       if (audioDropdown) {
-        audioDropdown.addEventListener('click', function (e) {
-          const option = e.target.closest('.audio-option');
-          if (!option) return;
-          e.stopPropagation();
-          setAudioTrack(parseInt(option.getAttribute('data-audio-index')));
-        });
+        audioDropdown.addEventListener('click', handleAudioClick);
       }
     }
 
@@ -3272,7 +3769,12 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (tagsContainer) {
         if (currentEpisode.show?.categories && currentEpisode.show.categories.length > 0) {
           tagsContainer.innerHTML = currentEpisode.show.categories
-            .map(c => `<span class="tag" onclick="window.location.href='/view.html#${c.category.slug}'">${c.category.name}</span>`)
+            .map(c => {
+              const name = c?.category?.name || c?.name || (typeof c === 'string' ? c : '');
+              const slug = c?.category?.slug || c?.slug || (name ? name.toLowerCase().replace(/\s+/g, '-') : '');
+              return name ? `<span class="tag" onclick="window.location.href='/view.html#${encodeURIComponent(slug)}'">${name}</span>` : '';
+            })
+            .filter(Boolean)
             .join('');
         } else {
           tagsContainer.innerHTML = '';
@@ -3297,7 +3799,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (videoTitle) videoTitle.textContent = currentEpisode.show.title || currentEpisode.title;
         if (episodeElement) episodeElement.textContent = 'Movie';
         const descriptionText = document.querySelector('.description-text');
-        if (descriptionText) descriptionText.textContent = currentEpisode.show?.description || '';
+        if (descriptionText) descriptionText.textContent = stripHtmlTags(currentEpisode.show?.description || currentEpisode.description || '');
         return;
       }
 
@@ -3309,9 +3811,9 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (videoTitle) videoTitle.textContent = currentEpisode.title;
       if (episodeElement) episodeElement.textContent = `Episode ${currentEpisode.episodeNumber}`;
       const descriptionText = document.querySelector('.description-text');
-      if (descriptionText) descriptionText.textContent = currentEpisode.show?.description || '';
+      if (descriptionText) descriptionText.textContent = stripHtmlTags(currentEpisode.show?.description || currentEpisode.description || '');
 
-      const totalEpisodes = siblingEpisodes.length;
+      const totalEpisodes = (siblingEpisodes && Array.isArray(siblingEpisodes)) ? siblingEpisodes.length : 0;
       document.querySelector('.episode-count').textContent = `(${totalEpisodes} episodes)`;
       const drawerCountEl = document.getElementById('drawer-episode-count');
       if (drawerCountEl) drawerCountEl.textContent = `(${totalEpisodes})`;
@@ -3326,20 +3828,66 @@ document.addEventListener('DOMContentLoaded', async function () {
       // Update series progress cards
       updateSeriesProgressUI(showProgData);
 
-      // Load all sibling episodes
-      siblingEpisodes.forEach((ep) => {
-        const epProg = (showProgData.episodes && showProgData.episodes[ep.id]) || null;
-        const isCurrentActive = ep.id === episodeId;
-        const isCompleted = epProg?.completed;
-        const isInProgress = epProg && epProg.positionSeconds > 10 && !isCompleted;
+      // Populate Player & Drawer Season Selectors if multi-season anime
+      const seasonsList = (currentEpisode.show && Array.isArray(currentEpisode.show.seasons)) ? currentEpisode.show.seasons : [];
+      const playerSeasonWrapper = document.getElementById('playerSeasonSelectorWrapper');
+      const playerSeasonSelect = document.getElementById('playerSeasonSelect');
+      const drawerSeasonWrapper = document.getElementById('drawerSeasonSelectorWrapper');
+      const drawerSeasonSelect = document.getElementById('drawerSeasonSelect');
 
-        const fallbackPoster = resolveAssetUrl(currentEpisode.show?.poster) || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';
+      if (seasonsList.length > 1) {
+        const populateSelect = (selectEl, wrapperEl) => {
+          if (!selectEl || !wrapperEl) return;
+          wrapperEl.style.display = 'block';
+          selectEl.innerHTML = seasonsList.map((s, idx) => {
+            const isCur = s.isCurrent || (s.anilistId && parseInt(s.anilistId) === parseInt(lunarId));
+            const sTitle = s.titleEnglish || s.title || `Season ${idx + 1}`;
+            return `<option value="${s.anilistId || s.id}" ${isCur ? 'selected' : ''}>${sTitle}</option>`;
+          }).join('');
+
+          selectEl.onchange = (e) => {
+            const targetId = e.target.value;
+            if (targetId) {
+              const cleanId = typeof targetId === 'string' && targetId.startsWith('lunar-') ? targetId.replace('lunar-', '') : targetId;
+              window.location.href = `/video-player/index.html?lunarId=${cleanId}&ep=1`;
+            }
+          };
+        };
+
+        populateSelect(playerSeasonSelect, playerSeasonWrapper);
+        populateSelect(drawerSeasonSelect, drawerSeasonWrapper);
+      } else {
+        if (playerSeasonWrapper) playerSeasonWrapper.style.display = 'none';
+        if (drawerSeasonWrapper) drawerSeasonWrapper.style.display = 'none';
+      }
+
+      // Load all sibling episodes
+      (siblingEpisodes || []).forEach((ep) => {
+        const epNumVal = ep.episodeNumber || ep.number;
+        const epProg = (showProgData.episodes && (
+          showProgData.episodes[ep.id] ||
+          (epNumVal && showProgData.episodes[epNumVal]) ||
+          (epNumVal && showProgData.episodes[String(epNumVal)]) ||
+          (lunarId && epNumVal && showProgData.episodes[`lunar-${lunarId}-${epNumVal}`])
+        )) || null;
+        const isCurrentActive = ep.id === (currentEpisode?.id || episodeId) ||
+          (lunarId && (ep.episodeNumber || ep.number) === (currentEpisode?.episodeNumber || epNum));
+        const isCompleted = epProg?.completed || (epProg?.progressPercent && epProg.progressPercent >= 88);
+        const isInProgress = epProg && epProg.positionSeconds > 5 && !isCompleted;
+
+        const fallbackPoster = (ep.thumbnail || ep.img)
+          ? (ep.thumbnail || ep.img)
+          : (resolveAssetUrl(currentEpisode.show?.poster) || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500');
 
         let badgeHtml = '';
         let progressTrackHtml = '';
 
         if (isCurrentActive) {
           badgeHtml = '<div class="item-status"><span class="item-watched"><i class="fas fa-play-circle"></i> Watching</span></div>';
+          if (epProg && epProg.progressPercent > 0) {
+            const fillBg = isCompleted ? '#00ff88' : 'var(--primary)';
+            progressTrackHtml = `<div class="item-progress-track"><div class="item-progress-fill" style="width: ${epProg.progressPercent}%; background: ${fillBg};"></div></div>`;
+          }
         } else if (isCompleted) {
           badgeHtml = '<div class="item-status"><span class="badge-watched"><i class="fas fa-check-circle"></i> Watched</span></div>';
           progressTrackHtml = '<div class="item-progress-track"><div class="item-progress-fill" style="width: 100%; background: #00ff88;"></div></div>';
@@ -3352,11 +3900,11 @@ document.addEventListener('DOMContentLoaded', async function () {
           <div class="item-thumbnail" style="position: relative; overflow: hidden;">
             <img class="playlist-item-img" src="${fallbackPoster}" alt="${ep.title}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
             <div class="item-overlay"><i class="fas fa-play"></i></div>
-            <div class="item-duration">Ep ${ep.episodeNumber}</div>
+            <div class="item-duration">Ep ${ep.episodeNumber || ep.number}</div>
             ${progressTrackHtml}
           </div>
           <div class="item-info">
-            <h4 class="item-title">Episode ${ep.episodeNumber}: ${ep.title}</h4>
+            <h4 class="item-title">Episode ${ep.episodeNumber || ep.number}: ${ep.title}</h4>
             <div class="item-meta">
               <span class="item-duration">${ep.duration || '24m'} • HD Streaming</span>
             </div>
@@ -3366,7 +3914,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const playAction = function () {
           const seekParam = (epProg && epProg.positionSeconds > 10 && !epProg.completed) ? `&t=${epProg.positionSeconds}` : '';
-          window.location.href = `/video-player/index.html?episodeId=${ep.id}${seekParam}`;
+          if (lunarId) {
+            const thisNum = ep.episodeNumber || ep.number;
+            window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${thisNum}${seekParam}`;
+          } else {
+            window.location.href = `/video-player/index.html?episodeId=${ep.id}${seekParam}`;
+          }
         };
 
         // 1. Sidebar Playlist item
@@ -3622,6 +4175,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     async function loadComments() {
+      if (currentEpisode?.isLunar || isNaN(parseInt(episodeId))) {
+        return;
+      }
       try {
         const headers = {};
         if (token) {
@@ -4063,10 +4619,104 @@ document.addEventListener('DOMContentLoaded', async function () {
       startAuthenticatedPlayback();
     }
 
-    function startAuthenticatedPlayback() {
+    async function startAuthenticatedPlayback() {
       updateServerOptions();
+      updateAudioOptions();
       const initialServer = (availableServers && availableServers.find(s => s.id === activeServerId)) || (availableServers && availableServers[0]) || null;
-      const initialVideoUrl = initialServer ? initialServer.url : (currentEpisode.videoUrl || null);
+      let initialVideoUrl = initialServer ? initialServer.url : (currentEpisode.videoUrl || null);
+
+      if (currentEpisode && currentEpisode.isLunar) {
+        try {
+          if (currentAudioType === 'dub') {
+            activeServerId = 'server-2';
+            const curDisplay = document.getElementById('current-server-display');
+            if (curDisplay) curDisplay.textContent = 'Server 2';
+            const miniServerDisp = document.getElementById('current-server-mini-display');
+            if (miniServerDisp) miniServerDisp.textContent = 'Server 2';
+            document.querySelectorAll('.server-option').forEach(opt => {
+              opt.classList.toggle('active', opt.getAttribute('data-server-id') === 'server-2');
+            });
+          }
+          const host = (currentAudioType === 'dub') ? 'yuki' : (initialServer?.host || 'zuna');
+          const epNumVal = currentEpisode.episodeNumber || epNum || 1;
+          const sRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${host}&type=${currentAudioType}`);
+          if (sRes.ok) {
+            const sData = await sRes.json();
+            if (sData.streamUrl) {
+              initialVideoUrl = sData.streamUrl;
+              if (initialServer) initialServer.url = sData.streamUrl;
+              if (sData.intro || sData.outro) {
+                detectedIntroOutro = { intro: sData.intro, outro: sData.outro };
+                updateTimelineMarkers();
+              }
+              if (sData.subtitles && sData.subtitles.length > 0) {
+                subtitleTracks = sData.subtitles;
+                updateSubtitleOptions();
+              }
+              if (sData.isFallbackSub && currentAudioType === 'dub') {
+                showPlayerToast('English Dub not available for this episode. Playing Japanese Sub.');
+              }
+            }
+          }
+          // If dub was requested but failed or returned empty streamUrl, auto fallback to sub
+          if (!initialVideoUrl && currentAudioType === 'dub') {
+            console.log('[Player] Dub stream unavailable on initial load, attempting fallback to Japanese Sub...');
+            try {
+              const fbRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=zuna&type=sub`);
+              if (fbRes.ok) {
+                const fbData = await fbRes.json();
+                if (fbData.streamUrl) {
+                  initialVideoUrl = fbData.streamUrl;
+                  currentAudioType = 'sub';
+                  activeServerId = 'server-1';
+                  localStorage.setItem('infinx_preferred_audio_type', 'sub');
+                  const curDisplay = document.getElementById('current-server-display');
+                  if (curDisplay) curDisplay.textContent = 'Server 1';
+                  const miniServerDisp = document.getElementById('current-server-mini-display');
+                  if (miniServerDisp) miniServerDisp.textContent = 'Server 1';
+                  document.querySelectorAll('.server-option').forEach(opt => {
+                    opt.classList.toggle('active', opt.getAttribute('data-server-id') === 'server-1');
+                  });
+                  updateAudioOptions();
+                  if (initialServer) initialServer.url = fbData.streamUrl;
+                  if (fbData.intro || fbData.outro) {
+                    detectedIntroOutro = { intro: fbData.intro, outro: fbData.outro };
+                    updateTimelineMarkers();
+                  }
+                  if (fbData.subtitles && fbData.subtitles.length > 0) {
+                    subtitleTracks = fbData.subtitles;
+                    updateSubtitleOptions();
+                  }
+                  showPlayerToast('English Dub not available. Playing Japanese Sub.');
+                }
+              }
+            } catch (fbErr) {
+              console.warn('[Player] Fallback to sub failed:', fbErr);
+            }
+          }
+          // If still no streamUrl, try alternative hosts (sora, 3rdprovider)
+          if (!initialVideoUrl) {
+            for (const altHost of ['sora', '3rdprovider']) {
+              try {
+                const altRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${altHost}&type=sub`);
+                if (altRes.ok) {
+                  const altData = await altRes.json();
+                  if (altData.streamUrl) {
+                    initialVideoUrl = altData.streamUrl;
+                    currentAudioType = 'sub';
+                    activeServerId = 'server-1';
+                    if (initialServer) initialServer.url = altData.streamUrl;
+                    break;
+                  }
+                }
+              } catch (altErr) { }
+            }
+          }
+        } catch (streamErr) {
+          console.warn('Initial Lunar stream fetch error:', streamErr);
+        }
+      }
+
       initHLS(initialVideoUrl);
 
       if (autoNextCheckbox && autoNextCheckbox.checked) {

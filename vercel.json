@@ -34,6 +34,17 @@
       "continue": false
     },
     {
+      "src": "/lunar-api/(.*)",
+      "dest": "https://api.lunarx.to/api/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
       "src": "/uploads/(.*)",
       "dest": "https://occurs-proteins-briefs-eric.trycloudflare.com/uploads/$1",
       "continue": false
@@ -51,6 +62,10 @@
     {
       "src": "/admin",
       "dest": "/admin.html"
+    },
+    {
+      "src": "/anime",
+      "dest": "/anime.html"
     },
     {
       "src": "/download",

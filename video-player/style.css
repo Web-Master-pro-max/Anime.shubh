@@ -431,8 +431,15 @@ video::cue,
 }
 
 @keyframes modalFadeIn {
-  from { opacity: 0; transform: scale(0.97); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .caption-settings-panel {
@@ -1107,18 +1114,39 @@ video::cue,
 }
 
 @keyframes settingsViewFadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes settingsSlideInRight {
-  from { opacity: 0; transform: translateX(18px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes settingsSlideInLeft {
-  from { opacity: 0; transform: translateX(-18px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Panel Header (Root View) */
@@ -1666,12 +1694,12 @@ video::cue,
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background-color: var(--primary, #ff0055);
   border-color: var(--primary, #ff0055);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(16px);
 }
 
@@ -1917,7 +1945,7 @@ input:checked + .slider:before {
     bottom: 3px !important;
   }
 
-  input:checked + .slider:before {
+  input:checked+.slider:before {
     transform: translateX(20px) !important;
   }
 
@@ -2272,6 +2300,14 @@ input:checked + .slider:before {
   border: 1px solid rgba(0, 168, 255, 0.4);
 }
 
+.server-badge-hls,
+.server-badge-lunar {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(112, 0, 255, 0.25));
+  color: #00f0ff;
+  border: 1px solid rgba(0, 240, 255, 0.5);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+}
+
 .quality-badge {
   font-size: 0.7rem;
   padding: 2px 6px;
@@ -2381,6 +2417,7 @@ input:checked + .slider:before {
   font-size: clamp(14px, 2vw, 15px);
   margin-bottom: 15px;
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .video-tags {
@@ -2442,6 +2479,30 @@ input:checked + .slider:before {
 .playlist-actions {
   display: flex;
   gap: 10px;
+}
+
+.player-season-select {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.player-season-select:hover,
+.player-season-select:focus {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--primary, #ff0055);
+}
+
+.player-season-select option {
+  background: #14142b;
+  color: #fff;
 }
 
 .playlist-btn {
@@ -3111,6 +3172,7 @@ input:checked + .slider:before {
 /* Fullscreen on Desktop / Standard Height (> 520px and > 768px):
    Elegantly floats above the bottom controls bar, pinned to bottom: 84px and right: 24px */
 @media (min-height: 521px) and (min-width: 769px) {
+
   .video-player.is-fullscreen .settings-dropdown,
   .video-player:fullscreen .settings-dropdown,
   .video-player:-webkit-full-screen .settings-dropdown,
@@ -3173,6 +3235,7 @@ input:checked + .slider:before {
 /* Fullscreen on Portrait Mobile (> 520px and <= 768px):
    Bottom sheet pinned to bottom: 0, left: 0, right: 0 */
 @media (min-height: 521px) and (max-width: 768px) {
+
   .video-player.is-fullscreen .settings-dropdown,
   .video-player:fullscreen .settings-dropdown,
   .video-player:-webkit-full-screen .settings-dropdown,
@@ -4326,10 +4389,12 @@ video::-webkit-media-text-track-background {
     transform: scale(0.7);
     opacity: 0;
   }
+
   50% {
     transform: scale(1.08);
     opacity: 1;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -4421,6 +4486,7 @@ video::-webkit-media-text-track-background {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -4824,7 +4890,7 @@ video::-webkit-media-text-track-background {
 
 .series-progress-stats {
   display: flex;
-  gap: 8px;
+  gap: 5px;
 }
 
 .series-progress-stats .stat-chip {
@@ -4832,11 +4898,11 @@ video::-webkit-media-text-track-background {
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.07);
-  padding: 8px 10px;
-  border-radius: 10px;
+  padding: 6px 6px;
+  border-radius: 8px;
   overflow: hidden;
   transition: all 0.2s ease;
 }
@@ -4847,7 +4913,7 @@ video::-webkit-media-text-track-background {
 }
 
 .series-progress-stats .stat-chip .stat-icon {
-  font-size: 1.35rem;
+  font-size: 1.1rem;
   flex-shrink: 0;
 }
 
@@ -4871,19 +4937,19 @@ video::-webkit-media-text-track-background {
 }
 
 .series-progress-stats .stat-chip .stat-label {
-  font-size: 1rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #8f94a6;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.2px;
   line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
 }
 
 .series-progress-stats .stat-chip .stat-value {
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   font-weight: 900;
   color: #ffffff;
   line-height: 1.2;
