@@ -1048,59 +1048,277 @@ video::cue,
 }
 
 /* Settings Dropdown Container */
+/* ===================================================
+   Settings Dropdown - All-in-One Unified Panel (LunarX Style)
+   =================================================== */
 .settings-dropdown {
-  position: absolute;
-  bottom: calc(100% + 12px);
-  right: 0;
-  left: auto;
-  transform: translateY(8px) scale(0.97);
-  background: rgba(12, 13, 20, 0.94);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  width: 295px;
-  max-width: min(320px, calc(100vw - 16px));
-  max-height: min(440px, 68vh);
-  display: none;
-  flex-direction: column;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 500;
-  box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.85),
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    0 8px 30px rgba(255, 0, 85, 0.06);
-  padding: 0;
-  overflow: hidden;
-  touch-action: pan-y !important;
-  -webkit-overflow-scrolling: touch !important;
-  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  user-select: none;
+  position: absolute !important;
+  top: 10px !important;
+  bottom: 10px !important;
+  right: 12px !important;
+  left: auto !important;
+  width: min(340px, calc(100% - 24px)) !important;
+  max-width: 360px !important;
+  max-height: calc(100% - 20px) !important;
+  background: rgba(13, 14, 23, 0.96) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
+  z-index: 100 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(20px) scale(0.98) !important;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  user-select: none !important;
+}
+
+.settings-dropdown.active {
+  display: flex !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateX(0) scale(1) !important;
+}
+
+@media (min-width: 900px) and (min-height: 600px) {
+  .video-player:not(.is-fullscreen):not(:fullscreen) .settings-dropdown {
+    top: auto !important;
+    bottom: 84px !important;
+    right: 24px !important;
+    max-height: min(520px, calc(100% - 105px)) !important;
+    transform: translateY(8px) scale(0.98) !important;
+  }
+
+  .video-player:not(.is-fullscreen):not(:fullscreen) .settings-dropdown.active {
+    transform: translateY(0) scale(1) !important;
+  }
 }
 
 .settings-mobile-backdrop {
-  display: none;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 95 !important;
+  display: none !important;
+  opacity: 0 !important;
+  transition: opacity 0.2s ease !important;
 }
 
-.settings-menu.active .settings-dropdown,
-.settings-dropdown.active {
+.settings-mobile-backdrop.active {
+  display: block !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Header */
+.settings-all-header {
   display: flex;
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0) scale(1);
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
 }
 
-/* Settings Drill-Down Views */
-.settings-view {
-  display: none;
-  width: 100%;
+.settings-all-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.settings-panel-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #a1a1aa;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.15s ease;
+}
+
+.settings-panel-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* Scrollable Body */
+.settings-all-body {
+  padding: 14px 18px 18px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
   flex-direction: column;
+  gap: 16px;
   flex: 1 1 auto;
-  min-height: 0;
+  -webkit-overflow-scrolling: touch;
 }
 
-.settings-view.active {
+.settings-all-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.settings-all-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.settings-all-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.settings-all-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Section */
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-section-title i {
+  color: var(--primary, #e50914);
+  font-size: 1.2rem;
+}
+
+.settings-badge {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary, #e50914);
+  background: rgba(229, 9, 20, 0.12);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(229, 9, 20, 0.25);
+}
+
+.settings-inline-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e4e4e7;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.settings-inline-btn:hover {
+  background: var(--primary, #e50914);
+  border-color: var(--primary, #e50914);
+  color: #ffffff;
+}
+
+/* Pills */
+.settings-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.settings-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #d4d4d8;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.settings-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.settings-pill.active {
+  background: var(--primary, #e50914) !important;
+  color: #ffffff !important;
+  border-color: var(--primary, #e50914) !important;
+  box-shadow: 0 0 14px rgba(229, 9, 20, 0.45);
+}
+
+/* Toggles */
+.settings-toggles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.settings-toggle-label-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-toggle-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #f4f4f5;
+}
+
+.settings-toggle-sub {
+  font-size: 1.1rem;
+  color: #71717a;
+  margin-top: 2px;
+
   display: flex;
   animation: settingsViewFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -1752,72 +1970,51 @@ input:checked+.slider:before {
    ======================================================== */
 @media (max-width: 768px) {
   .settings-mobile-backdrop {
-    display: block;
-    position: fixed !important;
-    inset: 0 !important;
-    background: rgba(0, 0, 0, 0.68) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    z-index: 2147483640 !important;
+    display: none !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    z-index: 95 !important;
     opacity: 0 !important;
     pointer-events: none !important;
     transition: opacity 0.28s ease !important;
   }
 
   .settings-mobile-backdrop.active {
+    display: block !important;
     opacity: 1 !important;
     pointer-events: auto !important;
   }
 
   .settings-drag-handle {
-    display: block !important;
-    width: 44px !important;
-    height: 5px !important;
-    border-radius: 3px !important;
-    background: rgba(255, 255, 255, 0.32) !important;
-    margin: 10px auto 4px !important;
-    cursor: pointer !important;
-    transition: background 0.2s ease !important;
-  }
-
-  .settings-drag-handle:active {
-    background: var(--primary, #ff0055) !important;
+    display: none !important;
   }
 
   .settings-dropdown {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    top: auto !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    max-height: min(78vh, 560px) !important;
-    border-radius: 22px 22px 0 0 !important;
-    border: 1px solid rgba(255, 255, 255, 0.14) !important;
-    border-bottom: none !important;
-    background: rgba(13, 14, 23, 0.97) !important;
-    backdrop-filter: blur(32px) saturate(200%) !important;
-    -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
-    z-index: 2147483645 !important;
-    touch-action: pan-y !important;
-    -webkit-overflow-scrolling: touch !important;
-    box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.95), 0 -1px 0 rgba(255, 255, 255, 0.1) !important;
-    transform: translateY(105%) !important;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease !important;
-    padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)) !important;
-    margin: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    display: flex !important;
+    position: absolute !important;
+    top: 10px !important;
+    bottom: 10px !important;
+    right: 12px !important;
+    left: auto !important;
+    width: min(340px, calc(100% - 24px)) !important;
+    max-width: 360px !important;
+    max-height: calc(100% - 20px) !important;
+    border-radius: 16px !important;
+    transform: translateX(20px) scale(0.98) !important;
   }
 
-  .settings-dropdown.active,
-  .settings-menu.active .settings-dropdown {
-    transform: translateY(0) !important;
+  .settings-dropdown.active {
     display: flex !important;
     opacity: 1 !important;
     pointer-events: auto !important;
+    transform: translateX(0) scale(1) !important;
   }
 
   .settings-panel-header {
@@ -1989,69 +2186,28 @@ input:checked+.slider:before {
     display: block !important;
     position: fixed !important;
     inset: 0 !important;
-    background: rgba(0, 0, 0, 0.6) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
-    z-index: 2147483640 !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    z-index: 95 !important;
     opacity: 1 !important;
     pointer-events: auto !important;
   }
 
   .settings-dropdown {
-    position: fixed !important;
-    top: 0 !important;
-    bottom: 0 !important;
-    right: 0 !important;
+    position: absolute !important;
+    top: 8px !important;
+    bottom: 8px !important;
+    right: 8px !important;
     left: auto !important;
     width: min(340px, 85vw) !important;
-    max-width: 360px !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    border-radius: 18px 0 0 18px !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    border-right: none !important;
-    background: rgba(13, 14, 23, 0.98) !important;
-    backdrop-filter: blur(28px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
-    z-index: 2147483645 !important;
-    touch-action: pan-y !important;
-    -webkit-overflow-scrolling: touch !important;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.9) !important;
-    transform: translateX(105%) !important;
-    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease !important;
-    padding-bottom: 0 !important;
-    margin: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    display: flex !important;
+    max-height: calc(100% - 16px) !important;
+    border-radius: 16px !important;
+    transform: translateX(20px) !important;
   }
 
-  /* When inside fullscreen video player */
-  .video-player.is-fullscreen .settings-dropdown,
-  .video-player:fullscreen .settings-dropdown,
-  .video-player:-webkit-full-screen .settings-dropdown,
-  .video-player:-moz-full-screen .settings-dropdown,
-  .video-player:-ms-fullscreen .settings-dropdown {
-    position: absolute !important;
-    height: 100% !important;
-    max-height: 100% !important;
-    top: 0 !important;
-    bottom: 0 !important;
-    right: 0 !important;
-    left: auto !important;
-  }
-
-  .settings-dropdown.active,
-  .settings-menu.active .settings-dropdown,
-  .video-player.is-fullscreen .settings-dropdown.active,
-  .video-player:fullscreen .settings-dropdown.active,
-  .video-player:-webkit-full-screen .settings-dropdown.active,
-  .video-player:-moz-full-screen .settings-dropdown.active,
-  .video-player:-ms-fullscreen .settings-dropdown.active {
+  .settings-dropdown.active {
     transform: translateX(0) !important;
-    display: flex !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
   }
 
   .settings-menu-list,
@@ -3161,119 +3317,83 @@ input:checked+.slider:before {
   bottom: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  background: rgba(0, 0, 0, 0.55) !important;
-  backdrop-filter: blur(4px) !important;
-  -webkit-backdrop-filter: blur(4px) !important;
-  z-index: 2147483640 !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 95 !important;
   opacity: 1 !important;
   pointer-events: auto !important;
 }
 
 /* Fullscreen on Desktop / Standard Height (> 520px and > 768px):
-   Elegantly floats above the bottom controls bar, pinned to bottom: 84px and right: 24px */
-@media (min-height: 521px) and (min-width: 769px) {
+/* Responsive Settings Dropdown Layouts (PC Windowed, PC Fullscreen, Mobile Portrait, Mobile Landscape) */
 
-  .video-player.is-fullscreen .settings-dropdown,
-  .video-player:fullscreen .settings-dropdown,
-  .video-player:-webkit-full-screen .settings-dropdown,
-  .video-player:-moz-full-screen .settings-dropdown,
-  .video-player:-ms-fullscreen .settings-dropdown {
+/* 1. Desktop & Tablets (Landscape & Portrait > 768px):
+   Positioned bottom-right above controls bar */
+@media (min-width: 769px) {
+  .settings-dropdown {
     position: absolute !important;
     bottom: 84px !important;
     right: 24px !important;
-    top: auto !important;
     left: auto !important;
-    width: 310px !important;
-    max-width: min(340px, calc(100vw - 32px)) !important;
-    max-height: min(480px, calc(100vh - 105px)) !important;
+    top: auto !important;
+    width: 360px !important;
+    max-width: min(380px, calc(100% - 32px)) !important;
+    max-height: min(520px, calc(100% - 105px)) !important;
     border-radius: 18px !important;
-    background: rgba(13, 14, 23, 0.96) !important;
-    backdrop-filter: blur(28px) saturate(180%);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9) !important;
-    z-index: 2147483645 !important;
-    transform: translateY(8px) scale(0.97) !important;
-    transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    display: none !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
+    transform: translateY(8px) scale(0.97);
   }
 
-  .video-player.is-fullscreen .settings-dropdown.active,
-  .video-player:fullscreen .settings-dropdown.active,
-  .video-player:-webkit-full-screen .settings-dropdown.active,
-  .video-player:-moz-full-screen .settings-dropdown.active,
-  .video-player:-ms-fullscreen .settings-dropdown.active {
+  .settings-dropdown.active {
     display: flex !important;
     opacity: 1 !important;
     pointer-events: auto !important;
     transform: translateY(0) scale(1) !important;
   }
 
-  .video-player.is-fullscreen .settings-drag-handle,
-  .video-player:fullscreen .settings-drag-handle,
-  .video-player:-webkit-full-screen .settings-drag-handle,
-  .video-player:-moz-full-screen .settings-drag-handle,
-  .video-player:-ms-fullscreen .settings-drag-handle {
+  .settings-drag-handle {
     display: none !important;
-  }
-
-  .video-player.is-fullscreen .settings-menu-list,
-  .video-player:fullscreen .settings-menu-list,
-  .video-player:-webkit-full-screen .settings-menu-list {
-    max-height: calc(min(480px, calc(100vh - 105px)) - 50px) !important;
-  }
-
-  .video-player.is-fullscreen .settings-sub-body,
-  .video-player:fullscreen .settings-sub-body,
-  .video-player:-webkit-full-screen .settings-sub-body {
-    max-height: calc(min(480px, calc(100vh - 105px)) - 50px) !important;
   }
 }
 
-/* Fullscreen on Portrait Mobile (> 520px and <= 768px):
-   Bottom sheet pinned to bottom: 0, left: 0, right: 0 */
-@media (min-height: 521px) and (max-width: 768px) {
-
-  .video-player.is-fullscreen .settings-dropdown,
-  .video-player:fullscreen .settings-dropdown,
-  .video-player:-webkit-full-screen .settings-dropdown,
-  .video-player:-moz-full-screen .settings-dropdown,
-  .video-player:-ms-fullscreen .settings-dropdown {
+/* Responsive Right-Docked Card Layout for Mobile & Fullscreen (Matches User Image) */
+@media (max-width: 768px) {
+  .settings-dropdown {
     position: absolute !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    top: auto !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    max-height: min(78vh, 560px) !important;
-    border-radius: 22px 22px 0 0 !important;
-    border: 1px solid rgba(255, 255, 255, 0.14) !important;
-    border-bottom: none !important;
-    background: rgba(13, 14, 23, 0.97) !important;
-    backdrop-filter: blur(32px) saturate(200%) !important;
-    -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
-    z-index: 2147483645 !important;
-    box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.95) !important;
-    transform: translateY(105%) !important;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease !important;
-    display: flex !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
+    top: 8px !important;
+    bottom: 8px !important;
+    right: 8px !important;
+    left: auto !important;
+    width: min(340px, calc(100% - 16px)) !important;
+    max-height: calc(100% - 16px) !important;
+    border-radius: 16px !important;
+    transform: translateX(20px) !important;
   }
 
-  .video-player.is-fullscreen .settings-dropdown.active,
-  .video-player:fullscreen .settings-dropdown.active,
-  .video-player:-webkit-full-screen .settings-dropdown.active,
-  .video-player:-moz-full-screen .settings-dropdown.active,
-  .video-player:-ms-fullscreen .settings-dropdown.active {
-    transform: translateY(0) !important;
-    display: flex !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
+  .settings-dropdown.active {
+    transform: translateX(0) !important;
   }
+
+  .settings-drag-handle {
+    display: none !important;
+  }
+}
+
+/* Ensure settings panel and backdrop are topmost inside video player in all fullscreen states */
+.video-player.is-fullscreen .settings-dropdown,
+.video-player:fullscreen .settings-dropdown,
+.video-player:-webkit-full-screen .settings-dropdown,
+.video-player:-moz-full-screen .settings-dropdown,
+.video-player:-ms-fullscreen .settings-dropdown {
+  z-index: 100 !important;
+}
+
+.video-player.is-fullscreen .settings-mobile-backdrop,
+.video-player:fullscreen .settings-mobile-backdrop,
+.video-player:-webkit-full-screen .settings-mobile-backdrop,
+.video-player:-moz-full-screen .settings-mobile-backdrop,
+.video-player:-ms-fullscreen .settings-mobile-backdrop {
+  z-index: 95 !important;
 }
 
 /* Orientation specific styles */
@@ -4075,15 +4195,30 @@ input:checked+.slider:before {
 /* ====== TRANSPARENT CAPTION STYLING ====== */
 .caption-overlay {
   position: absolute;
-  bottom: 80px;
+  bottom: 105px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 20;
+  z-index: 55;
   pointer-events: none;
   text-align: center;
   width: 90%;
   max-width: 800px;
-  transition: bottom 0.3s ease;
+  transition: bottom 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.custom-controls.hidden~.caption-overlay,
+.video-player.controls-hidden .caption-overlay,
+.video-player:not(:hover) .caption-overlay {
+  bottom: 35px;
+}
+
+.video-player:hover .caption-overlay,
+.custom-controls:not(.hidden)~.caption-overlay {
+  bottom: 105px;
+}
+
+.caption-overlay.pos-raised {
+  bottom: 140px !important;
 }
 
 .caption-overlay.hidden {
@@ -4672,7 +4807,8 @@ video::-webkit-media-text-track-background {
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.in-player-drawer.open {
+.in-player-drawer.open,
+.in-player-drawer.active {
   pointer-events: auto;
   opacity: 1;
   visibility: visible;
@@ -4700,7 +4836,8 @@ video::-webkit-media-text-track-background {
   z-index: 2;
 }
 
-.in-player-drawer.open .in-player-drawer-panel {
+.in-player-drawer.open .in-player-drawer-panel,
+.in-player-drawer.active .in-player-drawer-panel {
   transform: translateX(0);
 }
 
@@ -4766,27 +4903,44 @@ video::-webkit-media-text-track-background {
   gap: 8px;
 }
 
+.drawer-episodes-list .playlist-item,
+.drawer-item,
 .drawer-ep-item {
   display: flex;
   gap: 12px;
-  padding: 10px;
+  padding: 10px 12px;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   align-items: center;
+  user-select: none;
+  box-sizing: border-box;
+  width: 100%;
 }
 
+.drawer-episodes-list .playlist-item:hover,
+.drawer-item:hover,
 .drawer-ep-item:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: translateX(-2px);
 }
 
+.drawer-episodes-list .playlist-item.active,
+.drawer-item.active,
 .drawer-ep-item.active {
-  background: rgba(255, 0, 85, 0.12);
+  background: rgba(255, 0, 85, 0.14);
   border-color: var(--primary, #ff0055);
+  box-shadow: 0 0 16px rgba(255, 0, 85, 0.25);
+}
+
+.control-btn.disabled,
+.control-btn:disabled {
+  opacity: 0.32 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
 }
 
 .drawer-ep-thumb {

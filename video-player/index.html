@@ -89,8 +89,6 @@
         <div class="video-player">
           <!-- Video element WITHOUT native controls -->
           <video id="main-video" crossorigin="anonymous" playsinline webkit-playsinline></video>
-          <!-- Custom caption overlay (JS-rendered for consistent styling) -->
-          <div id="caption-overlay" class="caption-overlay" aria-hidden="true"></div>
 
           <!-- Custom Video Controls -->
           <div class="custom-controls">
@@ -158,290 +156,6 @@
                   title="Playback Settings">
                   <i class="fas fa-cog"></i>
                 </button>
-                <div class="settings-mobile-backdrop" id="settings-mobile-backdrop"></div>
-                <div class="settings-dropdown" id="player-settings-dropdown">
-                  <div class="settings-drag-handle"></div>
-
-                  <!-- Root View: Main Menu -->
-                  <div class="settings-view active" id="settings-view-main" data-view="main">
-                    <div class="settings-panel-header">
-                      <div class="settings-panel-title">
-                        <i class="fas fa-sliders-h" style="color: var(--primary);"></i>
-                        <span>Settings</span>
-                      </div>
-                      <button class="settings-panel-close-btn" id="settings-panel-close-btn"
-                        aria-label="Close Settings">
-                        <i class="fas fa-times"></i>
-                      </button>
-                    </div>
-
-                    <div class="settings-menu-list">
-                      <!-- Quality -->
-                      <div class="settings-menu-item" data-target-view="quality" role="button" tabindex="0">
-                        <div class="settings-menu-item-left">
-                          <i class="fas fa-layer-group"></i>
-                          <span>Quality</span>
-                        </div>
-                        <div class="settings-menu-item-right">
-                          <span class="settings-row-value current-quality">Auto</span>
-                          <i class="fas fa-chevron-right"></i>
-                        </div>
-                      </div>
-
-                      <!-- Playback Speed -->
-                      <div class="settings-menu-item" data-target-view="speed" role="button" tabindex="0">
-                        <div class="settings-menu-item-left">
-                          <i class="fas fa-tachometer-alt"></i>
-                          <span>Speed</span>
-                        </div>
-                        <div class="settings-menu-item-right">
-                          <span class="settings-row-value current-speed">1x</span>
-                          <i class="fas fa-chevron-right"></i>
-                        </div>
-                      </div>
-
-                      <!-- Audio Language -->
-                      <div class="settings-menu-item" data-target-view="audio" role="button" tabindex="0">
-                        <div class="settings-menu-item-left">
-                          <i class="fas fa-volume-up"></i>
-                          <span>Audio</span>
-                        </div>
-                        <div class="settings-menu-item-right">
-                          <span class="settings-row-value current-audio">Japanese</span>
-                          <i class="fas fa-chevron-right"></i>
-                        </div>
-                      </div>
-
-                      <!-- Subtitles -->
-                      <div class="settings-menu-item" data-target-view="subtitles" role="button" tabindex="0">
-                        <div class="settings-menu-item-left">
-                          <i class="fas fa-closed-captioning"></i>
-                          <span>Subtitles</span>
-                        </div>
-                        <div class="settings-menu-item-right">
-                          <span class="settings-row-value current-subtitle">Off</span>
-                          <i class="fas fa-chevron-right"></i>
-                        </div>
-                      </div>
-
-                      <!-- Auto-Skip Preferences -->
-                      <div class="settings-menu-item" data-target-view="autoskip" role="button" tabindex="0">
-                        <div class="settings-menu-item-left">
-                          <i class="fas fa-forward"></i>
-                          <span>Intro / Outro</span>
-                        </div>
-                        <div class="settings-menu-item-right">
-                          <span class="settings-row-value current-autoskip" id="current-autoskip-display">Smart
-                            Auto</span>
-                          <i class="fas fa-chevron-right"></i>
-                        </div>
-                      </div>
-
-                      <!-- Screen Fit & Aspect -->
-                      <div class="settings-menu-item" data-target-view="display" role="button" tabindex="0">
-                        <div class="settings-menu-item-left">
-                          <i class="fas fa-expand"></i>
-                          <span>Screen Fit</span>
-                        </div>
-                        <div class="settings-menu-item-right">
-                          <span class="settings-row-value current-fit" id="current-fit-display">Fill Notch</span>
-                          <i class="fas fa-chevron-right"></i>
-                        </div>
-                      </div>
-
-                      <!-- Streaming Server -->
-                      <div class="settings-menu-item" data-target-view="server" id="player-server-section" role="button"
-                        tabindex="0">
-                        <div class="settings-menu-item-left">
-                          <i class="fas fa-server"></i>
-                          <span>Server</span>
-                        </div>
-                        <div class="settings-menu-item-right">
-                          <span class="settings-row-value current-server" id="current-server-mini-display">Server
-                            1</span>
-                          <i class="fas fa-chevron-right"></i>
-                        </div>
-                      </div>
-
-                      <!-- Caption Appearance Modal Launcher -->
-                      <div class="settings-menu-item caption-style-launcher" id="open-caption-settings" role="button"
-                        tabindex="0" onclick="if(window.openCaptionSettingsModal)window.openCaptionSettingsModal();">
-                        <div class="settings-menu-item-left">
-                          <i class="fas fa-palette" style="color: var(--primary);"></i>
-                          <span>Caption Style</span>
-                        </div>
-                        <div class="settings-menu-item-right">
-                          <span class="settings-row-value"
-                            style="color: var(--primary); font-weight: 700;">Customize</span>
-                          <i class="fas fa-chevron-right" style="color: var(--primary);"></i>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Submenu: Quality -->
-                  <div class="settings-view" id="settings-view-quality" data-view="quality">
-                    <div class="settings-sub-header">
-                      <button class="settings-back-btn" data-back="main" aria-label="Back">
-                        <i class="fas fa-chevron-left"></i>
-                      </button>
-                      <span>Quality</span>
-                    </div>
-                    <div class="settings-sub-body quality-options" id="player-quality-options">
-                      <div class="quality-option active" data-quality="auto">Auto</div>
-                    </div>
-                  </div>
-
-                  <!-- Submenu: Speed -->
-                  <div class="settings-view" id="settings-view-speed" data-view="speed">
-                    <div class="settings-sub-header">
-                      <button class="settings-back-btn" data-back="main" aria-label="Back">
-                        <i class="fas fa-chevron-left"></i>
-                      </button>
-                      <span>Playback Speed</span>
-                    </div>
-                    <div class="settings-sub-body speed-options">
-                      <div class="speed-option" data-speed="0.5">0.5x</div>
-                      <div class="speed-option" data-speed="0.75">0.75x</div>
-                      <div class="speed-option active" data-speed="1">Normal (1x)</div>
-                      <div class="speed-option" data-speed="1.25">1.25x</div>
-                      <div class="speed-option" data-speed="1.5">1.5x</div>
-                      <div class="speed-option" data-speed="2">2x</div>
-                    </div>
-                  </div>
-
-                  <!-- Submenu: Audio Dubbing -->
-                  <div class="settings-view" id="settings-view-audio" data-view="audio">
-                    <div class="settings-sub-header">
-                      <button class="settings-back-btn" data-back="main" aria-label="Back">
-                        <i class="fas fa-chevron-left"></i>
-                      </button>
-                      <span>Audio Dubbing</span>
-                    </div>
-                    <div class="settings-sub-body audio-options" id="audio-track-list">
-                      <!-- Dynamically populated -->
-                    </div>
-                  </div>
-
-                  <!-- Submenu: Subtitles -->
-                  <div class="settings-view" id="settings-view-subtitles" data-view="subtitles">
-                    <div class="settings-sub-header">
-                      <button class="settings-back-btn" data-back="main" aria-label="Back">
-                        <i class="fas fa-chevron-left"></i>
-                      </button>
-                      <span>Subtitles</span>
-                    </div>
-                    <div class="settings-sub-body">
-                      <div class="subtitle-options" id="subtitle-track-list">
-                        <div class="subtitle-option active" data-subtitle="off">Off</div>
-                        <!-- Dynamically populated -->
-                      </div>
-                      <div class="settings-action-divider"></div>
-                      <div class="caption-settings-launch-card" id="open-caption-settings-from-subview" role="button"
-                        tabindex="0" onclick="if(window.openCaptionSettingsModal)window.openCaptionSettingsModal();">
-                        <div class="caption-launch-icon">
-                          <i class="fas fa-palette"></i>
-                        </div>
-                        <div class="caption-launch-info">
-                          <span class="caption-launch-title">Customize Appearance</span>
-                          <span class="caption-launch-desc">Fonts, colors, shadow & position</span>
-                        </div>
-                        <i class="fas fa-chevron-right caption-launch-arrow"></i>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Submenu: Auto-Skip -->
-                  <div class="settings-view" id="settings-view-autoskip" data-view="autoskip">
-                    <div class="settings-sub-header">
-                      <button class="settings-back-btn" data-back="main" aria-label="Back">
-                        <i class="fas fa-chevron-left"></i>
-                      </button>
-                      <span>Auto-Skip Preferences</span>
-                    </div>
-                    <div class="settings-sub-body">
-                      <div class="setting-toggle-row">
-                        <div class="toggle-text">
-                          <span class="toggle-label">Auto-Skip Opening (Intro)</span>
-                          <span class="toggle-hint">Automatically bypass opening themes (OP)</span>
-                        </div>
-                        <label class="switch">
-                          <input type="checkbox" id="setting-auto-skip-intro" checked>
-                          <span class="slider round"></span>
-                        </label>
-                      </div>
-
-                      <div class="setting-toggle-row">
-                        <div class="toggle-text">
-                          <span class="toggle-label">Auto-Skip Ending (Outro)</span>
-                          <span class="toggle-hint">Autoplay next episode when closing credits roll</span>
-                        </div>
-                        <label class="switch">
-                          <input type="checkbox" id="setting-auto-skip-outro" checked>
-                          <span class="slider round"></span>
-                        </label>
-                      </div>
-
-                      <div class="setting-duration-container">
-                        <div class="setting-sub-label">Theme Skip Window</div>
-                        <div class="skip-duration-chips" id="skip-duration-options">
-                          <div class="duration-chip active" data-duration="auto">Smart Auto</div>
-                          <div class="duration-chip" data-duration="60">60s</div>
-                          <div class="duration-chip" data-duration="75">75s</div>
-                          <div class="duration-chip" data-duration="85">85s</div>
-                          <div class="duration-chip" data-duration="90">90s</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Submenu: Screen Fit & Display -->
-                  <div class="settings-view" id="settings-view-display" data-view="display">
-                    <div class="settings-sub-header">
-                      <button class="settings-back-btn" data-back="main" aria-label="Back">
-                        <i class="fas fa-chevron-left"></i>
-                      </button>
-                      <span>Screen Fit & Aspect</span>
-                    </div>
-                    <div class="settings-sub-body">
-                      <div class="settings-subgroup-title">Screen Fit (Notch Display)</div>
-                      <div class="screen-fit-options">
-                        <div class="fit-option" data-fit="contain">Fit (Default)</div>
-                        <div class="fit-option active" data-fit="cover">Fill Notch Screen</div>
-                        <div class="fit-option" data-fit="fill">Stretch</div>
-                      </div>
-
-                      <div class="settings-subgroup-title" style="margin-top: 14px;">Aspect Ratio</div>
-                      <div class="aspect-options">
-                        <div class="aspect-option active" data-aspect="default">Default</div>
-                        <div class="aspect-option" data-aspect="16:9">16:9</div>
-                        <div class="aspect-option" data-aspect="4:3">4:3</div>
-                        <div class="aspect-option" data-aspect="1:1">1:1</div>
-                        <div class="aspect-option" data-aspect="16:10">16:10</div>
-                        <div class="aspect-option" data-aspect="2.21:1">2.21:1</div>
-                        <div class="aspect-option" data-aspect="2.35:1">2.35:1</div>
-                        <div class="aspect-option" data-aspect="2.39:1">2.39:1</div>
-                        <div class="aspect-option" data-aspect="5:4">5:4</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Submenu: Streaming Server -->
-                  <div class="settings-view" id="settings-view-server" data-view="server">
-                    <div class="settings-sub-header">
-                      <button class="settings-back-btn" data-back="main" aria-label="Back">
-                        <i class="fas fa-chevron-left"></i>
-                      </button>
-                      <span>Streaming Server</span>
-                    </div>
-                    <div class="settings-sub-body">
-                      <div class="server-options" id="player-server-options"
-                        style="display: flex; flex-direction: column; gap: 6px;">
-                        <!-- Populated dynamically -->
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
 
               <button class="control-btn subtitle-btn" id="player-subtitle-btn" aria-label="Toggle Subtitles"
@@ -546,6 +260,146 @@
                 <button id="outro-play-btn" class="outro-play-btn"><i class="fas fa-play"></i> Watch Now</button>
                 <button id="outro-cancel-btn" class="outro-cancel-btn"><i class="fas fa-times"></i> Cancel</button>
               </div>
+            </div>
+          </div>
+
+          <!-- Custom caption overlay (JS-rendered for consistent styling across PC & Mobile) -->
+          <div id="caption-overlay" class="caption-overlay" aria-hidden="true"></div>
+
+          <!-- In-Player All-In-One Settings Panel (LunarX Style - PC & Mobile Fullscreen Compatible) -->
+          <div class="settings-mobile-backdrop" id="settings-mobile-backdrop"></div>
+          <div class="settings-dropdown" id="player-settings-dropdown" aria-label="Playback Settings">
+            <div class="settings-drag-handle"></div>
+
+            <!-- Panel Header -->
+            <div class="settings-all-header">
+              <div class="settings-all-title">
+                <i class="fas fa-sliders-h" style="color: var(--primary);"></i>
+                <span>Playback Settings</span>
+              </div>
+              <button class="settings-panel-close-btn" id="settings-panel-close-btn" aria-label="Close Settings">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+
+            <!-- All-In-One Unified Controls Body -->
+            <div class="settings-all-body custom-scrollbar">
+
+              <!-- 1. Audio Language (Sub / Dub) -->
+              <div class="settings-section" id="settings-section-audio">
+                <div class="settings-section-header">
+                  <span class="settings-section-title"><i class="fas fa-volume-up"></i> Audio Language</span>
+                  <span class="settings-badge" id="settings-audio-badge">Sub</span>
+                </div>
+                <div class="settings-pills-row" id="settings-audio-pills">
+                  <button class="settings-pill active" data-audio-type="sub" id="pill-audio-sub">
+                    <i class="fas fa-closed-captioning"></i> Japanese (Sub)
+                  </button>
+                  <button class="settings-pill" data-audio-type="dub" id="pill-audio-dub">
+                    <i class="fas fa-microphone"></i> English (Dub)
+                  </button>
+                </div>
+              </div>
+
+              <!-- 2. Streaming Server -->
+              <div class="settings-section" id="settings-section-server">
+                <div class="settings-section-header">
+                  <span class="settings-section-title"><i class="fas fa-server"></i> Server</span>
+                  <span class="settings-badge" id="settings-server-badge">Server 1</span>
+                </div>
+                <div class="settings-pills-row" id="settings-server-pills">
+                  <button class="settings-pill active" data-server-id="server-1">Server 1 (HD)</button>
+                  <button class="settings-pill" data-server-id="server-2">Server 2 (Dub/Sub)</button>
+                  <button class="settings-pill" data-server-id="server-3">Server 3 (Backup)</button>
+                  <button class="settings-pill" data-server-id="server-4">Server 4 (Direct)</button>
+                </div>
+              </div>
+
+              <!-- 3. Quality -->
+              <div class="settings-section" id="settings-section-quality">
+                <div class="settings-section-header">
+                  <span class="settings-section-title"><i class="fas fa-layer-group"></i> Quality</span>
+                  <span class="settings-badge" id="settings-quality-badge">Auto</span>
+                </div>
+                <div class="settings-pills-row" id="settings-quality-pills">
+                  <button class="settings-pill active" data-quality="auto">Auto</button>
+                  <button class="settings-pill" data-quality="1080">1080p</button>
+                  <button class="settings-pill" data-quality="720">720p</button>
+                  <button class="settings-pill" data-quality="480">480p</button>
+                  <button class="settings-pill" data-quality="360">360p</button>
+                </div>
+              </div>
+
+              <!-- 4. Playback Speed -->
+              <div class="settings-section" id="settings-section-speed">
+                <div class="settings-section-header">
+                  <span class="settings-section-title"><i class="fas fa-tachometer-alt"></i> Speed</span>
+                  <span class="settings-badge" id="settings-speed-badge">1x</span>
+                </div>
+                <div class="settings-pills-row" id="settings-speed-pills">
+                  <button class="settings-pill" data-speed="0.5">0.5x</button>
+                  <button class="settings-pill" data-speed="0.75">0.75x</button>
+                  <button class="settings-pill active" data-speed="1">1x Normal</button>
+                  <button class="settings-pill" data-speed="1.25">1.25x</button>
+                  <button class="settings-pill" data-speed="1.5">1.5x</button>
+                  <button class="settings-pill" data-speed="2">2x</button>
+                </div>
+              </div>
+
+              <!-- 5. Subtitles -->
+              <div class="settings-section" id="settings-section-subtitles">
+                <div class="settings-section-header">
+                  <span class="settings-section-title"><i class="fas fa-closed-captioning"></i> Subtitles</span>
+                  <button class="settings-inline-btn" id="open-caption-settings" title="Customize Font, Color & Shadow">
+                    <i class="fas fa-palette"></i> Style
+                  </button>
+                </div>
+                <div class="settings-pills-row" id="settings-subtitle-pills">
+                  <button class="settings-pill active" data-subtitle="off">Off</button>
+                </div>
+              </div>
+
+              <!-- 6. Automation & Skipping (LunarX style) -->
+              <div class="settings-section" id="settings-section-automation">
+                <div class="settings-section-header">
+                  <span class="settings-section-title"><i class="fas fa-magic"></i> Automation</span>
+                </div>
+                <div class="settings-toggles-list">
+                  <div class="settings-toggle-row">
+                    <div class="settings-toggle-label-group">
+                      <span class="settings-toggle-name">Auto-Skip Intro (OP)</span>
+                      <span class="settings-toggle-sub">Skip anime opening automatically</span>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="setting-auto-skip-intro" checked>
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+
+                  <div class="settings-toggle-row">
+                    <div class="settings-toggle-label-group">
+                      <span class="settings-toggle-name">Auto-Skip Outro (ED)</span>
+                      <span class="settings-toggle-sub">Skip closing credits automatically</span>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="setting-auto-skip-outro" checked>
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+
+                  <div class="settings-toggle-row">
+                    <div class="settings-toggle-label-group">
+                      <span class="settings-toggle-name">Auto-Play Next Episode</span>
+                      <span class="settings-toggle-sub">Play next episode when current ends</span>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="setting-auto-next-episode" checked>
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 

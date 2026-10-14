@@ -268,8 +268,8 @@ document.addEventListener('DOMContentLoaded', async function () {
           servers: [
             { id: 'server-1', name: 'Server 1 (1080p Ultra)', shortName: 'Server 1', badge: '1080p HD', host: 'zuna', type: 'hls' },
             { id: 'server-2', name: 'Server 2 (English Dub / Fast)', shortName: 'Server 2', badge: 'English Dub', host: 'yuki', type: 'hls' },
-            { id: 'server-3', name: 'Server 3 (HD Backup)', shortName: 'Server 3', badge: '1080p Backup', host: 'sora', type: 'hls' },
-            { id: 'server-4', name: 'Server 4 (Backup 2)', shortName: 'Server 4', badge: 'Fast Stream', host: 'zuna', type: 'hls' }
+            { id: 'server-3', name: 'Server 3 (Dual Audio / 1080p)', shortName: 'Server 3', badge: 'Dual Audio', host: '3rdprovider', type: 'hls' },
+            { id: 'server-4', name: 'Server 4 (HD Backup)', shortName: 'Server 4', badge: 'Fast Stream', host: 'sora', type: 'hls' }
           ]
         };
 
@@ -342,8 +342,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         servers: [
           { id: 'server-1', name: 'Server 1 (1080p Ultra)', shortName: 'Server 1', badge: '1080p HD', host: 'zuna', type: 'hls' },
           { id: 'server-2', name: 'Server 2 (English Dub / Fast)', shortName: 'Server 2', badge: 'English Dub', host: 'yuki', type: 'hls' },
-          { id: 'server-3', name: 'Server 3 (HD Backup)', shortName: 'Server 3', badge: '1080p Backup', host: 'sora', type: 'hls' },
-          { id: 'server-4', name: 'Server 4 (Backup 2)', shortName: 'Server 4', badge: 'Fast Stream', host: 'zuna', type: 'hls' }
+          { id: 'server-3', name: 'Server 3 (Dual Audio / 1080p)', shortName: 'Server 3', badge: 'Dual Audio', host: '3rdprovider', type: 'hls' },
+          { id: 'server-4', name: 'Server 4 (HD Backup)', shortName: 'Server 4', badge: 'Fast Stream', host: 'sora', type: 'hls' }
         ]
       };
       // Show user-friendly notification inside the UI instead of hard-killing the tab
@@ -362,11 +362,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     let hls = null; // HLS.js instance
     let audioTracks = []; // Available audio tracks
     let currentAudioTrack = 0;
-    let currentAudioType = localStorage.getItem('infinx_preferred_audio_type') || 'sub'; // 'sub' (Japanese) or 'dub' (English)
-    // Clear stale server preferences to ensure crystal-clear 1080p and studio audio
-    if (localStorage.getItem('infinx_preferred_server') === 'server-3') {
-      localStorage.setItem('infinx_preferred_server', 'server-1');
-    }
+    const urlAudioParam = (urlParams.get('type') || urlParams.get('audio') || '').toLowerCase();
+    let currentAudioType = (urlAudioParam === 'dub' || urlAudioParam === 'sub')
+      ? urlAudioParam
+      : (localStorage.getItem('infinx_preferred_audio_type') || 'sub');
     let subtitleTracks = []; // Available subtitle tracks
     let currentSubtitleTrack = -1; // -1 means no subtitle
     let qualities = []; // Available quality levels
@@ -515,6 +514,23 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (playerServerOptions) {
         playerServerOptions.innerHTML = html;
       }
+
+      const serverPills = document.getElementById('settings-server-pills');
+      const serverBadge = document.getElementById('settings-server-badge');
+      if (serverBadge && match) {
+        serverBadge.textContent = match.shortName || match.name;
+      }
+      if (serverPills) {
+        serverPills.innerHTML = '';
+        availableServers.forEach(s => {
+          const pill = document.createElement('button');
+          pill.className = `settings-pill ${s.id === activeServerId ? 'active' : ''}`;
+          pill.setAttribute('data-server-id', s.id);
+          pill.textContent = s.shortName || s.name;
+          pill.onclick = (e) => { e.stopPropagation(); switchServer(s.id, true); };
+          serverPills.appendChild(pill);
+        });
+      }
     }
 
 
@@ -543,6 +559,13 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (miniServerDisp) {
         miniServerDisp.textContent = target.shortName || target.name;
       }
+      const serverBadge = document.getElementById('settings-server-badge');
+      if (serverBadge) {
+        serverBadge.textContent = target.shortName || target.name;
+      }
+      document.querySelectorAll('#settings-server-pills .settings-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.getAttribute('data-server-id') === target.id);
+      });
 
       document.querySelectorAll('.server-option').forEach(opt => {
         opt.classList.toggle('active', opt.getAttribute('data-server-id') === target.id);
@@ -565,7 +588,7 @@ document.addEventListener('DOMContentLoaded', async function () {
               currentAudioType = 'dub';
               localStorage.setItem('infinx_preferred_audio_type', 'dub');
               updateAudioOptions();
-            } else if (target.id === 'server-1' || target.id === 'server-3') {
+            } else if (target.id === 'server-1' || target.id === 'server-4') {
               currentAudioType = 'sub';
               localStorage.setItem('infinx_preferred_audio_type', 'sub');
               updateAudioOptions();
@@ -730,8 +753,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
           console.log("Manually parsed subtitle tracks:", parsedSubtitles);
           if (parsedSubtitles.length > 0) {
-            subtitleTracks = parsedSubtitles;
-            updateSubtitleOptions();
+            // Guard: Never overwrite direct Lunar VTT subtitles with HLS master manifest streams
+            if (!currentEpisode || !currentEpisode.isLunar || !subtitleTracks || subtitleTracks.length === 0) {
+              subtitleTracks = parsedSubtitles;
+              updateSubtitleOptions();
+            }
           }
         } catch (err) {
           console.warn('Manual manifest parsing failed:', err);
@@ -854,6 +880,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
 
         hls.on(Hls.Events.SUBTITLE_TRACKS_UPDATED, function (event, data) {
+          if (currentEpisode && currentEpisode.isLunar && subtitleTracks && subtitleTracks.length > 0 && subtitleTracks[0].url) {
+            return; // Protect Lunar VTT subtitles from being wiped by HLS internal tracks
+          }
           if (data.subtitleTracks && data.subtitleTracks.length > 0) {
             subtitleTracks = data.subtitleTracks || hls.subtitleTracks || [];
             updateSubtitleOptions();
@@ -1305,6 +1334,33 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
       });
 
+      const qualityPills = document.getElementById('settings-quality-pills');
+      const qualityBadge = document.getElementById('settings-quality-badge');
+      if (qualityPills) {
+        qualityPills.innerHTML = '';
+        const autoPill = document.createElement('button');
+        autoPill.className = 'settings-pill' + (savedPref === 'auto' ? ' active' : '');
+        autoPill.setAttribute('data-quality', 'auto');
+        autoPill.textContent = 'Auto';
+        autoPill.onclick = (e) => { e.stopPropagation(); setQuality('auto'); };
+        qualityPills.appendChild(autoPill);
+
+        if (mappedLevels && mappedLevels.length > 0) {
+          mappedLevels.forEach(lvl => {
+            const isSelected = (savedPref !== 'auto' && lvl.index === matchedLevelIndex);
+            const pill = document.createElement('button');
+            pill.className = 'settings-pill' + (isSelected ? ' active' : '');
+            pill.setAttribute('data-quality', lvl.index);
+            pill.textContent = lvl.label;
+            pill.onclick = (e) => { e.stopPropagation(); setQuality(lvl.index); };
+            qualityPills.appendChild(pill);
+          });
+        }
+      }
+      if (qualityBadge) {
+        qualityBadge.textContent = savedPref === 'auto' ? 'Auto' : savedPref;
+      }
+
       // Restore user's preferred quality
       if (savedPref !== 'auto' && matchedLevelIndex !== null) {
         setQuality(matchedLevelIndex, false);
@@ -1345,15 +1401,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function getTrackDisplayName(track, fallbackIndex, isSub = false) {
       if (!track) return isSub ? `Subtitle ${fallbackIndex + 1}` : `Track ${fallbackIndex + 1}`;
-      const langCode = track.lang || track.language;
+      const label = track.label || track.name || '';
+      const langCode = track.lang || track.language || '';
       const friendlyLang = getFriendlyLanguageName(langCode);
-      if (friendlyLang) {
-        if (track.name && !track.name.toLowerCase().includes('vegamovies') && track.name.toLowerCase() !== (langCode || '').toLowerCase() && track.name.toLowerCase() !== friendlyLang.toLowerCase()) {
-          return `${friendlyLang} (${track.name})`;
+      if (label && friendlyLang && label.toLowerCase() !== friendlyLang.toLowerCase()) {
+        if (!label.toLowerCase().includes('vegamovies')) {
+          return `${friendlyLang} (${label})`;
         }
         return friendlyLang;
       }
-      return track.name || (isSub ? `Subtitle ${fallbackIndex + 1}` : `Track ${fallbackIndex + 1}`);
+      if (friendlyLang) return friendlyLang;
+      if (label) return label;
+      return isSub ? `Subtitle ${fallbackIndex + 1}` : `Track ${fallbackIndex + 1}`;
     }
 
     // Audio Preference Memory (Global & Per-Series)
@@ -1424,36 +1483,52 @@ document.addEventListener('DOMContentLoaded', async function () {
     function updateAudioOptions() {
       const audioDropdown = document.getElementById('audio-dropdown');
       const audioList = document.getElementById('audio-track-list');
+      const audioPills = document.getElementById('settings-audio-pills');
+      const audioBadge = document.getElementById('settings-audio-badge');
 
-      if (!audioDropdown || !audioList) return;
-
-      audioDropdown.innerHTML = '';
-      audioList.innerHTML = '';
+      if (audioDropdown) audioDropdown.innerHTML = '';
+      if (audioList) audioList.innerHTML = '';
+      if (audioPills) audioPills.innerHTML = '';
 
       if (currentEpisode && currentEpisode.isLunar) {
         // Anime catalog: Switch between Japanese (Original Audio / Sub) and English (Dub)
         const animeAudioOptions = [
-          { type: 'sub', label: 'Japanese (Original Audio)', shortLabel: 'Japanese' },
+          { type: 'sub', label: 'Japanese (Original Audio)', shortLabel: 'Japanese (Sub)' },
           { type: 'dub', label: 'English (Dub)', shortLabel: 'English (Dub)' }
         ];
 
         animeAudioOptions.forEach(opt => {
           const isCurrentActive = opt.type === currentAudioType;
 
-          const audioOption = document.createElement('div');
-          audioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
-          audioOption.setAttribute('data-audio-type', opt.type);
-          audioOption.innerHTML = `<i class="fas fa-volume-up"></i> ${opt.label}`;
-          audioDropdown.appendChild(audioOption);
+          if (audioDropdown) {
+            const audioOption = document.createElement('div');
+            audioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
+            audioOption.setAttribute('data-audio-type', opt.type);
+            audioOption.innerHTML = `<i class="fas fa-volume-up"></i> ${opt.label}`;
+            audioDropdown.appendChild(audioOption);
+          }
 
-          const settingsAudioOption = document.createElement('div');
-          settingsAudioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
-          settingsAudioOption.setAttribute('data-audio-type', opt.type);
-          settingsAudioOption.innerHTML = `${opt.label}`;
-          audioList.appendChild(settingsAudioOption);
+          if (audioList) {
+            const settingsAudioOption = document.createElement('div');
+            settingsAudioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
+            settingsAudioOption.setAttribute('data-audio-type', opt.type);
+            settingsAudioOption.innerHTML = `${opt.label}`;
+            audioList.appendChild(settingsAudioOption);
+          }
+
+          if (audioPills) {
+            const pill = document.createElement('button');
+            pill.className = `settings-pill ${isCurrentActive ? 'active' : ''}`;
+            pill.setAttribute('data-audio-type', opt.type);
+            const icon = opt.type === 'dub' ? 'fa-microphone' : 'fa-closed-captioning';
+            pill.innerHTML = `<i class="fas ${icon}"></i> ${opt.shortLabel}`;
+            pill.onclick = (e) => { e.stopPropagation(); switchAudioType(opt.type); };
+            audioPills.appendChild(pill);
+          }
         });
 
         const activeOpt = animeAudioOptions.find(o => o.type === currentAudioType) || animeAudioOptions[0];
+        if (audioBadge) audioBadge.textContent = currentAudioType === 'dub' ? 'Dub' : 'Sub';
         document.querySelectorAll('.current-audio').forEach(el => { el.textContent = activeOpt.shortLabel; });
         const currentAudioDisp = document.querySelector('.current-audio-display');
         if (currentAudioDisp) {
@@ -1465,37 +1540,38 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (audioTracks && audioTracks.length > 0) {
         audioTracks.forEach((track, index) => {
           const isCurrentActive = index === currentAudioTrack;
-          const audioOption = document.createElement('div');
-          audioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
-          audioOption.setAttribute('data-audio-index', index);
-          audioOption.innerHTML = `<i class="fas fa-volume-up"></i> ${getTrackDisplayName(track, index, false)}`;
-          audioDropdown.appendChild(audioOption);
+          const trackLabel = getTrackDisplayName(track, index, false);
 
-          const settingsAudioOption = document.createElement('div');
-          settingsAudioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
-          settingsAudioOption.setAttribute('data-audio-index', index);
-          settingsAudioOption.innerHTML = `${getTrackDisplayName(track, index, false)}`;
-          audioList.appendChild(settingsAudioOption);
-        });
-      } else {
-        const defaultAudioTracks = [{ name: 'Default Stream' }];
-        defaultAudioTracks.forEach((track, index) => {
-          const audioOption = document.createElement('div');
-          audioOption.className = `audio-option active`;
-          audioOption.setAttribute('data-audio-index', index);
-          audioOption.innerHTML = `<i class="fas fa-volume-up"></i> ${track.name}`;
-          audioDropdown.appendChild(audioOption);
+          if (audioDropdown) {
+            const audioOption = document.createElement('div');
+            audioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
+            audioOption.setAttribute('data-audio-index', index);
+            audioOption.innerHTML = `<i class="fas fa-volume-up"></i> ${trackLabel}`;
+            audioDropdown.appendChild(audioOption);
+          }
 
-          const settingsAudioOption = document.createElement('div');
-          settingsAudioOption.className = `audio-option active`;
-          settingsAudioOption.setAttribute('data-audio-index', index);
-          settingsAudioOption.innerHTML = `${track.name}`;
-          audioList.appendChild(settingsAudioOption);
+          if (audioList) {
+            const settingsAudioOption = document.createElement('div');
+            settingsAudioOption.className = `audio-option ${isCurrentActive ? 'active' : ''}`;
+            settingsAudioOption.setAttribute('data-audio-index', index);
+            settingsAudioOption.innerHTML = `${trackLabel}`;
+            audioList.appendChild(settingsAudioOption);
+          }
+
+          if (audioPills) {
+            const pill = document.createElement('button');
+            pill.className = `settings-pill ${isCurrentActive ? 'active' : ''}`;
+            pill.setAttribute('data-audio-index', index);
+            pill.innerHTML = trackLabel;
+            pill.onclick = (e) => { e.stopPropagation(); setAudioTrack(index); };
+            audioPills.appendChild(pill);
+          }
         });
       }
 
       const activeTrackObj = (audioTracks && audioTracks[currentAudioTrack]) || (audioTracks && audioTracks[0]);
       const activeLabel = activeTrackObj ? getTrackDisplayName(activeTrackObj, currentAudioTrack, false) : 'Default Stream';
+      if (audioBadge) audioBadge.textContent = activeLabel;
       document.querySelectorAll('.current-audio').forEach(el => { el.textContent = activeLabel; });
       const currentAudioDisp = document.querySelector('.current-audio-display');
       if (currentAudioDisp) {
@@ -1582,12 +1658,23 @@ document.addEventListener('DOMContentLoaded', async function () {
             const activeServer = (availableServers && availableServers.find(s => s.id === activeServerId)) || (availableServers && availableServers[0]);
             if (activeServer) activeServer.url = data.streamUrl;
             if (data.intro || data.outro) {
+              streamIntroOutro = { intro: data.intro, outro: data.outro };
               detectedIntroOutro = { intro: data.intro, outro: data.outro };
               updateTimelineMarkers();
             }
             if (data.subtitles && data.subtitles.length > 0) {
               subtitleTracks = data.subtitles;
               updateSubtitleOptions();
+              if (targetType === 'sub') {
+                const defaultIdx = subtitleTracks.findIndex(t => {
+                  const lang = (t.lang || t.language || '').toLowerCase();
+                  const label = (t.label || t.name || '').toLowerCase();
+                  return t.default || lang.startsWith('en') || label.includes('english');
+                });
+                setSubtitle(defaultIdx >= 0 ? defaultIdx : 0);
+              } else {
+                setSubtitle(-1);
+              }
             }
             updateAudioOptions();
             initHLS(data.streamUrl, savedTime, wasPlaying);
@@ -1675,6 +1762,15 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         document.querySelectorAll('.current-quality').forEach(el => {
           el.textContent = displayLabel;
+        });
+
+        const qualityBadge = document.getElementById('settings-quality-badge');
+        if (qualityBadge) qualityBadge.textContent = displayLabel;
+        document.querySelectorAll('#settings-quality-pills .settings-pill').forEach(pill => {
+          pill.classList.remove('active');
+          const q = pill.getAttribute('data-quality');
+          if (qualityLevel === 'auto' && q === 'auto') pill.classList.add('active');
+          else if (qualityLevel !== 'auto' && parseInt(q, 10) === parseInt(qualityLevel, 10)) pill.classList.add('active');
         });
 
         document.querySelectorAll('.quality-option').forEach(option => {
@@ -1769,183 +1865,275 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     }
 
-    // Update subtitle options
+    // Direct VTT subtitle engine storage & globally scoped caption renderer
+    let activeSubCues = [];
+    let activeSubUrl = '';
+    let currentRenderedCaptionText = '';
+
+    function getCaptionOverlay() {
+      let overlay = document.getElementById('caption-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'caption-overlay';
+        overlay.className = 'caption-overlay hidden';
+        overlay.setAttribute('aria-hidden', 'true');
+        const vp = document.querySelector('.video-player') || document.querySelector('.main-video-container');
+        if (vp) vp.appendChild(overlay);
+      }
+      return overlay;
+    }
+
+    function formatSubtitleHtml(rawText) {
+      if (!rawText) return '';
+      let s = String(rawText);
+
+      // 1. Strip ASS/SSA override tags like {\an8}, {\pos(..)}, {\i1}, etc.
+      s = s.replace(/\{[^}\n]*\}/g, '');
+
+      // 2. Strip WebVTT timestamp tags like <00:19.000> or <00:01:23.456>
+      s = s.replace(/<\d{1,2}:\d{2}(?::\d{2})?(?:\.\d+)?>/g, '');
+
+      // 3. Strip WebVTT voice/class/lang/ruby/rt/font tags while preserving inner text
+      s = s.replace(/<\/?(?:v|c|lang|ruby|rt|font)(?:\.[^>\s]+|\s+[^>]+)?>/gi, '');
+
+      // 4. Safely escape special HTML characters
+      s = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      // 5. Restore safe formatting tags so <i>, <b>, <u> render properly as styled text
+      s = s.replace(/&lt;(\/?)i(?:\s+[^&>]*)?&gt;/gi, '<$1i>');
+      s = s.replace(/&lt;(\/?)em(?:\s+[^&>]*)?&gt;/gi, '<$1em>');
+      s = s.replace(/&lt;(\/?)b(?:\s+[^&>]*)?&gt;/gi, '<$1b>');
+      s = s.replace(/&lt;(\/?)strong(?:\s+[^&>]*)?&gt;/gi, '<$1strong>');
+      s = s.replace(/&lt;(\/?)u(?:\s+[^&>]*)?&gt;/gi, '<$1u>');
+
+      // 6. Ensure matching closing tags for open formatting tags
+      ['i', 'b', 'u', 'em', 'strong'].forEach(tag => {
+        const openCount = (s.match(new RegExp(`<${tag}>`, 'gi')) || []).length;
+        const closeCount = (s.match(new RegExp(`</${tag}>`, 'gi')) || []).length;
+        if (openCount > closeCount) {
+          s += `</${tag}>`.repeat(openCount - closeCount);
+        }
+      });
+
+      // 7. Convert line breaks
+      s = s.replace(/\r\n|\r|\n/g, '<br>');
+
+      return s;
+    }
+    window.formatSubtitleHtml = formatSubtitleHtml;
+
+    function showCaption(text) {
+      const captionOverlay = getCaptionOverlay();
+      if (!captionOverlay) return;
+      if (!text || !text.trim()) {
+        hideCaption();
+        return;
+      }
+
+      let presetCfg = { fontSize: 'medium', textColor: '#ffffff', backdropStyle: 'shadow', position: 'bottom' };
+      try {
+        const raw = localStorage.getItem('@infinx_subtitle_presets');
+        if (raw) presetCfg = Object.assign(presetCfg, JSON.parse(raw));
+      } catch (e) { }
+
+      const sizeMap = { small: '16px', medium: '20px', large: '25px', huge: '30px' };
+      const fs = sizeMap[presetCfg.fontSize] || '20px';
+
+      captionOverlay.classList.remove('pos-raised', 'pos-bottom');
+      if (presetCfg.position === 'raised') captionOverlay.classList.add('pos-raised');
+
+      if (currentRenderedCaptionText === text && !captionOverlay.classList.contains('hidden')) {
+        return;
+      }
+      currentRenderedCaptionText = text;
+
+      captionOverlay.innerHTML = `<div class="caption-text style-${presetCfg.backdropStyle || 'shadow'}" style="font-size: ${fs}; color: ${presetCfg.textColor || '#ffffff'};">${formatSubtitleHtml(text)}</div>`;
+      captionOverlay.classList.remove('hidden');
+    }
+    window.showCaption = showCaption;
+
+    function hideCaption() {
+      const captionOverlay = getCaptionOverlay();
+      if (!captionOverlay) return;
+      if (currentRenderedCaptionText === '' && captionOverlay.classList.contains('hidden')) return;
+      currentRenderedCaptionText = '';
+      captionOverlay.classList.add('hidden');
+      captionOverlay.innerHTML = '';
+    }
+    window.hideCaption = hideCaption;
+
+    function parseVttTimestamp(timeStr) {
+      if (!timeStr) return 0;
+      const clean = timeStr.trim().split(/\s+/)[0];
+      const parts = clean.split(':');
+      let hours = 0, minutes = 0, seconds = 0;
+      if (parts.length === 3) {
+        hours = parseFloat(parts[0]) || 0;
+        minutes = parseFloat(parts[1]) || 0;
+        seconds = parseFloat(parts[2].replace(',', '.')) || 0;
+      } else if (parts.length === 2) {
+        minutes = parseFloat(parts[0]) || 0;
+        seconds = parseFloat(parts[1].replace(',', '.')) || 0;
+      } else if (parts.length === 1) {
+        seconds = parseFloat(parts[0].replace(',', '.')) || 0;
+      }
+      return hours * 3600 + minutes * 60 + seconds;
+    }
+
+    function parseVttCues(vttText) {
+      if (!vttText) return [];
+      const cues = [];
+      const rawLines = vttText.replace(/\r\n|\r/g, '\n').split('\n');
+      let i = 0;
+      while (i < rawLines.length) {
+        const line = rawLines[i].trim();
+        if (line.includes('-->')) {
+          const parts = line.split('-->');
+          if (parts.length >= 2) {
+            const start = parseVttTimestamp(parts[0]);
+            const end = parseVttTimestamp(parts[1]);
+            i++;
+            const textLines = [];
+            while (i < rawLines.length && rawLines[i].trim() !== '') {
+              textLines.push(rawLines[i].trim());
+              i++;
+            }
+            if (textLines.length > 0) {
+              cues.push({ start, end, text: textLines.join('\n') });
+            }
+          }
+        }
+        i++;
+      }
+      return cues;
+    }
+
+    function updateActiveSubtitleDisplay() {
+      if (currentSubtitleTrack === -1) {
+        hideCaption();
+        return;
+      }
+      if (!activeSubCues || activeSubCues.length === 0) {
+        return;
+      }
+      if (!mainVideo) return;
+      const cur = mainVideo.currentTime;
+      const matches = activeSubCues.filter(c => cur >= (c.start - 0.05) && cur <= (c.end + 0.05));
+      if (matches.length > 0) {
+        const text = matches.map(c => c.text).join('\n');
+        showCaption(text);
+      } else {
+        hideCaption();
+      }
+    }
+
+    // Update subtitle options in all panels (all-in-one pills, bottom bar dropdown, mobile)
     function updateSubtitleOptions() {
       const subtitleDropdown = document.getElementById('subtitle-dropdown');
       const subtitleList = document.getElementById('subtitle-track-list');
+      const subtitlePills = document.getElementById('settings-subtitle-pills');
 
-      if (!subtitleDropdown || !subtitleList) return;
+      if (subtitleDropdown) subtitleDropdown.innerHTML = '';
+      if (subtitleList) subtitleList.innerHTML = '';
+      if (subtitlePills) subtitlePills.innerHTML = '';
 
-      subtitleDropdown.innerHTML = '';
-      subtitleList.innerHTML = '';
+      // Off option
+      if (subtitleDropdown) {
+        const offOptionDropdown = document.createElement('div');
+        offOptionDropdown.className = 'subtitle-option' + (currentSubtitleTrack === -1 ? ' active' : '');
+        offOptionDropdown.setAttribute('data-subtitle', 'off');
+        offOptionDropdown.innerHTML = '<i class="fas fa-ban"></i> Off';
+        subtitleDropdown.appendChild(offOptionDropdown);
+      }
 
-      const offOptionDropdown = document.createElement('div');
-      offOptionDropdown.className = 'subtitle-option active';
-      offOptionDropdown.setAttribute('data-subtitle', 'off');
-      offOptionDropdown.innerHTML = '<i class="fas fa-ban"></i> Off';
-      subtitleDropdown.appendChild(offOptionDropdown);
+      if (subtitleList) {
+        const offOptionList = document.createElement('div');
+        offOptionList.className = 'subtitle-option' + (currentSubtitleTrack === -1 ? ' active' : '');
+        offOptionList.setAttribute('data-subtitle', 'off');
+        offOptionList.innerHTML = 'Off';
+        subtitleList.appendChild(offOptionList);
+      }
 
-      const offOptionList = document.createElement('div');
-      offOptionList.className = 'subtitle-option active';
-      offOptionList.setAttribute('data-subtitle', 'off');
-      offOptionList.innerHTML = 'Off';
-      subtitleList.appendChild(offOptionList);
+      if (subtitlePills) {
+        const offPill = document.createElement('button');
+        offPill.className = 'settings-pill' + (currentSubtitleTrack === -1 ? ' active' : '');
+        offPill.setAttribute('data-subtitle', 'off');
+        offPill.textContent = 'Off';
+        offPill.onclick = (e) => { e.stopPropagation(); setSubtitle(-1); };
+        subtitlePills.appendChild(offPill);
+      }
 
       if (subtitleTracks && subtitleTracks.length > 0) {
         subtitleTracks.forEach((track, index) => {
-          const dropdownOption = document.createElement('div');
-          dropdownOption.className = 'subtitle-option';
-          dropdownOption.setAttribute('data-subtitle', index);
-          dropdownOption.setAttribute('data-track-index', index);
-          dropdownOption.innerHTML = `<i class="fas fa-closed-captioning"></i> ${getTrackDisplayName(track, index, true)}`;
-          subtitleDropdown.appendChild(dropdownOption);
+          const trackName = getTrackDisplayName(track, index, true);
+          const isAct = currentSubtitleTrack === index;
 
-          const listOption = document.createElement('div');
-          listOption.className = 'subtitle-option';
-          listOption.setAttribute('data-subtitle', index);
-          listOption.setAttribute('data-track-index', index);
-          listOption.innerHTML = getTrackDisplayName(track, index, true);
-          subtitleList.appendChild(listOption);
+          if (subtitleDropdown) {
+            const dropdownOption = document.createElement('div');
+            dropdownOption.className = 'subtitle-option' + (isAct ? ' active' : '');
+            dropdownOption.setAttribute('data-subtitle', index);
+            dropdownOption.setAttribute('data-track-index', index);
+            dropdownOption.innerHTML = `<i class="fas fa-closed-captioning"></i> ${trackName}`;
+            subtitleDropdown.appendChild(dropdownOption);
+          }
+
+          if (subtitleList) {
+            const listOption = document.createElement('div');
+            listOption.className = 'subtitle-option' + (isAct ? ' active' : '');
+            listOption.setAttribute('data-subtitle', index);
+            listOption.setAttribute('data-track-index', index);
+            listOption.innerHTML = trackName;
+            subtitleList.appendChild(listOption);
+          }
+
+          if (subtitlePills) {
+            const pill = document.createElement('button');
+            pill.className = 'settings-pill' + (isAct ? ' active' : '');
+            pill.setAttribute('data-subtitle', index);
+            pill.textContent = trackName;
+            pill.onclick = (e) => { e.stopPropagation(); setSubtitle(index); };
+            subtitlePills.appendChild(pill);
+          }
         });
       }
 
       // Add Subtitle Appearance Style option in footer dropdown
-      const styleBtnDropdown = document.createElement('div');
-      styleBtnDropdown.className = 'subtitle-option subtitle-style-trigger';
-      styleBtnDropdown.setAttribute('role', 'button');
-      styleBtnDropdown.setAttribute('tabindex', '0');
-      styleBtnDropdown.innerHTML = '<i class="fas fa-palette"></i> Customize Subtitle Style...';
-      subtitleDropdown.appendChild(styleBtnDropdown);
+      if (subtitleDropdown) {
+        const styleBtnDropdown = document.createElement('div');
+        styleBtnDropdown.className = 'subtitle-option subtitle-style-trigger';
+        styleBtnDropdown.setAttribute('role', 'button');
+        styleBtnDropdown.setAttribute('tabindex', '0');
+        styleBtnDropdown.innerHTML = '<i class="fas fa-palette"></i> Customize Subtitle Style...';
+        subtitleDropdown.appendChild(styleBtnDropdown);
+      }
+    }
+
+    function detachAllTextTrackListeners() {
+      if (!mainVideo || !mainVideo.textTracks) return;
+      for (let i = 0; i < mainVideo.textTracks.length; i++) {
+        try { mainVideo.textTracks[i].oncuechange = null; } catch (e) { }
+      }
+    }
+
+    function removeCustomTrackElement() {
+      const existing = document.getElementById('custom-subtitle-track');
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
     }
 
     // Set subtitle track and render via custom styles
     function setSubtitle(trackIndex) {
       if (typeof trackIndex === 'string') {
         if (trackIndex === 'off') trackIndex = -1;
-        else trackIndex = parseInt(trackIndex);
+        else trackIndex = parseInt(trackIndex, 10);
       }
       if (isNaN(trackIndex)) trackIndex = -1;
 
       const subtitleBtn = document.querySelector('.subtitle-btn');
-      const captionOverlay = document.getElementById('caption-overlay') || createCaptionOverlay();
-
-      function createCaptionOverlay() {
-        const el = document.createElement('div');
-        el.id = 'caption-overlay';
-        el.className = 'caption-overlay hidden';
-        const vp = document.querySelector('.video-player');
-        if (vp) vp.appendChild(el);
-        return el;
-      }
-
-      function formatSubtitleHtml(rawText) {
-        if (!rawText) return '';
-        let s = String(rawText);
-
-        // 1. Strip ASS/SSA override tags like {\an8}, {\pos(..)}, {\i1}, etc.
-        s = s.replace(/\{[^}\n]*\}/g, '');
-
-        // 2. Strip WebVTT timestamp tags like <00:19.000> or <00:01:23.456>
-        s = s.replace(/<\d{1,2}:\d{2}(?::\d{2})?(?:\.\d+)?>/g, '');
-
-        // 3. Strip WebVTT voice/class/lang/ruby/rt/font tags while preserving inner text
-        s = s.replace(/<\/?(?:v|c|lang|ruby|rt|font)(?:\.[^>\s]+|\s+[^>]+)?>/gi, '');
-
-        // 4. Safely escape special HTML characters
-        s = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-        // 5. Restore safe formatting tags so <i>, <b>, <u> render properly as styled text
-        // Italics: <i>, </i>, <em>, </em>
-        s = s.replace(/&lt;(\/?)i(?:\s+[^&>]*)?&gt;/gi, '<$1i>');
-        s = s.replace(/&lt;(\/?)em(?:\s+[^&>]*)?&gt;/gi, '<$1em>');
-        // Bold: <b>, </b>, <strong>, </strong>
-        s = s.replace(/&lt;(\/?)b(?:\s+[^&>]*)?&gt;/gi, '<$1b>');
-        s = s.replace(/&lt;(\/?)strong(?:\s+[^&>]*)?&gt;/gi, '<$1strong>');
-        // Underline: <u>, </u>
-        s = s.replace(/&lt;(\/?)u(?:\s+[^&>]*)?&gt;/gi, '<$1u>');
-
-        // 6. Ensure matching closing tags for open formatting tags
-        ['i', 'b', 'u', 'em', 'strong'].forEach(tag => {
-          const openCount = (s.match(new RegExp(`<${tag}>`, 'gi')) || []).length;
-          const closeCount = (s.match(new RegExp(`</${tag}>`, 'gi')) || []).length;
-          if (openCount > closeCount) {
-            s += `</${tag}>`.repeat(openCount - closeCount);
-          }
-        });
-
-        // 7. Convert line breaks
-        s = s.replace(/\r\n|\r|\n/g, '<br>');
-
-        return s;
-      }
-
-      function showCaption(text) {
-        if (!captionOverlay) return;
-        captionOverlay.classList.remove('hidden');
-
-        let presetCfg = { fontSize: 'medium', textColor: '#ffffff', backdropStyle: 'shadow', position: 'bottom' };
-        try {
-          const raw = localStorage.getItem('@infinx_subtitle_presets');
-          if (raw) presetCfg = Object.assign(presetCfg, JSON.parse(raw));
-        } catch (e) { }
-
-        const sizeMap = { small: '16px', medium: '20px', large: '25px', huge: '30px' };
-        const fs = sizeMap[presetCfg.fontSize] || '20px';
-
-        captionOverlay.classList.remove('pos-raised', 'pos-bottom');
-        if (presetCfg.position === 'raised') captionOverlay.classList.add('pos-raised');
-
-        captionOverlay.innerHTML = `<div class="caption-text style-${presetCfg.backdropStyle || 'shadow'}" style="font-size: ${fs}; color: ${presetCfg.textColor || '#ffffff'};">${formatSubtitleHtml(text)}</div>`;
-      }
-
-      function hideCaption() {
-        if (!captionOverlay) return;
-        captionOverlay.classList.add('hidden');
-        captionOverlay.innerHTML = '';
-      }
-
-      function escapeHtml(s) {
-        return (s + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      }
-
-      function detachAllTextTrackListeners() {
-        if (!mainVideo.textTracks) return;
-        for (let i = 0; i < mainVideo.textTracks.length; i++) {
-          try { mainVideo.textTracks[i].oncuechange = null; } catch (e) { }
-        }
-      }
-
-      function attachTextTrackForOverlay(track) {
-        if (!track) return;
-        try { track.mode = 'hidden'; } catch (e) { }
-        track.oncuechange = function () {
-          const cues = track.activeCues;
-          if (cues && cues.length > 0) {
-            let text = '';
-            for (let i = 0; i < cues.length; i++) {
-              text += (i ? '\n' : '') + cues[i].text;
-            }
-            showCaption(text);
-          } else {
-            hideCaption();
-          }
-        };
-
-        if (track.activeCues && track.activeCues.length > 0) {
-          let t = '';
-          for (let i = 0; i < track.activeCues.length; i++) t += (i ? '\n' : '') + track.activeCues[i].text;
-          showCaption(t);
-        } else {
-          hideCaption();
-        }
-      }
-
-      function removeCustomTrackElement() {
-        const existing = document.getElementById('custom-subtitle-track');
-        if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
-      }
 
       if (trackIndex === -1) {
+        activeSubCues = [];
+        activeSubUrl = '';
+        currentRenderedCaptionText = '';
         if (hls && typeof hls.subtitleTrack !== 'undefined') {
           try { hls.subtitleTrack = -1; } catch (e) { }
         }
@@ -1956,6 +2144,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           }
         }
         removeCustomTrackElement();
+        detachAllTextTrackListeners();
         hideCaption();
         currentSubtitleTrack = -1;
         document.querySelectorAll('.current-subtitle').forEach(el => { el.textContent = 'Off'; });
@@ -1968,40 +2157,31 @@ document.addEventListener('DOMContentLoaded', async function () {
         const trackInfo = subtitleTracks[trackIndex];
         const trackName = getTrackDisplayName(trackInfo, trackIndex, true);
 
-        if (hls && trackInfo && trackInfo.url) {
-          removeCustomTrackElement();
-          const tEl = document.createElement('track');
-          tEl.kind = 'subtitles';
-          tEl.src = trackInfo.url;
-          tEl.srclang = trackInfo.lang || trackInfo.srclang || 'en';
-          tEl.label = trackName;
-          tEl.id = 'custom-subtitle-track';
-          tEl.default = false;
-          mainVideo.appendChild(tEl);
+        // Keep all native textTracks completely disabled so they never render duplicate native cues or cause flicker
+        removeCustomTrackElement();
+        detachAllTextTrackListeners();
 
-          setTimeout(function () {
-            const tracks = mainVideo.textTracks;
-            if (tracks && tracks.length > 0) {
-              let tt = null;
-              for (let i = 0; i < tracks.length; i++) {
-                if (tracks[i].label === trackName) { tt = tracks[i]; break; }
+        if (trackInfo && trackInfo.url) {
+          const fetchUrl = (trackInfo.url.startsWith('http://') || trackInfo.url.startsWith('https://'))
+            ? trackInfo.url
+            : `${SERVER_ORIGIN}${trackInfo.url.startsWith('/') ? '' : '/'}${trackInfo.url}`;
+          activeSubUrl = fetchUrl;
+          fetch(fetchUrl)
+            .then(r => {
+              if (!r.ok) throw new Error(`HTTP ${r.status}`);
+              return r.text();
+            })
+            .then(text => {
+              if (activeSubUrl === fetchUrl) {
+                activeSubCues = parseVttCues(text);
+                console.log(`[Player Subtitles] Direct VTT engine loaded ${activeSubCues.length} cues for: ${trackName}`);
+                currentRenderedCaptionText = '';
+                updateActiveSubtitleDisplay();
               }
-              if (!tt) tt = tracks[tracks.length - 1];
-              detachAllTextTrackListeners();
-              attachTextTrackForOverlay(tt);
-            }
-          }, 400);
-        } else if (mainVideo.textTracks && mainVideo.textTracks[trackIndex]) {
-          detachAllTextTrackListeners();
-          attachTextTrackForOverlay(mainVideo.textTracks[trackIndex]);
-        } else if (hls && typeof hls.subtitleTrack !== 'undefined') {
-          try { hls.subtitleTrack = trackIndex; } catch (e) { }
-          setTimeout(function () {
-            if (mainVideo.textTracks && mainVideo.textTracks.length > 0) {
-              detachAllTextTrackListeners();
-              attachTextTrackForOverlay(mainVideo.textTracks[mainVideo.textTracks.length - 1]);
-            }
-          }, 400);
+            })
+            .catch(err => {
+              console.warn('[Player Subtitles] Direct fetch failed:', err);
+            });
         }
 
         currentSubtitleTrack = trackIndex;
@@ -2013,13 +2193,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         showPlayerToast(`Subtitles: ${trackName}`);
       }
 
-      document.querySelectorAll('.subtitle-option').forEach(option => {
+      document.querySelectorAll('.subtitle-option, #settings-subtitle-pills .settings-pill').forEach(option => {
         option.classList.remove('active');
         const optionIndex = option.getAttribute('data-subtitle');
         const trackIndexAttr = option.getAttribute('data-track-index');
         if (trackIndex === -1 && optionIndex === 'off') {
           option.classList.add('active');
-        } else if (parseInt(optionIndex) === trackIndex || parseInt(trackIndexAttr) === trackIndex) {
+        } else if (parseInt(optionIndex, 10) === trackIndex || parseInt(trackIndexAttr, 10) === trackIndex) {
           option.classList.add('active');
         }
       });
@@ -2129,6 +2309,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     // Smart Anime Intro & Outro Detection Engine (Netflix / Crunchyroll Style)
+    let streamIntroOutro = { intro: null, outro: null };
     let detectedIntroOutro = { intro: null, outro: null };
     let introAutoSkipped = false;
     let outroCountdownActive = false;
@@ -2138,25 +2319,63 @@ document.addEventListener('DOMContentLoaded', async function () {
     let preSkipTime = null;
     let undoToastTimeout = null;
 
+    function hasPreviousEpisode() {
+      if (lunarId) {
+        const curEp = parseInt(currentEpisode?.episodeNumber || epNum, 10) || 1;
+        return curEp > 1;
+      }
+      const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
+      return curIndex > 0;
+    }
+
+    function hasNextEpisode() {
+      if (lunarId) {
+        const curEp = parseInt(currentEpisode?.episodeNumber || epNum, 10) || 1;
+        const total = siblingEpisodes?.length || 0;
+        return total > 0 ? curEp < total : false;
+      }
+      const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
+      return curIndex >= 0 && curIndex < siblingEpisodes.length - 1;
+    }
+
+    function updateNavButtonsState() {
+      const hasPrev = hasPreviousEpisode();
+      const hasNext = hasNextEpisode();
+
+      if (prevBtn) {
+        prevBtn.disabled = !hasPrev;
+        prevBtn.classList.toggle('disabled', !hasPrev);
+        prevBtn.setAttribute('aria-disabled', (!hasPrev).toString());
+        prevBtn.title = hasPrev ? 'Previous Episode (P)' : 'First Episode';
+      }
+
+      if (nextBtn) {
+        nextBtn.disabled = !hasNext;
+        nextBtn.classList.toggle('disabled', !hasNext);
+        nextBtn.setAttribute('aria-disabled', (!hasNext).toString());
+        nextBtn.title = hasNext ? 'Next Episode (N)' : 'Final Episode';
+      }
+    }
+
     function computeIntroOutroWindows() {
       if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration < 120) {
         return { intro: null, outro: null };
       }
       const dur = mainVideo.duration;
-      let intro = null;
-      let outro = null;
+      let intro = streamIntroOutro?.intro || detectedIntroOutro?.intro || null;
+      let outro = streamIntroOutro?.outro || detectedIntroOutro?.outro || null;
 
       // 1. Metadata from episode
       if (currentEpisode) {
         const iStart = currentEpisode.introStart ?? currentEpisode.skipIntroStart;
         const iEnd = currentEpisode.introEnd ?? currentEpisode.skipIntroEnd;
-        if (iStart !== undefined && iEnd !== undefined && Number(iEnd) > Number(iStart)) {
+        if (!intro && iStart !== undefined && iEnd !== undefined && Number(iEnd) > Number(iStart)) {
           intro = { start: Math.max(0, Number(iStart)), end: Math.min(dur, Number(iEnd)) };
         }
 
         const oStart = currentEpisode.outroStart ?? currentEpisode.skipOutroStart;
         const oEnd = currentEpisode.outroEnd ?? currentEpisode.skipOutroEnd;
-        if (oStart !== undefined && oEnd !== undefined && Number(oEnd) > Number(oStart)) {
+        if (!outro && oStart !== undefined && oEnd !== undefined && Number(oEnd) > Number(oStart)) {
           outro = { start: Math.max(0, Number(oStart)), end: Math.min(dur, Number(oEnd)) };
         }
       }
@@ -2273,8 +2492,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       let nextEp = null;
       if (lunarId) {
-        const curEp = currentEpisode?.episodeNumber || epNum;
-        nextEp = siblingEpisodes.find(e => (e.episodeNumber || e.number) === curEp + 1);
+        const curEp = parseInt(currentEpisode?.episodeNumber || epNum, 10) || 1;
+        nextEp = siblingEpisodes.find(e => parseInt(e.episodeNumber || e.number, 10) === curEp + 1);
       } else {
         const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
         if (curIndex >= 0 && curIndex < siblingEpisodes.length - 1) {
@@ -2288,7 +2507,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         thumbEl.src = thumbUrl;
       }
       if (titleEl) {
-        titleEl.textContent = `Episode ${nextEp.episodeNumber || nextEp.number}: ${nextEp.title}`;
+        titleEl.textContent = `Episode ${nextEp.episodeNumber || nextEp.number}: ${nextEp.title || ''}`;
       }
 
       outroCountdownActive = true;
@@ -2345,15 +2564,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function handleSmartIntroOutro(currentTime, duration) {
-      if (!detectedIntroOutro.intro || !detectedIntroOutro.outro) {
+      if (!detectedIntroOutro.intro && !detectedIntroOutro.outro) {
         detectedIntroOutro = computeIntroOutroWindows();
       }
       const { intro, outro } = detectedIntroOutro;
-      if (!intro || !outro) return;
 
       // 1. INTRO WINDOW
       const skipIntroFloatingBtn = document.getElementById('skip-intro-btn');
-      if (currentTime >= intro.start && currentTime < intro.end) {
+      if (intro && currentTime >= intro.start && currentTime < intro.end) {
         const autoSkipSetting = localStorage.getItem('@infinx_auto_skip_intro');
         const autoSkipEnabled = autoSkipSetting === null || autoSkipSetting === 'true';
 
@@ -2365,18 +2583,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
       } else {
         if (skipIntroFloatingBtn) skipIntroFloatingBtn.classList.add('hidden');
+        if (intro && currentTime < intro.start) {
+          introAutoSkipped = false;
+        }
       }
 
       // 2. OUTRO WINDOW
-      if (currentTime >= outro.start && currentTime <= outro.end) {
-        const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
-        const hasNext = curIndex >= 0 && curIndex < siblingEpisodes.length - 1;
+      if (outro && currentTime >= outro.start && currentTime <= outro.end) {
+        const hasNext = hasNextEpisode();
         const autoSkipOutroSetting = localStorage.getItem('@infinx_auto_skip_outro');
         const autoSkipOutroEnabled = autoSkipOutroSetting === null || autoSkipOutroSetting === 'true';
         if (hasNext && autoSkipOutroEnabled && !outroCountdownActive && !outroDismissed) {
           startOutroCountdown();
         }
-      } else if (currentTime < outro.start) {
+      } else if (outro && currentTime < outro.start) {
         outroDismissed = false;
         if (outroCountdownActive) {
           cancelOutroCountdown();
@@ -2392,14 +2612,22 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function toggleEpisodeDrawer(open) {
       if (!inPlayerEpisodeDrawer) return;
-      const isOpen = typeof open === 'boolean' ? open : !inPlayerEpisodeDrawer.classList.contains('active');
+      const isCurrentlyOpen = inPlayerEpisodeDrawer.classList.contains('active') || inPlayerEpisodeDrawer.classList.contains('open');
+      const isOpen = typeof open === 'boolean' ? open : !isCurrentlyOpen;
       inPlayerEpisodeDrawer.classList.toggle('active', isOpen);
+      inPlayerEpisodeDrawer.classList.toggle('open', isOpen);
       inPlayerEpisodeDrawer.setAttribute('aria-hidden', (!isOpen).toString());
       if (isOpen) {
         try {
           const rawProg = localStorage.getItem(`@infinx_episodes_progress_${showId}`);
           updateSeriesProgressUI(rawProg ? JSON.parse(rawProg) : null);
         } catch (e) { }
+        setTimeout(() => {
+          const activeEl = inPlayerEpisodeDrawer.querySelector('.drawer-item.active, .playlist-item.active');
+          if (activeEl) {
+            activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 120);
       }
     }
 
@@ -2435,6 +2663,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         reportPlaybackProgress();
         handleSmartIntroOutro(mainVideo.currentTime, mainVideo.duration);
         updateTimelineMarkers();
+        updateActiveSubtitleDisplay();
       }
     }
 
@@ -2562,9 +2791,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Sibling-based Next/Prev Episode navigation
     function playPreviousVideo() {
       if (lunarId) {
-        const curEp = currentEpisode?.episodeNumber || epNum;
+        const curEp = parseInt(currentEpisode?.episodeNumber || epNum, 10) || 1;
         if (curEp > 1) {
-          window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${curEp - 1}`;
+          const audioParam = currentAudioType ? `&type=${currentAudioType}` : '';
+          window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${curEp - 1}${audioParam}`;
         } else {
           showPlayerToast('This is the first episode!');
         }
@@ -2575,15 +2805,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         const prevEp = siblingEpisodes[curIndex - 1];
         window.location.href = `/video-player/index.html?episodeId=${prevEp.id}`;
       } else {
-        alert('This is the first episode!');
+        showPlayerToast('This is the first episode!');
       }
     }
 
     function playNextVideo() {
       if (lunarId) {
-        const curEp = currentEpisode?.episodeNumber || epNum;
+        const curEp = parseInt(currentEpisode?.episodeNumber || epNum, 10) || 1;
         if (curEp < siblingEpisodes.length) {
-          window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${curEp + 1}`;
+          const audioParam = currentAudioType ? `&type=${currentAudioType}` : '';
+          window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${curEp + 1}${audioParam}`;
         } else {
           showPlayerToast('This is the final episode!');
         }
@@ -2594,7 +2825,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const nextEp = siblingEpisodes[curIndex + 1];
         window.location.href = `/video-player/index.html?episodeId=${nextEp.id}`;
       } else {
-        alert('This is the final episode!');
+        showPlayerToast('This is the final episode!');
       }
     }
 
@@ -3038,7 +3269,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         videoPlayer.classList.toggle('is-fullscreen', isFullscreen);
       }
       document.body.classList.toggle('is-player-fullscreen', isFullscreen);
-      syncSettingsContainer();
 
       if (isFullscreen) {
         lockLandscapeOrientation();
@@ -3067,96 +3297,42 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
     mainVideo.addEventListener('timeupdate', updateTime);
+    mainVideo.addEventListener('seeking', updateActiveSubtitleDisplay);
+    mainVideo.addEventListener('seeked', updateActiveSubtitleDisplay);
 
-    function positionSettingsDropdown() {
-      if (!settingsDropdown || !videoPlayer) return;
-      settingsDropdown.style.right = '';
-      settingsDropdown.style.maxHeight = '';
-
-      const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-      if (fsEl || (videoPlayer && videoPlayer.classList.contains('is-fullscreen'))) {
-        // In fullscreen, layout is controlled entirely by our robust fullscreen CSS rules
-        return;
-      }
-
-      if (window.innerWidth <= 768 || window.innerHeight <= 520) {
-        // Mobile bottom-sheet / side-sheet is handled by CSS fixed rules
-        return;
-      }
-      const playerRect = videoPlayer.getBoundingClientRect();
-      const menuRect = settingsDropdown.getBoundingClientRect();
-      if (menuRect.left < playerRect.left + 8) {
-        const overflow = (playerRect.left + 8) - menuRect.left;
-        settingsDropdown.style.right = `-${overflow}px`;
-      } else if (menuRect.right > playerRect.right - 8) {
-        const overflow = menuRect.right - (playerRect.right - 8);
-        settingsDropdown.style.right = `${overflow}px`;
-      }
-
-      // Safeguard against extending above video player top
-      if (menuRect.top < playerRect.top + 8) {
-        const availableHeight = menuRect.bottom - (playerRect.top + 12);
-        if (availableHeight > 180) {
-          settingsDropdown.style.maxHeight = `${availableHeight}px`;
-        }
-      }
+    function updateSpeedPillsActive() {
+      const currentRate = (mainVideo && !isNaN(mainVideo.playbackRate)) ? mainVideo.playbackRate : 1;
+      const speedBadge = document.getElementById('settings-speed-badge');
+      if (speedBadge) speedBadge.textContent = `${currentRate}x`;
+      document.querySelectorAll('#settings-speed-pills .settings-pill').forEach(pill => {
+        const val = parseFloat(pill.getAttribute('data-speed'));
+        pill.classList.toggle('active', Math.abs(val - currentRate) < 0.05);
+      });
     }
 
-    function syncSettingsContainer() {
-      const dropdown = document.getElementById('player-settings-dropdown');
-      const backdrop = document.getElementById('settings-mobile-backdrop');
-      const settingsMenuEl = document.getElementById('player-settings-menu');
-      if (!dropdown) return;
-
-      const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-      const isMobile = window.innerWidth <= 768 || window.innerHeight <= 520 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches && window.innerWidth <= 1024);
-
-      if (fsEl) {
-        // In FULLSCREEN (both desktop and mobile): append directly to fsEl (video player)
-        // so it escapes custom-controls transforms and is always rendered in the fullscreen tree!
-        if (dropdown.parentElement !== fsEl) {
-          fsEl.appendChild(dropdown);
-        }
-        if (backdrop && backdrop.parentElement !== fsEl) {
-          fsEl.appendChild(backdrop);
-        }
-      } else if (isMobile) {
-        // Normal mobile: append to body to escape video-player-wrapper overflow:hidden
-        if (dropdown.parentElement !== document.body) {
-          document.body.appendChild(dropdown);
-        }
-        if (backdrop && backdrop.parentElement !== document.body) {
-          document.body.appendChild(backdrop);
-        }
-      } else {
-        // Normal desktop: attach inside settingsMenu to anchor right above gear button
-        if (settingsMenuEl && dropdown.parentElement !== settingsMenuEl) {
-          settingsMenuEl.appendChild(dropdown);
-        }
-        if (backdrop && settingsMenuEl && backdrop.parentElement !== settingsMenuEl) {
-          settingsMenuEl.appendChild(backdrop);
-        }
-      }
+    function setupSpeedPills() {
+      document.querySelectorAll('#settings-speed-pills .settings-pill').forEach(pill => {
+        pill.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const speed = parseFloat(this.getAttribute('data-speed')) || 1;
+          if (mainVideo) mainVideo.playbackRate = speed;
+          updateSpeedPillsActive();
+          document.querySelectorAll('.current-speed').forEach(el => { el.textContent = `${speed}x`; });
+          showPlayerToast(`Speed: ${speed}x`);
+        });
+      });
     }
-
-    // Initial container sync
-    syncSettingsContainer();
-    document.addEventListener('fullscreenchange', syncSettingsContainer);
-    document.addEventListener('webkitfullscreenchange', syncSettingsContainer);
-    document.addEventListener('mozfullscreenchange', syncSettingsContainer);
-    document.addEventListener('MSFullscreenChange', syncSettingsContainer);
-    window.addEventListener('resize', syncSettingsContainer);
-    window.addEventListener('orientationchange', syncSettingsContainer);
 
     // Settings dropdown clicks
     if (settingsBtn) settingsBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       isSettingsMenuOpen = !isSettingsMenuOpen;
-      syncSettingsContainer();
 
-      if (settingsMenu) settingsMenu.classList.toggle('active', isSettingsMenuOpen);
-      if (settingsDropdown) settingsDropdown.classList.toggle('active', isSettingsMenuOpen);
+      const dropdown = document.getElementById('player-settings-dropdown');
       const backdrop = document.getElementById('settings-mobile-backdrop');
+
+      if (settingsBtn) settingsBtn.classList.toggle('active', isSettingsMenuOpen);
+      if (dropdown) dropdown.classList.toggle('active', isSettingsMenuOpen);
       if (backdrop) backdrop.classList.toggle('active', isSettingsMenuOpen);
 
       const controls = document.querySelector('.custom-controls');
@@ -3166,16 +3342,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       if (isSettingsMenuOpen) {
         showControls();
-        if (typeof window.switchSettingsView === 'function') {
-          window.switchSettingsView('main', true);
-        }
-        positionSettingsDropdown();
-        const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-        if (!fsEl && window.innerWidth <= 768) {
-          document.body.style.overflow = 'hidden';
-        }
-      } else {
-        document.body.style.overflow = '';
+        updateSpeedPillsActive();
+        updateQualityOptions();
+        updateAudioOptions();
+        updateSubtitleOptions();
+        updateServerOptions();
       }
 
       closeAllDropdowns();
@@ -3212,7 +3383,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     document.addEventListener('click', function (event) {
-      if (isSettingsMenuOpen && !settingsMenu.contains(event.target) && !settingsBtn.contains(event.target) && !event.target.closest('.settings-dropdown')) {
+      if (isSettingsMenuOpen && !settingsBtn?.contains(event.target) && !event.target.closest('.settings-dropdown')) {
         closeSettingsDropdown();
       }
       if (!event.target.closest('.server-selector') &&
@@ -3253,9 +3424,12 @@ document.addEventListener('DOMContentLoaded', async function () {
           return;
         }
         if (currentSubtitleTrack === -1) {
-          setSubtitle(0);
-        } else if (currentSubtitleTrack < subtitleTracks.length - 1) {
-          setSubtitle(currentSubtitleTrack + 1);
+          const defaultIdx = subtitleTracks.findIndex(t => {
+            const lang = (t.lang || t.language || '').toLowerCase();
+            const label = (t.label || t.name || '').toLowerCase();
+            return t.default || lang.startsWith('en') || label.includes('english');
+          });
+          setSubtitle(defaultIdx >= 0 ? defaultIdx : 0);
         } else {
           setSubtitle(-1);
         }
@@ -3455,31 +3629,13 @@ document.addEventListener('DOMContentLoaded', async function () {
       });
     }
 
-    let currentSettingsView = 'main';
-    function switchSettingsView(targetView, isBack = false) {
-      const views = document.querySelectorAll('.settings-dropdown .settings-view');
-      const targetEl = document.getElementById(`settings-view-${targetView}`);
-      if (!targetEl) return;
-
-      views.forEach(v => {
-        v.classList.remove('active', 'slide-in-right', 'slide-in-left');
-      });
-
-      targetEl.classList.add('active');
-      if (targetView !== 'main' && !isBack) {
-        targetEl.classList.add('slide-in-right');
-      } else if (isBack) {
-        targetEl.classList.add('slide-in-left');
-      }
-
-      currentSettingsView = targetView;
-      positionSettingsDropdown();
+    function switchSettingsView() {
+      // Unified all-in-one settings view
     }
     window.switchSettingsView = switchSettingsView;
 
-    function setupHierarchicalSettingsMenu() {
+    function setupAllInOneSettingsMenu() {
       const closeBtn = document.getElementById('settings-panel-close-btn');
-
       if (closeBtn) {
         closeBtn.addEventListener('click', function (e) {
           e.stopPropagation();
@@ -3487,25 +3643,58 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
       }
 
-      // Root menu row clicks to open submenus
-      document.querySelectorAll('.settings-menu-item[data-target-view]').forEach(item => {
-        item.addEventListener('click', function (e) {
+      const openCaptionBtn = document.getElementById('open-caption-settings');
+      if (openCaptionBtn) {
+        openCaptionBtn.addEventListener('click', function (e) {
           e.stopPropagation();
-          const target = this.getAttribute('data-target-view');
-          if (target) {
-            switchSettingsView(target, false);
+          closeSettingsDropdown();
+          if (typeof window.openCaptionSettingsModal === 'function') {
+            window.openCaptionSettingsModal();
           }
         });
-      });
+      }
 
-      // Submenu back buttons
-      document.querySelectorAll('.settings-back-btn').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          const backTarget = this.getAttribute('data-back') || 'main';
-          switchSettingsView(backTarget, true);
+      setupSpeedPills();
+
+      // Automation toggles
+      const introToggle = document.getElementById('setting-auto-skip-intro');
+      if (introToggle) {
+        const introPref = localStorage.getItem('@infinx_auto_skip_intro');
+        introToggle.checked = introPref === null || introPref === 'true';
+        introToggle.addEventListener('change', function () {
+          localStorage.setItem('@infinx_auto_skip_intro', introToggle.checked ? 'true' : 'false');
+          showPlayerToast(introToggle.checked ? 'Auto-Skip Intro: Enabled' : 'Auto-Skip Intro: Disabled');
         });
-      });
+      }
+
+      const outroToggle = document.getElementById('setting-auto-skip-outro');
+      if (outroToggle) {
+        const outroPref = localStorage.getItem('@infinx_auto_skip_outro');
+        outroToggle.checked = outroPref === null || outroPref === 'true';
+        outroToggle.addEventListener('change', function () {
+          localStorage.setItem('@infinx_auto_skip_outro', outroToggle.checked ? 'true' : 'false');
+          showPlayerToast(outroToggle.checked ? 'Auto-Skip Outro: Enabled' : 'Auto-Skip Outro: Disabled');
+        });
+      }
+
+      const autoNextToggle = document.getElementById('setting-auto-next-episode');
+      const autoNextCheckbox = document.getElementById('auto-next');
+      if (autoNextToggle) {
+        const autoNextPref = localStorage.getItem('@infinx_auto_next');
+        const isAutoNext = autoNextPref === null || autoNextPref === 'true';
+        autoNextToggle.checked = isAutoNext;
+        if (autoNextCheckbox) autoNextCheckbox.checked = isAutoNext;
+        autoNextToggle.addEventListener('change', function () {
+          localStorage.setItem('@infinx_auto_next', autoNextToggle.checked ? 'true' : 'false');
+          if (autoNextCheckbox) autoNextCheckbox.checked = autoNextToggle.checked;
+          showPlayerToast(autoNextToggle.checked ? 'Auto-Play Next: Enabled' : 'Auto-Play Next: Disabled');
+        });
+        if (autoNextCheckbox) {
+          autoNextCheckbox.addEventListener('change', function () {
+            autoNextToggle.checked = autoNextCheckbox.checked;
+          });
+        }
+      }
     }
 
     // Call dropdown listeners setup
@@ -3513,7 +3702,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     setupAudioEventListeners();
     setupSubtitleEventListeners();
     setupAutoSkipEventListeners();
-    setupHierarchicalSettingsMenu();
+    setupAllInOneSettingsMenu();
 
     // Mobile Navigation & Search Wireup
     if (mobileMenuBtn && mobileNav && mobileNavOverlay) {
@@ -3916,7 +4105,8 @@ document.addEventListener('DOMContentLoaded', async function () {
           const seekParam = (epProg && epProg.positionSeconds > 10 && !epProg.completed) ? `&t=${epProg.positionSeconds}` : '';
           if (lunarId) {
             const thisNum = ep.episodeNumber || ep.number;
-            window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${thisNum}${seekParam}`;
+            const audioParam = currentAudioType ? `&type=${currentAudioType}` : '';
+            window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${thisNum}${audioParam}${seekParam}`;
           } else {
             window.location.href = `/video-player/index.html?episodeId=${ep.id}${seekParam}`;
           }
@@ -3951,6 +4141,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       // Hide Load More if not enough siblings
       const loadMoreBtn = document.querySelector('.load-more-btn');
       if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+      updateNavButtonsState();
     }
 
     // ====== COMMENTS SECTION LOGIC ======
@@ -4466,15 +4657,15 @@ document.addEventListener('DOMContentLoaded', async function () {
           e.preventDefault();
           if (volumeBtn) volumeBtn.click();
           break;
+        case 'j':
         case 'arrowleft':
           e.preventDefault();
-          mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10);
+          seekBy(-10);
           break;
+        case 'l':
         case 'arrowright':
           e.preventDefault();
-          if (mainVideo.duration && !isNaN(mainVideo.duration)) {
-            mainVideo.currentTime = Math.min(mainVideo.duration, mainVideo.currentTime + 10);
-          }
+          seekBy(10);
           break;
         case 'arrowup':
           e.preventDefault();
@@ -4494,9 +4685,27 @@ document.addEventListener('DOMContentLoaded', async function () {
           e.preventDefault();
           playPreviousVideo();
           break;
+        case 's':
+          e.preventDefault();
+          skipIntroAction();
+          break;
+        case 'c':
+          e.preventDefault();
+          if (playerSubtitleBtn) playerSubtitleBtn.click();
+          break;
+        case 'e':
+          e.preventDefault();
+          toggleEpisodeDrawer();
+          break;
         case 'escape':
           e.preventDefault();
-          closeSettingsDropdown();
+          if (inPlayerEpisodeDrawer && (inPlayerEpisodeDrawer.classList.contains('active') || inPlayerEpisodeDrawer.classList.contains('open'))) {
+            toggleEpisodeDrawer(false);
+          } else if (outroCountdownActive) {
+            cancelOutroCountdown();
+          } else {
+            closeSettingsDropdown();
+          }
           break;
       }
     });
@@ -4646,12 +4855,21 @@ document.addEventListener('DOMContentLoaded', async function () {
               initialVideoUrl = sData.streamUrl;
               if (initialServer) initialServer.url = sData.streamUrl;
               if (sData.intro || sData.outro) {
+                streamIntroOutro = { intro: sData.intro, outro: sData.outro };
                 detectedIntroOutro = { intro: sData.intro, outro: sData.outro };
                 updateTimelineMarkers();
               }
               if (sData.subtitles && sData.subtitles.length > 0) {
                 subtitleTracks = sData.subtitles;
                 updateSubtitleOptions();
+                if (currentAudioType === 'sub') {
+                  const defaultIdx = subtitleTracks.findIndex(t => {
+                    const lang = (t.lang || t.language || '').toLowerCase();
+                    const label = (t.label || t.name || '').toLowerCase();
+                    return t.default || lang.startsWith('en') || label.includes('english');
+                  });
+                  setSubtitle(defaultIdx >= 0 ? defaultIdx : 0);
+                }
               }
               if (sData.isFallbackSub && currentAudioType === 'dub') {
                 showPlayerToast('English Dub not available for this episode. Playing Japanese Sub.');
@@ -4797,6 +5015,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         previewSample.classList.add(`style-${s.backdropStyle || 'shadow'}`);
         previewSample.style.fontSize = fs;
         previewSample.style.color = s.textColor || '#ffffff';
+      }
+
+      currentRenderedCaptionText = '';
+      if (typeof updateActiveSubtitleDisplay === 'function') {
+        updateActiveSubtitleDisplay();
       }
     }
 
