@@ -270,7 +270,9 @@
       if (targetUser.role) currentRole = targetUser.role;
       if (targetUser.vipRank) userRank = targetUser.vipRank;
       if (targetUser.level) userLevel = targetUser.level;
-      if (targetUser.avatarUrl) userAvatar = targetUser.avatarUrl;
+      if (targetUser.avatarUrl) {
+        userAvatar = (targetUser.avatarUrl.startsWith('assets/') || targetUser.avatarUrl.startsWith('uploads/') || targetUser.avatarUrl.startsWith('Postes/')) ? '/' + targetUser.avatarUrl : targetUser.avatarUrl;
+      }
       if (targetUser.avatarFrame) userAvatarFrame = targetUser.avatarFrame;
 
       updateAdminState();
@@ -535,7 +537,8 @@
         row.setAttribute('data-msg-id', msg.id);
       }
 
-      const avatarUrl = msg.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(msg.user || 'Anime')}`;
+      const rawAv = msg.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(msg.user || 'Anime')}`;
+      const avatarUrl = (rawAv.startsWith('assets/') || rawAv.startsWith('uploads/') || rawAv.startsWith('Postes/')) ? '/' + rawAv : rawAv;
       const rankBadge = renderRankBadge(msg.rank, msg.level);
       const rawFrame = (msg.avatarFrame || 'default')
         .toLowerCase()

@@ -2506,7 +2506,8 @@
 
             const username = localStorage.getItem('infinx_username') || (user && user.username) || email.split('@')[0];
             const displayName = username.charAt(0).toUpperCase() + username.slice(1);
-            const avatarUrl = localStorage.getItem('infinx_avatar') || (user && user.avatarUrl);
+            const rawAvatar = localStorage.getItem('infinx_avatar') || (user && user.avatarUrl);
+            const avatarUrl = rawAvatar ? ((rawAvatar.startsWith('assets/') || rawAvatar.startsWith('uploads/') || rawAvatar.startsWith('Postes/')) ? '/' + rawAvatar : rawAvatar) : null;
             const avatarFrame = localStorage.getItem('infinx_avatar_frame') || (user && user.avatarFrame) || 'default';
             const initial = (displayName || email || 'U')[0].toUpperCase();
 

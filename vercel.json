@@ -4,12 +4,20 @@
     { "src": "**/*.html", "use": "@vercel/static" },
     { "src": "**/*.css", "use": "@vercel/static" },
     { "src": "**/*.js", "use": "@vercel/static" },
-    { "src": "img/**/*", "use": "@vercel/static" },
-    { "src": "Postes/**/*", "use": "@vercel/static" },
-    { "src": "AMovies-Poster/**/*", "use": "@vercel/static" },
-    { "src": "Horror-poster/**/*", "use": "@vercel/static" },
-    { "src": "assets/**/*", "use": "@vercel/static" },
-    { "src": "video-player/**/*", "use": "@vercel/static" }
+    { "src": "**/*.png", "use": "@vercel/static" },
+    { "src": "**/*.jpg", "use": "@vercel/static" },
+    { "src": "**/*.jpeg", "use": "@vercel/static" },
+    { "src": "**/*.svg", "use": "@vercel/static" },
+    { "src": "**/*.webp", "use": "@vercel/static" },
+    { "src": "**/*.gif", "use": "@vercel/static" },
+    { "src": "**/*.ico", "use": "@vercel/static" },
+    { "src": "**/*.json", "use": "@vercel/static" },
+    { "src": "assets/**", "use": "@vercel/static" },
+    { "src": "Postes/**", "use": "@vercel/static" },
+    { "src": "img/**", "use": "@vercel/static" },
+    { "src": "AMovies-Poster/**", "use": "@vercel/static" },
+    { "src": "Horror-poster/**", "use": "@vercel/static" },
+    { "src": "video-player/**", "use": "@vercel/static" }
   ],
   "routes": [
     {
@@ -24,8 +32,57 @@
       "continue": false
     },
     {
+      "src": "/uploads/(.*)",
+      "dest": "http://13.202.95.5:8000/uploads/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "continue": false
+    },
+    {
+      "src": "/ec2-uploads/(.*)",
+      "dest": "http://13.202.95.5:8000/uploads/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS"
+      },
+      "continue": false
+    },
+    {
+      "src": "/posters/(.*)",
+      "dest": "http://13.202.95.5:8000/posters/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS"
+      },
+      "continue": false
+    },
+    {
+      "src": "/banners/(.*)",
+      "dest": "http://13.202.95.5:8000/banners/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS"
+      },
+      "continue": false
+    },
+    {
+      "src": "/socket.io/(.*)",
+      "dest": "http://13.202.95.5:8000/socket.io/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
       "src": "/laptop-api/(.*)",
-      "dest": "https://occurs-proteins-briefs-eric.trycloudflare.com/api/$1",
+      "dest": "http://13.202.95.5:8000/api/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -46,25 +103,48 @@
       "continue": false
     },
     {
-      "src": "/uploads/(.*)",
-      "dest": "https://occurs-proteins-briefs-eric.trycloudflare.com/uploads/$1",
-      "continue": false
+      "src": "/(?:profile|watch|party|video-player)/assets/(.*)",
+      "dest": "/assets/$1"
     },
     {
-      "src": "/ec2-uploads/(.*)",
-      "dest": "http://13.202.95.5:8000/uploads/$1",
-      "continue": false
+      "src": "/(?:profile|watch|party|video-player)/Postes/(.*)",
+      "dest": "/Postes/$1"
     },
     {
-      "src": "/socket.io/(.*)",
-      "dest": "http://13.202.95.5:8000/socket.io/$1",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
-        "Access-Control-Allow-Credentials": "true"
-      },
-      "continue": false
+      "src": "/(?:profile|watch|party|video-player)/uploads/(.*)",
+      "dest": "http://13.202.95.5:8000/uploads/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/Postes/(.*)",
+      "dest": "/Postes/$1"
+    },
+    {
+      "src": "/img/(.*)",
+      "dest": "/img/$1"
+    },
+    {
+      "src": "/AMovies-Poster/(.*)",
+      "dest": "/AMovies-Poster/$1"
+    },
+    {
+      "src": "/Horror-poster/(.*)",
+      "dest": "/Horror-poster/$1"
+    },
+    {
+      "src": "/video-player/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts))",
+      "dest": "/video-player/$1"
+    },
+    {
+      "src": "/(?:profile|watch|party)/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts))",
+      "dest": "/$1"
     },
     {
       "src": "/admin",
@@ -127,15 +207,37 @@
       "dest": "/index.html"
     },
     {
-      "src": "/(.*)\\.(css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts)",
-      "dest": "/$1.$2"
-    },
-    {
-      "src": "/(.*)",
+      "src": "/([^/]+)/?",
       "dest": "/$1.html"
     }
   ],
   "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    },
+    {
+      "source": "/Postes/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

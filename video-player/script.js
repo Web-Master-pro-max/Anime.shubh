@@ -15,15 +15,33 @@ document.addEventListener('DOMContentLoaded', async function () {
     };
     const isHttps = window.location.protocol === 'https:';
     const savedServer = getSavedServer();
+    // On HTTPS (Vercel, production domain), never use an insecure http:// savedServer as browsers block mixed content
+    const safeSavedServer = (isHttps && savedServer && savedServer.startsWith('http://')) ? null : savedServer;
     const isLocalFrontendPort = ['5000', '5500', '3000', '5173'].includes(window.location.port);
-    const SERVER_ORIGIN = (isHttps && !savedServer)
-      ? ''
+    const SERVER_ORIGIN = isHttps
+      ? (safeSavedServer || '')
       : (isLocalFrontendPort
         ? (savedServer || 'http://localhost:8000')
         : ((window.location.protocol === 'file:' || window.location.origin === 'null' || !window.location.origin.includes(':'))
           ? (savedServer || 'http://13.202.95.5:8000')
           : ''));
     const API_BASE = `${SERVER_ORIGIN}/api`;
+
+    // Global stream URL sanitizer to prevent mixed content on HTTPS deployments (Vercel, custom domain)
+    function sanitizeStreamUrl(url) {
+      if (!url || typeof url !== 'string') return url;
+      if (window.location.protocol === 'https:') {
+        // Rewrite proxy endpoints (/api/lunarx/...) to current secure origin
+        if (url.includes('/api/lunarx/') || url.includes('/api/shows/') || url.includes('/uploads/')) {
+          return url.replace(/^http:\/\/[^/]+(\/.*)$/i, `${window.location.origin}$1`);
+        }
+        // Rewrite direct EC2 / localhost backend references to current HTTPS origin
+        if (url.startsWith('http://13.202.95.5') || url.startsWith('http://localhost') || url.startsWith('http://127.0.0.1')) {
+          return url.replace(/^http:\/\/[^/]+/i, window.location.origin);
+        }
+      }
+      return url;
+    }
 
     // Clean HTML tags from anime descriptions for clean text presentation
     function stripHtmlTags(str) {
@@ -513,8 +531,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     // URL resolver for local vs cloud media
     function resolveMediaUrl(url) {
       if (!url) return '';
-      if (url.startsWith('http://') || url.startsWith('https://')) return url;
-      return `${SERVER_ORIGIN}${url}`;
+      if (url.startsWith('http://') || url.startsWith('https://')) return sanitizeStreamUrl(url);
+      return sanitizeStreamUrl(`${SERVER_ORIGIN}${url}`);
     }
 
     // Available streaming servers for current episode
@@ -1042,8 +1060,9 @@ document.addEventListener('DOMContentLoaded', async function () {
       // Manually parse master playlist for subtitles as a robust fallback for raw VTTs
       async function parseMasterPlaylist(videoSrc) {
         try {
-          console.log("Manually fetching and parsing HLS manifest for subtitles:", videoSrc);
-          const response = await fetch(videoSrc);
+          const safeManifestUrl = sanitizeStreamUrl(videoSrc);
+          console.log("Manually fetching and parsing HLS manifest for subtitles:", safeManifestUrl);
+          const response = await fetch(safeManifestUrl);
           if (!response.ok) throw new Error('Failed to fetch manifest');
           const text = await response.text();
 
@@ -1061,8 +1080,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const name = nameMatch ? nameMatch[1] : 'Subtitle';
                 const lang = langMatch ? langMatch[1] : 'en';
                 const uri = uriMatch[1];
-                // Resolve relative URI to absolute URL
-                const absoluteUrl = new URL(uri, videoSrc).href;
+                // Resolve relative URI to absolute URL and sanitize against mixed content
+                const absoluteUrl = sanitizeStreamUrl(new URL(uri, safeManifestUrl).href);
 
                 parsedSubtitles.push({
                   name: name,
@@ -1101,6 +1120,16 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
 
       if (Hls.isSupported()) {
+        const BaseLoader = Hls.DefaultConfig.loader;
+        class SecureHlsLoader extends BaseLoader {
+          load(context, config, callbacks) {
+            if (context && context.url) {
+              context.url = sanitizeStreamUrl(context.url);
+            }
+            super.load(context, config, callbacks);
+          }
+        }
+
         hls = new Hls({
           enableWorker: true,
           lowLatencyMode: false,
@@ -1111,6 +1140,9 @@ document.addEventListener('DOMContentLoaded', async function () {
           capLevelToPlayerSize: false,
           nudgeOffset: 0.1,
           nudgeMaxRetry: 5,
+          loader: SecureHlsLoader,
+          pLoader: SecureHlsLoader,
+          fLoader: SecureHlsLoader,
         });
 
         hls.loadSource(resolvedVideoSrc);
@@ -2489,9 +2521,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         detachAllTextTrackListeners();
 
         if (trackInfo && trackInfo.url) {
-          const fetchUrl = (trackInfo.url.startsWith('http://') || trackInfo.url.startsWith('https://'))
+          const rawUrl = (trackInfo.url.startsWith('http://') || trackInfo.url.startsWith('https://'))
             ? trackInfo.url
             : `${SERVER_ORIGIN}${trackInfo.url.startsWith('/') ? '' : '/'}${trackInfo.url}`;
+          const fetchUrl = sanitizeStreamUrl(rawUrl);
           activeSubUrl = fetchUrl;
           fetch(fetchUrl)
             .then(r => {
@@ -4084,7 +4117,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function resolveAssetUrl(url) {
       if (!url) return '';
       if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-        return url;
+        return sanitizeStreamUrl(url);
       }
       if (url.startsWith('/')) {
         return url;
