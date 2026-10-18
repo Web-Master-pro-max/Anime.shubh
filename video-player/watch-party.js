@@ -953,8 +953,10 @@
     // 12. Connect Socket.io
     function ensureSocket() {
       if (!socket && typeof io === 'function') {
+        const isVercel = window.location.hostname.includes('vercel.app') || window.location.protocol === 'https:';
         socket = io(window.location.origin, {
-          transports: ['websocket', 'polling']
+          transports: isVercel ? ['polling'] : ['websocket', 'polling'],
+          upgrade: !isVercel
         });
 
         // Remote playback sync event (Bug 2 Fix: Programmatic seek tracking)

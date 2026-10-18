@@ -45,6 +45,43 @@
     { id: 'gif-zoro-asura', title: 'Zoro Asura Stance', tag: 'hype', url: 'https://i.giphy.com/OdSZCPaQZWlWw.gif' }
   ];
 
+  function normalizeAvatarUrl(url, username) {
+    const fallback = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username || 'Anime')}`;
+    if (!url || typeof url !== 'string') return fallback;
+    const trimmed = url.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
+      return trimmed;
+    }
+    if (trimmed.startsWith('assets/') || trimmed.startsWith('uploads/') || trimmed.startsWith('Postes/')) {
+      return '/' + trimmed;
+    }
+    if (trimmed.startsWith('/assets/') || trimmed.startsWith('/uploads/') || trimmed.startsWith('/Postes/')) {
+      return trimmed;
+    }
+    if (trimmed.startsWith('av-') || trimmed.endsWith('.png') || trimmed.endsWith('.jpg') || trimmed.endsWith('.jpeg')) {
+      return `/assets/avatars/${trimmed.replace(/^\/+/, '')}`;
+    }
+    return fallback;
+  }
+
+  function normalizeBannerUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
+      return trimmed;
+    }
+    if (trimmed.startsWith('assets/') || trimmed.startsWith('uploads/') || trimmed.startsWith('Postes/')) {
+      return '/' + trimmed;
+    }
+    if (trimmed.startsWith('/assets/') || trimmed.startsWith('/uploads/') || trimmed.startsWith('/Postes/')) {
+      return trimmed;
+    }
+    if (trimmed.startsWith('ban-') || trimmed.endsWith('.jpg') || trimmed.endsWith('.png')) {
+      return `/assets/banners/${trimmed.replace(/^\/+/, '')}`;
+    }
+    return trimmed;
+  }
+
   function initPublicCommunityChat() {
     let mount = document.getElementById('publicLiveChatMount');
     if (!mount) {
@@ -271,7 +308,7 @@
       if (targetUser.vipRank) userRank = targetUser.vipRank;
       if (targetUser.level) userLevel = targetUser.level;
       if (targetUser.avatarUrl) {
-        userAvatar = (targetUser.avatarUrl.startsWith('assets/') || targetUser.avatarUrl.startsWith('uploads/') || targetUser.avatarUrl.startsWith('Postes/')) ? '/' + targetUser.avatarUrl : targetUser.avatarUrl;
+        userAvatar = normalizeAvatarUrl(targetUser.avatarUrl, currentUser);
       }
       if (targetUser.avatarFrame) userAvatarFrame = targetUser.avatarFrame;
 
@@ -537,8 +574,7 @@
         row.setAttribute('data-msg-id', msg.id);
       }
 
-      const rawAv = msg.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(msg.user || 'Anime')}`;
-      const avatarUrl = (rawAv.startsWith('assets/') || rawAv.startsWith('uploads/') || rawAv.startsWith('Postes/')) ? '/' + rawAv : rawAv;
+      const avatarUrl = normalizeAvatarUrl(msg.avatar, msg.user);
       const rankBadge = renderRankBadge(msg.rank, msg.level);
       const rawFrame = (msg.avatarFrame || 'default')
         .toLowerCase()
@@ -678,10 +714,10 @@
         if (res.ok) {
           const profile = await res.json();
           if (profile.bannerUrl) {
-            userModalBanner.style.backgroundImage = `url('${profile.bannerUrl}')`;
+            userModalBanner.style.backgroundImage = `url('${normalizeBannerUrl(profile.bannerUrl)}')`;
           }
           if (profile.avatarUrl) {
-            userModalAvatar.src = profile.avatarUrl;
+            userModalAvatar.src = normalizeAvatarUrl(profile.avatarUrl, username);
           }
           if (profile.avatarFrame) {
             const raw = profile.avatarFrame.toLowerCase().replace(/^aura-/, '').replace(/^frame-/, '');
@@ -701,7 +737,7 @@
           if (Array.isArray(profile.topAnime) && profile.topAnime.length > 0 && userModalShowcaseList) {
             userModalShowcaseList.innerHTML = profile.topAnime.slice(0, 3).map(a => `
               <div class="chat-user-showcase-item">
-                <img src="${a.poster || a.banner || 'assets/avatars/av-jin-u-seong.png'}" class="chat-user-showcase-poster" alt="${a.title}" />
+                <img src="${a.poster || a.banner || '/assets/avatars/av-jin-u-seong.png'}" class="chat-user-showcase-poster" alt="${a.title}" />
                 <div class="chat-user-showcase-name">${a.title}</div>
               </div>
             `).join('');
@@ -892,8 +928,10 @@
     let socket = null;
     if (typeof io === 'function') {
       try {
+        const isVercel = window.location.hostname.includes('vercel.app') || window.location.protocol === 'https:';
         socket = io(window.location.origin, {
-          transports: ['websocket', 'polling']
+          transports: isVercel ? ['polling'] : ['websocket', 'polling'],
+          upgrade: !isVercel
         });
 
         socket.emit('chat:join');

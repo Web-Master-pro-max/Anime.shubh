@@ -19,6 +19,15 @@
     if (trimmed.startsWith('assets/') || trimmed.startsWith('Postes/') || trimmed.startsWith('uploads/')) {
       return '/' + trimmed;
     }
+    if (trimmed.startsWith('/assets/') || trimmed.startsWith('/Postes/') || trimmed.startsWith('/uploads/')) {
+      return trimmed;
+    }
+    if (trimmed.startsWith('av-') || trimmed.endsWith('.png') || trimmed.endsWith('.jpg') || trimmed.endsWith('.jpeg')) {
+      return `/assets/avatars/${trimmed.replace(/^\/+/, '')}`;
+    }
+    if (trimmed.startsWith('ban-')) {
+      return `/assets/banners/${trimmed.replace(/^\/+/, '')}`;
+    }
     return trimmed;
   }
 

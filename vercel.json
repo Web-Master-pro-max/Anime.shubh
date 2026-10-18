@@ -104,11 +104,11 @@
     },
     {
       "src": "/(?:profile|watch|party|video-player)/assets/(.*)",
-      "dest": "/assets/$1"
+      "dest": "http://13.202.95.5:8000/assets/$1"
     },
     {
       "src": "/(?:profile|watch|party|video-player)/Postes/(.*)",
-      "dest": "/Postes/$1"
+      "dest": "http://13.202.95.5:8000/Postes/$1"
     },
     {
       "src": "/(?:profile|watch|party|video-player)/uploads/(.*)",
@@ -116,23 +116,27 @@
     },
     {
       "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "dest": "http://13.202.95.5:8000/assets/$1"
+    },
+    {
+      "src": "/av-(.*)",
+      "dest": "http://13.202.95.5:8000/assets/avatars/av-$1"
     },
     {
       "src": "/Postes/(.*)",
-      "dest": "/Postes/$1"
+      "dest": "http://13.202.95.5:8000/Postes/$1"
     },
     {
       "src": "/img/(.*)",
-      "dest": "/img/$1"
+      "dest": "http://13.202.95.5:8000/img/$1"
     },
     {
       "src": "/AMovies-Poster/(.*)",
-      "dest": "/AMovies-Poster/$1"
+      "dest": "http://13.202.95.5:8000/AMovies-Poster/$1"
     },
     {
       "src": "/Horror-poster/(.*)",
-      "dest": "/Horror-poster/$1"
+      "dest": "http://13.202.95.5:8000/Horror-poster/$1"
     },
     {
       "src": "/video-player/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts))",

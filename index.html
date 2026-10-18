@@ -2829,7 +2829,21 @@
                 const username = localStorage.getItem('infinx_username') || (user && user.username) || email.split('@')[0];
                 const displayName = username.charAt(0).toUpperCase() + username.slice(1);
                 const rawAvatar = localStorage.getItem('infinx_avatar') || (user && user.avatarUrl);
-                const avatarUrl = rawAvatar ? ((rawAvatar.startsWith('assets/') || rawAvatar.startsWith('uploads/') || rawAvatar.startsWith('Postes/')) ? '/' + rawAvatar : rawAvatar) : null;
+                let avatarUrl = null;
+                if (rawAvatar && typeof rawAvatar === 'string') {
+                    const trimmed = rawAvatar.trim();
+                    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
+                        avatarUrl = trimmed;
+                    } else if (trimmed.startsWith('assets/') || trimmed.startsWith('uploads/') || trimmed.startsWith('Postes/')) {
+                        avatarUrl = '/' + trimmed;
+                    } else if (trimmed.startsWith('/assets/') || trimmed.startsWith('/uploads/') || trimmed.startsWith('/Postes/')) {
+                        avatarUrl = trimmed;
+                    } else if (trimmed.startsWith('av-') || trimmed.endsWith('.png') || trimmed.endsWith('.jpg') || trimmed.endsWith('.jpeg')) {
+                        avatarUrl = `/assets/avatars/${trimmed.replace(/^\/+/, '')}`;
+                    } else {
+                        avatarUrl = trimmed;
+                    }
+                }
                 const avatarFrame = localStorage.getItem('infinx_avatar_frame') || (user && user.avatarFrame) || 'default';
                 const vipRank = localStorage.getItem('infinx_vip_rank') || (user && user.vipRank) || 'GENIN';
                 const level = localStorage.getItem('infinx_level') || (user && user.level) || 1;
