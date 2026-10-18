@@ -20,6 +20,10 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <!-- Premium Animated Welcome Intro -->
+    <link rel="stylesheet" href="welcome.css">
+    <link rel="stylesheet" href="public-chat.css?v=2.2">
+
     <!-- Custom CSS -->
     <style>
         /* ====== VARIABLES & RESET ====== */
@@ -445,6 +449,38 @@
             color: var(--primary);
         }
 
+        /* Mobile Search Button in Header */
+        .mobile-search-btn {
+            display: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--light-text);
+            font-size: 1.4rem;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .mobile-search-btn:hover,
+        .mobile-search-btn:active {
+            background: rgba(255, 0, 85, 0.2);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 12px rgba(255, 0, 85, 0.4);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 992px) {
+            .mobile-search-btn {
+                display: flex;
+            }
+        }
+
         /* Live Search Auto-Suggest Dropdown */
         .live-search-dropdown {
             position: absolute;
@@ -578,6 +614,60 @@
             gap: 12px;
             position: relative;
             cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .profile-name-text {
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        .user-avatar-link {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .nav-chat-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .nav-live-dot {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #fff;
+            background: linear-gradient(135deg, #ff0055, #ff5500);
+            padding: 2px 7px;
+            border-radius: 999px;
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.6);
+            animation: pulseLiveBadge 1.8s infinite ease-in-out;
+            margin-left: 2px;
+        }
+
+        @keyframes pulseLiveBadge {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 8px rgba(255, 0, 85, 0.6);
+            }
+
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 0 16px rgba(255, 0, 85, 0.9);
+            }
         }
 
         .user-avatar {
@@ -595,6 +685,42 @@
             box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
             border: 2px solid rgba(255, 255, 255, 0.2);
             transition: var(--transition);
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .user-avatar.aura-gold {
+            box-shadow: 0 0 14px rgba(255, 183, 0, 0.8) !important;
+            border-color: #ffd700 !important;
+        }
+
+        .user-avatar.aura-cyan {
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.8) !important;
+            border-color: #00f0ff !important;
+        }
+
+        .user-avatar.aura-flame {
+            box-shadow: 0 0 14px rgba(255, 0, 85, 0.8) !important;
+            border-color: #ff0055 !important;
+        }
+
+        .user-avatar.aura-void {
+            box-shadow: 0 0 14px rgba(184, 0, 255, 0.8) !important;
+            border-color: #b800ff !important;
+        }
+
+        .user-avatar.aura-sakura {
+            box-shadow: 0 0 14px rgba(255, 117, 140, 0.8) !important;
+            border-color: #ff758c !important;
         }
 
         .user-avatar:hover {
@@ -1446,13 +1572,14 @@
             color: var(--gray-text);
             text-decoration: none;
             font-family: 'Outfit', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 600;
             transition: var(--transition);
-            min-width: 44px;
+            min-width: 0;
             min-height: 44px;
             flex: 1;
-            padding-top: 5px;
+            padding: 4px 2px;
+            white-space: nowrap;
         }
 
         .tab-item i {
@@ -1753,12 +1880,15 @@
             /* Clean up header buttons in actions area to save space */
             .header-actions .btn-secondary,
             .header-actions .user-profile-menu .btn-secondary,
-            .header-actions .user-profile-menu a[href="/admin.html"] {
+            .header-actions .user-profile-menu a[href="/admin.html"],
+            .header-actions .user-profile-menu .profile-name-text,
+            .profile-name-text {
                 display: none !important;
             }
 
             .header-actions .user-profile-menu {
                 gap: 0;
+                flex-shrink: 0;
             }
 
             .search-box:focus-within {
@@ -1800,6 +1930,10 @@
         }
 
         @media (max-width: 768px) {
+            header {
+                padding: 0 16px !important;
+            }
+
             .mobile-tab-bar {
                 display: flex;
             }
@@ -1817,7 +1951,13 @@
             }
 
             .header-actions {
-                gap: 10px;
+                gap: 8px !important;
+                flex-shrink: 0;
+            }
+
+            .mobile-toggle {
+                margin-right: 0 !important;
+                flex-shrink: 0 !important;
             }
 
             .search-box {
@@ -2057,6 +2197,11 @@
 
             <a href="view.html#watchlist" class="nav-link"><i class="fas fa-heart"></i> Watchlist</a>
             <a href="view.html#history" class="nav-link"><i class="fas fa-history"></i> History</a>
+            <a href="#publicLiveChatSection" class="nav-link nav-chat-link" id="navChatLink"
+                onclick="window.scrollToPublicChat(event)">
+                <i class="fas fa-comments" style="color: var(--secondary);"></i> <span>Live Chat</span> <span
+                    class="nav-live-dot">LIVE</span>
+            </a>
             <div class="drawer-auth" id="drawerAuthHeader"></div>
         </nav>
 
@@ -2068,6 +2213,10 @@
                 </div>
                 <div class="live-search-dropdown" id="liveSearchDropdown"></div>
             </div>
+
+            <button class="mobile-search-btn" id="mobileHeaderSearchBtn" aria-label="Open Search">
+                <i class="fas fa-search"></i>
+            </button>
 
             <!-- Dynamic Authentication Header Section -->
             <div class="auth-buttons" id="authHeader">
@@ -2243,10 +2392,12 @@
         <a href="index.html" class="tab-item active" id="tabHome"><i class="fas fa-home"></i><span>Home</span></a>
         <a href="anime.html" class="tab-item" id="tabAnime"><i class="fas fa-tv"></i><span>Anime</span></a>
         <a href="#" class="tab-item" id="tabSearch"><i class="fas fa-search"></i><span>Search</span></a>
+        <a href="#publicLiveChatSection" class="tab-item" id="tabChat" onclick="window.scrollToPublicChat(event)"><i
+                class="fas fa-comments"></i><span>Chat</span></a>
         <a href="view.html#watchlist" class="tab-item" id="tabWatchlist"><i
                 class="fas fa-heart"></i><span>Watchlist</span></a>
-        <a href="view.html#history" class="tab-item" id="tabHistory"><i
-                class="fas fa-history"></i><span>History</span></a>
+        <a href="profile.html" class="tab-item" id="tabProfile"><i
+                class="fas fa-user-ninja"></i><span>Profile</span></a>
     </nav>
 
     <!-- ====== SCRIPTS ====== -->
@@ -2455,54 +2606,76 @@
 
             // Mobile Search Overlay listeners
             const tabSearch = document.getElementById('tabSearch');
+            const mobileHeaderSearchBtn = document.getElementById('mobileHeaderSearchBtn');
             const mobileSearchOverlay = document.getElementById('mobileSearchOverlay');
             const closeSearchOverlay = document.getElementById('closeSearchOverlay');
             const clearMobileSearch = document.getElementById('clearMobileSearch');
             const mobileSearchInput = document.getElementById('mobileSearchInput');
             const mobileSearchResults = document.getElementById('mobileSearchResults');
 
-            tabSearch.addEventListener('click', (e) => {
-                e.preventDefault();
-                mobileSearchOverlay.classList.add('active');
-                mobileSearchInput.focus();
-            });
-
-            closeSearchOverlay.addEventListener('click', () => {
-                mobileSearchOverlay.classList.remove('active');
-            });
-
-            let mobileSearchDebounce = null;
-            mobileSearchInput.addEventListener('input', function () {
-                const q = this.value.trim();
-                if (q) {
-                    clearMobileSearch.style.display = 'flex';
-                } else {
-                    clearMobileSearch.style.display = 'none';
-                }
-
-                clearTimeout(mobileSearchDebounce);
-                mobileSearchDebounce = setTimeout(() => {
-                    performLiveSearch(q, mobileSearchResults);
-                }, 220);
-            });
-
-            clearMobileSearch.addEventListener('click', () => {
-                mobileSearchInput.value = '';
-                clearMobileSearch.style.display = 'none';
-                mobileSearchResults.innerHTML = '';
-                mobileSearchResults.style.display = 'none';
-                mobileSearchInput.focus();
-            });
-
-            mobileSearchInput.addEventListener('keyup', function (e) {
-                if (e.key === 'Enter') {
-                    const term = this.value.trim();
-                    if (term) {
-                        mobileSearchOverlay.classList.remove('active');
-                        window.location.href = `view.html#search?q=${encodeURIComponent(term)}`;
+            const openMobileSearch = (e) => {
+                if (e) e.preventDefault();
+                if (mobileSearchOverlay) {
+                    mobileSearchOverlay.classList.add('active');
+                    if (mobileSearchInput) {
+                        setTimeout(() => mobileSearchInput.focus(), 60);
                     }
                 }
-            });
+            };
+
+            if (tabSearch) {
+                tabSearch.addEventListener('click', openMobileSearch);
+            }
+            if (mobileHeaderSearchBtn) {
+                mobileHeaderSearchBtn.addEventListener('click', openMobileSearch);
+            }
+
+            if (closeSearchOverlay && mobileSearchOverlay) {
+                closeSearchOverlay.addEventListener('click', () => {
+                    mobileSearchOverlay.classList.remove('active');
+                });
+            }
+
+            let mobileSearchDebounce = null;
+            if (mobileSearchInput) {
+                mobileSearchInput.addEventListener('input', function () {
+                    const q = this.value.trim();
+                    if (clearMobileSearch) {
+                        clearMobileSearch.style.display = q ? 'flex' : 'none';
+                    }
+
+                    clearTimeout(mobileSearchDebounce);
+                    mobileSearchDebounce = setTimeout(() => {
+                        if (mobileSearchResults) {
+                            performLiveSearch(q, mobileSearchResults);
+                        }
+                    }, 220);
+                });
+
+                mobileSearchInput.addEventListener('keyup', function (e) {
+                    if (e.key === 'Enter') {
+                        const term = this.value.trim();
+                        if (term) {
+                            if (mobileSearchOverlay) mobileSearchOverlay.classList.remove('active');
+                            window.location.href = `view.html#search?q=${encodeURIComponent(term)}`;
+                        }
+                    }
+                });
+            }
+
+            if (clearMobileSearch) {
+                clearMobileSearch.addEventListener('click', () => {
+                    if (mobileSearchInput) {
+                        mobileSearchInput.value = '';
+                        mobileSearchInput.focus();
+                    }
+                    clearMobileSearch.style.display = 'none';
+                    if (mobileSearchResults) {
+                        mobileSearchResults.innerHTML = '';
+                        mobileSearchResults.style.display = 'none';
+                    }
+                });
+            }
 
             // Handle forms
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
@@ -2541,7 +2714,7 @@
             if (list.length === 0) return;
 
             const cardsHtml = list.slice(0, 10).map(show => {
-                const playUrl = `/video-player/index.html?lunarId=${show.anilistId}&ep=1`;
+                const playUrl = `/watch?id=${show.anilistId}&ep=1`;
                 const posterUrl = show.poster || 'Postes/spyfamS3p.jpg';
                 const safeTitle = (show.title || '').replace(/'/g, "\\'");
                 const safePoster = (show.poster || '').replace(/'/g, "\\'");
@@ -2593,8 +2766,36 @@
             `;
         }
 
+        async function syncFreshUserProfile() {
+            const token = localStorage.getItem('infinx_token');
+            if (!token) return;
+            try {
+                const res = await fetch(`${API_BASE}/user/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const profile = await res.json();
+                    if (profile) {
+                        localStorage.setItem('infinx_user', JSON.stringify(profile));
+                        if (profile.username) localStorage.setItem('infinx_username', profile.username);
+                        if (profile.email) localStorage.setItem('infinx_user_email', profile.email);
+                        if (profile.role) localStorage.setItem('infinx_user_role', profile.role);
+                        if (profile.avatarUrl) localStorage.setItem('infinx_avatar', profile.avatarUrl);
+                        if (profile.avatarFrame) localStorage.setItem('infinx_avatar_frame', profile.avatarFrame);
+                        if (profile.accentColor) localStorage.setItem('infinx_accent_color', profile.accentColor);
+                        if (profile.vipRank) localStorage.setItem('infinx_vip_rank', profile.vipRank);
+                        if (profile.level) localStorage.setItem('infinx_level', String(profile.level));
+                        updateAuthHeader();
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to sync user profile:', e);
+            }
+        }
+
         async function initApp() {
             updateAuthHeader();
+            syncFreshUserProfile();
             await loadCarousel();
             await loadLunarTrending();
             await loadCategories();
@@ -2621,24 +2822,51 @@
             if (isLoggedIn()) {
                 const email = localStorage.getItem('infinx_user_email') || 'User';
                 const role = localStorage.getItem('infinx_user_role');
+                const userRaw = localStorage.getItem('infinx_user');
+                let user = null;
+                try { if (userRaw) user = JSON.parse(userRaw); } catch (e) { }
+
+                const username = localStorage.getItem('infinx_username') || (user && user.username) || email.split('@')[0];
+                const displayName = username.charAt(0).toUpperCase() + username.slice(1);
+                const avatarUrl = localStorage.getItem('infinx_avatar') || (user && user.avatarUrl);
+                const avatarFrame = localStorage.getItem('infinx_avatar_frame') || (user && user.avatarFrame) || 'default';
+                const vipRank = localStorage.getItem('infinx_vip_rank') || (user && user.vipRank) || 'GENIN';
+                const level = localStorage.getItem('infinx_level') || (user && user.level) || 1;
+
                 const adminLink = role === 'ADMIN' ? `<a href="/admin.html" class="nav-link" style="color: var(--secondary);"><i class="fas fa-lock"></i> Admin</a>` : '';
+
+                const initial = (displayName || email || 'U')[0].toUpperCase();
+                const avatarHtml = avatarUrl ?
+                    `<div class="user-avatar aura-${avatarFrame}" title="${displayName} (${email})"><img src="${avatarUrl}" alt="${displayName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" /><span style="display:none;">${initial}</span></div>` :
+                    `<div class="user-avatar aura-${avatarFrame}" title="${displayName} (${email})">${initial}</div>`;
 
                 headerDiv.innerHTML = `
                     <div class="user-profile-menu">
                         ${adminLink}
-                        <div class="user-avatar" title="${email}">${email[0].toUpperCase()}</div>
+                        <a href="/profile.html" class="nav-link profile-name-text"><i class="fas fa-user-ninja" style="color: var(--primary);"></i> <span>${displayName}</span></a>
+                        <a href="/profile.html" class="user-avatar-link" title="View Profile (${displayName})">
+                            ${avatarHtml}
+                        </a>
                         <button class="btn btn-secondary btn-small" onclick="handleLogout(event)">Logout</button>
                     </div>
                 `;
 
                 if (drawerDiv) {
+                    const drawerAvatarHtml = avatarUrl ?
+                        `<div class="user-avatar aura-${avatarFrame}" style="width: 44px; height: 44px; flex-shrink: 0;"><img src="${avatarUrl}" alt="${displayName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" /><span style="display:none;">${initial}</span></div>` :
+                        `<div class="user-avatar aura-${avatarFrame}" style="width: 44px; height: 44px; flex-shrink: 0;">${initial}</div>`;
+
                     drawerDiv.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px; padding: 0 10px;">
-                            <div class="user-avatar">${email[0].toUpperCase()}</div>
-                            <div style="font-size: 1.4rem; font-weight: 500; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${email}</div>
-                        </div>
+                        <a href="/profile.html" style="text-decoration: none; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+                            ${drawerAvatarHtml}
+                            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <div style="font-size: 1.45rem; font-weight: 700; color: white;">${displayName}</div>
+                                <div style="font-size: 1.15rem; color: var(--gray-text);">${email}</div>
+                            </div>
+                        </a>
+                        <a href="/profile.html" class="nav-link" style="color: white; margin-bottom: 6px;"><i class="fas fa-user-ninja" style="color: var(--primary);"></i> My Otaku Profile & Passport</a>
                         ${role === 'ADMIN' ? `<a href="/admin.html" class="nav-link" style="color: var(--secondary);"><i class="fas fa-lock"></i> Admin Panel</a>` : ''}
-                        <button class="btn btn-secondary" onclick="handleLogout(event)" style="width: 100%; justify-content: center; text-transform: uppercase;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                        <button class="btn btn-secondary" onclick="handleLogout(event)" style="width: 100%; justify-content: center; text-transform: uppercase; margin-top: 6px;"><i class="fas fa-sign-out-alt"></i> Logout</button>
                     `;
                 }
             } else {
@@ -2761,7 +2989,7 @@
                             showTitle = item.title || item.showTitle || item.episode?.show?.title || 'Anime Series';
                             posterUrl = item.poster || item.episode?.show?.poster || 'Postes/spyfamS3p.jpg';
                             const seekParam = progress > 5 ? `&t=${Math.floor(progress)}` : '';
-                            resumeUrl = `/video-player/index.html?lunarId=${anilistId}&ep=${epNum}${seekParam}`;
+                            resumeUrl = `/watch?id=${anilistId}&ep=${epNum}${seekParam}`;
                         } else {
                             if (!item.episode || !item.episode.show) return;
                             const show = item.episode.show;
@@ -2769,7 +2997,7 @@
                             posterUrl = window.formatMediaUrl(show.poster);
                             epNum = item.episode.episodeNumber;
                             const seekParam = progress > 5 ? `&t=${Math.floor(progress)}` : '';
-                            resumeUrl = `/video-player/index.html?episodeId=${item.episodeId}${seekParam}`;
+                            resumeUrl = `/watch?id=${item.episodeId}${seekParam}`;
                         }
 
                         html += `
@@ -2831,7 +3059,7 @@
                     data.forEach((show, index) => {
                         // Find first episode to watch, or default watch action
                         const playLink = show.episodes && show.episodes.length > 0
-                            ? `/video-player/index.html?episodeId=${show.episodes[0].id}`
+                            ? `/watch?id=${show.episodes[0].id}`
                             : '#';
                         const rawBanner = show.banner || show.poster;
                         const bannerImg = rawBanner ? encodeURI(rawBanner) : 'Postes/infinit-cas11.jpg';
@@ -3023,7 +3251,7 @@
                         const isFav = userWatchlist.includes(show.id) ? 'active' : '';
                         const heartIcon = userWatchlist.includes(show.id) ? 'fas fa-heart' : 'far fa-heart';
                         const hasEpisodes = show.episodes && show.episodes.length > 0;
-                        const playUrl = hasEpisodes ? `/video-player/index.html?episodeId=${show.episodes[0].id}` : '#';
+                        const playUrl = hasEpisodes ? `/watch?id=${show.episodes[0].id}` : '#';
                         const playBtnText = hasEpisodes ? '<i class="fas fa-play"></i> Watch' : 'Soon';
                         const btnDisabled = !hasEpisodes ? 'disabled style="opacity: 0.5; pointer-events: none;"' : '';
 
@@ -3149,6 +3377,14 @@
                     localStorage.setItem('infinx_token', data.token);
                     localStorage.setItem('infinx_user_email', data.user.email);
                     localStorage.setItem('infinx_user_role', data.user.role);
+                    if (data.user) {
+                        localStorage.setItem('infinx_user', JSON.stringify(data.user));
+                        if (data.user.username) localStorage.setItem('infinx_username', data.user.username);
+                        if (data.user.avatarUrl) localStorage.setItem('infinx_avatar', data.user.avatarUrl);
+                        if (data.user.avatarFrame) localStorage.setItem('infinx_avatar_frame', data.user.avatarFrame);
+                        if (data.user.vipRank) localStorage.setItem('infinx_vip_rank', data.user.vipRank);
+                        if (data.user.level) localStorage.setItem('infinx_level', String(data.user.level));
+                    }
 
                     closeModal('login');
                     initApp();
@@ -3185,6 +3421,14 @@
                     localStorage.setItem('infinx_token', data.token);
                     localStorage.setItem('infinx_user_email', data.user.email);
                     localStorage.setItem('infinx_user_role', data.user.role);
+                    if (data.user) {
+                        localStorage.setItem('infinx_user', JSON.stringify(data.user));
+                        if (data.user.username) localStorage.setItem('infinx_username', data.user.username);
+                        if (data.user.avatarUrl) localStorage.setItem('infinx_avatar', data.user.avatarUrl);
+                        if (data.user.avatarFrame) localStorage.setItem('infinx_avatar_frame', data.user.avatarFrame);
+                        if (data.user.vipRank) localStorage.setItem('infinx_vip_rank', data.user.vipRank);
+                        if (data.user.level) localStorage.setItem('infinx_level', String(data.user.level));
+                    }
 
                     closeModal('register');
                     initApp();
@@ -3232,6 +3476,9 @@
         }
     </script>
     <script src="/show-details-modal.js"></script>
+    <script src="welcome.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="public-chat.js?v=2.2"></script>
 </body>
 
 </html>

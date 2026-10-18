@@ -1,0 +1,1209 @@
+/* ==========================================================================
+   INFINX WATCH PARTY & LIVE REACTIONS STYLES - ADVANCED AAA SUITE
+   ========================================================================== */
+
+/* Party Button in Control Bar */
+.control-btn.party-btn {
+  color: #00f0ff !important;
+  position: relative;
+  transition: transform 0.2s ease, text-shadow 0.2s ease;
+}
+
+.control-btn.party-btn:hover {
+  transform: scale(1.15);
+  text-shadow: 0 0 12px #00f0ff, 0 0 20px #ff0055;
+}
+
+.control-btn.party-btn.in-party {
+  color: #ff0055 !important;
+  text-shadow: 0 0 12px #ff0055;
+}
+
+.control-btn.party-btn.in-party::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #00f0ff;
+  box-shadow: 0 0 8px #00f0ff;
+}
+
+/* Floating Live Reactions Bar in Video (Host-only during Watch Party) */
+.party-reactions-bar {
+  position: absolute;
+  bottom: 80px;
+  right: 24px;
+  z-index: 45;
+  display: none; /* Only shown when user is in watch party AND is the host */
+  align-items: center;
+  gap: 6px;
+  background: rgba(14, 14, 28, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 6px 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 240, 255, 0.2);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  user-select: none;
+}
+
+.party-reaction-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s ease;
+  line-height: 1;
+}
+
+.party-reaction-btn:hover {
+  transform: scale(1.35) translateY(-4px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.party-reaction-btn:active {
+  transform: scale(0.9);
+}
+
+.party-pin-btn {
+  background: rgba(0, 240, 255, 0.15);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  color: #00f0ff;
+  font-size: 1.3rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.party-pin-btn:hover {
+  background: rgba(0, 240, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.party-reactions-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 4px;
+}
+
+.party-bar-hide-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #94a3b8;
+  font-size: 1.15rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  line-height: 1;
+  padding: 0;
+}
+
+.party-bar-hide-btn:hover {
+  color: #ff0055;
+  background: rgba(255, 0, 85, 0.18);
+  border-color: rgba(255, 0, 85, 0.45);
+  transform: scale(1.15);
+}
+
+/* Compact Unhide Pill Button (Host Only when bar is hidden) */
+.party-reactions-unhide-btn {
+  position: absolute;
+  bottom: 80px;
+  right: 24px;
+  z-index: 45;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  background: rgba(14, 14, 28, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 999px;
+  padding: 6px 14px;
+  color: #00f0ff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 0 16px rgba(0, 240, 255, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.party-reactions-unhide-btn:hover {
+  background: rgba(0, 240, 255, 0.22);
+  border-color: #00f0ff;
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 240, 255, 0.45);
+  color: #fff;
+}
+
+.party-reactions-unhide-btn:active {
+  transform: scale(0.96);
+}
+
+.party-reactions-unhide-btn i {
+  font-size: 1.3rem;
+}
+
+/* Drawer Visibility Control Setting Row */
+.party-bar-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+}
+
+.party-bar-visibility-toggle {
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  color: #00f0ff;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.party-bar-visibility-toggle:hover {
+  background: rgba(0, 240, 255, 0.25);
+  color: #fff;
+  border-color: #00f0ff;
+}
+
+
+/* Flying Reactions Layer */
+.party-reactions-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 40;
+}
+
+.flying-reaction {
+  position: absolute;
+  bottom: 90px;
+  font-size: 2.8rem;
+  animation: flyUpAndFade 2.4s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
+  user-select: none;
+}
+
+@keyframes flyUpAndFade {
+  0% {
+    transform: translateY(0) scale(0.4) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    transform: translateY(-40px) scale(1.25) rotate(var(--rot, 0deg));
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-380px) scale(0.95) rotate(calc(var(--rot, 0deg) * 2));
+    opacity: 0;
+  }
+}
+
+/* Timeline Hype Marker Pips on Progress Bar */
+.timeline-hype-marker {
+  position: absolute;
+  top: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff0055;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px #ff0055;
+  transform: translateX(-50%);
+  cursor: pointer;
+  z-index: 20;
+  transition: transform 0.2s ease;
+}
+
+.timeline-hype-marker:hover {
+  transform: translateX(-50%) scale(1.5);
+}
+
+/* Sync Toast Notification */
+.party-sync-toast {
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: rgba(14, 14, 28, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 240, 255, 0.3);
+  z-index: 55;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.party-sync-toast.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.party-sync-toast i {
+  color: #00f0ff;
+}
+
+/* Auto-Binge Next Episode Countdown Modal */
+.party-autobinge-modal {
+  position: absolute;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: rgba(14, 16, 28, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  border-radius: 16px;
+  padding: 18px 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 240, 255, 0.25);
+  z-index: 70;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 300px;
+  max-width: 90%;
+}
+
+.party-autobinge-modal.active {
+  display: flex;
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.party-autobinge-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.party-autobinge-title i {
+  color: #00f0ff;
+}
+
+.party-autobinge-progress {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.party-autobinge-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #ff0055 0%, #00f0ff 100%);
+  transition: width 1s linear;
+}
+
+.party-autobinge-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.party-autobinge-btn-play {
+  flex: 1;
+  background: linear-gradient(135deg, #00f0ff 0%, #0070f3 100%);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.party-autobinge-btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Watch Party Slide-Over Drawer (Desktop Default) */
+.watch-party-drawer {
+  position: absolute;
+  top: 0;
+  right: -380px;
+  width: 360px;
+  height: 100%;
+  background: rgba(10, 10, 22, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.7);
+}
+
+.watch-party-drawer.open {
+  right: 0;
+}
+
+/* Drawer Header */
+.party-drawer-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.party-drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.party-drawer-title i {
+  color: #00f0ff;
+}
+
+.party-close-btn {
+  background: transparent;
+  border: none;
+  color: #a0aec0;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.party-close-btn:hover {
+  color: #ff0055;
+}
+
+/* Drawer Navigation Tabs */
+.party-drawer-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.party-tab-nav-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #8e9bb0;
+  padding: 10px 6px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.party-tab-nav-btn.active {
+  color: #00f0ff;
+  border-bottom-color: #00f0ff;
+  background: rgba(0, 240, 255, 0.05);
+}
+
+/* Drawer Body & Party Controls */
+.party-drawer-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  overscroll-behavior-y: contain;
+  padding: 14px;
+  min-height: 0;
+}
+
+.party-drawer-view {
+  display: none;
+  flex-direction: column;
+  min-height: min-content;
+  width: 100%;
+}
+
+.party-drawer-view.active {
+  display: flex;
+  flex: 1;
+}
+
+.party-panel-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.party-room-code-tag {
+  font-size: 1.15rem;
+  color: #a0aec0;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.party-room-code-val {
+  font-size: 2.0rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #00f0ff;
+  font-family: monospace;
+}
+
+/* DJ Mode & Host Controls Box */
+.party-dj-control-box {
+  background: rgba(0, 240, 255, 0.04);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.party-dj-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.party-dj-toggle-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #00f0ff;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.party-dj-toggle-btn:hover {
+  background: rgba(0, 240, 255, 0.2);
+}
+
+.party-request-ctrl-btn {
+  background: rgba(255, 0, 85, 0.15);
+  border: 1px solid rgba(255, 0, 85, 0.35);
+  color: #ff0055;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.2s ease;
+}
+
+.party-request-ctrl-btn:hover {
+  background: rgba(255, 0, 85, 0.25);
+}
+
+.party-btn-primary {
+  width: 100%;
+  background: linear-gradient(135deg, #00f0ff 0%, #0070f3 100%);
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 8px;
+}
+
+.party-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4);
+}
+
+.party-btn-secondary {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.15rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.party-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.party-leave-btn {
+  color: #ff0055;
+  border-color: rgba(255, 0, 85, 0.3);
+}
+
+.party-leave-btn:hover {
+  background: rgba(255, 0, 85, 0.15);
+}
+
+/* In-Party Chat Stream */
+.party-chat-container {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 10px;
+  min-height: 200px;
+  flex: 1;
+}
+
+.party-chat-messages {
+  min-height: 120px;
+  max-height: 380px;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px;
+  flex: 1;
+}
+
+.party-chat-msg {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.party-chat-user {
+  font-weight: 700;
+  color: #00f0ff;
+  font-size: 1.1rem;
+  margin-bottom: 2px;
+}
+
+.party-chat-text {
+  color: #e2e8f0;
+}
+
+.party-chat-input-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  position: sticky;
+  bottom: 0;
+  background: rgba(10, 10, 22, 0.96);
+  padding: 6px 0;
+  z-index: 5;
+}
+
+.party-chat-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 1.2rem;
+  outline: none;
+}
+
+.party-chat-input:focus {
+  border-color: #00f0ff;
+}
+
+.party-chat-send {
+  background: #00f0ff;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Hype Moments List View */
+.party-markers-container {
+  flex: 1;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  min-height: 140px;
+}
+
+.party-marker-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.party-marker-card:hover {
+  background: rgba(255, 0, 85, 0.15);
+  border-color: rgba(255, 0, 85, 0.4);
+  transform: translateX(4px);
+}
+
+.party-marker-time {
+  font-weight: 800;
+  color: #00f0ff;
+  font-size: 1.2rem;
+  font-family: monospace;
+}
+
+.party-marker-desc {
+  font-size: 1.15rem;
+  color: #e2e8f0;
+}
+
+/* Hype Soundboard View */
+.party-soundboard-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  padding-top: 8px;
+  min-height: 180px;
+}
+
+.party-soundboard-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+/* Custom Sleek Scrollbars for Drawer Containers */
+.party-drawer-body::-webkit-scrollbar,
+.party-chat-messages::-webkit-scrollbar,
+.party-markers-container::-webkit-scrollbar,
+.party-soundboard-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.party-drawer-body::-webkit-scrollbar-track,
+.party-chat-messages::-webkit-scrollbar-track,
+.party-markers-container::-webkit-scrollbar-track,
+.party-soundboard-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+}
+
+.party-drawer-body::-webkit-scrollbar-thumb,
+.party-chat-messages::-webkit-scrollbar-thumb,
+.party-markers-container::-webkit-scrollbar-thumb,
+.party-soundboard-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.4);
+  border-radius: 4px;
+}
+
+.party-drawer-body::-webkit-scrollbar-thumb:hover,
+.party-chat-messages::-webkit-scrollbar-thumb:hover,
+.party-markers-container::-webkit-scrollbar-thumb:hover,
+.party-soundboard-container::-webkit-scrollbar-thumb:hover {
+  background: #00f0ff;
+}
+
+.party-soundboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.party-sfx-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.party-sfx-btn:hover {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: rgba(0, 240, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.party-sfx-btn:active {
+  transform: scale(0.95);
+}
+
+.party-sfx-icon {
+  font-size: 2.0rem;
+}
+
+.party-sfx-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE WATCH PARTY BOTTOM SHEET & CONTROLS
+   ========================================================================== */
+
+.party-drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* 1. Mobile Portrait: Slide-up bottom sheet */
+@media (max-width: 768px) and (min-height: 601px) {
+  .party-drawer-backdrop.active {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .watch-party-drawer {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 75vh !important;
+    max-height: 85vh !important;
+    max-height: 85dvh !important;
+    border-radius: 20px 20px 0 0 !important;
+    border-left: none !important;
+    border-top: 1px solid rgba(0, 240, 255, 0.35) !important;
+    background: rgba(12, 14, 26, 0.98) !important;
+    backdrop-filter: blur(28px) !important;
+    -webkit-backdrop-filter: blur(28px) !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 240, 255, 0.15) !important;
+    z-index: 9999 !important;
+    transform: translateY(105%) !important;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    touch-action: pan-y !important;
+  }
+
+  .watch-party-drawer.open {
+    transform: translateY(0) !important;
+  }
+
+  .party-drawer-header::before {
+    content: '';
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .party-drawer-header {
+    position: relative;
+    padding: 18px 16px 12px 16px;
+  }
+
+  .party-drawer-title {
+    font-size: 1.35rem;
+  }
+
+  .party-drawer-body {
+    padding: 12px 16px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    flex: 1 !important;
+  }
+
+  body.party-drawer-active {
+    overflow: hidden !important;
+  }
+
+  body.party-drawer-active .party-reactions-bar,
+  body.party-drawer-active .party-reactions-unhide-btn {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+
+/* 2. Small Screen & Mobile Landscape: Right-docked scrollable panel (Matches Screenshot) */
+@media (max-height: 600px), (orientation: landscape) and (max-height: 650px) {
+  .watch-party-drawer {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: auto !important;
+    right: -360px !important;
+    width: min(340px, 80vw) !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+    border-left: 1px solid rgba(0, 240, 255, 0.3) !important;
+    border-top: none !important;
+    background: rgba(10, 12, 22, 0.97) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    transform: none !important;
+    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    touch-action: pan-y !important;
+    z-index: 60 !important;
+  }
+
+  .watch-party-drawer.open {
+    right: 0 !important;
+    transform: none !important;
+  }
+
+  .party-drawer-header {
+    padding: 8px 12px !important;
+  }
+
+  .party-drawer-header::before {
+    display: none !important;
+  }
+
+  .party-drawer-title {
+    font-size: 1.2rem !important;
+  }
+
+  .party-tab-nav-btn {
+    padding: 6px 4px !important;
+    font-size: 1.05rem !important;
+  }
+
+  .party-drawer-body {
+    padding: 8px 10px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    flex: 1 !important;
+  }
+
+  .party-panel-box {
+    padding: 8px 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .party-panel-box h4 {
+    font-size: 1.15rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .party-panel-box p {
+    font-size: 0.95rem !important;
+    margin-bottom: 6px !important;
+    line-height: 1.3 !important;
+  }
+
+  .party-room-code-tag {
+    font-size: 0.95rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .party-room-code-val {
+    font-size: 1.45rem !important;
+    letter-spacing: 2px !important;
+  }
+
+  .party-dj-control-box {
+    padding: 6px 8px !important;
+    margin: 6px 0 !important;
+  }
+
+  .party-dj-status-row {
+    font-size: 1.05rem !important;
+  }
+
+  .party-dj-toggle-btn {
+    padding: 4px 8px !important;
+    font-size: 0.95rem !important;
+  }
+
+  .party-btn-primary {
+    font-size: 1.05rem !important;
+    padding: 7px 10px !important;
+    margin-top: 6px !important;
+  }
+
+  .party-btn-secondary {
+    font-size: 1.0rem !important;
+    padding: 6px 10px !important;
+    margin-top: 6px !important;
+  }
+
+  .party-chat-container {
+    min-height: 130px !important;
+    padding-top: 6px !important;
+  }
+
+  .party-chat-messages {
+    min-height: 80px !important;
+    max-height: 200px !important;
+    gap: 6px !important;
+  }
+
+  .party-chat-msg {
+    font-size: 1.05rem !important;
+    padding: 5px 8px !important;
+  }
+
+  .party-chat-input-bar {
+    padding: 6px 0 !important;
+  }
+
+  .party-chat-input {
+    font-size: 1.05rem !important;
+    padding: 6px 10px !important;
+  }
+
+  /* Compact Floating Reactions Bar on Mobile */
+  .party-reactions-bar,
+  .party-reactions-unhide-btn {
+    bottom: 48px;
+    right: 8px;
+  }
+
+  .party-reactions-bar {
+    padding: 3px 6px;
+    gap: 3px;
+    background: rgba(10, 12, 22, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .party-reactions-unhide-btn {
+    padding: 4px 10px;
+    font-size: 1.05rem;
+  }
+
+  .party-reaction-btn {
+    font-size: 1.25rem;
+    padding: 2px 3px;
+  }
+
+  .flying-reaction {
+    bottom: 55px;
+    font-size: 2.0rem;
+  }
+
+  .party-sync-toast {
+    top: 50px;
+    font-size: 1.1rem;
+    padding: 6px 14px;
+  }
+}
+
+/* Fullscreen mode (landscape mobile or desktop fullscreen) */
+:fullscreen .watch-party-drawer,
+:-webkit-full-screen .watch-party-drawer {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: auto !important;
+  right: -360px !important;
+  width: min(340px, 80vw) !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  border-radius: 0 !important;
+  transform: none !important;
+  touch-action: pan-y !important;
+}
+
+:fullscreen .watch-party-drawer.open,
+:-webkit-full-screen .watch-party-drawer.open {
+  right: 0 !important;
+  transform: none !important;
+}
+
+/* Non-blocking Host Control Request Banner (Bug 5 Fix) */
+.party-control-req-banner {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 60;
+  background: rgba(14, 16, 28, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  border-radius: 14px;
+  padding: 12px 18px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.75), 0 0 25px rgba(0, 240, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 90%;
+  width: 360px;
+}
+
+.party-control-req-banner.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.party-req-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.party-req-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.party-req-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.party-req-grant {
+  background: linear-gradient(135deg, #00f0ff, #0072ff);
+  color: #0b0c16;
+}
+
+.party-req-grant:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4);
+}
+
+.party-req-deny {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.party-req-deny:hover {
+  background: rgba(255, 0, 85, 0.2);
+  border-color: #ff0055;
+  color: #ff0055;
+}
+
+/* Pseudo-fullscreen container for mobile/tablet overlay preservation (Bug 9 Fix) */
+.player-wrapper.pseudo-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 999999 !important;
+  background: #000 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+}
+
+.player-wrapper.pseudo-fullscreen .watch-party-drawer {
+  z-index: 1000000 !important;
+}
+

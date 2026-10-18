@@ -43,11 +43,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
 
-    // Get episode ID or Lunar Anime ID from URL params
+    // Get episode ID or Lunar Anime ID from URL params (supports clean /watch?id=1735&ep=1&t=681)
     const urlParams = new URLSearchParams(window.location.search);
-    const episodeId = parseInt(urlParams.get('episodeId'));
-    const lunarId = urlParams.get('lunarId') || urlParams.get('anilistId');
-    const epNum = parseInt(urlParams.get('ep') || urlParams.get('epNum') || '1', 10);
+    const rawId = urlParams.get('id');
+    const epParam = urlParams.get('ep') || urlParams.get('epNum');
+    const isLunarFromId = rawId && (rawId.startsWith('lunar-') || epParam || isNaN(parseInt(rawId)));
+    const episodeId = parseInt(urlParams.get('episodeId') || (!isLunarFromId && rawId ? rawId : null));
+    const lunarId = urlParams.get('lunarId') || urlParams.get('anilistId') || (isLunarFromId ? String(rawId).replace(/^lunar-/, '') : null);
+    let epNum = parseInt(epParam || '1', 10);
 
     if (!episodeId && !lunarId) {
       alert('No episode selected to watch. Redirecting to home.');
@@ -75,6 +78,139 @@ document.addEventListener('DOMContentLoaded', async function () {
     const rewind10Btn = document.querySelector('.rewind-10');
     const nextBtn = document.querySelector('.next-btn');
     const forward10Btn = document.querySelector('.forward-10');
+
+    // Animated Player Loader & Autoplay Recovery Elements
+    const playerLoadingOverlay = document.getElementById('playerLoadingOverlay');
+    const playerLoadingTitle = document.getElementById('playerLoadingTitle');
+    const playerLoadingSubtitle = document.getElementById('playerLoadingSubtitle');
+    const playerUnmuteBanner = document.getElementById('playerUnmuteBanner');
+    const playerUnmuteBtn = document.getElementById('playerUnmuteBtn');
+    const playerClickToPlayOverlay = document.getElementById('playerClickToPlayOverlay');
+    const playerClickToPlayBtn = document.getElementById('playerClickToPlayBtn');
+
+    function showPlayerLoader(title = 'Loading Episode...', subtitle = 'Connecting to high-speed stream') {
+      if (playerLoadingTitle) playerLoadingTitle.textContent = title;
+      if (playerLoadingSubtitle) playerLoadingSubtitle.textContent = subtitle;
+      if (playerLoadingOverlay) {
+        playerLoadingOverlay.classList.remove('hidden');
+        playerLoadingOverlay.classList.add('active');
+      }
+      if (videoPlayer) videoPlayer.classList.add('loading');
+    }
+
+    function hidePlayerLoader() {
+      if (playerLoadingOverlay) {
+        playerLoadingOverlay.classList.remove('active');
+      }
+      if (videoPlayer) videoPlayer.classList.remove('loading');
+    }
+
+    function hideUnmuteBanner() {
+      if (playerUnmuteBanner) playerUnmuteBanner.classList.add('hidden');
+    }
+
+    function showUnmuteBanner() {
+      if (playerUnmuteBanner) playerUnmuteBanner.classList.remove('hidden');
+    }
+
+    function hideClickToPlayOverlay() {
+      if (playerClickToPlayOverlay) playerClickToPlayOverlay.classList.add('hidden');
+    }
+
+    function showClickToPlayOverlay() {
+      if (playerClickToPlayOverlay) playerClickToPlayOverlay.classList.remove('hidden');
+    }
+
+    if (playerUnmuteBtn) {
+      playerUnmuteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (mainVideo) {
+          mainVideo.muted = false;
+          mainVideo.volume = 1;
+          if (volumeSlider) volumeSlider.value = 100;
+          if (volumeBtn) volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        }
+        hideUnmuteBanner();
+        showPlayerToast('Audio Unmuted 🔊');
+      });
+    }
+
+    if (playerClickToPlayBtn) {
+      playerClickToPlayBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hideClickToPlayOverlay();
+        if (mainVideo) {
+          mainVideo.muted = false;
+          mainVideo.play().catch(err => {
+            console.warn('[Player] Manual play attempt failed:', err);
+            mainVideo.muted = true;
+            mainVideo.play();
+            showUnmuteBanner();
+          });
+        }
+      });
+    }
+
+    function attemptAutoplay(videoEl = mainVideo) {
+      if (!videoEl) return;
+      hideClickToPlayOverlay();
+
+      const playPromise = videoEl.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          hidePlayerLoader();
+          hideUnmuteBanner();
+          hideClickToPlayOverlay();
+          if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        }).catch(err => {
+          console.warn('[Autoplay] Unmuted autoplay blocked by browser policy, attempting muted fallback...', err);
+          videoEl.muted = true;
+          videoEl.play().then(() => {
+            hidePlayerLoader();
+            showUnmuteBanner();
+            hideClickToPlayOverlay();
+            if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+          }).catch(mutedErr => {
+            console.error('[Autoplay] Muted autoplay also blocked:', mutedErr);
+            hidePlayerLoader();
+            showClickToPlayOverlay();
+            if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+          });
+        });
+      }
+    }
+
+    // Attach buffer, seek, and loading lifecycle listeners to mainVideo
+    if (mainVideo) {
+      mainVideo.addEventListener('waiting', () => {
+        if (!mainVideo.paused && !mainVideo.ended) {
+          showPlayerLoader('Buffering...', 'Synchronizing stream buffer...');
+        }
+      });
+      mainVideo.addEventListener('stalled', () => {
+        if (!mainVideo.paused && !mainVideo.ended) {
+          showPlayerLoader('Buffering...', 'Re-establishing stream connection...');
+        }
+      });
+      mainVideo.addEventListener('seeking', () => {
+        showPlayerLoader('Seeking...', 'Jumping to timeline position...');
+      });
+      mainVideo.addEventListener('playing', () => {
+        hidePlayerLoader();
+        hideClickToPlayOverlay();
+        if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+      });
+      mainVideo.addEventListener('canplay', () => {
+        if (!mainVideo.paused) {
+          hidePlayerLoader();
+        }
+      });
+      mainVideo.addEventListener('timeupdate', () => {
+        if (!mainVideo.paused && mainVideo.currentTime > 0) {
+          hidePlayerLoader();
+        }
+      });
+    }
 
     // Auto-next checkbox
     const autoNextCheckbox = document.getElementById('auto-next');
@@ -662,6 +798,192 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     }
 
+    // Streaming Server Auto-Fallback Handler (Deep Fix for server stalls)
+    function autoFallbackNextServer() {
+      if (!currentEpisode || !currentEpisode.servers) return;
+      const order = ['server-1', 'server-2', 'server-4', 'server-3'];
+      const curIdx = order.indexOf(activeServerId);
+      const nextId = (curIdx >= 0 && curIdx < order.length - 1) ? order[curIdx + 1] : (curIdx !== 0 ? 'server-1' : null);
+      if (nextId && nextId !== activeServerId) {
+        showPlayerToast(`Stream interrupted, auto-switching to ${nextId.toUpperCase()}...`);
+        showPlayerLoader('Switching Server...', 'Connecting to backup streaming host...');
+        switchServer(nextId, true);
+      } else {
+        showPlayerToast('All streaming servers temporarily unavailable. Please retry shortly.');
+        hidePlayerLoader();
+      }
+    }
+
+    // Seamless In-Player Episode Switching (Deep Fix for next episode loading)
+    let isSwitchingEpisode = false;
+
+    async function switchEpisode(targetEpNum, targetAudioType = null, targetSeekTime = null) {
+      targetEpNum = parseInt(targetEpNum, 10);
+      if (isNaN(targetEpNum) || targetEpNum < 1) return;
+      if (isSwitchingEpisode) return;
+      isSwitchingEpisode = true;
+
+      try {
+        if (targetAudioType) {
+          currentAudioType = targetAudioType;
+          localStorage.setItem('infinx_preferred_audio_type', targetAudioType);
+        }
+
+        cancelOutroCountdown();
+        showPlayerLoader(`Loading Episode ${targetEpNum}...`, 'Connecting to high-speed stream...');
+
+        // Pause and cleanly tear down current playback
+        if (mainVideo) {
+          try { mainVideo.pause(); } catch (e) { }
+        }
+        if (hls) {
+          try { hls.destroy(); } catch (e) { }
+          hls = null;
+        }
+
+        epNum = targetEpNum;
+
+        // Find episode metadata in siblingEpisodes
+        const epData = (siblingEpisodes || []).find(e => parseInt(e.episodeNumber || e.number, 10) === targetEpNum);
+        const epTitle = epData?.title ? `Episode ${targetEpNum}: ${epData.title}` : `Episode ${targetEpNum}`;
+        const cleanTitle = epData?.title || `Episode ${targetEpNum}`;
+
+        if (currentEpisode) {
+          currentEpisode.episodeNumber = targetEpNum;
+          currentEpisode.id = `lunar-${lunarId}-${targetEpNum}`;
+          currentEpisode.title = epTitle;
+          if (epData?.thumbnail) currentEpisode.thumbnail = epData.thumbnail;
+          if (epData?.description) currentEpisode.description = stripHtmlTags(epData.description);
+        }
+
+        // Update URL in browser address bar without hard page reload (preserves user gesture activation & fullscreen)
+        try {
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.set('ep', targetEpNum);
+          if (currentAudioType) newUrl.searchParams.set('type', currentAudioType);
+          if (targetSeekTime && targetSeekTime > 0) {
+            newUrl.searchParams.set('t', Math.floor(targetSeekTime));
+          } else {
+            newUrl.searchParams.delete('t');
+          }
+          window.history.pushState({ ep: targetEpNum, id: lunarId }, '', newUrl.toString());
+        } catch (e) { }
+
+        // Update Document Title
+        const animeTitle = currentEpisode?.show?.title || 'Watch Anime';
+        document.title = `${animeTitle} - Episode ${targetEpNum}: ${cleanTitle}`;
+
+        // Update In-Player Title & Meta elements
+        if (videoTitle) videoTitle.textContent = epTitle;
+        if (episodeElement) episodeElement.textContent = `Episode ${targetEpNum}`;
+        const descText = document.querySelector('.description-text');
+        if (descText && epData?.description) {
+          descText.textContent = stripHtmlTags(epData.description);
+        }
+
+        // Update Playlist Items active state in Sidebar & Drawer
+        document.querySelectorAll('.playlist-item').forEach(item => {
+          const durationEl = item.querySelector('.item-duration');
+          const titleEl = item.querySelector('.item-title');
+          const isThisEp = (durationEl && durationEl.textContent.trim().startsWith(`Ep ${targetEpNum}`)) ||
+                           (titleEl && (titleEl.textContent.startsWith(`Episode ${targetEpNum}:`) || titleEl.textContent === `Episode ${targetEpNum}`));
+          item.classList.toggle('active', !!isThisEp);
+          if (isThisEp) {
+            try { item.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { }
+          }
+        });
+
+        // Update Nav button states (Prev / Next disabled states)
+        updateNavButtonsState();
+
+        // Reset intro/outro detection markers for new episode
+        detectedIntroOutro = { intro: null, outro: null };
+        streamIntroOutro = { intro: null, outro: null };
+        updateTimelineMarkers();
+
+        // Fetch stream for new episode
+        let streamUrl = null;
+        const hostParam = (currentAudioType === 'dub') ? 'yuki' : (currentEpisode?.servers?.find(s => s.id === activeServerId)?.host || 'zuna');
+
+        try {
+          const sRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=${hostParam}&type=${currentAudioType}`);
+          if (sRes.ok) {
+            const sData = await sRes.json();
+            if (sData.streamUrl) {
+              streamUrl = sData.streamUrl;
+              if (sData.intro || sData.outro) {
+                streamIntroOutro = { intro: sData.intro, outro: sData.outro };
+                detectedIntroOutro = { intro: sData.intro, outro: sData.outro };
+                updateTimelineMarkers();
+              }
+              if (sData.subtitles && sData.subtitles.length > 0) {
+                subtitleTracks = sData.subtitles;
+                updateSubtitleOptions();
+              }
+            }
+          }
+        } catch (fetchErr) {
+          console.warn('[switchEpisode] Primary stream fetch failed:', fetchErr);
+        }
+
+        // Fallback to sub or other hosts if initial stream was empty
+        if (!streamUrl && currentAudioType === 'dub') {
+          try {
+            const fbRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=zuna&type=sub`);
+            if (fbRes.ok) {
+              const fbData = await fbRes.json();
+              if (fbData.streamUrl) {
+                streamUrl = fbData.streamUrl;
+                currentAudioType = 'sub';
+                activeServerId = 'server-1';
+                updateAudioOptions();
+                showPlayerToast('English Dub unavailable for this episode. Playing Japanese Sub.');
+              }
+            }
+          } catch (e) { }
+        }
+
+        if (!streamUrl) {
+          for (const altHost of ['sora', '3rdprovider']) {
+            try {
+              const altRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=${altHost}&type=sub`);
+              if (altRes.ok) {
+                const altData = await altRes.json();
+                if (altData.streamUrl) {
+                  streamUrl = altData.streamUrl;
+                  break;
+                }
+              }
+            } catch (e) { }
+          }
+        }
+
+        if (streamUrl) {
+          showPlayerToast(`Now Playing Episode ${targetEpNum}`);
+          initHLS(streamUrl, targetSeekTime, true);
+        } else {
+          showPlayerToast(`Could not load stream for Episode ${targetEpNum}. Please try selecting another server.`);
+          hidePlayerLoader();
+        }
+      } catch (err) {
+        console.error('[switchEpisode] Error:', err);
+        showPlayerToast('Failed to switch episode. Please try again.');
+        hidePlayerLoader();
+      } finally {
+        isSwitchingEpisode = false;
+      }
+    }
+
+    window.switchPlayerEpisode = switchEpisode;
+
+    // Listen for browser Back/Forward navigation
+    window.addEventListener('popstate', (e) => {
+      const stateParams = new URLSearchParams(window.location.search);
+      const poppedEp = parseInt(stateParams.get('ep') || stateParams.get('epNum'), 10);
+      if (poppedEp && poppedEp !== epNum && lunarId) {
+        switchEpisode(poppedEp, stateParams.get('type') || currentAudioType, parseFloat(stateParams.get('t')) || 0);
+      }
+    });
 
     // Initialize HLS
     function initHLS(videoSrc, seekTime = null, autoPlay = true) {
@@ -829,10 +1151,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           }
 
           if (autoPlay) {
-            mainVideo.play().catch(e => {
-              console.log("Autoplay prevented:", e);
-              playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            });
+            attemptAutoplay(mainVideo);
           }
         });
 
@@ -925,30 +1244,38 @@ document.addEventListener('DOMContentLoaded', async function () {
           if (data.fatal) {
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
-                hls.startLoad();
+                if (window._hlsNetworkRetryCount === undefined) window._hlsNetworkRetryCount = 0;
+                window._hlsNetworkRetryCount++;
+                if (window._hlsNetworkRetryCount <= 2) {
+                  showPlayerLoader('Reconnecting Stream...', 'Retrying network connection...');
+                  hls.startLoad();
+                } else {
+                  window._hlsNetworkRetryCount = 0;
+                  console.warn('[HLS] Network retries exhausted, auto-switching to fallback server...');
+                  autoFallbackNextServer();
+                }
                 break;
               case Hls.ErrorTypes.MEDIA_ERROR:
                 hls.recoverMediaError();
                 break;
               default:
                 hls.destroy();
+                autoFallbackNextServer();
                 break;
             }
           }
         });
 
       } else if (mainVideo.canPlayType('application/vnd.apple.mpegurl')) {
-        videoPlayer.classList.remove('loading');
         mainVideo.src = resolvedVideoSrc;
         mainVideo.addEventListener('loadedmetadata', function () {
-          videoPlayer.classList.remove('loading');
           if (seekTime !== null && !isNaN(seekTime) && seekTime > 0) {
             mainVideo.currentTime = seekTime;
           } else {
             resumeSavedProgress();
           }
           if (autoPlay) {
-            mainVideo.play().catch(e => { });
+            attemptAutoplay(mainVideo);
           }
 
           if (mainVideo.audioTracks && mainVideo.audioTracks.length > 0) {
@@ -2793,8 +3120,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (lunarId) {
         const curEp = parseInt(currentEpisode?.episodeNumber || epNum, 10) || 1;
         if (curEp > 1) {
-          const audioParam = currentAudioType ? `&type=${currentAudioType}` : '';
-          window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${curEp - 1}${audioParam}`;
+          switchEpisode(curEp - 1);
         } else {
           showPlayerToast('This is the first episode!');
         }
@@ -2803,7 +3129,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
       if (curIndex > 0) {
         const prevEp = siblingEpisodes[curIndex - 1];
-        window.location.href = `/video-player/index.html?episodeId=${prevEp.id}`;
+        window.location.href = `/watch?id=${prevEp.id}`;
       } else {
         showPlayerToast('This is the first episode!');
       }
@@ -2813,8 +3139,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (lunarId) {
         const curEp = parseInt(currentEpisode?.episodeNumber || epNum, 10) || 1;
         if (curEp < siblingEpisodes.length) {
-          const audioParam = currentAudioType ? `&type=${currentAudioType}` : '';
-          window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${curEp + 1}${audioParam}`;
+          switchEpisode(curEp + 1);
         } else {
           showPlayerToast('This is the final episode!');
         }
@@ -2823,7 +3148,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       const curIndex = siblingEpisodes.findIndex(e => e.id === episodeId);
       if (curIndex >= 0 && curIndex < siblingEpisodes.length - 1) {
         const nextEp = siblingEpisodes[curIndex + 1];
-        window.location.href = `/video-player/index.html?episodeId=${nextEp.id}`;
+        window.location.href = `/watch?id=${nextEp.id}`;
       } else {
         showPlayerToast('This is the final episode!');
       }
@@ -4038,7 +4363,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const targetId = e.target.value;
             if (targetId) {
               const cleanId = typeof targetId === 'string' && targetId.startsWith('lunar-') ? targetId.replace('lunar-', '') : targetId;
-              window.location.href = `/video-player/index.html?lunarId=${cleanId}&ep=1`;
+              window.location.href = `/watch?id=${cleanId}&ep=1`;
             }
           };
         };
@@ -4102,13 +4427,17 @@ document.addEventListener('DOMContentLoaded', async function () {
         `;
 
         const playAction = function () {
-          const seekParam = (epProg && epProg.positionSeconds > 10 && !epProg.completed) ? `&t=${epProg.positionSeconds}` : '';
+          const seekPos = (epProg && epProg.positionSeconds > 10 && !epProg.completed) ? epProg.positionSeconds : null;
           if (lunarId) {
-            const thisNum = ep.episodeNumber || ep.number;
-            const audioParam = currentAudioType ? `&type=${currentAudioType}` : '';
-            window.location.href = `/video-player/index.html?lunarId=${lunarId}&ep=${thisNum}${audioParam}${seekParam}`;
+            const thisNum = parseInt(ep.episodeNumber || ep.number, 10);
+            if (thisNum === epNum) {
+              if (seekPos && mainVideo) mainVideo.currentTime = seekPos;
+              return;
+            }
+            switchEpisode(thisNum, currentAudioType, seekPos);
           } else {
-            window.location.href = `/video-player/index.html?episodeId=${ep.id}${seekParam}`;
+            const seekParam = seekPos ? `&t=${seekPos}` : '';
+            window.location.href = `/watch?id=${ep.id}${seekParam}`;
           }
         };
 

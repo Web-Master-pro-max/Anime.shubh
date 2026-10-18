@@ -1108,8 +1108,8 @@
         const seekParam = (hasResumeProgress && resumePosition > 0) ? `&t=${resumePosition}` : '';
         const epNum = resumeEpisode.episodeNumber || resumeEpisode.number || 1;
         const playUrl = show.isLunar
-          ? `/video-player/index.html?lunarId=${show.anilistId || anilistId}&ep=${epNum}${seekParam}`
-          : `/video-player/index.html?episodeId=${resumeEpisode.id}${seekParam}`;
+          ? `/watch?id=${show.anilistId || anilistId}&ep=${epNum}${seekParam}`
+          : `/watch?id=${resumeEpisode.id}${seekParam}`;
 
         if (typeof window.requireAuthPlay === 'function') {
           if (!window.requireAuthPlay(e, playUrl)) return;
@@ -1144,8 +1144,8 @@
           const seekParam = (isInProgress && epProg.positionSeconds > 0) ? `&t=${epProg.positionSeconds}` : '';
           const epNum = ep.episodeNumber || ep.number;
           const epPlayUrl = show.isLunar
-            ? `/video-player/index.html?lunarId=${show.anilistId || anilistId}&ep=${epNum}${seekParam}`
-            : `/video-player/index.html?episodeId=${ep.id}${seekParam}`;
+            ? `/watch?id=${show.anilistId || anilistId}&ep=${epNum}${seekParam}`
+            : `/watch?id=${ep.id}${seekParam}`;
 
           const thumbHtml = ep.thumbnail ? `
             <div class="ep-thumbnail-box">

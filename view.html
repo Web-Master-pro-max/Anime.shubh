@@ -347,6 +347,32 @@
             box-shadow: 0 4px 15px rgba(255, 0, 85, 0.15);
         }
 
+        .mobile-search-btn {
+            display: inline-flex;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--gray-border);
+            color: var(--light-text);
+            font-size: 1.4rem;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+            text-decoration: none;
+        }
+
+        .mobile-search-btn:hover,
+        .mobile-search-btn:active {
+            background: rgba(255, 0, 85, 0.2);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 12px rgba(255, 0, 85, 0.4);
+            transform: scale(1.05);
+        }
+
         /* === dynamic page header === */
         .category-hero {
             margin-top: calc(var(--header-height) + 30px);
@@ -1264,10 +1290,13 @@
         </nav>
 
         <div style="display: flex; align-items: center; gap: 10px;">
+            <!-- <button class="mobile-search-btn" id="mobileHeaderSearchBtn" aria-label="Open Search">
+                <i class="fas fa-search"></i>
+            </button>-->
             <a href="download.html" class="back-home"
                 style="background: var(--gradient); border: none; font-weight: 700;"><i class="fas fa-mobile-alt"></i>
                 App</a>
-            <a href="javascript:history.back()" class="back-home"><i class="fas fa-arrow-left"></i> Back</a>
+            <!-- <a href="javascript:history.back()" class="back-home"><i class="fas fa-arrow-left"></i> Back</a>-->
             <div class="mobile-toggle" id="mobileToggle">
                 <i class="fas fa-bars"></i>
             </div>
@@ -1316,8 +1345,12 @@
         <a href="index.html" class="tab-item" id="tabHome"><i class="fas fa-home"></i><span>Home</span></a>
         <a href="anime.html" class="tab-item" id="tabAnime"><i class="fas fa-tv"></i><span>Anime</span></a>
         <a href="#" class="tab-item" id="tabSearch"><i class="fas fa-search"></i><span>Search</span></a>
-        <a href="#watchlist" class="tab-item" id="tabWatchlist"><i class="fas fa-heart"></i><span>Watchlist</span></a>
-        <a href="#history" class="tab-item" id="tabHistory"><i class="fas fa-history"></i><span>History</span></a>
+        <a href="index.html#publicLiveChatSection" class="tab-item" id="tabChat"><i
+                class="fas fa-comments"></i><span>Chat</span></a>
+        <a href="view.html#watchlist" class="tab-item" id="tabWatchlist"><i
+                class="fas fa-heart"></i><span>Watchlist</span></a>
+        <a href="profile.html" class="tab-item" id="tabProfile"><i
+                class="fas fa-user-ninja"></i><span>Profile</span></a>
     </nav>
 
     <script>
@@ -1426,16 +1459,24 @@
                 }
             });
 
-            // Set bottom tab active classes
+            // Set bottom tab active classes safely
             const tabHome = document.getElementById('tabHome');
             const tabWatchlist = document.getElementById('tabWatchlist');
             const tabHistory = document.getElementById('tabHistory');
 
             if (currentCategory === 'watchlist') {
-                tabWatchlist.classList.add('active');
+                if (tabWatchlist) tabWatchlist.classList.add('active');
             } else if (currentCategory === 'history') {
-                tabHistory.classList.add('active');
+                if (tabHistory) tabHistory.classList.add('active');
             }
+
+            // Also highlight active desktop nav link
+            document.querySelectorAll('.navbar .nav-link').forEach(link => {
+                const href = link.getAttribute('href') || '';
+                if (href.endsWith(`#${currentCategory}`) || href.includes(`view.html#${currentCategory}`)) {
+                    link.classList.add('active');
+                }
+            });
 
             // Set hero area
             const hero = document.getElementById('categoryHero');
@@ -1446,6 +1487,22 @@
                         <h1>Search Results: "${searchQuery}"</h1>
                     </div>
                     <div class="results-count" id="catResultCount">Loading...</div>
+                `;
+            } else if (currentCategory === 'history') {
+                const currentInfo = catInfo[currentCategory];
+                hero.innerHTML = `
+                    <div class="category-title-block" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 15px;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div class="category-icon" style="background: rgba(0, 168, 255, 0.15); border: 1px solid rgba(0, 168, 255, 0.35);"><i class="fas ${currentInfo.icon}" style="color: ${currentInfo.color};"></i></div>
+                            <div>
+                                <h1 style="margin: 0;">${currentInfo.name}</h1>
+                                <div class="results-count" id="catResultCount" style="margin-top: 4px;">Loading history...</div>
+                            </div>
+                        </div>
+                        <button id="clearHistoryBtn" type="button" style="background: rgba(255, 0, 85, 0.12); border: 1px solid rgba(255, 0, 85, 0.35); color: #ff0055; padding: 8px 18px; border-radius: 20px; font-family: Outfit, sans-serif; font-weight: 600; font-size: 1.3rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: var(--transition);">
+                            <i class="fas fa-trash-alt"></i> Clear History
+                        </button>
+                    </div>
                 `;
             } else {
                 const currentInfo = catInfo[currentCategory];
@@ -1547,8 +1604,13 @@
                     if (token) {
                         try {
                             const res = await fetch(`${API_BASE}/user/history`, { headers });
-                            if (res.ok) historyData = await res.json();
-                        } catch (e) { }
+                            if (res.ok) {
+                                const json = await res.json();
+                                if (Array.isArray(json)) historyData = json;
+                            }
+                        } catch (e) {
+                            console.warn('Could not fetch server history:', e);
+                        }
                     }
 
                     // Also incorporate local continue watching items
@@ -1557,61 +1619,111 @@
                         const raw = localStorage.getItem('@infinx_continue_watching');
                         if (raw) localHistory = JSON.parse(raw);
                         if (!Array.isArray(localHistory)) localHistory = [];
-                    } catch (e) { }
+                    } catch (e) {
+                        localHistory = [];
+                    }
 
                     const mergedMap = new Map();
-                    // Add local first
+
+                    // Add local history first
                     localHistory.forEach(item => {
                         if (!item) return;
-                        const key = item.isLunar ? `lunar-${item.lunarId || item.anilistId}` : `show-${item.showId || item.id}`;
-                        mergedMap.set(key, item);
+                        const isLunar = !!(item.isLunar || item.lunarId || item.anilistId);
+                        const aId = item.lunarId || item.anilistId;
+                        const key = isLunar ? `lunar-${aId}` : `show-${item.showId || item.id || item.episodeId}`;
+                        mergedMap.set(key, { ...item, _isLocal: true });
                     });
+
                     // Merge server history
                     (historyData || []).forEach(item => {
                         if (!item) return;
-                        const isLunar = !!(item.isLunar || item.lunarId || item.episode?.show?.isLunar);
+                        const isLunar = !!(item.isLunar || item.lunarId || item.episode?.show?.isLunar || item.episode?.show?.anilistId);
                         const anilistId = item.lunarId || item.episode?.show?.anilistId;
-                        const key = isLunar ? `lunar-${anilistId}` : `show-${item.episode?.show?.id || item.episodeId}`;
-                        mergedMap.set(key, item);
+                        const key = isLunar ? `lunar-${anilistId}` : `show-${item.episode?.show?.id || item.episodeId || item.id}`;
+
+                        if (!mergedMap.has(key)) {
+                            mergedMap.set(key, item);
+                        } else {
+                            const existing = mergedMap.get(key);
+                            const existingTime = existing.lastWatchedAt || (existing.watchedAt ? new Date(existing.watchedAt).getTime() : 0);
+                            const serverTime = item.watchedAt ? new Date(item.watchedAt).getTime() : (item.lastWatchedAt || 0);
+                            if (serverTime >= existingTime) {
+                                mergedMap.set(key, item);
+                            }
+                        }
                     });
 
-                    // We map history items so they can be rendered as movie cards!
+                    // Map history items into playable cards
                     categoryMovies = Array.from(mergedMap.values()).map(item => {
                         if (!item) return null;
-                        const isLunar = !!(item.isLunar || item.lunarId || item.episode?.show?.isLunar);
-                        const duration = item.duration || 1;
-                        const progress = item.progress || 0;
-                        const percent = item.percent !== undefined ? item.percent : Math.min(100, Math.max(0, (progress / duration) * 100));
+                        const isLunar = !!(item.isLunar || item.lunarId || item.anilistId || item.episode?.show?.isLunar || item.episode?.show?.anilistId);
+                        const duration = Math.max(1, item.duration || 1);
+                        const progress = Math.max(0, item.progress || 0);
+                        const percent = (item.percent !== undefined && item.percent !== null)
+                            ? Math.min(100, Math.max(0, Number(item.percent)))
+                            : Math.min(100, Math.max(0, Math.round((progress / duration) * 100)));
 
                         if (isLunar) {
-                            const anilistId = item.lunarId || item.anilistId || item.episode?.show?.anilistId;
+                            const anilistId = item.lunarId || item.anilistId || item.episode?.show?.anilistId || (typeof item.id === 'string' ? item.id.replace('lunar-', '') : null);
                             const epNum = item.episodeNumber || item.episode?.episodeNumber || 1;
                             const title = item.title || item.showTitle || item.episode?.show?.title || 'Anime Series';
                             const poster = item.poster || item.episode?.show?.poster || 'Postes/spyfamS3p.jpg';
+                            const banner = item.banner || item.episode?.show?.banner || '';
+                            const watchedAt = item.watchedAt ? new Date(item.watchedAt).getTime() : (item.lastWatchedAt || Date.now());
+
                             return {
                                 id: `lunar-${anilistId}`,
                                 isLunar: true,
                                 lunarId: anilistId,
+                                anilistId: anilistId,
                                 title: title,
                                 poster: poster,
+                                banner: banner,
                                 historyPercent: percent,
-                                episodeId: `lunar-${anilistId}-${epNum}`,
+                                progress: progress,
+                                duration: duration,
+                                episodeId: item.episodeId || `lunar-${anilistId}-${epNum}`,
                                 episodeNumber: epNum,
-                                rating: '9.0',
-                                releaseYear: 2024,
-                                genres: ['Anime']
+                                rating: item.rating || item.episode?.show?.rating || '9.0',
+                                releaseYear: item.releaseYear || item.year || 2024,
+                                genres: item.genres || ['Anime'],
+                                watchedAt: watchedAt
                             };
                         } else if (item.episode && item.episode.show) {
                             const show = item.episode.show;
+                            const watchedAt = item.watchedAt ? new Date(item.watchedAt).getTime() : Date.now();
                             return {
                                 ...show,
                                 historyPercent: percent,
+                                progress: progress,
+                                duration: duration,
                                 episodeId: item.episodeId,
-                                episodeNumber: item.episode.episodeNumber
+                                episodeNumber: item.episode.episodeNumber || 1,
+                                watchedAt: watchedAt
+                            };
+                        } else if (item.title || item.showTitle) {
+                            const watchedAt = item.lastWatchedAt || (item.watchedAt ? new Date(item.watchedAt).getTime() : Date.now());
+                            return {
+                                id: item.showId || item.id || `show-${item.episodeId}`,
+                                title: item.title || item.showTitle || 'Video',
+                                poster: item.poster || '',
+                                banner: item.banner || '',
+                                historyPercent: percent,
+                                progress: progress,
+                                duration: duration,
+                                episodeId: item.episodeId,
+                                episodeNumber: item.episodeNumber || 1,
+                                rating: item.rating || '8.5',
+                                releaseYear: item.releaseYear || item.year || 2024,
+                                genres: item.genres || ['Action'],
+                                watchedAt: watchedAt
                             };
                         }
                         return null;
                     }).filter(Boolean);
+
+                    // Sort history from most recent to oldest
+                    categoryMovies.sort((a, b) => (b.watchedAt || 0) - (a.watchedAt || 0));
                 } else {
                     const res = await fetch(`${API_BASE}/shows/categories`);
                     if (!res.ok) throw new Error('API request failed');
@@ -1670,6 +1782,46 @@
                 document.getElementById('catResultCount').innerText = filtered.length + ' titles';
 
                 if (filtered.length === 0) {
+                    if (currentCategory === 'history') {
+                        document.getElementById('catResultCount').innerText = '0 titles';
+                        document.getElementById('categoryGrid').innerHTML = `
+                            <div class="no-results" style="grid-column: 1/-1; text-align: center; padding: 70px 20px; background: rgba(20, 20, 35, 0.45); border-radius: var(--radius); border: 1px solid var(--gray-border); margin: 30px 0;">
+                                <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(0, 168, 255, 0.12); border: 1px solid rgba(0, 168, 255, 0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                    <i class="fas fa-history" style="font-size: 3.2rem; color: #00a8ff;"></i>
+                                </div>
+                                <h3 style="font-size: 2.2rem; font-weight: 700; color: white; margin-bottom: 10px; font-family: Outfit, sans-serif;">No Watch History Found</h3>
+                                <p style="color: var(--gray-text); font-size: 1.45rem; max-width: 480px; margin: 0 auto 25px; line-height: 1.6;">
+                                    You haven't watched any anime or episodes yet. Start streaming your favorite series to track your progress and resume right where you left off!
+                                </p>
+                                <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+                                    <a href="anime.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 1.4rem; background: var(--gradient); color: white;">
+                                        <i class="fas fa-fire"></i> Explore Anime
+                                    </a>
+                                    <a href="index.html" class="btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 1.4rem; background: rgba(255,255,255,0.08); color: white; border: 1px solid var(--gray-border);">
+                                        <i class="fas fa-home"></i> Back to Home
+                                    </a>
+                                </div>
+                            </div>`;
+                        return;
+                    } else if (currentCategory === 'watchlist') {
+                        document.getElementById('catResultCount').innerText = '0 titles';
+                        document.getElementById('categoryGrid').innerHTML = `
+                            <div class="no-results" style="grid-column: 1/-1; text-align: center; padding: 70px 20px; background: rgba(20, 20, 35, 0.45); border-radius: var(--radius); border: 1px solid var(--gray-border); margin: 30px 0;">
+                                <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255, 0, 85, 0.12); border: 1px solid rgba(255, 0, 85, 0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                    <i class="fas fa-heart" style="font-size: 3.2rem; color: #ff0055;"></i>
+                                </div>
+                                <h3 style="font-size: 2.2rem; font-weight: 700; color: white; margin-bottom: 10px; font-family: Outfit, sans-serif;">Your Watchlist is Empty</h3>
+                                <p style="color: var(--gray-text); font-size: 1.45rem; max-width: 480px; margin: 0 auto 25px; line-height: 1.6;">
+                                    Browse our anime collections and movies, then tap the heart icon on any title to save it to your watchlist for quick access anytime!
+                                </p>
+                                <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+                                    <a href="anime.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 1.4rem; background: var(--gradient); color: white;">
+                                        <i class="fas fa-compass"></i> Discover Anime
+                                    </a>
+                                </div>
+                            </div>`;
+                        return;
+                    }
                     document.getElementById('categoryGrid').innerHTML = `<div class="no-results"><i class="fas fa-folder-open"></i><br />No titles match</div>`;
                     return;
                 }
@@ -1681,21 +1833,22 @@
                     let watchDisabled = '';
 
                     if (currentCategory === 'history') {
+                        const seekParam = (m.progress && m.progress > 5) ? `&t=${Math.floor(m.progress)}` : '';
                         if (m.isLunar) {
-                            const aId = m.anilistId || (typeof m.id === 'string' ? m.id.replace('lunar-', '') : m.id);
-                            watchLink = `/video-player/index.html?lunarId=${aId}&ep=${m.episodeNumber || 1}`;
+                            const aId = m.anilistId || m.lunarId || (typeof m.id === 'string' ? m.id.replace('lunar-', '') : m.id);
+                            watchLink = `/watch?id=${aId}&ep=${m.episodeNumber || 1}${seekParam}`;
                         } else {
-                            watchLink = `/video-player/index.html?episodeId=${m.episodeId}`;
+                            watchLink = `/watch?id=${m.episodeId || m.id}${seekParam}`;
                         }
                         playBtnText = '<i class="fas fa-play"></i> Resume';
                     } else if (m.isLunar || (typeof m.id === 'string' && m.id.startsWith('lunar-')) || m.anilistId) {
                         const aId = m.anilistId || (typeof m.id === 'string' ? m.id.replace('lunar-', '') : m.id);
-                        watchLink = `/video-player/index.html?lunarId=${aId}&ep=1`;
+                        watchLink = `/watch?id=${aId}&ep=1`;
                         playBtnText = '<i class="fas fa-play"></i> Watch';
                         watchDisabled = '';
                     } else {
                         const hasEpisodes = m.episodes && m.episodes.length > 0;
-                        watchLink = hasEpisodes ? `/video-player/index.html?episodeId=${m.episodes[0].id}` : '#';
+                        watchLink = hasEpisodes ? `/watch?id=${m.episodes[0].id}` : '#';
                         watchDisabled = !hasEpisodes ? ' style="opacity:0.5; pointer-events:none;"' : '';
                         playBtnText = hasEpisodes ? '<i class="fas fa-play"></i> Watch' : 'Soon';
                     }
@@ -1709,7 +1862,7 @@
                                 <div class="progress-bar-fill" style="height: 100%; background: var(--gradient); width: ${m.historyPercent}%"></div>
                             </div>
                             <div style="font-size: 1.1rem; color: var(--gray-text); margin-top: 5px; text-align: right;">
-                                Ep ${m.episodeNumber} · ${Math.round(m.historyPercent)}% watched
+                                Ep ${m.episodeNumber || 1} · ${Math.round(m.historyPercent)}% watched
                             </div>
                         `;
                     }
@@ -1717,6 +1870,16 @@
                     const posterImgUrl = (m.poster && (m.poster.startsWith('http://') || m.poster.startsWith('https://')))
                         ? m.poster
                         : window.formatMediaUrl(m.poster);
+
+                    let removeActionHtml = '';
+                    if (currentCategory === 'history') {
+                        const rawTargetId = m.isLunar ? (m.anilistId || m.lunarId) : (m.episodeId || m.id);
+                        removeActionHtml = `
+                            <button type="button" class="btn-watchlist-toggle" title="Remove from History" style="color: #ff0055; border-color: rgba(255,0,85,0.35);" onclick="window.removeHistoryItem(event, '${m.id}', '${rawTargetId}')">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        `;
+                    }
 
                     gridHtml += `
                     <div class="movie-card" onclick="if(!event.target.closest('.movie-actions')) window.openShowDetails('${m.id}')" style="cursor: pointer;">
@@ -1736,9 +1899,10 @@
                             ${progressHtml}
                             <div class="movie-actions" style="margin-top: auto; padding-top: 10px;">
                                 <a href="${watchLink}" class="btn-small" ${watchDisabled} onclick="return window.requireAuthPlay(event, '${watchLink}')">${playBtnText}</a>
+                                ${currentCategory === 'history' ? removeActionHtml : `
                                 <button class="btn-watchlist-toggle ${isFav}" onclick="toggleWatchlistItem(this, '${m.id}')">
                                     <i class="${userWatchlist.includes(String(m.id)) || userWatchlist.includes(m.id) ? 'fas fa-heart' : 'far fa-heart'}"></i>
-                                </button>
+                                </button>`}
                             </div>
                         </div>
                     </div>
@@ -1751,20 +1915,32 @@
 
             // Mobile Search Overlay listeners
             const tabSearch = document.getElementById('tabSearch');
+            const mobileHeaderSearchBtn = document.getElementById('mobileHeaderSearchBtn');
             const mobileSearchOverlay = document.getElementById('mobileSearchOverlay');
             const closeSearchOverlay = document.getElementById('closeSearchOverlay');
             const clearMobileSearch = document.getElementById('clearMobileSearch');
             const mobileSearchInput = document.getElementById('mobileSearchInput');
 
-            tabSearch.addEventListener('click', (e) => {
-                e.preventDefault();
-                mobileSearchOverlay.classList.add('active');
-                mobileSearchInput.focus();
-            });
+            const openMobileSearch = (e) => {
+                if (e) e.preventDefault();
+                if (mobileSearchOverlay) {
+                    mobileSearchOverlay.classList.add('active');
+                    if (mobileSearchInput) setTimeout(() => mobileSearchInput.focus(), 60);
+                }
+            };
 
-            closeSearchOverlay.addEventListener('click', () => {
-                mobileSearchOverlay.classList.remove('active');
-            });
+            if (tabSearch) {
+                tabSearch.addEventListener('click', openMobileSearch);
+            }
+            if (mobileHeaderSearchBtn) {
+                mobileHeaderSearchBtn.addEventListener('click', openMobileSearch);
+            }
+
+            if (closeSearchOverlay && mobileSearchOverlay) {
+                closeSearchOverlay.addEventListener('click', () => {
+                    mobileSearchOverlay.classList.remove('active');
+                });
+            }
 
             mobileSearchInput.addEventListener('input', function () {
                 if (this.value.trim()) {
@@ -1851,6 +2027,64 @@
                     }
                 } catch (e) {
                     console.error(e);
+                }
+            };
+
+            // Clear History Button handler
+            const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+            if (clearHistoryBtn) {
+                clearHistoryBtn.addEventListener('click', async () => {
+                    if (!confirm('Are you sure you want to clear your entire watch history?')) return;
+                    localStorage.removeItem('@infinx_continue_watching');
+                    if (token) {
+                        try {
+                            await fetch(`${API_BASE}/user/history`, {
+                                method: 'DELETE',
+                                headers
+                            });
+                        } catch (e) {
+                            console.warn('Server history delete error:', e);
+                        }
+                    }
+                    categoryMovies = [];
+                    renderCategory('all');
+                });
+            }
+
+            // Remove single history item handler
+            window.removeHistoryItem = async function (e, cardId, rawTargetId) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                try {
+                    let localHistory = [];
+                    try {
+                        const raw = localStorage.getItem('@infinx_continue_watching');
+                        if (raw) localHistory = JSON.parse(raw);
+                    } catch (err) {}
+                    localHistory = localHistory.filter(item => {
+                        if (!item) return false;
+                        const itemKey = item.isLunar ? `lunar-${item.lunarId || item.anilistId}` : `show-${item.showId || item.id || item.episodeId}`;
+                        return itemKey !== cardId && String(item.anilistId) !== String(rawTargetId) && String(item.lunarId) !== String(rawTargetId) && String(item.episodeId) !== String(rawTargetId) && String(item.id) !== String(cardId);
+                    });
+                    localStorage.setItem('@infinx_continue_watching', JSON.stringify(localHistory));
+
+                    if (token) {
+                        try {
+                            const isLunar = String(cardId).startsWith('lunar-');
+                            const qParam = isLunar ? `lunarId=${encodeURIComponent(rawTargetId)}` : `episodeId=${encodeURIComponent(rawTargetId)}`;
+                            await fetch(`${API_BASE}/user/history?${qParam}`, {
+                                method: 'DELETE',
+                                headers
+                            });
+                        } catch (err) {}
+                    }
+
+                    categoryMovies = categoryMovies.filter(m => m.id !== cardId);
+                    renderCategory(currentSubFilter);
+                } catch (err) {
+                    console.error('Error removing history item:', err);
                 }
             };
 

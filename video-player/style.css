@@ -44,7 +44,7 @@
 
 html {
   font-size: 16px;
-  height: 100%;
+  min-height: 100%;
   overflow-x: hidden;
 }
 
@@ -55,20 +55,21 @@ body {
   color: var(--light);
   line-height: 1.6;
   overflow-x: hidden;
-  height: 100%;
+  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: auto;
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  contain: layout style paint;
 }
 
-/* Ensure the page can extend under notches when viewport-fit=cover is used */
+/* Ensure the page can extend under notches and enable smooth touch scrolling on mobile */
 html,
 body {
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-  touch-action: manipulation;
+  touch-action: pan-y manipulation;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Header */
@@ -1318,7 +1319,9 @@ video::cue,
   font-size: 1.1rem;
   color: #71717a;
   margin-top: 2px;
+}
 
+.settings-view.active {
   display: flex;
   animation: settingsViewFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -2992,31 +2995,323 @@ input:checked+.slider:before {
   background: #000;
 }
 
-/* Loading spinner */
+/* ========================================================
+   FUTURISTIC ANIME VIDEO PLAYER LOADING OVERLAY & OVERLAYS
+   ======================================================== */
 .video-player::before {
-  content: '';
+  display: none !important;
+}
+
+.player-loading-overlay {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 50px;
-  height: 50px;
-  margin: -25px 0 0 -25px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: var(--primary);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(12, 13, 24, 0.82) 0%, rgba(4, 5, 10, 0.94) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+}
+
+.player-loading-overlay.active,
+.video-player.loading .player-loading-overlay {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.player-loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 24px;
+  max-width: 90%;
+  transform: translateY(0);
+}
+
+.player-loader-spinner-wrapper {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Outer neon spinner ring */
+.loader-ring-outer {
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-  display: none;
-  z-index: 10;
+  border: 3.5px solid transparent;
+  border-top-color: var(--primary, #ff0055);
+  border-right-color: var(--accent, #b800ff);
+  filter: drop-shadow(0 0 10px rgba(255, 0, 85, 0.65));
+  animation: animeRingOuter 1.25s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 
-.video-player.loading::before {
-  display: block;
+/* Inner counter-rotating neon ring */
+.loader-ring-inner {
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  border-bottom-color: #00f0ff;
+  border-left-color: #7b2cbf;
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.55));
+  animation: animeRingInner 0.9s linear infinite;
 }
 
-@keyframes spin {
-  to {
+/* Core pulsating orb */
+.loader-core-pulse {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--primary, #ff0055) 0%, rgba(184, 0, 255, 0.6) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 18px var(--primary-glow, rgba(255, 0, 85, 0.75));
+  animation: animeCorePulse 1.8s ease-in-out infinite;
+}
+
+.loader-core-icon {
+  font-size: 11px;
+  color: #ffffff;
+  margin-left: 2px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+}
+
+.player-loader-text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-loader-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  margin: 0;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9), 0 0 18px rgba(255, 0, 85, 0.35);
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.player-loader-subtitle {
+  font-size: 0.84rem;
+  color: #a0a5b9;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.player-loader-bar {
+  width: 140px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 4px;
+  position: relative;
+}
+
+.player-loader-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, transparent, var(--primary, #ff0055), #00f0ff, transparent);
+  border-radius: 999px;
+  animation: animeBarShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes animeRingOuter {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
     transform: rotate(360deg);
   }
+}
+
+@keyframes animeRingInner {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes animeCorePulse {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.85;
+    box-shadow: 0 0 14px rgba(255, 0, 85, 0.5);
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+    box-shadow: 0 0 24px rgba(255, 0, 85, 0.9), 0 0 35px rgba(0, 240, 255, 0.4);
+  }
+}
+
+@keyframes animeBarShimmer {
+  0% {
+    transform: translateX(-160%);
+  }
+  100% {
+    transform: translateX(260%);
+  }
+}
+
+/* ========================================================
+   AUTOPLAY MUTED RECOVERY BANNER (UNMUTE SOUND PILL)
+   ======================================================== */
+.player-unmute-banner {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 38;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+.player-unmute-banner.hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(-10px);
+}
+
+.player-unmute-btn {
+  background: rgba(18, 18, 30, 0.88);
+  border: 1px solid rgba(255, 0, 85, 0.55);
+  color: #ffffff;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 0, 85, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: unmutePulse 2s infinite ease-in-out;
+  transition: all 0.2s ease;
+}
+
+.player-unmute-btn:hover {
+  background: var(--primary, #ff0055);
+  border-color: #ff3377;
+  transform: scale(1.05);
+  box-shadow: 0 10px 28px rgba(255, 0, 85, 0.6), 0 0 30px rgba(255, 0, 85, 0.5);
+}
+
+.player-unmute-btn i {
+  color: #ff0055;
+  font-size: 1.05rem;
+  transition: color 0.2s;
+}
+
+.player-unmute-btn:hover i {
+  color: #ffffff;
+}
+
+@keyframes unmutePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 0, 85, 0.35);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.6), 0 0 28px rgba(255, 0, 85, 0.6);
+  }
+}
+
+/* ========================================================
+   CLICK TO PLAY OVERLAY (STRICT AUTOPLAY BLOCKED FALLBACK)
+   ======================================================== */
+.player-click-to-play-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.25s, visibility 0.25s;
+}
+
+.player-click-to-play-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.player-click-play-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  padding: 16px;
+  transition: transform 0.2s;
+}
+
+.player-click-play-btn:hover {
+  transform: scale(1.08);
+}
+
+.player-click-play-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary, #ff0055), var(--accent, #b800ff));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: #ffffff;
+  box-shadow: 0 0 30px var(--primary-glow, rgba(255, 0, 85, 0.6));
+  padding-left: 4px;
+}
+
+.player-click-play-text {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
 }
 
 /* Audio track display */

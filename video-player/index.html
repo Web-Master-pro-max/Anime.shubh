@@ -9,8 +9,8 @@
   <title>Watch Anime | Infinx Anime</title>
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="style.css">
-  <!-- Android-fix inline rules removed; using external stylesheet -->
+  <link rel="stylesheet" href="/video-player/style.css">
+  <link rel="stylesheet" href="/video-player/watch-party.css">
 
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -52,6 +52,7 @@
         <a href="/index.html"><i class="fas fa-home"></i> <span class="nav-text">Home</span></a>
         <a href="/view.html#watchlist"><i class="fas fa-heart"></i> <span class="nav-text">Watchlist</span></a>
         <a href="/view.html#history"><i class="fas fa-history"></i> <span class="nav-text">History</span></a>
+        <a href="/profile.html"><i class="fas fa-user-ninja"></i> <span class="nav-text">Profile</span></a>
         <div class="search-box">
           <input type="text" id="searchInput" placeholder="Search anime..." aria-label="Search anime">
           <i class="fas fa-search" id="searchIcon"></i>
@@ -77,6 +78,7 @@
       <a href="/index.html"><i class="fas fa-home"></i> Home</a>
       <a href="/view.html#watchlist"><i class="fas fa-heart"></i> Watchlist</a>
       <a href="/view.html#history"><i class="fas fa-history"></i> History</a>
+      <a href="/profile.html"><i class="fas fa-user-ninja"></i> Profile</a>
     </div>
   </div>
 
@@ -89,6 +91,44 @@
         <div class="video-player">
           <!-- Video element WITHOUT native controls -->
           <video id="main-video" crossorigin="anonymous" playsinline webkit-playsinline></video>
+
+          <!-- Animated Anime Video Player Loader Overlay -->
+          <div id="playerLoadingOverlay" class="player-loading-overlay active">
+            <div class="player-loader-content">
+              <div class="player-loader-spinner-wrapper">
+                <div class="loader-ring loader-ring-outer"></div>
+                <div class="loader-ring loader-ring-inner"></div>
+                <div class="loader-core-pulse">
+                  <i class="fas fa-play loader-core-icon"></i>
+                </div>
+              </div>
+              <div class="player-loader-text-group">
+                <h4 id="playerLoadingTitle" class="player-loader-title">Loading Episode...</h4>
+                <p id="playerLoadingSubtitle" class="player-loader-subtitle">Connecting to high-speed stream</p>
+                <div class="player-loader-bar">
+                  <div class="player-loader-bar-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Autoplay Muted Recovery Banner -->
+          <div id="playerUnmuteBanner" class="player-unmute-banner hidden">
+            <button id="playerUnmuteBtn" class="player-unmute-btn" type="button" aria-label="Unmute audio">
+              <i class="fas fa-volume-mute"></i>
+              <span>Click to Unmute Audio 🔊</span>
+            </button>
+          </div>
+
+          <!-- Strict Autoplay Click-to-Play Overlay Fallback -->
+          <div id="playerClickToPlayOverlay" class="player-click-to-play-overlay hidden">
+            <button id="playerClickToPlayBtn" class="player-click-play-btn" type="button" aria-label="Play Episode">
+              <div class="player-click-play-icon">
+                <i class="fas fa-play"></i>
+              </div>
+              <span class="player-click-play-text">Click to Play</span>
+            </button>
+          </div>
 
           <!-- Custom Video Controls -->
           <div class="custom-controls">
@@ -825,7 +865,9 @@
   </footer>
 
   <!-- JavaScript -->
-  <script src="script.js"></script>
+  <script src="/video-player/script.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/video-player/watch-party.js"></script>
 
   <!-- Player Authentication Lock Modal (Strict Gate) -->
   <div id="playerAuthModal" class="player-auth-overlay" style="display: none;" role="dialog" aria-modal="true"

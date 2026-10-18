@@ -1,0 +1,612 @@
+/* ====== ULTRA-PREMIUM CINEMATIC WELCOME OVERLAY (FLAGSHIP EDITION) ====== */
+.premium-welcome-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 45%, #0e071c 0%, #05050d 50%, #000000 100%);
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.premium-welcome-overlay.welcome-leaving {
+  opacity: 0;
+  transform: scale(1.12);
+  filter: blur(16px);
+  pointer-events: none;
+}
+
+.premium-welcome-overlay.welcome-hidden {
+  display: none !important;
+}
+
+/* Widescreen 2.39:1 Cinema Curtains */
+.welcome-curtain {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 5.5vh;
+  background: #000000;
+  z-index: 50;
+  pointer-events: none;
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.95);
+}
+
+.welcome-curtain-top {
+  top: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.welcome-curtain-bottom {
+  bottom: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.welcome-curtains-open .welcome-curtain-top {
+  transform: translateY(-100%);
+}
+
+.welcome-curtains-open .welcome-curtain-bottom {
+  transform: translateY(100%);
+}
+
+/* Anamorphic Laser Lens Flare */
+.welcome-lens-flare {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scaleX(0);
+  width: 150vw;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 240, 255, 0) 15%, 
+    rgba(0, 240, 255, 0.85) 35%, 
+    #ffffff 50%, 
+    rgba(255, 0, 85, 0.85) 65%, 
+    rgba(255, 0, 85, 0) 85%, 
+    transparent 100%
+  );
+  filter: drop-shadow(0 0 18px #00f0ff) drop-shadow(0 0 35px #ff0055);
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+}
+
+.welcome-lens-flare.flare-ignite {
+  transform: translate(-50%, -50%) scaleX(1);
+  opacity: 1;
+}
+
+/* Background Canvas & Ambient Nebulae */
+.welcome-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.welcome-nebula {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  opacity: 0.55;
+  z-index: 0;
+  animation: welcomeNebulaPulse 8s ease-in-out infinite alternate;
+}
+
+.welcome-nebula-1 {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, #ff0055 0%, rgba(255, 0, 85, 0) 70%);
+  top: 15%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.welcome-nebula-2 {
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, #a200ff 0%, rgba(162, 0, 255, 0) 70%);
+  bottom: 15%;
+  right: 18%;
+  animation-delay: -3s;
+}
+
+.welcome-nebula-3 {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, #00f0ff 0%, rgba(0, 240, 255, 0) 70%);
+  top: 40%;
+  right: 30%;
+  animation-delay: -5s;
+}
+
+@keyframes welcomeNebulaPulse {
+  0% { transform: scale(0.9) translate(0, 0); opacity: 0.45; }
+  50% { transform: scale(1.15) translate(25px, -20px); opacity: 0.7; }
+  100% { transform: scale(0.95) translate(-20px, 15px); opacity: 0.5; }
+}
+
+/* Top Action Controls: Sound Toggle & Skip Pill */
+.welcome-top-controls {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  right: 0;
+  padding: 0 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 60;
+  pointer-events: auto;
+}
+
+.welcome-sound-toggle,
+.welcome-skip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.welcome-sound-toggle:hover,
+.welcome-skip-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 0, 85, 0.5);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(255, 0, 85, 0.25);
+}
+
+.welcome-sound-toggle.is-muted i {
+  color: #ff0055;
+}
+
+.welcome-skip-btn kbd {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 1.05rem;
+  font-family: inherit;
+  letter-spacing: 0.5px;
+  color: #a0aec0;
+}
+
+/* 3D Perspective Stage Container */
+.welcome-perspective-wrap {
+  perspective: 1200px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.welcome-stage {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 680px;
+  padding: 0 24px;
+  transform-style: preserve-3d;
+  transition: transform 0.12s cubic-bezier(0.2, 0, 0.2, 1);
+  will-change: transform;
+  pointer-events: auto;
+  animation: welcomeStageFadeIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes welcomeStageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Glowing Rotating Hologram Ring & Infinity Emblem */
+.welcome-ring-container {
+  position: relative;
+  width: 105px;
+  height: 105px;
+  margin-bottom: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease-out;
+}
+
+.welcome-ring-outer {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #ff0055, #a200ff, #00f0ff, #ff0055);
+  animation: welcomeRingRotate 4s linear infinite;
+  filter: blur(5px);
+  opacity: 0.85;
+}
+
+.welcome-ring-glow {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 0, 85, 0.55) 0%, rgba(0, 240, 255, 0.25) 60%, transparent 80%);
+  animation: welcomeGlowPulse 2.8s ease-in-out infinite alternate;
+}
+
+.welcome-emblem-orb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(14, 14, 28, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 25px rgba(255, 0, 85, 0.35), 0 10px 30px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+  transform: translateZ(30px);
+}
+
+.welcome-emblem-orb i {
+  font-size: 3.8rem;
+  background: linear-gradient(135deg, #ff0055 0%, #ff5e98 40%, #00f0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(255, 0, 85, 0.8));
+  animation: welcomeIconFloat 3.2s ease-in-out infinite alternate;
+}
+
+@keyframes welcomeRingRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes welcomeGlowPulse {
+  0% { transform: scale(0.9); opacity: 0.5; }
+  100% { transform: scale(1.15); opacity: 0.95; }
+}
+
+@keyframes welcomeIconFloat {
+  0% { transform: translateY(0) scale(0.97); }
+  100% { transform: translateY(-4px) scale(1.05); }
+}
+
+/* Brand Title & Badges */
+.welcome-brand-block {
+  margin-bottom: 20px;
+  transform: translateZ(20px);
+}
+
+.welcome-title-main {
+  font-size: 4.4rem;
+  font-weight: 900;
+  letter-spacing: 7px;
+  line-height: 1.1;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  text-shadow: 0 0 35px rgba(255, 255, 255, 0.25);
+  animation: welcomeTrackingIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.welcome-title-pro {
+  background: linear-gradient(135deg, #ff0055 0%, #b800ff 55%, #00f0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px rgba(255, 0, 85, 0.7));
+}
+
+.welcome-chromatic {
+  animation: welcomeChromaticShift 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes welcomeChromaticShift {
+  0% { text-shadow: -1.5px 0 rgba(255, 0, 85, 0.75), 1.5px 0 rgba(0, 240, 255, 0.75); }
+  50% { text-shadow: 1px -1px rgba(255, 0, 85, 0.75), -1px 1px rgba(0, 240, 255, 0.75); }
+  100% { text-shadow: 2px 0 rgba(255, 0, 85, 0.8), -2px 0 rgba(0, 240, 255, 0.8); }
+}
+
+@keyframes welcomeTrackingIn {
+  from {
+    letter-spacing: 14px;
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    letter-spacing: 7px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.welcome-features-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-feat-tag {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #cbd5e1;
+  text-transform: uppercase;
+}
+
+.welcome-feat-dot {
+  color: var(--primary, #ff0055);
+  font-size: 1.1rem;
+}
+
+/* Continue Watching Quick-Resume Glass Card */
+.welcome-resume-container {
+  margin-bottom: 24px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(15px);
+}
+
+.welcome-resume-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(18, 14, 30, 0.75);
+  border: 1px solid rgba(255, 0, 85, 0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 8px 18px 8px 10px;
+  border-radius: 999px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 0, 85, 0.2);
+  animation: welcomeResumeSlide 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  max-width: 90vw;
+}
+
+@keyframes welcomeResumeSlide {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-resume-thumb {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff0055;
+  box-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+}
+
+.welcome-resume-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.welcome-resume-label {
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #00f0ff;
+  font-weight: 700;
+}
+
+.welcome-resume-title {
+  font-size: 1.25rem;
+  color: #ffffff;
+  font-weight: 700;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.welcome-resume-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #ff0055 0%, #b800ff 100%);
+  border: none;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(255, 0, 85, 0.6);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.welcome-resume-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 25px rgba(255, 0, 85, 0.9);
+}
+
+/* Dynamic Personalized Greeting Pill */
+.welcome-greeting-container {
+  margin-bottom: 24px;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(10px);
+}
+
+.welcome-greeting-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(255, 0, 85, 0.12) 0%, rgba(184, 0, 255, 0.12) 100%);
+  border: 1px solid rgba(255, 0, 85, 0.28);
+  padding: 8px 22px;
+  border-radius: 999px;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: #f1f5f9;
+  box-shadow: 0 0 25px rgba(255, 0, 85, 0.18);
+  animation: welcomeGreetingFade 0.8s ease forwards 0.3s;
+  opacity: 0;
+}
+
+@keyframes welcomeGreetingFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-greeting-pill i {
+  color: #00f0ff;
+  font-size: 1.25rem;
+}
+
+.welcome-user-name {
+  color: #fff;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ff0055, #00f0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* High-Tech Laser Progress Bar */
+.welcome-progress-block {
+  width: 100%;
+  max-width: 360px;
+  transform: translateZ(10px);
+}
+
+.welcome-laser-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.welcome-laser-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff0055, #b800ff, #00f0ff);
+  border-radius: 999px;
+  box-shadow: 0 0 12px #00f0ff, 0 0 20px #ff0055;
+  transition: width 0.15s ease-out;
+  position: relative;
+}
+
+.welcome-laser-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px #ffffff, 0 0 18px #00f0ff;
+}
+
+.welcome-status-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 1.15rem;
+  font-family: 'Inter', monospace, sans-serif;
+  letter-spacing: 1px;
+}
+
+.welcome-status-msg {
+  color: #718096;
+  text-transform: uppercase;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 290px;
+}
+
+.welcome-percent-num {
+  color: #a0aec0;
+  font-weight: 700;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+  .welcome-title-main {
+    font-size: 3.2rem;
+    letter-spacing: 5px;
+  }
+  .welcome-ring-container {
+    width: 85px;
+    height: 85px;
+    margin-bottom: 20px;
+  }
+  .welcome-emblem-orb i {
+    font-size: 3.2rem;
+  }
+  .welcome-feat-tag {
+    font-size: 1.0rem;
+    letter-spacing: 1px;
+  }
+  .welcome-top-controls {
+    padding: 0 18px;
+    top: 18px;
+  }
+  .welcome-sound-toggle,
+  .welcome-skip-btn {
+    padding: 7px 14px;
+    font-size: 1.15rem;
+  }
+  .welcome-curtain {
+    height: 3.5vh;
+  }
+}

@@ -1283,10 +1283,12 @@
                             <thead>
                                 <tr>
                                     <th>User ID</th>
-                                    <th>Email Address</th>
+                                    <th>Otaku Profile</th>
                                     <th>Access Role</th>
-                                    <th>Account Status</th>
-                                    <th>Registration Date</th>
+                                    <th>Otaku Rank / Title</th>
+                                    <th>Level & XP</th>
+                                    <th>Status</th>
+                                    <th>Registration</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -2813,25 +2815,41 @@
         }
 
 
-        // ======= USER MANAGEMENT =======
+        // ======= USER MANAGEMENT & OTAKU RANK PROMOTION =======
+        function getRankBadgeHtml(rank) {
+            const r = (rank || 'GENIN').toUpperCase();
+            if (r === 'HOKAGE_VIP' || r === 'HOKAGE') {
+                return `<span style="background: linear-gradient(135deg, #ffb700, #ff0055); color: #fff; font-weight: 800; padding: 4px 10px; border-radius: 999px; font-size: 1.05rem; box-shadow: 0 0 10px rgba(255,183,0,0.4);"><i class="fas fa-crown"></i> HOKAGE VIP</span>`;
+            }
+            if (r === 'HASHIRA') {
+                return `<span style="background: linear-gradient(135deg, #e50914, #ff5e57); color: #fff; font-weight: 800; padding: 4px 10px; border-radius: 999px; font-size: 1.05rem; box-shadow: 0 0 10px rgba(229,9,20,0.3);"><i class="fas fa-khanda"></i> HASHIRA</span>`;
+            }
+            if (r === 'JOUNIN') {
+                return `<span style="background: rgba(255, 0, 85, 0.2); border: 1px solid #ff0055; color: #ff0055; font-weight: 700; padding: 3px 8px; border-radius: 999px; font-size: 1.05rem;">🔥 JOUNIN</span>`;
+            }
+            if (r === 'CHUNIN') {
+                return `<span style="background: rgba(0, 240, 255, 0.2); border: 1px solid #00f0ff; color: #00f0ff; font-weight: 700; padding: 3px 8px; border-radius: 999px; font-size: 1.05rem;">⚡ CHUNIN</span>`;
+            }
+            return `<span style="background: rgba(46, 213, 115, 0.15); border: 1px solid #2ed573; color: #2ed573; font-weight: 700; padding: 3px 8px; border-radius: 999px; font-size: 1.05rem;">🌱 GENIN</span>`;
+        }
+
+        function updateRankPreview() {
+            const rankSelect = document.getElementById('editUserVipRank');
+            const previewEl = document.getElementById('editRankBadgePreview');
+            if (rankSelect && previewEl) {
+                previewEl.innerHTML = getRankBadgeHtml(rankSelect.value);
+            }
+        }
+
         async function fetchUsers() {
             const tbody = document.getElementById('usersTableBody');
             const token = localStorage.getItem('infinx_token');
 
-            // Avoid flashing loading screen if it's already populated and we are running inside interval
             if (tbody.innerHTML.trim() === '' || tbody.innerHTML.includes('Loading users database...') || tbody.innerHTML.includes('Querying')) {
                 tbody.innerHTML = `
                     <tr>
                         <td><div class="skeleton skeleton-text" style="height: 14px; width: 30px;"></div></td>
                         <td><div class="skeleton skeleton-text" style="height: 14px; width: 150px;"></div></td>
-                        <td><div class="skeleton skeleton-text" style="height: 14px; width: 60px;"></div></td>
-                        <td><div class="skeleton skeleton-pill" style="height: 20px; width: 70px;"></div></td>
-                        <td><div class="skeleton skeleton-text" style="height: 14px; width: 80px;"></div></td>
-                        <td><div class="skeleton skeleton-pill" style="height: 26px; width: 60px; display: inline-block; margin-right: 6px;"></div><div class="skeleton skeleton-pill" style="height: 26px; width: 60px; display: inline-block;"></div></td>
-                    </tr>
-                    <tr>
-                        <td><div class="skeleton skeleton-text" style="height: 14px; width: 30px;"></div></td>
-                        <td><div class="skeleton skeleton-text" style="height: 14px; width: 130px;"></div></td>
                         <td><div class="skeleton skeleton-text" style="height: 14px; width: 60px;"></div></td>
                         <td><div class="skeleton skeleton-pill" style="height: 20px; width: 70px;"></div></td>
                         <td><div class="skeleton skeleton-text" style="height: 14px; width: 80px;"></div></td>
@@ -2848,7 +2866,7 @@
                 if (res.ok) {
                     const users = await res.json();
                     if (users.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-text);">No registered users found.</td></tr>`;
+                        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray-text);">No registered users found.</td></tr>`;
                         return;
                     }
 
@@ -2857,18 +2875,36 @@
                         const isBannedText = user.isBanned
                             ? `<span class="status-badge failed"><i class="fas fa-user-slash"></i> Banned</span>`
                             : `<span class="status-badge completed"><i class="fas fa-user-check"></i> Active</span>`;
-                        const roleColor = user.role === 'ADMIN' ? 'var(--primary)' : 'var(--secondary)';
+                        
+                        let roleColor = 'var(--secondary)';
+                        let roleIcon = 'fa-user';
+                        if (user.role === 'ADMIN') { roleColor = 'var(--primary)'; roleIcon = 'fa-user-shield'; }
+                        else if (user.role === 'VIP') { roleColor = '#ffb700'; roleIcon = 'fa-gem'; }
+                        else if (user.role === 'MODERATOR') { roleColor = '#00f0ff'; roleIcon = 'fa-shield-alt'; }
+
+                        const displayName = user.username || user.email.split('@')[0];
+                        const avatarSrc = user.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.email)}`;
 
                         return `
                             <tr>
                                 <td><strong>#${user.id}</strong></td>
-                                <td>${user.email}</td>
-                                <td><span style="font-weight: 700; color: ${roleColor};"><i class="fas ${user.role === 'ADMIN' ? 'fa-user-shield' : 'fa-user'}"></i> ${user.role}</span></td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="${avatarSrc}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" />
+                                        <div>
+                                            <div style="font-weight: 700; color: #fff;">${displayName}</div>
+                                            <div style="font-size: 1.05rem; color: var(--gray-text);">${user.email}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span style="font-weight: 700; color: ${roleColor};"><i class="fas ${roleIcon}"></i> ${user.role}</span></td>
+                                <td>${getRankBadgeHtml(user.vipRank)}</td>
+                                <td><span style="font-weight: 600; color: #00f0ff;">Lv. ${user.level || 1}</span> <span style="font-size: 1.05rem; color: var(--gray-text);">(${(user.xp || 0)} XP)</span></td>
                                 <td>${isBannedText}</td>
                                 <td><span style="color: var(--gray-text);">${registerDate}</span></td>
                                 <td>
                                     <div style="display: flex; gap: 8px;">
-                                        <button onclick="openEditUserModal(${user.id}, '${user.email}', '${user.role}', ${user.isBanned})" class="btn-back" style="padding: 6px 12px; font-size: 1.1rem; background: rgba(0, 168, 255, 0.1); border-color: var(--secondary); color: var(--secondary); cursor: pointer;"><i class="fas fa-edit"></i> Edit</button>
+                                        <button onclick="openEditUserModal(${user.id}, '${escape(user.email)}', '${escape(user.username || '')}', '${user.role}', '${user.vipRank || 'GENIN'}', ${user.level || 1}, ${user.xp || 0}, ${user.isBanned})" class="btn-back" style="padding: 6px 12px; font-size: 1.1rem; background: rgba(0, 168, 255, 0.1); border-color: var(--secondary); color: var(--secondary); cursor: pointer;"><i class="fas fa-crown"></i> Promote / Edit</button>
                                         <button onclick="deleteUser(${user.id}, '${user.email}')" class="btn-back" style="padding: 6px 12px; font-size: 1.1rem; background: rgba(231, 76, 60, 0.1); border-color: var(--danger); color: var(--danger); cursor: pointer;"><i class="fas fa-trash"></i> Delete</button>
                                     </div>
                                 </td>
@@ -2876,11 +2912,11 @@
                         `;
                     }).join('');
                 } else {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger);">Failed to query users database.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--danger);">Failed to query users database.</td></tr>`;
                 }
             } catch (e) {
                 console.error(e);
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger);">Error connecting to API.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--danger);">Error connecting to API.</td></tr>`;
             }
         }
 
@@ -2925,12 +2961,17 @@
             }
         }
 
-        function openEditUserModal(id, email, role, isBanned) {
+        function openEditUserModal(id, rawEmail, rawUsername, role, vipRank, level, xp, isBanned) {
             document.getElementById('editUserId').value = id;
-            document.getElementById('editUserEmail').value = email;
+            document.getElementById('editUserEmail').value = unescape(rawEmail);
+            document.getElementById('editUserUsername').value = unescape(rawUsername || '');
             document.getElementById('editUserPassword').value = '';
-            document.getElementById('editUserRole').value = role;
-            document.getElementById('editUserBanned').checked = isBanned;
+            document.getElementById('editUserRole').value = role || 'USER';
+            document.getElementById('editUserVipRank').value = vipRank || 'GENIN';
+            document.getElementById('editUserLevel').value = level || 1;
+            document.getElementById('editUserXp').value = xp || 0;
+            document.getElementById('editUserBanned').checked = Boolean(isBanned);
+            updateRankPreview();
             document.getElementById('editUserModal').style.display = 'flex';
         }
 
@@ -2942,13 +2983,17 @@
             e.preventDefault();
             const id = document.getElementById('editUserId').value;
             const email = document.getElementById('editUserEmail').value;
+            const username = document.getElementById('editUserUsername').value;
             const password = document.getElementById('editUserPassword').value;
             const role = document.getElementById('editUserRole').value;
+            const vipRank = document.getElementById('editUserVipRank').value;
+            const level = document.getElementById('editUserLevel').value;
+            const xp = document.getElementById('editUserXp').value;
             const isBanned = document.getElementById('editUserBanned').checked;
             const token = localStorage.getItem('infinx_token');
 
-            const payload = { email, role, isBanned };
-            if (password.trim() !== '') {
+            const payload = { email, username, role, vipRank, level, xp, isBanned };
+            if (password && password.trim() !== '') {
                 payload.password = password;
             }
 
@@ -2963,7 +3008,7 @@
                 });
 
                 if (res.ok) {
-                    alert('User details saved and updated successfully!');
+                    alert('User promoted and saved successfully! 👑');
                     closeEditUserModal();
                     fetchUsers();
                 } else {
@@ -3584,33 +3629,73 @@
                     class="fas fa-times"></i></button>
             <h3
                 style="font-size:2rem; margin-bottom:20px; font-family:'Outfit'; color:white; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">
-                <i class="fas fa-user-edit"></i> Edit User Account
+                <i class="fas fa-crown" style="color: #ffb700;"></i> Promote & Edit User Account
             </h3>
 
             <form id="editUserForm" onsubmit="handleEditUser(event)">
                 <input type="hidden" id="editUserId">
-                <div class="form-group">
-                    <label for="editUserEmail">Email Address</label>
-                    <input type="email" id="editUserEmail" required>
+                <div style="display: flex; gap: 12px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1; min-width: 220px; margin-bottom: 0;">
+                        <label for="editUserUsername">Otaku Username / Nickname</label>
+                        <input type="text" id="editUserUsername" placeholder="e.g. ShadowHokage">
+                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 220px; margin-bottom: 0;">
+                        <label for="editUserEmail">Email Address</label>
+                        <input type="email" id="editUserEmail" required>
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <label for="editUserPassword">Password (Leave blank to keep current password)</label>
                     <input type="password" id="editUserPassword" placeholder="Enter new password to change">
                 </div>
-                <div class="form-group">
-                    <label for="editUserRole">Access Role</label>
-                    <select id="editUserRole">
-                        <option value="USER">USER</option>
-                        <option value="ADMIN">ADMIN</option>
-                    </select>
+
+                <div style="display: flex; gap: 12px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1; min-width: 220px; margin-bottom: 0;">
+                        <label for="editUserRole">System Access Role</label>
+                        <select id="editUserRole">
+                            <option value="USER">USER (Standard Member)</option>
+                            <option value="VIP">VIP (Supporter)</option>
+                            <option value="MODERATOR">MODERATOR (Chat & Content Mod)</option>
+                            <option value="ADMIN">ADMINISTRATOR (Full Admin Access)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 220px; margin-bottom: 0;">
+                        <label for="editUserVipRank">Otaku Rank / Title</label>
+                        <select id="editUserVipRank" onchange="updateRankPreview()">
+                            <option value="GENIN">🌱 GENIN (Novice)</option>
+                            <option value="CHUNIN">⚡ CHUNIN (Adept)</option>
+                            <option value="JOUNIN">🔥 JOUNIN (Elite)</option>
+                            <option value="HASHIRA">⚔️ HASHIRA (Pillar / S-Rank)</option>
+                            <option value="HOKAGE_VIP">👑 HOKAGE VIP (Supreme Prestige)</option>
+                        </select>
+                    </div>
                 </div>
+
+                <!-- Live Rank Badge Preview -->
+                <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <span style="font-size: 1.15rem; color: var(--gray-text);"><i class="fas fa-eye"></i> Rank Badge Live Preview:</span>
+                    <div id="editRankBadgePreview"></div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1; min-width: 140px; margin-bottom: 0;">
+                        <label for="editUserLevel">Level</label>
+                        <input type="number" id="editUserLevel" min="1" max="999" value="1">
+                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 140px; margin-bottom: 0;">
+                        <label for="editUserXp">Current XP</label>
+                        <input type="number" id="editUserXp" min="0" value="0">
+                    </div>
+                </div>
+
                 <div class="form-group"
-                    style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 10px;">
+                    style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 5px;">
                     <input type="checkbox" id="editUserBanned" style="width: 20px; height: 20px; cursor: pointer;">
                     <label for="editUserBanned" style="cursor: pointer; margin-bottom: 0;">Account Banned</label>
                 </div>
-                <button type="submit" class="btn-submit" style="width: 100%; margin-top: 20px;"><i
-                        class="fas fa-save"></i> Save Changes</button>
+                <button type="submit" class="btn-submit" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #ffb700, #ff0055);"><i
+                        class="fas fa-crown"></i> Save & Promote User</button>
             </form>
         </div>
     </div>

@@ -8,6 +8,7 @@
     { "src": "Postes/**/*", "use": "@vercel/static" },
     { "src": "AMovies-Poster/**/*", "use": "@vercel/static" },
     { "src": "Horror-poster/**/*", "use": "@vercel/static" },
+    { "src": "assets/**/*", "use": "@vercel/static" },
     { "src": "video-player/**/*", "use": "@vercel/static" }
   ],
   "routes": [
@@ -24,7 +25,7 @@
     },
     {
       "src": "/laptop-api/(.*)",
-      "dest": "https://lopez-matrix-vincent-topics.trycloudflare.com/api/$1",
+      "dest": "https://occurs-proteins-briefs-eric.trycloudflare.com/api/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -46,7 +47,7 @@
     },
     {
       "src": "/uploads/(.*)",
-      "dest": "https://lopez-matrix-vincent-topics.trycloudflare.com/uploads/$1",
+      "dest": "https://occurs-proteins-briefs-eric.trycloudflare.com/uploads/$1",
       "continue": false
     },
     {
@@ -57,6 +58,12 @@
     {
       "src": "/socket.io/(.*)",
       "dest": "http://13.202.95.5:8000/socket.io/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Credentials": "true"
+      },
       "continue": false
     },
     {
@@ -76,8 +83,32 @@
       "dest": "/live_admin.html"
     },
     {
+      "src": "/profile",
+      "dest": "/profile.html"
+    },
+    {
+      "src": "/profile/(.*)",
+      "dest": "/profile.html"
+    },
+    {
       "src": "/view",
       "dest": "/view.html"
+    },
+    {
+      "src": "/watch",
+      "dest": "/video-player/index.html"
+    },
+    {
+      "src": "/watch/(.*)",
+      "dest": "/video-player/index.html"
+    },
+    {
+      "src": "/party",
+      "dest": "/video-player/index.html"
+    },
+    {
+      "src": "/party/(.*)",
+      "dest": "/video-player/index.html"
     },
     {
       "src": "/video-player",
@@ -92,7 +123,11 @@
       "dest": "/index.html"
     },
     {
-      "src": "/(.*)\\.(css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot)",
+      "src": "/home",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)\\.(css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts)",
       "dest": "/$1.$2"
     },
     {
@@ -107,6 +142,14 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
         }
       ]
     }
