@@ -301,7 +301,7 @@
     { id: 'electric', name: 'Thunder Sparks', levelReq: 10, tier: 'Chunin' },
     { id: 'fire', name: 'Nine-Tails Flame', levelReq: 15, tier: 'Chunin' },
     { id: 'purple', name: 'Domain Void', levelReq: 25, tier: 'Jounin' },
-    { id: 'gold', name: 'Super Saiyan God', levelReq: 50, tier: 'Monarch' }
+    { id: 'gold', name: 'Super Saiyan God', levelReq: 50, tier: 'Monarch', adminOnly: true }
   ];
 
   // Accent Colors
@@ -553,8 +553,12 @@
       }
     };
 
+    const isUserAdmin = p.role === 'ADMIN';
+    const effectiveAura = (!isUserAdmin && (p.avatarFrame === 'gold' || p.avatarFrame === 'aura-gold')) ? 'default' : (p.avatarFrame || 'default');
     const frameContainer = document.getElementById('avatarFrameContainer');
-    frameContainer.className = `avatar-frame-container aura-${p.avatarFrame || 'default'}`;
+    if (frameContainer) {
+      frameContainer.className = `avatar-frame-container aura-${effectiveAura}`;
+    }
 
     // 4. Identity & Rank
     document.getElementById('profileUsername').innerText = p.username || (p.email ? p.email.split('@')[0] : 'Otaku');
@@ -1262,9 +1266,16 @@
           return;
         }
         const auraMatch = AURA_PRESETS.find(a => a.id === selectedAuraFrame);
-        if (auraMatch && auraMatch.levelReq > userLvl) {
-          showToast(`🔒 Cannot equip ${auraMatch.name}: requires Level ${auraMatch.levelReq}!`);
-          return;
+        if (auraMatch) {
+          const isUserAdmin = currentUserProfile?.role === 'ADMIN';
+          if (auraMatch.adminOnly && !isUserAdmin) {
+            showToast(`👑 Cannot equip ${auraMatch.name}: Administrator privileges required!`);
+            return;
+          }
+          if (auraMatch.levelReq > userLvl) {
+            showToast(`🔒 Cannot equip ${auraMatch.name}: requires Level ${auraMatch.levelReq}!`);
+            return;
+          }
         }
 
       const payload = {
@@ -1428,10 +1439,11 @@
     }
 
     // 2. Aura Selector Cards
+    const isOwnerAdmin = currentUserProfile?.role === 'ADMIN';
     document.querySelectorAll('.aura-option-card').forEach(card => {
       const aura = card.getAttribute('data-aura');
       const auraConfig = AURA_PRESETS.find(a => a.id === aura) || { levelReq: 1, name: 'Aura' };
-      const isLocked = userLevel < auraConfig.levelReq;
+      const isLocked = auraConfig.adminOnly ? !isOwnerAdmin : (userLevel < auraConfig.levelReq);
       card.classList.toggle('locked', isLocked);
       card.classList.toggle('selected', aura === selectedAuraFrame && !isLocked);
 
@@ -1441,15 +1453,24 @@
         badge.className = 'aura-lvl-tag';
         card.appendChild(badge);
       }
-      badge.className = `aura-lvl-tag ${isLocked ? 'locked' : 'unlocked'}`;
-      badge.innerHTML = isLocked ? `<i class="fas fa-lock"></i> Lv.${auraConfig.levelReq}` : `<i class="fas fa-check"></i> Lv.${auraConfig.levelReq}`;
+      if (auraConfig.adminOnly) {
+        badge.className = `aura-lvl-tag ${isOwnerAdmin ? 'admin-unlocked' : 'admin-locked'}`;
+        badge.innerHTML = isOwnerAdmin ? `<i class="fas fa-crown"></i> ADMIN` : `<i class="fas fa-lock"></i> ADMIN ONLY`;
+      } else {
+        badge.className = `aura-lvl-tag ${isLocked ? 'locked' : 'unlocked'}`;
+        badge.innerHTML = isLocked ? `<i class="fas fa-lock"></i> Lv.${auraConfig.levelReq}` : `<i class="fas fa-check"></i> Lv.${auraConfig.levelReq}`;
+      }
 
       card.onclick = () => {
         if (isLocked) {
           card.classList.remove('shake-locked');
           void card.offsetWidth;
           card.classList.add('shake-locked');
-          showToast(`🔒 Level ${auraConfig.levelReq} Required! Reach Level ${auraConfig.levelReq} to unlock ${auraConfig.name}.`);
+          if (auraConfig.adminOnly) {
+            showToast(`👑 Access Denied: The "${auraConfig.name}" animated aura frame is exclusive to Administrators!`);
+          } else {
+            showToast(`🔒 Level ${auraConfig.levelReq} Required! Reach Level ${auraConfig.levelReq} to unlock ${auraConfig.name}.`);
+          }
           return;
         }
         document.querySelectorAll('.aura-option-card').forEach(c => c.classList.remove('selected'));
