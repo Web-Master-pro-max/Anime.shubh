@@ -5534,3 +5534,128 @@ video::-webkit-media-text-track-background {
   border-radius: 6px !important;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8) !important;
 }
+
+/* ========================================================
+   INFINX DYNAMIC XP GAIN TOAST & LEVEL UP NOTIFICATION
+   ======================================================== */
+.player-xp-toast {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(14, 15, 23, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 215, 0, 0.45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 215, 0, 0.25);
+  border-radius: 14px;
+  padding: 12px 20px;
+  color: #fff;
+  font-family: inherit;
+  pointer-events: none;
+  animation: xpToastSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.player-xp-toast.party {
+  border-color: rgba(0, 247, 255, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 247, 255, 0.3);
+}
+
+.player-xp-toast.levelup {
+  border-color: rgba(255, 0, 85, 0.8);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 0, 85, 0.5);
+  animation: xpToastLevelUpPulse 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes xpToastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes xpToastLevelUpPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(-20px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.player-xp-toast.fade-out {
+  opacity: 0;
+  transform: translateY(-15px) scale(0.95);
+}
+
+.player-xp-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ffd700, #ff8800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0b0c10;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  flex-shrink: 0;
+}
+
+.player-xp-toast.party .player-xp-icon {
+  background: linear-gradient(135deg, #00f7ff, #0077ff);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.6);
+  color: #fff;
+}
+
+.player-xp-toast.levelup .player-xp-icon {
+  background: linear-gradient(135deg, #ff0055, #ff5500);
+  box-shadow: 0 0 20px rgba(255, 0, 85, 0.8);
+  color: #fff;
+}
+
+.player-xp-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.player-xp-title {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffd700;
+  text-transform: uppercase;
+}
+
+.player-xp-toast.party .player-xp-title {
+  color: #00f7ff;
+}
+
+.player-xp-toast.levelup .player-xp-title {
+  color: #ff0055;
+}
+
+.player-xp-sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+}

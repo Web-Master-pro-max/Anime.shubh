@@ -1205,6 +1205,10 @@
       isHost = asHost;
       if (isHost) hostUserName = currentUser;
 
+      window.__infinxWatchPartyActive = true;
+      window.__infinxWatchPartyId = currentPartyId;
+      window.isInWatchParty = () => true;
+
       socket.emit('party:join', {
         partyId: currentPartyId,
         user: currentUser,
@@ -1252,6 +1256,10 @@
       currentPartyId = null;
       isHost = false;
       hasGrantedTemporaryControl = false;
+      window.__infinxWatchPartyActive = false;
+      window.__infinxWatchPartyId = null;
+      window.isInWatchParty = () => false;
+
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete('party');
       window.history.replaceState({}, '', newUrl.toString());

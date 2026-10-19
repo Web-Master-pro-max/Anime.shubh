@@ -588,14 +588,17 @@
     }
 
     // 5. XP Progression Bar
+    const xpVal = p.xp || 0;
+    const xpNext = p.xpNextLevel || ((p.level || 1) * 200);
+    const xpPct = p.xpPercent !== undefined ? p.xpPercent : Math.min(100, Math.round((xpVal / xpNext) * 100));
     document.getElementById('profileLevelBadge').innerText = `LEVEL ${p.level} • ${p.vipRank ? p.vipRank.replace('_', ' ') : 'GENIN'}`;
-    document.getElementById('profileXpRatio').innerText = `${p.xp || 0} / ${p.xpNextLevel || (p.level * 200)} XP (${p.xpPercent || 100}%)`;
-    document.getElementById('profileXpFill').style.width = `${p.xpPercent || 100}%`;
+    document.getElementById('profileXpRatio').innerText = `${xpVal.toLocaleString()} / ${xpNext.toLocaleString()} XP (${xpPct}%)`;
+    document.getElementById('profileXpFill').style.width = `${xpPct}%`;
 
     // 6. Stats
     const stats = p.stats || {};
     document.getElementById('statWatchTime').innerText = `${stats.totalHoursWatched || 0} hrs`;
-    document.getElementById('statEpisodes').innerText = `${stats.totalEpisodesWatched || 0}`;
+    document.getElementById('statEpisodes').innerText = `${(stats.totalEpisodesWatched || 0).toLocaleString()}`;
     document.getElementById('statWatchlist').innerText = `${stats.watchlistCount || 0}`;
     document.getElementById('statStanding').innerText = p.level >= 20 ? 'Top 1% Shinobi' : (p.level >= 10 ? 'Top 5% Otaku' : 'Top 15% Member');
 
@@ -1802,6 +1805,46 @@
       });
     }
   }
+
+  // Real-time synchronization when XP is earned in player
+  window.addEventListener('infinx:xp-updated', (e) => {
+    if (e.detail) {
+      const d = e.detail;
+      const ratioEl = document.getElementById('profileXpRatio');
+      const fillEl = document.getElementById('profileXpFill');
+      const badgeEl = document.getElementById('profileLevelBadge');
+      if (ratioEl && d.xp !== undefined) {
+        const next = d.xpNextLevel || ((d.level || 1) * 200);
+        const pct = d.xpPercent !== undefined ? d.xpPercent : Math.min(100, Math.round((d.xp / next) * 100));
+        ratioEl.innerText = `${(d.xp || 0).toLocaleString()} / ${next.toLocaleString()} XP (${pct}%)`;
+        if (fillEl) fillEl.style.width = `${pct}%`;
+      }
+      if (badgeEl && d.level) {
+        badgeEl.innerText = `LEVEL ${d.level} • ${(d.vipRank || 'GENIN').replace('_', ' ')}`;
+      }
+    }
+  });
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'infinx_last_xp_gain' && e.newValue) {
+      try {
+        const d = JSON.parse(e.newValue);
+        const ratioEl = document.getElementById('profileXpRatio');
+        const fillEl = document.getElementById('profileXpFill');
+        const badgeEl = document.getElementById('profileLevelBadge');
+        if (ratioEl && d.xp !== undefined) {
+          const lvl = d.level || 1;
+          const next = lvl * 200;
+          const pct = Math.min(100, Math.round((d.xp / next) * 100));
+          ratioEl.innerText = `${(d.xp || 0).toLocaleString()} / ${next.toLocaleString()} XP (${pct}%)`;
+          if (fillEl) fillEl.style.width = `${pct}%`;
+        }
+        if (badgeEl && d.level) {
+          badgeEl.innerText = `LEVEL ${d.level} • ${(d.vipRank || 'GENIN').replace('_', ' ')}`;
+        }
+      } catch (_) {}
+    }
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
     updateHeaderAuth(null);

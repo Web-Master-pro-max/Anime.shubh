@@ -903,6 +903,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (isNaN(targetEpNum) || targetEpNum < 1) return;
       if (isSwitchingEpisode) return;
       isSwitchingEpisode = true;
+      currentEpisodeXpAwarded = false;
 
       try {
         saveUserVolumePreference();
@@ -1264,6 +1265,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           fLoader: SecureHlsLoader,
         });
 
+        currentEpisodeXpAwarded = false;
         hls.loadSource(resolvedVideoSrc);
         hls.attachMedia(mainVideo);
 
@@ -1442,6 +1444,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
 
       } else if (mainVideo.canPlayType('application/vnd.apple.mpegurl')) {
+        currentEpisodeXpAwarded = false;
         mainVideo.src = resolvedVideoSrc;
         mainVideo.addEventListener('loadedmetadata', function () {
           if (seekTime !== null && !isNaN(seekTime) && seekTime > 0) {
@@ -1690,6 +1693,129 @@ document.addEventListener('DOMContentLoaded', async function () {
       } catch (domErr) { }
     }
 
+    // Track whether XP was already awarded for the currently loaded episode in this session
+    let currentEpisodeXpAwarded = false;
+
+    // Toast notification for XP gained and level ups
+    function showXpAwardToast(gained, currentXp, nextXp, level, inParty, leveledUp) {
+      try {
+        const existing = document.querySelector('.player-xp-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.className = `player-xp-toast ${inParty ? 'party' : ''} ${leveledUp ? 'levelup' : ''}`;
+        
+        const titleText = leveledUp
+          ? `LEVEL UP! LEVEL ${level}`
+          : (inParty ? `+${gained} XP • WATCH PARTY BONUS` : `+${gained} XP EARNED`);
+        
+        const subText = leveledUp
+          ? `Congratulations! You unlocked new Otaku tier rewards.`
+          : `Otaku XP: ${(currentXp || 0).toLocaleString()} / ${(nextXp || (level * 200)).toLocaleString()} XP`;
+
+        const iconHtml = leveledUp
+          ? '<i class="fas fa-crown"></i>'
+          : (inParty ? '<i class="fas fa-users-viewfinder"></i>' : '<i class="fas fa-bolt"></i>');
+
+        toast.innerHTML = `
+          <div class="player-xp-icon">${iconHtml}</div>
+          <div class="player-xp-details">
+            <span class="player-xp-title">${titleText}</span>
+            <span class="player-xp-sub">${subText}</span>
+          </div>
+        `;
+
+        const playerWrapper = document.querySelector('.video-player') || document.body;
+        playerWrapper.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.add('fade-out');
+          setTimeout(() => { toast.remove(); }, 600);
+        }, 4500);
+      } catch (err) {
+        console.warn('Error showing XP toast:', err);
+      }
+    }
+
+    // Award XP to user for watching episode (threshold >= 70% or video ended)
+    async function checkAndAwardEpisodeXp(forced = false) {
+      if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
+      if (!token) return;
+
+      const effectiveEpId = currentEpisode?.id || episodeId;
+      const isLunar = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
+      const anilistIdVal = currentEpisode?.anilistId || lunarId;
+      const epNumVal = currentEpisode?.episodeNumber || epNum || 1;
+      const epKey = isLunar ? `lunar_${anilistIdVal}_${epNumVal}` : `db_${effectiveEpId}`;
+
+      const sessionKey = `infinx_xp_awarded_${epKey}`;
+      if (currentEpisodeXpAwarded || sessionStorage.getItem(sessionKey)) {
+        return;
+      }
+
+      const progressRatio = mainVideo.currentTime / mainVideo.duration;
+      if (progressRatio < 0.70 && !mainVideo.ended && !forced) {
+        return;
+      }
+
+      const inWatchParty = Boolean(window.__infinxWatchPartyActive || (new URLSearchParams(window.location.search)).get('party'));
+      const xpAmount = inWatchParty ? 25 : 10;
+      const xpReason = inWatchParty ? 'watch_party' : 'episode_watched';
+
+      currentEpisodeXpAwarded = true;
+      try { sessionStorage.setItem(sessionKey, 'true'); } catch (_) {}
+
+      try {
+        const payload = {
+          amount: xpAmount,
+          reason: xpReason,
+          inWatchParty,
+          episodeId: isLunar ? `lunar-${anilistIdVal}-${epNumVal}` : effectiveEpId,
+          lunarId: anilistIdVal,
+          episodeNumber: epNumVal,
+          episodeTitle: currentEpisode?.title || `Episode ${epNumVal}`,
+          showTitle: currentEpisode?.show?.title || currentEpisode?.showTitle || 'Anime Series',
+          progress: Math.floor(mainVideo.currentTime),
+          duration: Math.floor(mainVideo.duration),
+          completed: progressRatio >= 0.85 || mainVideo.ended
+        };
+
+        const res = await fetch(`${API_BASE}/user/xp`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && (data.xpGained > 0 || data.leveledUp)) {
+            showXpAwardToast(
+              data.xpGained || xpAmount,
+              data.xp,
+              data.xpNextLevel || (data.level * 200),
+              data.level,
+              inWatchParty,
+              data.leveledUp
+            );
+            try {
+              localStorage.setItem('infinx_last_xp_gain', JSON.stringify({
+                xp: data.xp,
+                level: data.level,
+                gained: data.xpGained || xpAmount,
+                timestamp: Date.now()
+              }));
+              window.dispatchEvent(new CustomEvent('infinx:xp-updated', { detail: data }));
+            } catch (_) {}
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to award episode XP:', err);
+      }
+    }
+
     // Periodically post progress updates to API & local storage
     async function reportPlaybackProgress() {
       if (isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
@@ -1703,6 +1829,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       lastProgressReportTime = now;
       try {
+        const inWatchParty = Boolean(window.__infinxWatchPartyActive || (new URLSearchParams(window.location.search)).get('party'));
+        const progressRatio = mainVideo.currentTime / mainVideo.duration;
+        const isCompleted = progressRatio >= 0.85 || mainVideo.ended;
         const isLunar = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
         const payload = isLunar ? {
           isLunar: true,
@@ -1713,16 +1842,20 @@ document.addEventListener('DOMContentLoaded', async function () {
           showTitle: currentEpisode?.show?.title,
           poster: currentEpisode?.show?.poster || currentEpisode?.thumbnail,
           progress: Math.floor(mainVideo.currentTime),
-          duration: Math.floor(mainVideo.duration)
+          duration: Math.floor(mainVideo.duration),
+          inWatchParty,
+          completed: isCompleted
         } : {
           episodeId: parseInt(episodeId),
           progress: Math.floor(mainVideo.currentTime),
-          duration: Math.floor(mainVideo.duration)
+          duration: Math.floor(mainVideo.duration),
+          inWatchParty,
+          completed: isCompleted
         };
 
         if (!isLunar && isNaN(payload.episodeId)) return;
 
-        await fetch(`${API_BASE}/user/history`, {
+        const res = await fetch(`${API_BASE}/user/history`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1730,6 +1863,31 @@ document.addEventListener('DOMContentLoaded', async function () {
           },
           body: JSON.stringify(payload)
         });
+
+        if (res.ok) {
+          const resData = await res.json();
+          if (resData.xpResult && (resData.xpResult.xpGained > 0 || resData.xpResult.leveledUp)) {
+            const xpRes = resData.xpResult;
+            currentEpisodeXpAwarded = true;
+            showXpAwardToast(
+              xpRes.xpGained,
+              xpRes.xp,
+              xpRes.xpNextLevel || (xpRes.level * 200),
+              xpRes.level,
+              inWatchParty,
+              xpRes.leveledUp
+            );
+            try {
+              localStorage.setItem('infinx_last_xp_gain', JSON.stringify({
+                xp: xpRes.xp,
+                level: xpRes.level,
+                gained: xpRes.xpGained,
+                timestamp: Date.now()
+              }));
+              window.dispatchEvent(new CustomEvent('infinx:xp-updated', { detail: xpRes }));
+            } catch (_) {}
+          }
+        }
       } catch (e) {
         console.warn('Failed to save playback progress:', e);
       }
@@ -3264,6 +3422,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         updateBufferBar();
         reportPlaybackProgress();
+        checkAndAwardEpisodeXp();
         handleSmartIntroOutro(mainVideo.currentTime, mainVideo.duration);
         updateTimelineMarkers();
         updateActiveSubtitleDisplay();
@@ -3448,6 +3607,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Video end handler for auto-next
     mainVideo.addEventListener('ended', function () {
+      checkAndAwardEpisodeXp(true);
       if (autoNextCheckbox && autoNextCheckbox.checked) {
         playNextVideo();
       }
@@ -3474,6 +3634,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function playNextVideo() {
+      checkAndAwardEpisodeXp(false);
       if (lunarId) {
         const curEp = parseInt(currentEpisode?.episodeNumber || epNum, 10) || 1;
         if (curEp < siblingEpisodes.length) {
