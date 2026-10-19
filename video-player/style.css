@@ -5586,6 +5586,21 @@ video::-webkit-media-text-track-background {
   animation: xpToastLevelUpPulse 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.player-xp-toast.warning {
+  border-color: rgba(245, 158, 11, 0.75);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(245, 158, 11, 0.35);
+}
+
+.player-xp-toast.warning .player-xp-icon {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+}
+
+.player-xp-toast.warning .player-xp-title {
+  color: #fbbf24;
+}
+
 @keyframes xpToastSlideIn {
   from {
     opacity: 0;

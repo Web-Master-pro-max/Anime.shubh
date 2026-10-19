@@ -904,6 +904,9 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (isSwitchingEpisode) return;
       isSwitchingEpisode = true;
       currentEpisodeXpAwarded = false;
+      const targetEpKey = getEpisodeWatchKey(null, lunarId, targetEpNum, true);
+      loadEpisodeWatchMetrics(targetEpKey);
+      lastActivePlaybackTick = null;
 
       try {
         saveUserVolumePreference();
@@ -1696,6 +1699,82 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Track whether XP was already awarded for the currently loaded episode in this session
     let currentEpisodeXpAwarded = false;
 
+    // ========================================================
+    // WATCH-TIME & ANTI-CHEAT XP REWARD ENGINE
+    // ========================================================
+    let currentEpisodeActiveWatchSeconds = 0;
+    let currentEpisodeWatchedBuckets = new Set();
+    let lastActivePlaybackTick = null;
+    let lastNoticeToastTime = 0;
+
+    function getEpisodeWatchKey(epId, anilistId, epNumVal, isLunar) {
+      return isLunar ? `lunar_${anilistId}_${epNumVal}` : `db_${epId}`;
+    }
+
+    function loadEpisodeWatchMetrics(key) {
+      if (!key) return;
+      try {
+        const raw = sessionStorage.getItem(`infinx_watch_metrics_${key}`);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          currentEpisodeActiveWatchSeconds = parsed.seconds || 0;
+          currentEpisodeWatchedBuckets = new Set(parsed.buckets || []);
+          return;
+        }
+      } catch (_) {}
+      currentEpisodeActiveWatchSeconds = 0;
+      currentEpisodeWatchedBuckets = new Set();
+    }
+
+    function saveEpisodeWatchMetrics(key) {
+      if (!key) return;
+      try {
+        sessionStorage.setItem(`infinx_watch_metrics_${key}`, JSON.stringify({
+          seconds: Math.floor(currentEpisodeActiveWatchSeconds),
+          buckets: Array.from(currentEpisodeWatchedBuckets)
+        }));
+      } catch (_) {}
+    }
+
+    function recordActiveWatchTick() {
+      if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
+      if (!mainVideo.paused && !mainVideo.seeking && !isScrubbing) {
+        const now = Date.now();
+        if (lastActivePlaybackTick) {
+          const deltaMs = now - lastActivePlaybackTick;
+          // Count only natural real-time playback ticks (between 50ms and 2500ms)
+          if (deltaMs >= 50 && deltaMs <= 2500) {
+            const speed = Math.max(0.25, Math.min(3.0, mainVideo.playbackRate || 1));
+            currentEpisodeActiveWatchSeconds += (deltaMs / 1000) * speed;
+          }
+        }
+        lastActivePlaybackTick = now;
+
+        // Record 10-second segment coverage
+        if (mainVideo.currentTime >= 0) {
+          const bucket = Math.floor(mainVideo.currentTime / 10);
+          currentEpisodeWatchedBuckets.add(bucket);
+        }
+
+        const isLunar = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
+        const effectiveEpId = currentEpisode?.id || episodeId;
+        const anilistIdVal = currentEpisode?.anilistId || lunarId;
+        const epNumVal = currentEpisode?.episodeNumber || epNum || 1;
+        const epKey = getEpisodeWatchKey(effectiveEpId, anilistIdVal, epNumVal, isLunar);
+        saveEpisodeWatchMetrics(epKey);
+      } else {
+        lastActivePlaybackTick = null;
+      }
+    }
+
+    function getEpisodeWatchCoverage(duration) {
+      if (!duration || duration <= 0) return 0;
+      const watchSeconds = currentEpisodeActiveWatchSeconds;
+      const bucketSeconds = currentEpisodeWatchedBuckets.size * 10;
+      const effectiveWatched = Math.max(watchSeconds, bucketSeconds);
+      return Math.min(1.0, effectiveWatched / duration);
+    }
+
     // Toast notification for XP gained and level ups
     function showXpAwardToast(gained, currentXp, nextXp, level, inParty, leveledUp) {
       try {
@@ -1737,24 +1816,76 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     }
 
-    // Award XP to user for watching episode (threshold >= 70% or video ended)
+    // Toast notification when user skips entire episode without watching required time
+    function showXpWarningToast(title, message) {
+      try {
+        const existing = document.querySelector('.player-xp-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'player-xp-toast warning';
+        toast.innerHTML = `
+          <div class="player-xp-icon"><i class="fas fa-hourglass-half"></i></div>
+          <div class="player-xp-details">
+            <span class="player-xp-title">${title}</span>
+            <span class="player-xp-sub">${message}</span>
+          </div>
+        `;
+
+        const playerWrapper = document.querySelector('.video-player') || document.body;
+        playerWrapper.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.add('fade-out');
+          setTimeout(() => { toast.remove(); }, 600);
+        }, 4800);
+      } catch (_) {}
+    }
+
+    // Award XP to user for watching episode (threshold >= 70% reached AND watched at least 50% of episode)
     async function checkAndAwardEpisodeXp(forced = false) {
       if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
       if (!token) return;
 
+      const duration = mainVideo.duration;
       const effectiveEpId = currentEpisode?.id || episodeId;
       const isLunar = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
       const anilistIdVal = currentEpisode?.anilistId || lunarId;
       const epNumVal = currentEpisode?.episodeNumber || epNum || 1;
-      const epKey = isLunar ? `lunar_${anilistIdVal}_${epNumVal}` : `db_${effectiveEpId}`;
+      const epKey = getEpisodeWatchKey(effectiveEpId, anilistIdVal, epNumVal, isLunar);
 
       const sessionKey = `infinx_xp_awarded_${epKey}`;
       if (currentEpisodeXpAwarded || sessionStorage.getItem(sessionKey)) {
         return;
       }
 
-      const progressRatio = mainVideo.currentTime / mainVideo.duration;
-      if (progressRatio < 0.70 && !mainVideo.ended && !forced) {
+      const progressRatio = mainVideo.currentTime / duration;
+      const watchCoverage = getEpisodeWatchCoverage(duration);
+
+      // ANTI-CHEAT CHECK 1: Must have reached at least 70% of the episode or ended
+      const reachedEnd = progressRatio >= 0.70 || mainVideo.ended || forced;
+      if (!reachedEnd) {
+        return;
+      }
+
+      // ANTI-CHEAT CHECK 2: Must have actively watched at least 50% of the episode duration!
+      // This allows legitimate viewers to skip intro (85-90s) & outro (90s) and small sections,
+      // while completely blocking anyone who skips/scrubs to the end to farm XP.
+      const hasSufficientWatchTime = (duration <= 60) || (watchCoverage >= 0.50);
+
+      if (!hasSufficientWatchTime) {
+        // If user reached the end (ended, playNext, or scrubbed past 70%) without watching 50%:
+        // Inform them with an anti-skip notice so they understand XP requires actual watching.
+        if (forced || mainVideo.ended || progressRatio >= 0.85) {
+          const now = Date.now();
+          if (now - lastNoticeToastTime > 8000) {
+            lastNoticeToastTime = now;
+            showXpWarningToast(
+              'STREAM MORE TO EARN XP',
+              `Watched ${Math.round(watchCoverage * 100)}% • Stream at least 50% of the episode naturally to earn Otaku XP!`
+            );
+          }
+        }
         return;
       }
 
@@ -1776,8 +1907,10 @@ document.addEventListener('DOMContentLoaded', async function () {
           episodeTitle: currentEpisode?.title || `Episode ${epNumVal}`,
           showTitle: currentEpisode?.show?.title || currentEpisode?.showTitle || 'Anime Series',
           progress: Math.floor(mainVideo.currentTime),
-          duration: Math.floor(mainVideo.duration),
-          completed: progressRatio >= 0.85 || mainVideo.ended
+          duration: Math.floor(duration),
+          watchTime: Math.floor(currentEpisodeActiveWatchSeconds),
+          watchCoverage: Math.round(watchCoverage * 100) / 100,
+          completed: true
         };
 
         const res = await fetch(`${API_BASE}/user/xp`, {
@@ -1831,7 +1964,9 @@ document.addEventListener('DOMContentLoaded', async function () {
       try {
         const inWatchParty = Boolean(window.__infinxWatchPartyActive || (new URLSearchParams(window.location.search)).get('party'));
         const progressRatio = mainVideo.currentTime / mainVideo.duration;
-        const isCompleted = progressRatio >= 0.85 || mainVideo.ended;
+        const watchCoverage = getEpisodeWatchCoverage(mainVideo.duration);
+        // Only mark completed if progress reached near end AND user watched at least 50%
+        const isCompleted = (progressRatio >= 0.85 || mainVideo.ended) && (watchCoverage >= 0.50);
         const isLunar = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
         const payload = isLunar ? {
           isLunar: true,
@@ -1843,12 +1978,16 @@ document.addEventListener('DOMContentLoaded', async function () {
           poster: currentEpisode?.show?.poster || currentEpisode?.thumbnail,
           progress: Math.floor(mainVideo.currentTime),
           duration: Math.floor(mainVideo.duration),
+          watchTime: Math.floor(currentEpisodeActiveWatchSeconds),
+          watchCoverage: Math.round(watchCoverage * 100) / 100,
           inWatchParty,
           completed: isCompleted
         } : {
           episodeId: parseInt(episodeId),
           progress: Math.floor(mainVideo.currentTime),
           duration: Math.floor(mainVideo.duration),
+          watchTime: Math.floor(currentEpisodeActiveWatchSeconds),
+          watchCoverage: Math.round(watchCoverage * 100) / 100,
           inWatchParty,
           completed: isCompleted
         };
@@ -3420,6 +3559,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           progressEl.style.width = `${progressPercent}%`;
         }
 
+        recordActiveWatchTick();
         updateBufferBar();
         reportPlaybackProgress();
         checkAndAwardEpisodeXp();
@@ -3710,6 +3850,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     mainVideo.addEventListener('play', function () {
+      lastActivePlaybackTick = Date.now();
       if (!checkIsLoggedIn()) {
         mainVideo.pause();
         showPlayerAuthLock();
@@ -3720,6 +3861,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     mainVideo.addEventListener('pause', function () {
+      lastActivePlaybackTick = null;
       if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
       clearTimeout(hideControlsTimeout);
       showControls(0);
@@ -3819,6 +3961,12 @@ document.addEventListener('DOMContentLoaded', async function () {
       updateBufferBar();
       detectedIntroOutro = computeIntroOutroWindows();
       updateTimelineMarkers();
+      const isLunar = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
+      const effectiveEpId = currentEpisode?.id || episodeId;
+      const anilistIdVal = currentEpisode?.anilistId || lunarId;
+      const epNumVal = currentEpisode?.episodeNumber || epNum || 1;
+      const epKey = getEpisodeWatchKey(effectiveEpId, anilistIdVal, epNumVal, isLunar);
+      loadEpisodeWatchMetrics(epKey);
     });
     mainVideo.addEventListener('durationchange', function () {
       detectedIntroOutro = computeIntroOutroWindows();
@@ -4200,8 +4348,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
     mainVideo.addEventListener('timeupdate', updateTime);
-    mainVideo.addEventListener('seeking', updateActiveSubtitleDisplay);
-    mainVideo.addEventListener('seeked', updateActiveSubtitleDisplay);
+    mainVideo.addEventListener('seeking', () => {
+      lastActivePlaybackTick = null;
+      updateActiveSubtitleDisplay();
+    });
+    mainVideo.addEventListener('seeked', () => {
+      lastActivePlaybackTick = Date.now();
+      updateActiveSubtitleDisplay();
+    });
 
     function updateSpeedPillsActive() {
       const currentRate = (mainVideo && !isNaN(mainVideo.playbackRate)) ? mainVideo.playbackRate : 1;
