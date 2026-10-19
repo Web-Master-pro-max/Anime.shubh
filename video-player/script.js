@@ -1848,10 +1848,12 @@ document.addEventListener('DOMContentLoaded', async function () {
       } catch (_) {}
     }
 
-    // Award XP to user for watching episode (threshold >= 70% reached AND watched at least 50% of episode)
+    // Award XP to user for watching episode
     async function checkAndAwardEpisodeXp(forced = false) {
       if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration <= 0) return;
-      if (!token) return;
+
+      const userToken = localStorage.getItem('infinx_token') || localStorage.getItem('token') || sessionStorage.getItem('infinx_token') || token;
+      if (!userToken) return;
 
       const duration = mainVideo.duration;
       const effectiveEpId = currentEpisode?.id || episodeId;
@@ -1865,33 +1867,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         return;
       }
 
-      const progressRatio = mainVideo.currentTime / duration;
+      const progressRatio = duration > 0 ? (mainVideo.currentTime / duration) : 0;
       const watchCoverage = getEpisodeWatchCoverage(duration);
 
-      // ANTI-CHEAT CHECK 1: Must have reached at least 70% of the episode or ended
-      const reachedEnd = progressRatio >= 0.70 || mainVideo.ended || forced;
-      if (!reachedEnd) {
-        return;
-      }
-
-      // ANTI-CHEAT CHECK 2: Must have actively watched at least 50% of the episode duration!
-      // This allows legitimate viewers to skip intro (85-90s) & outro (90s) and small sections,
-      // while completely blocking anyone who skips/scrubs to the end to farm XP.
-      const hasSufficientWatchTime = (duration <= 60) || (watchCoverage >= 0.50);
-
-      if (!hasSufficientWatchTime) {
-        // If user reached the end (ended, playNext, or scrubbed past 70%) without watching 50%:
-        // Inform them with an anti-skip notice so they understand XP requires actual watching.
-        if (forced || mainVideo.ended || progressRatio >= 0.85) {
-          const now = Date.now();
-          if (now - lastNoticeToastTime > 8000) {
-            lastNoticeToastTime = now;
-            showXpWarningToast(
-              'STREAM MORE TO EARN XP',
-              `Watched ${Math.round(watchCoverage * 100)}% • Stream at least 50% of the episode naturally to earn Otaku XP!`
-            );
-          }
-        }
+      // Episode complete if reached >= 65% of the episode, video ended, or forced by episode navigation
+      const isCompleted = progressRatio >= 0.65 || mainVideo.ended || forced;
+      if (!isCompleted) {
         return;
       }
 
@@ -1923,7 +1904,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...authHeaders
+            'Authorization': `Bearer ${userToken}`
           },
           body: JSON.stringify(payload)
         });
@@ -1961,7 +1942,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       const effectiveEpId = currentEpisode?.id || episodeId;
       saveEpisodeWatchProgress(effectiveEpId, mainVideo.currentTime, mainVideo.duration);
 
-      if (!token) return;
+      const userToken = localStorage.getItem('infinx_token') || localStorage.getItem('token') || sessionStorage.getItem('infinx_token') || token;
+      if (!userToken) return;
       const now = Date.now();
       // Report every 8 seconds
       if (now - lastProgressReportTime < 8000) return;
@@ -1971,8 +1953,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const inWatchParty = Boolean(window.__infinxWatchPartyActive || (new URLSearchParams(window.location.search)).get('party'));
         const progressRatio = mainVideo.currentTime / mainVideo.duration;
         const watchCoverage = getEpisodeWatchCoverage(mainVideo.duration);
-        // Only mark completed if progress reached near end AND user watched at least 50%
-        const isCompleted = (progressRatio >= 0.85 || mainVideo.ended) && (watchCoverage >= 0.50);
+        const isCompleted = progressRatio >= 0.80 || mainVideo.ended;
         const isLunar = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
         const payload = isLunar ? {
           isLunar: true,
@@ -2004,7 +1985,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...authHeaders
+            'Authorization': `Bearer ${userToken}`
           },
           body: JSON.stringify(payload)
         });
