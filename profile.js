@@ -220,7 +220,7 @@
     { id: 'ban-dragonball', name: 'Dragon Ball Super: Tournament', anime: 'Dragon Ball Super', levelReq: 50, tier: 'Monarch', url: 'assets/banners/ban-dragonball.jpg', fallback: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/21175-Qo9gdGPUm4Im.jpg' },
     { id: 'ban-death-note', name: 'Death Note: Battle of Minds', anime: 'Death Note', levelReq: 50, tier: 'Monarch', url: 'assets/banners/ban-death-note.jpg', fallback: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/1535.jpg' },
     { id: 'ban-steins-gate', name: 'Steins;Gate: World Line Convergence', anime: 'Steins;Gate', levelReq: 50, tier: 'Monarch', url: 'assets/banners/ban-steins-gate.jpg', fallback: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/n9253-JIhmKgBKsWUN.jpg' },
-    { id: 'ban-evangelion', name: 'Neon Genesis Evangelion: Third Impact', anime: 'Evangelion', levelReq: 50, tier: 'Monarch', url: 'assets/banners/ban-evangelion.jpg', fallback: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/30-gEMoHHIqxDgN.jpg' },,
+    { id: 'ban-evangelion', name: 'Neon Genesis Evangelion: Third Impact', anime: 'Evangelion', levelReq: 50, tier: 'Monarch', url: 'assets/banners/ban-evangelion.jpg', fallback: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/30-gEMoHHIqxDgN.jpg' },
 
     // --- EXPANDED HD WIDESCREEN POSTERS (Level 1 to 50) ---
 
@@ -291,8 +291,8 @@
     { id: 'ban-the-rising-of-the-shield-hero', name: "The Rising of the Shield Hero: Widescreen Showcase", anime: "The Rising of the Shield Hero", levelReq: 50, tier: 'Monarch', url: 'assets/banners/ban-the-rising-of-the-shield-hero.jpg', fallback: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/99263-IwkmdCTsDY1t.jpg' }
   ];
 
-  AVATAR_PRESETS.forEach(a => { if (a.url && !a.url.startsWith('/')) a.url = '/' + a.url; });
-  BANNER_PRESETS.forEach(b => { if (b.url && !b.url.startsWith('/')) b.url = '/' + b.url; });
+  AVATAR_PRESETS.forEach(a => { if (a && a.url && !a.url.startsWith('/')) a.url = '/' + a.url; });
+  BANNER_PRESETS.forEach(b => { if (b && b.url && !b.url.startsWith('/')) b.url = '/' + b.url; });
 
   // Preset Aura Frames with Level Requirements
   const AURA_PRESETS = [
@@ -513,23 +513,19 @@
     const bannerEl = document.getElementById('profileBannerImg');
     const defaultBan = BANNER_PRESETS[0];
     const activeBannerUrl = normalizeAssetUrl(p.bannerUrl || defaultBan.url);
-    bannerEl.src = activeBannerUrl;
+    const banMatch = BANNER_PRESETS.find(b => 
+      b && (
+        b.url === activeBannerUrl || 
+        b.fallback === activeBannerUrl || 
+        (activeBannerUrl && activeBannerUrl.endsWith(b.url.replace(/^\//, '')))
+      )
+    );
+    bannerEl.src = (banMatch && banMatch.fallback) ? banMatch.fallback : activeBannerUrl;
     bannerEl.onerror = () => {
-      const srcUrl = bannerEl.getAttribute('src') || bannerEl.src || '';
-      const match = BANNER_PRESETS.find(b => 
-        b.url === srcUrl || 
-        b.fallback === srcUrl || 
-        (srcUrl && srcUrl.endsWith(b.url.replace(/^\//, '')))
-      );
-      if (match && match.fallback && bannerEl.src !== match.fallback) {
-        bannerEl.src = match.fallback;
+      if (banMatch && bannerEl.src !== activeBannerUrl) {
+        bannerEl.src = activeBannerUrl;
       }
     };
-    const banMatch = BANNER_PRESETS.find(b => 
-      b.url === activeBannerUrl || 
-      b.fallback === activeBannerUrl || 
-      (activeBannerUrl && activeBannerUrl.endsWith(b.url.replace(/^\//, '')))
-    );
     const bannerLevelTag = document.getElementById('bannerLevelText');
     if (bannerLevelTag && banMatch) {
       bannerLevelTag.innerText = `Lv. ${banMatch.levelReq} • ${banMatch.tier} Poster`;
@@ -540,17 +536,19 @@
     const avatarSeed = p.email || p.username || 'AnimeFan';
     const defaultAv = AVATAR_PRESETS[0];
     const activeAvatarUrl = normalizeAssetUrl(p.avatarUrl || defaultAv.url);
-    avatarImg.src = activeAvatarUrl;
+    const avMatch = AVATAR_PRESETS.find(a => 
+      a && (
+        a.url === activeAvatarUrl || 
+        a.fallback === activeAvatarUrl || 
+        (activeAvatarUrl && activeAvatarUrl.endsWith(a.url.replace(/^\//, '')))
+      )
+    );
+    avatarImg.src = (avMatch && avMatch.fallback) ? avMatch.fallback : activeAvatarUrl;
     avatarImg.onerror = () => {
-      const srcUrl = avatarImg.getAttribute('src') || avatarImg.src || '';
-      const match = AVATAR_PRESETS.find(a => 
-        a.url === srcUrl || 
-        a.fallback === srcUrl || 
-        (srcUrl && srcUrl.endsWith(a.url.replace(/^\//, '')))
-      );
-      if (match && match.fallback && avatarImg.src !== match.fallback) {
-        avatarImg.src = match.fallback;
+      if (avMatch && avatarImg.src !== activeAvatarUrl) {
+        avatarImg.src = activeAvatarUrl;
       } else {
+        avatarImg.onerror = null;
         avatarImg.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(avatarSeed)}`;
       }
     };
@@ -1403,7 +1401,7 @@
                data-locked="${isLocked}" 
                title="${av.name} (${av.anime}) - ${isLocked ? `🔒 Locked (Requires Level ${req})` : `✓ Unlocked (Level ${req})`}">
             ${lvlTag}
-            <img src="${normalizeAssetUrl(av.url)}" class="preset-avatar-option" alt="${av.name}" onerror="if(this.src!=='${av.fallback}'){this.src='${av.fallback}';}" />
+            <img src="${av.fallback || normalizeAssetUrl(av.url)}" data-local="${normalizeAssetUrl(av.url)}" class="preset-avatar-option" alt="${av.name}" loading="lazy" onerror="if(this.dataset.local && this.src!==this.dataset.local){this.onerror=null; this.src=this.dataset.local;}" />
             ${lockIcon}
             <span class="preset-avatar-name">${av.name}</span>
           </div>
@@ -1484,7 +1482,7 @@
                data-locked="${isLocked}"
                title="${ban.name} - ${isLocked ? `🔒 Locked (Level ${req} Required)` : `✓ Unlocked (Level ${req})`}">
             ${lvlTag}
-            <img class="fame-card-img" src="${normalizeAssetUrl(ban.url)}" alt="${ban.name}" onerror="if(this.src!=='${ban.fallback}'){this.src='${ban.fallback}';}" />
+            <img class="fame-card-img" src="${ban.fallback || normalizeAssetUrl(ban.url)}" data-local="${normalizeAssetUrl(ban.url)}" alt="${ban.name}" loading="lazy" onerror="if(this.dataset.local && this.src!==this.dataset.local){this.onerror=null; this.src=this.dataset.local;}" />
             ${lockCenter}
             <div class="fame-card-overlay" style="padding: 10px; background: linear-gradient(180deg, transparent 0%, rgba(6,7,13,0.92) 100%);">
               <div style="font-size: 1.25rem; font-weight: 700; color: #fff;">${ban.name}</div>
