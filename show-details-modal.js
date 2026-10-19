@@ -831,7 +831,7 @@
 
     if (isLunarShow && anilistId) {
       try {
-        const res = await fetch(`${apiBase}/lunarx/all/${anilistId}`);
+        const res = await fetch(`${apiBase}/anime/all/${anilistId}`);
         if (res.ok) {
           const lData = await res.json();
           show = {

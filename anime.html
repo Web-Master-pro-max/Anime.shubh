@@ -2589,7 +2589,7 @@
         // Load Spotlight Header (Popular/Trending anime)
         async function initSpotlight() {
             try {
-                const res = await fetch(`${API_BASE}/lunarx/trending`);
+                const res = await fetch(`${API_BASE}/anime/trending`);
                 if (!res.ok) return;
                 const data = await res.json();
                 const list = data.popularThisSeason || data.trendingNow || [];
@@ -2620,7 +2620,7 @@
 
                 // Fetch details for genres/desc
                 try {
-                    const infoRes = await fetch(`${API_BASE}/lunarx/info/${topAnime.anilistId}`);
+                    const infoRes = await fetch(`${API_BASE}/anime/info/${topAnime.anilistId}`);
                     if (infoRes.ok) {
                         const info = await infoRes.json();
                         if (info.rating) document.getElementById('spotlightRating').innerHTML = `<i class="fas fa-star"></i> ${info.rating}`;
@@ -2660,7 +2660,7 @@
                 if (currentFilters.year && currentFilters.year !== 'all') params.append('year', currentFilters.year);
                 if (currentFilters.status && currentFilters.status !== 'all') params.append('status', currentFilters.status);
 
-                const res = await fetch(`${API_BASE}/lunarx/browse?${params.toString()}`);
+                const res = await fetch(`${API_BASE}/anime/browse?${params.toString()}`);
                 if (!res.ok) throw new Error(`API error ${res.status}`);
                 const data = await res.json();
 

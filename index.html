@@ -2691,7 +2691,7 @@
             if (!container) return;
 
             try {
-                const res = await fetch(`${API_BASE}/lunarx/trending`);
+                const res = await fetch(`${API_BASE}/anime/trending`);
                 if (!res.ok) return;
                 const data = await res.json();
                 globalLunarData = data;
