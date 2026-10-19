@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     try {
       if (lunarId) {
         // Fetch complete anime metadata and episodes from Stream API
-        const allRes = await fetch(`${API_BASE}/stream/all/${lunarId}`);
+        const allRes = await fetch(`${API_BASE}/lunarx/all/${lunarId}`);
         if (!allRes.ok) throw new Error(`Stream API returned ${allRes.status}`);
         const animeData = await allRes.json();
         const eps = animeData.episodes || [];
@@ -809,7 +809,7 @@ document.addEventListener('DOMContentLoaded', async function () {
               updateAudioOptions();
             }
             const hostParam = (currentAudioType === 'dub' && target.host === 'zuna') ? 'yuki' : target.host;
-            const sRes = await fetch(`${API_BASE}/stream/watch/${currentEpisode.anilistId}/${epNumVal}?host=${hostParam}&type=${currentAudioType}`);
+            const sRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${hostParam}&type=${currentAudioType}`);
             if (sRes.ok) {
               const sData = await sRes.json();
               if (sData.streamUrl) {
@@ -830,7 +830,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (!target.url && currentAudioType === 'dub') {
               console.log('[Player] Dub unavailable on server switch, falling back to Japanese Sub...');
               try {
-                const fbRes = await fetch(`${API_BASE}/stream/watch/${currentEpisode.anilistId}/${epNumVal}?host=zuna&type=sub`);
+                const fbRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=zuna&type=sub`);
                 if (fbRes.ok) {
                   const fbData = await fbRes.json();
                   if (fbData.streamUrl) {
@@ -1044,7 +1044,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const hostParam = (currentAudioType === 'dub') ? 'yuki' : (currentEpisode?.servers?.find(s => s.id === activeServerId)?.host || 'zuna');
 
         try {
-          const sRes = await fetch(`${API_BASE}/stream/watch/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=${hostParam}&type=${currentAudioType}`);
+          const sRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=${hostParam}&type=${currentAudioType}`);
           if (sRes.ok) {
             const sData = await sRes.json();
             if (sData.streamUrl) {
@@ -1069,7 +1069,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Fallback to sub or other hosts if initial stream was empty
         if (!streamUrl && currentAudioType === 'dub') {
           try {
-            const fbRes = await fetch(`${API_BASE}/stream/watch/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=zuna&type=sub`);
+            const fbRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=zuna&type=sub`);
             if (fbRes.ok) {
               const fbData = await fbRes.json();
               if (fbData.streamUrl) {
@@ -1086,7 +1086,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (!streamUrl) {
           for (const altHost of ['sora', '3rdprovider']) {
             try {
-              const altRes = await fetch(`${API_BASE}/stream/watch/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=${altHost}&type=sub`);
+              const altRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=${altHost}&type=sub`);
               if (altRes.ok) {
                 const altData = await altRes.json();
                 if (altData.streamUrl) {
@@ -2435,7 +2435,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       try {
         const epNumVal = currentEpisode.episodeNumber || epNum || 1;
         const hostParam = targetType === 'dub' ? 'yuki' : 'zuna';
-        const res = await fetch(`${API_BASE}/stream/watch/${currentEpisode.anilistId}/${epNumVal}?host=${hostParam}&type=${targetType}`);
+        const res = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${hostParam}&type=${targetType}`);
 
         if (res.ok) {
           const data = await res.json();
@@ -5972,7 +5972,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           }
           const host = (currentAudioType === 'dub') ? 'yuki' : (initialServer?.host || 'zuna');
           const epNumVal = currentEpisode.episodeNumber || epNum || 1;
-          const sRes = await fetch(`${API_BASE}/stream/watch/${currentEpisode.anilistId}/${epNumVal}?host=${host}&type=${currentAudioType}`);
+          const sRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${host}&type=${currentAudioType}`);
           if (sRes.ok) {
             const sData = await sRes.json();
             if (sData.streamUrl) {
@@ -6006,7 +6006,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           if (!initialVideoUrl && currentAudioType === 'dub') {
             console.log('[Player] Dub stream unavailable on initial load, attempting fallback to Japanese Sub...');
             try {
-              const fbRes = await fetch(`${API_BASE}/stream/watch/${currentEpisode.anilistId}/${epNumVal}?host=zuna&type=sub`);
+              const fbRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=zuna&type=sub`);
               if (fbRes.ok) {
                 const fbData = await fbRes.json();
                 if (fbData.streamUrl) {
@@ -6045,7 +6045,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           if (!initialVideoUrl) {
             for (const altHost of ['sora', '3rdprovider']) {
               try {
-                const altRes = await fetch(`${API_BASE}/stream/watch/${currentEpisode.anilistId}/${epNumVal}?host=${altHost}&type=sub`);
+                const altRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${altHost}&type=sub`);
                 if (altRes.ok) {
                   const altData = await altRes.json();
                   if (altData.streamUrl) {
