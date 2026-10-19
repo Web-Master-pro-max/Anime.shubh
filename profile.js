@@ -401,7 +401,9 @@
     // Check if viewing another user's profile
     if (targetUser) {
       try {
-        const res = await fetch(`${API_BASE}/user/profile/${encodeURIComponent(targetUser)}`);
+        const reqHeaders = {};
+        if (token) reqHeaders['Authorization'] = `Bearer ${token}`;
+        const res = await fetch(`${API_BASE}/user/profile/${encodeURIComponent(targetUser)}`, { headers: reqHeaders });
         if (res.ok) {
           const targetProfile = await res.json();
           const currentEmail = localStorage.getItem('infinx_user_email');
@@ -487,21 +489,45 @@
           cardHeader.insertBefore(viewingBadge, cardHeader.firstChild);
         }
       }
-      viewingBadge.innerHTML = `
-        <div style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 12px; padding: 10px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
-          <div style="display: flex; align-items: center; gap: 8px; color: #00f0ff; font-weight: 700; font-size: 1.3rem;">
-            <i class="fas fa-eye"></i> Viewing @${p.username}'s Public Otaku Profile
+      if (p.isAdminViewer && p.isPrivate) {
+        viewingBadge.innerHTML = `
+          <div class="admin-private-banner">
+            <i class="fas fa-user-shield"></i>
+            <div style="flex: 1;">
+              <div style="font-weight: 800; font-size: 1.35rem; color: #00f0ff; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-shield-alt"></i> Administrator Access Active • Private Profile
+              </div>
+              <div style="font-size: 1.2rem; color: #e2e8f0; margin-top: 3px; line-height: 1.4;">
+                @${p.username} has set their profile to <strong>Private</strong>. As an <strong>Admin</strong>, all watch history and watchlist details are visible to you.
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-shrink: 0;">
+              <a href="admin.html" style="background: rgba(0, 240, 255, 0.15); border: 1px solid rgba(0, 240, 255, 0.4); color: #00f0ff; padding: 6px 14px; border-radius: 999px; text-decoration: none; font-size: 1.15rem; font-weight: 600;">
+                <i class="fas fa-tools"></i> Admin Panel
+              </a>
+              <a href="profile.html" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 6px 14px; border-radius: 999px; text-decoration: none; font-size: 1.15rem; font-weight: 600;">
+                <i class="fas fa-user"></i> My Profile
+              </a>
+            </div>
           </div>
-          <div style="display: flex; gap: 8px;">
-            <a href="index.html#publicLiveChatSection" style="background: rgba(255, 0, 85, 0.15); border: 1px solid rgba(255, 0, 85, 0.4); color: #fff; padding: 6px 14px; border-radius: 999px; text-decoration: none; font-size: 1.15rem; font-weight: 600;">
-              <i class="fas fa-comments"></i> Return to Live Chat
-            </a>
-            <a href="profile.html" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 6px 14px; border-radius: 999px; text-decoration: none; font-size: 1.15rem; font-weight: 600;">
-              <i class="fas fa-user"></i> My Profile
-            </a>
+        `;
+      } else {
+        viewingBadge.innerHTML = `
+          <div style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 12px; padding: 10px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 8px; color: #00f0ff; font-weight: 700; font-size: 1.3rem;">
+              <i class="fas fa-eye"></i> Viewing @${p.username}'s ${p.isPrivate ? 'Private' : 'Public'} Otaku Profile
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <a href="index.html#publicLiveChatSection" style="background: rgba(255, 0, 85, 0.15); border: 1px solid rgba(255, 0, 85, 0.4); color: #fff; padding: 6px 14px; border-radius: 999px; text-decoration: none; font-size: 1.15rem; font-weight: 600;">
+                <i class="fas fa-comments"></i> Return to Live Chat
+              </a>
+              <a href="profile.html" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 6px 14px; border-radius: 999px; text-decoration: none; font-size: 1.15rem; font-weight: 600;">
+                <i class="fas fa-user"></i> My Profile
+              </a>
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      }
     } else {
       const viewingBadge = document.getElementById('viewingOtherUserBadge');
       if (viewingBadge) viewingBadge.remove();
@@ -582,6 +608,26 @@
     badgeEl.className = `rank-badge ${badgeConfig.class}`;
     badgeEl.innerHTML = badgeConfig.label;
 
+    // Private profile indicator badge
+    const privateBadge = document.getElementById('profilePrivateBadge');
+    if (privateBadge) {
+      if (p.isPrivate) {
+        privateBadge.style.display = 'inline-flex';
+        if (isOwner) {
+          privateBadge.className = 'badge-private-indicator owner';
+          privateBadge.innerHTML = '<i class="fas fa-lock"></i> Private Profile (Only You & Admins)';
+        } else if (p.isAdminViewer) {
+          privateBadge.className = 'badge-private-indicator admin';
+          privateBadge.innerHTML = '<i class="fas fa-user-shield"></i> Private Profile (Admin View)';
+        } else {
+          privateBadge.className = 'badge-private-indicator';
+          privateBadge.innerHTML = '<i class="fas fa-lock"></i> Private Profile';
+        }
+      } else {
+        privateBadge.style.display = 'none';
+      }
+    }
+
     // Admin link if admin (and viewing own profile)
     if (adminLinkBtn && isOwner) {
       adminLinkBtn.style.display = (p.role === 'ADMIN') ? 'inline-flex' : 'none';
@@ -597,22 +643,23 @@
 
     // 6. Stats
     const stats = p.stats || {};
-    document.getElementById('statWatchTime').innerText = `${stats.totalHoursWatched || 0} hrs`;
-    document.getElementById('statEpisodes').innerText = `${(stats.totalEpisodesWatched || 0).toLocaleString()}`;
-    document.getElementById('statWatchlist').innerText = `${stats.watchlistCount || 0}`;
+    const isPrivateHidden = Boolean(p.isPrivateHidden);
+    document.getElementById('statWatchTime').innerText = isPrivateHidden ? '🔒 Hidden' : `${stats.totalHoursWatched || 0} hrs`;
+    document.getElementById('statEpisodes').innerText = isPrivateHidden ? '🔒 Hidden' : `${(stats.totalEpisodesWatched || 0).toLocaleString()}`;
+    document.getElementById('statWatchlist').innerText = isPrivateHidden ? '🔒 Hidden' : `${stats.watchlistCount !== null && stats.watchlistCount !== undefined ? stats.watchlistCount : 0}`;
     document.getElementById('statStanding').innerText = p.level >= 20 ? 'Top 1% Shinobi' : (p.level >= 10 ? 'Top 5% Otaku' : 'Top 15% Member');
 
     // 7. Hall of Fame Showcase (Ownership Enforcement: only owner can edit or interact with slots)
     renderHallOfFame(p.topAnime, isOwner, p.username);
 
     // 8. Recent History
-    renderRecentHistory(stats.recentHistory || []);
+    renderRecentHistory(stats.recentHistory || [], isPrivateHidden, p.username);
 
-    // 9. Watchlist (Owner sees personal feed, visitor sees public watchlist items)
+    // 9. Watchlist (Owner sees personal feed, visitor/admin sees public/admin watchlist items)
     if (isOwner) {
       loadWatchlistFeed();
     } else {
-      renderWatchlistItems(p.watchlist || [], p.username);
+      renderWatchlistItems(p.watchlist || [], p.username, isPrivateHidden);
     }
   }
 
@@ -706,9 +753,20 @@
     }).join('');
   }
 
-  function renderWatchlistItems(items, username = 'Shinobi') {
+  function renderWatchlistItems(items, username = 'Shinobi', isPrivateHidden = false) {
     const grid = document.getElementById('watchlistGrid');
     if (!grid) return;
+
+    if (isPrivateHidden) {
+      grid.innerHTML = `
+        <div class="private-profile-notice">
+          <div class="private-notice-icon"><i class="fas fa-lock"></i></div>
+          <div class="private-notice-title">Watchlist is Private</div>
+          <div class="private-notice-sub">@${username}'s anime watchlist is hidden from public visitors.</div>
+        </div>
+      `;
+      return;
+    }
 
     if (!items || items.length === 0) {
       grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px 0;">@${username} has no public watchlist items.</div>`;
@@ -1124,9 +1182,20 @@
   window.selectCompletedAnimeForTarget = selectCompletedAnimeForTarget;
   window.markHistoryItemAsCompleted = markHistoryItemAsCompleted;
 
-  function renderRecentHistory(history) {
+  function renderRecentHistory(history, isPrivateHidden = false, username = 'Shinobi') {
     const grid = document.getElementById('recentHistoryGrid');
     if (!grid) return;
+
+    if (isPrivateHidden) {
+      grid.innerHTML = `
+        <div class="private-profile-notice">
+          <div class="private-notice-icon"><i class="fas fa-user-secret"></i></div>
+          <div class="private-notice-title">Watch History is Private</div>
+          <div class="private-notice-sub">@${username}'s anime watch activity is hidden from public visitors.</div>
+        </div>
+      `;
+      return;
+    }
 
     if (!history || history.length === 0) {
       grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px 0;">No watch history yet. Start watching an episode!</div>`;

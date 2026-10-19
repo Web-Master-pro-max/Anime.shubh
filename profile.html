@@ -661,6 +661,9 @@
             <div class="profile-name-row">
               <h1 class="profile-username" id="profileUsername">SupremeHokage</h1>
               <span class="rank-badge hokage" id="profileRankBadge">👑 HOKAGE VIP</span>
+              <span class="badge-private-indicator" id="profilePrivateBadge" style="display: none;">
+                <i class="fas fa-lock"></i> Private Profile
+              </span>
             </div>
             <div class="profile-email-tag" id="profileEmailTag">@SupremeHokage • admin@infinx.com</div>
             <p class="profile-bio" id="profileBio">
@@ -841,11 +844,16 @@
             </div>
 
             <div class="form-group-custom"
-              style="display: flex; flex-direction: row; align-items: center; gap: 10px; margin-top: 8px;">
-              <input type="checkbox" id="editPrivateToggle" style="width: 20px; height: 20px; cursor: pointer;" />
-              <label for="editPrivateToggle" style="color: #cbd5e1; font-size: 1.3rem; cursor: pointer;">
-                Private Profile (Hide watch history and watchlist from public visitors)
-              </label>
+              style="display: flex; flex-direction: row; align-items: flex-start; gap: 14px; margin-top: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px 16px; border-radius: 12px;">
+              <input type="checkbox" id="editPrivateToggle" style="width: 22px; height: 22px; cursor: pointer; accent-color: #ff0055; margin-top: 2px;" />
+              <div>
+                <label for="editPrivateToggle" style="color: #f8fafc; font-size: 1.35rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                  <i class="fas fa-user-shield" style="color: #ff0055;"></i> Private Profile
+                </label>
+                <div style="color: var(--text-muted); font-size: 1.15rem; margin-top: 4px; line-height: 1.45;">
+                  Hide watch history and watchlist from public visitors. Only you and InfinX Administrators will be able to view all your profile details.
+                </div>
+              </div>
             </div>
           </div>
 
