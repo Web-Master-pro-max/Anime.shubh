@@ -741,18 +741,24 @@ video::cue,
   transform: translateY(5px);
 }
 
+.video-player.controls-visible .custom-controls,
+.video-player:not(.controls-hidden) .custom-controls,
 .video-player:hover .custom-controls,
 .custom-controls.settings-open {
   opacity: 1 !important;
+  visibility: visible !important;
   pointer-events: auto !important;
   transform: translateY(0) !important;
 }
 
+.video-player.controls-hidden .custom-controls,
+.video-player .custom-controls.hidden,
 .custom-controls.hidden {
   opacity: 0 !important;
+  visibility: hidden !important;
   pointer-events: none !important;
-  transform: translateY(8px) !important;
-  transition: opacity 0.3s ease, transform 0.3s ease !important;
+  transform: translateY(12px) !important;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s !important;
 }
 
 /* Sleek Smooth Streaming Timeline */
@@ -2247,9 +2253,22 @@ input:checked+.slider:before {
   transition: opacity 0.3s ease;
 }
 
+.video-player.controls-visible .video-overlay,
+.video-player:not(.controls-hidden) .video-overlay,
+.video-player:hover .video-overlay {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+}
+
+.video-player.controls-hidden .video-overlay,
+.video-player .video-overlay.hidden,
 .video-overlay.hidden {
   opacity: 0 !important;
+  visibility: hidden !important;
   pointer-events: none !important;
+  transform: translateY(-12px) !important;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s !important;
 }
 
 .video-info {
@@ -2287,8 +2306,10 @@ input:checked+.slider:before {
   left: 0;
   right: 0;
   bottom: 0;
-  display: none;
-  z-index: 9;
+  display: flex;
+  z-index: 10;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
 .touch-left,
@@ -2296,6 +2317,11 @@ input:checked+.slider:before {
 .touch-right {
   flex: 1;
   height: 100%;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* Video Settings Bar */
@@ -3572,6 +3598,7 @@ input:checked+.slider:before {
 :fullscreen .custom-controls.hidden,
 :-webkit-full-screen .custom-controls.hidden {
   opacity: 0 !important;
+  visibility: hidden !important;
   pointer-events: none !important;
 }
 
@@ -3584,6 +3611,7 @@ input:checked+.slider:before {
 :fullscreen .video-overlay.hidden,
 :-webkit-full-screen .video-overlay.hidden {
   opacity: 0 !important;
+  visibility: hidden !important;
   pointer-events: none !important;
 }
 

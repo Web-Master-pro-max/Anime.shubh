@@ -2232,7 +2232,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (controls) {
         controls.classList.remove('settings-open');
       }
-      if (isFullscreen) {
+      if (mainVideo && !mainVideo.paused) {
         clearTimeout(hideControlsTimeout);
         hideControlsTimeout = setTimeout(hideControls, 3000);
       }
@@ -3314,53 +3314,114 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     playPauseBtn.addEventListener('click', togglePlayPause);
 
-    // Mobile & Desktop Double-Tap Seek and Touch Control listeners
+    // Mobile & Desktop Double-Tap Seek and Touch Control listeners (Tap-to-Toggle)
     let lastLeftTapTime = 0;
     let lastRightTapTime = 0;
+    let lastCenterTapTime = 0;
     let singleTapTimeout = null;
 
     const touchLeft = document.querySelector('.touch-left');
     const touchCenter = document.querySelector('.touch-center');
     const touchRight = document.querySelector('.touch-right');
 
-    if (touchLeft) {
-      touchLeft.addEventListener('click', function (e) {
+    function isMobileOrTouchDevice() {
+      return (
+        (window.matchMedia && (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches)) ||
+        window.innerWidth <= 1024 ||
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      );
+    }
+
+    function handleZoneTap(zone, e) {
+      if (e) {
         e.stopPropagation();
-        const now = Date.now();
-        if (now - lastLeftTapTime < 380) {
+      }
+      const now = Date.now();
+
+      if (zone === 'left') {
+        lastRightTapTime = 0;
+        lastCenterTapTime = 0;
+        if (now - lastLeftTapTime < 340) {
           clearTimeout(singleTapTimeout);
+          singleTapTimeout = null;
           lastLeftTapTime = 0;
           handleDoubleSeek('rewind');
         } else {
           lastLeftTapTime = now;
-          singleTapTimeout = setTimeout(() => {
-            showControls();
-          }, 320);
-        }
-      });
-    }
-
-    if (touchRight) {
-      touchRight.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const now = Date.now();
-        if (now - lastRightTapTime < 380) {
           clearTimeout(singleTapTimeout);
+          singleTapTimeout = setTimeout(() => {
+            toggleControls();
+            singleTapTimeout = null;
+          }, 260);
+        }
+      } else if (zone === 'right') {
+        lastLeftTapTime = 0;
+        lastCenterTapTime = 0;
+        if (now - lastRightTapTime < 340) {
+          clearTimeout(singleTapTimeout);
+          singleTapTimeout = null;
           lastRightTapTime = 0;
           handleDoubleSeek('forward');
         } else {
           lastRightTapTime = now;
+          clearTimeout(singleTapTimeout);
           singleTapTimeout = setTimeout(() => {
-            showControls();
-          }, 320);
+            toggleControls();
+            singleTapTimeout = null;
+          }, 260);
         }
-      });
+      } else if (zone === 'center') {
+        lastLeftTapTime = 0;
+        lastRightTapTime = 0;
+        if (now - lastCenterTapTime < 340) {
+          clearTimeout(singleTapTimeout);
+          singleTapTimeout = null;
+          lastCenterTapTime = 0;
+          togglePlayPause();
+        } else {
+          lastCenterTapTime = now;
+          clearTimeout(singleTapTimeout);
+          singleTapTimeout = setTimeout(() => {
+            if (isMobileOrTouchDevice()) {
+              toggleControls();
+            } else {
+              togglePlayPause();
+            }
+            singleTapTimeout = null;
+          }, 260);
+        }
+      }
     }
 
+    if (touchLeft) {
+      touchLeft.addEventListener('click', (e) => handleZoneTap('left', e));
+    }
+    if (touchRight) {
+      touchRight.addEventListener('click', (e) => handleZoneTap('right', e));
+    }
     if (touchCenter) {
-      touchCenter.addEventListener('click', function (e) {
-        e.stopPropagation();
-        togglePlayPause();
+      touchCenter.addEventListener('click', (e) => handleZoneTap('center', e));
+    }
+
+    // Direct Tap-to-Toggle fallback on video player container for mobile and small screens
+    if (videoPlayer) {
+      videoPlayer.addEventListener('click', function (e) {
+        if (
+          e.target.closest('.custom-controls') ||
+          e.target.closest('.settings-dropdown') ||
+          e.target.closest('.in-player-drawer') ||
+          e.target.closest('#in-player-episode-drawer') ||
+          e.target.closest('#caption-settings-modal') ||
+          e.target.closest('.skip-intro-btn') ||
+          e.target.closest('.outro-countdown-card') ||
+          e.target.closest('.undo-skip-toast') ||
+          e.target.closest('.player-click-to-play-overlay') ||
+          e.target.closest('.player-unmute-banner') ||
+          e.target.closest('.mobile-touch-controls')
+        ) {
+          return;
+        }
+        toggleControls();
       });
     }
 
@@ -3460,10 +3521,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         return;
       }
       if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+      showControls(3500);
     });
 
     mainVideo.addEventListener('pause', function () {
       if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+      clearTimeout(hideControlsTimeout);
+      showControls(0);
     });
 
     // Robust Volume Controls for PC and Mobile/Android
@@ -3546,6 +3610,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       document.removeEventListener('touchend', stopScrubbing);
 
       if (e) handleScrubMove(e);
+      showControls(3500);
     }
 
     if (progressBarContainer) {
@@ -3829,21 +3894,62 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     });
 
+    function areControlsVisible() {
+      const controls = document.querySelector('.custom-controls');
+      if (!controls) return false;
+      if (controls.classList.contains('hidden')) return false;
+      if (videoPlayer && videoPlayer.classList.contains('controls-hidden')) return false;
+      try {
+        const style = window.getComputedStyle(controls);
+        if (style.opacity === '0' || style.visibility === 'hidden' || style.display === 'none') {
+          return false;
+        }
+      } catch (err) { }
+      return true;
+    }
+
     function hideControls() {
+      if (typeof isScrubbing !== 'undefined' && isScrubbing) return;
       const modalActive = document.getElementById('caption-settings-modal')?.classList.contains('active');
       const drawerActive = document.getElementById('in-player-episode-drawer')?.classList.contains('active');
-      if (isFullscreen && !isSettingsMenuOpen && !modalActive && !drawerActive) {
-        document.querySelector('.custom-controls').classList.add('hidden');
-        document.querySelector('.video-overlay').classList.add('hidden');
+      if (modalActive || drawerActive) return;
+
+      if (isSettingsMenuOpen && typeof closeSettingsDropdown === 'function') {
+        closeSettingsDropdown();
+      }
+
+      clearTimeout(hideControlsTimeout);
+      const controls = document.querySelector('.custom-controls');
+      const overlay = document.querySelector('.video-overlay');
+      if (controls) controls.classList.add('hidden');
+      if (overlay) overlay.classList.add('hidden');
+      if (videoPlayer) {
+        videoPlayer.classList.add('controls-hidden');
+        videoPlayer.classList.remove('controls-visible');
       }
     }
 
-    function showControls() {
+    function showControls(autoHideDelay = 3500) {
       clearTimeout(hideControlsTimeout);
-      document.querySelector('.custom-controls').classList.remove('hidden');
-      document.querySelector('.video-overlay').classList.remove('hidden');
-      if (isFullscreen) {
-        hideControlsTimeout = setTimeout(hideControls, 5000);
+      const controls = document.querySelector('.custom-controls');
+      const overlay = document.querySelector('.video-overlay');
+      if (controls) controls.classList.remove('hidden');
+      if (overlay) overlay.classList.remove('hidden');
+      if (videoPlayer) {
+        videoPlayer.classList.remove('controls-hidden');
+        videoPlayer.classList.add('controls-visible');
+      }
+
+      if (mainVideo && !mainVideo.paused && autoHideDelay > 0) {
+        hideControlsTimeout = setTimeout(hideControls, autoHideDelay);
+      }
+    }
+
+    function toggleControls() {
+      if (areControlsVisible()) {
+        hideControls();
+      } else {
+        showControls(3500);
       }
     }
 
@@ -3861,22 +3967,30 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (isFullscreen) {
         lockLandscapeOrientation();
         if (fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
-        showControls();
-        videoPlayer.addEventListener('mousemove', handleMouseMove);
-        videoPlayer.addEventListener('touchstart', handleMouseMove);
+        showControls(3500);
       } else {
         unlockOrientation();
         if (fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
-        clearTimeout(hideControlsTimeout);
-        videoPlayer.removeEventListener('mousemove', handleMouseMove);
-        videoPlayer.removeEventListener('touchstart', handleMouseMove);
-        document.querySelector('.custom-controls').classList.remove('hidden');
-        document.querySelector('.video-overlay').classList.remove('hidden');
+        showControls(3500);
       }
     }
 
+    let lastMouseMoveTime = 0;
     function handleMouseMove() {
-      showControls();
+      const now = Date.now();
+      if (now - lastMouseMoveTime < 120) return;
+      lastMouseMoveTime = now;
+      showControls(3500);
+    }
+    if (videoPlayer) {
+      videoPlayer.addEventListener('mousemove', handleMouseMove);
+      videoPlayer.addEventListener('mouseleave', function () {
+        if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+          if (mainVideo && !mainVideo.paused && !isSettingsMenuOpen) {
+            hideControls();
+          }
+        }
+      });
     }
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
