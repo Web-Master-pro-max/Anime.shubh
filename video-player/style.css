@@ -743,12 +743,20 @@ video::cue,
 
 .video-player.controls-visible .custom-controls,
 .video-player:not(.controls-hidden) .custom-controls,
-.video-player:hover .custom-controls,
 .custom-controls.settings-open {
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
   transform: translateY(0) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .video-player:hover:not(.controls-hidden) .custom-controls {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
+  }
 }
 
 .video-player.controls-hidden .custom-controls,
@@ -2254,11 +2262,18 @@ input:checked+.slider:before {
 }
 
 .video-player.controls-visible .video-overlay,
-.video-player:not(.controls-hidden) .video-overlay,
-.video-player:hover .video-overlay {
+.video-player:not(.controls-hidden) .video-overlay {
   opacity: 1 !important;
   visibility: visible !important;
   transform: translateY(0) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .video-player:hover:not(.controls-hidden) .video-overlay {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+  }
 }
 
 .video-player.controls-hidden .video-overlay,

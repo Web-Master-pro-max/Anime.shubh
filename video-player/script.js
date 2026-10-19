@@ -3478,6 +3478,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     let lastRightTapTime = 0;
     let lastCenterTapTime = 0;
     let singleTapTimeout = null;
+    let lastTouchInteractionTime = 0;
+
+    const markTouch = () => { lastTouchInteractionTime = Date.now(); };
+    window.addEventListener('touchstart', markTouch, { passive: true, capture: true });
+    window.addEventListener('touchend', markTouch, { passive: true, capture: true });
+    window.addEventListener('touchmove', markTouch, { passive: true, capture: true });
+    window.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'touch') markTouch();
+    }, { passive: true, capture: true });
 
     const touchLeft = document.querySelector('.touch-left');
     const touchCenter = document.querySelector('.touch-center');
@@ -3495,7 +3504,9 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (e) {
         e.stopPropagation();
       }
+      lastTouchInteractionTime = Date.now();
       const now = Date.now();
+      const controlsVisible = areControlsVisible();
 
       if (zone === 'left') {
         lastRightTapTime = 0;
@@ -3508,10 +3519,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else {
           lastLeftTapTime = now;
           clearTimeout(singleTapTimeout);
-          singleTapTimeout = setTimeout(() => {
-            toggleControls();
-            singleTapTimeout = null;
-          }, 260);
+          if (!controlsVisible) {
+            // When hidden: immediately show controls on single tap (never flicker/hide)
+            showControls(3500);
+          } else {
+            // When visible: wait briefly to see if user wants to double-tap rewind before hiding
+            singleTapTimeout = setTimeout(() => {
+              hideControls();
+              singleTapTimeout = null;
+            }, 240);
+          }
         }
       } else if (zone === 'right') {
         lastLeftTapTime = 0;
@@ -3524,10 +3541,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else {
           lastRightTapTime = now;
           clearTimeout(singleTapTimeout);
-          singleTapTimeout = setTimeout(() => {
-            toggleControls();
-            singleTapTimeout = null;
-          }, 260);
+          if (!controlsVisible) {
+            // When hidden: immediately show controls on single tap (never flicker/hide)
+            showControls(3500);
+          } else {
+            // When visible: wait briefly to see if user wants to double-tap forward before hiding
+            singleTapTimeout = setTimeout(() => {
+              hideControls();
+              singleTapTimeout = null;
+            }, 240);
+          }
         }
       } else if (zone === 'center') {
         lastLeftTapTime = 0;
@@ -3540,14 +3563,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else {
           lastCenterTapTime = now;
           clearTimeout(singleTapTimeout);
-          singleTapTimeout = setTimeout(() => {
-            if (isMobileOrTouchDevice()) {
-              toggleControls();
+          if (isMobileOrTouchDevice()) {
+            if (!controlsVisible) {
+              showControls(3500);
             } else {
-              togglePlayPause();
+              hideControls();
             }
-            singleTapTimeout = null;
-          }, 260);
+          } else {
+            singleTapTimeout = setTimeout(() => {
+              togglePlayPause();
+              singleTapTimeout = null;
+            }, 240);
+          }
         }
       }
     }
@@ -3576,11 +3603,18 @@ document.addEventListener('DOMContentLoaded', async function () {
           e.target.closest('.undo-skip-toast') ||
           e.target.closest('.player-click-to-play-overlay') ||
           e.target.closest('.player-unmute-banner') ||
-          e.target.closest('.mobile-touch-controls')
+          e.target.closest('.mobile-touch-controls') ||
+          e.target.closest('.player-xp-toast') ||
+          e.target.closest('.seek-ripple-container')
         ) {
           return;
         }
-        toggleControls();
+        lastTouchInteractionTime = Date.now();
+        if (areControlsVisible()) {
+          hideControls();
+        } else {
+          showControls(3500);
+        }
       });
     }
 
@@ -4137,7 +4171,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     let lastMouseMoveTime = 0;
-    function handleMouseMove() {
+    function handleMouseMove(e) {
+      // Ignore simulated mouse events from touch / coarse pointers
+      if (Date.now() - lastTouchInteractionTime < 1000) return;
+      if (e && e.pointerType === 'touch') return;
+      if (isMobileOrTouchDevice() && (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches)) {
+        return;
+      }
       const now = Date.now();
       if (now - lastMouseMoveTime < 120) return;
       lastMouseMoveTime = now;
