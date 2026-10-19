@@ -302,26 +302,31 @@ body {
   max-width: 1400px;
   margin: 0 auto;
   min-height: calc(100vh - 200px);
+  overflow-x: clip;
 }
 
 .main-video-container {
   grid-column: 1;
   grid-row: 1;
+  min-width: 0;
 }
 
 .video-playlist {
   grid-column: 2;
   grid-row: 1 / span 2;
+  min-width: 0;
 }
 
 .comments-section {
   grid-column: 1;
   grid-row: 2;
   margin-top: 0;
+  min-width: 0;
 }
 
 /* Video Player */
 .video-player-wrapper {
+  position: relative;
   background: var(--secondary);
   border-radius: var(--border-radius);
   overflow: hidden;
@@ -333,6 +338,7 @@ body {
   width: 100%;
   background: #000;
   aspect-ratio: 16/9;
+  overflow: hidden;
 }
 
 #main-video {

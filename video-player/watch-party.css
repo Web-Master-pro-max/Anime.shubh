@@ -378,8 +378,9 @@
 .watch-party-drawer {
   position: absolute;
   top: 0;
-  right: -380px;
-  width: 360px;
+  right: 0;
+  bottom: 0;
+  width: min(360px, 85%);
   height: 100%;
   background: rgba(10, 10, 22, 0.95);
   backdrop-filter: blur(24px);
@@ -388,12 +389,19 @@
   z-index: 60;
   display: flex;
   flex-direction: column;
-  transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, visibility 0.35s ease;
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .watch-party-drawer.open {
-  right: 0;
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* Drawer Header */
@@ -876,12 +884,18 @@
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 240, 255, 0.15) !important;
     z-index: 9999 !important;
     transform: translateY(105%) !important;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, visibility 0.35s ease !important;
     touch-action: pan-y !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 
   .watch-party-drawer.open {
     transform: translateY(0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 
   .party-drawer-header::before {

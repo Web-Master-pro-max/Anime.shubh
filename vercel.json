@@ -33,7 +33,7 @@
     },
     {
       "src": "/uploads/(.*)",
-      "dest": "http://13.202.95.5:8000/uploads/$1",
+      "dest": "https://creek-academics-detect-dot.trycloudflare.com/uploads/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS",

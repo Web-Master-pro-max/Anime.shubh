@@ -27,6 +27,17 @@ document.addEventListener('DOMContentLoaded', async function () {
           : ''));
     const API_BASE = `${SERVER_ORIGIN}/api`;
 
+    // Strict Horizontal Viewport Lock: Guarantee window and document never scroll horizontally
+    function enforceZeroHorizontalScroll() {
+      if (window.scrollX !== 0 || window.pageXOffset !== 0) {
+        window.scrollTo({ left: 0, top: window.scrollY });
+      }
+      if (document.documentElement.scrollLeft > 0) document.documentElement.scrollLeft = 0;
+      if (document.body.scrollLeft > 0) document.body.scrollLeft = 0;
+    }
+    window.addEventListener('scroll', enforceZeroHorizontalScroll, { passive: true });
+    window.addEventListener('resize', enforceZeroHorizontalScroll, { passive: true });
+
     // Global stream URL sanitizer to prevent mixed content on HTTPS deployments (Vercel, custom domain)
     function sanitizeStreamUrl(url) {
       if (!url || typeof url !== 'string') return url;
@@ -139,14 +150,74 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (playerClickToPlayOverlay) playerClickToPlayOverlay.classList.remove('hidden');
     }
 
+    // Persist and apply user volume and mute preferences across episodes and sessions
+    function saveUserVolumePreference() {
+      if (!mainVideo) return;
+      try {
+        localStorage.setItem('infinx_player_volume', mainVideo.volume.toString());
+        localStorage.setItem('infinx_player_muted', mainVideo.muted ? 'true' : 'false');
+      } catch (e) {
+        console.warn('[Volume] Failed to save volume preference:', e);
+      }
+    }
+
+    function applyUserVolumePreference() {
+      if (!mainVideo) return;
+      try {
+        const savedVol = localStorage.getItem('infinx_player_volume');
+        const savedMuted = localStorage.getItem('infinx_player_muted');
+
+        if (savedVol !== null && savedVol !== '') {
+          const parsed = parseFloat(savedVol);
+          if (!isNaN(parsed) && parsed >= 0 && parsed <= 1) {
+            mainVideo.volume = parsed;
+          }
+        } else {
+          mainVideo.volume = 1.0;
+        }
+
+        // Never auto-mute; only mute if user explicitly saved muted === 'true'
+        if (savedMuted === 'true') {
+          mainVideo.muted = true;
+        } else {
+          mainVideo.muted = false;
+        }
+
+        updateVolumeUI();
+      } catch (e) {
+        console.warn('[Volume] Failed to apply volume preference:', e);
+      }
+    }
+
+    function updateVolumeUI() {
+      if (!mainVideo) return;
+      const isMuted = mainVideo.muted || mainVideo.volume === 0;
+      const vol = mainVideo.volume;
+
+      if (volumeBtn) {
+        if (isMuted) {
+          volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        } else if (vol < 0.5) {
+          volumeBtn.innerHTML = '<i class="fas fa-volume-down"></i>';
+        } else {
+          volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        }
+      }
+
+      if (volumeSlider) {
+        volumeSlider.value = isMuted ? 0 : Math.round(vol * 100);
+      }
+    }
+
     if (playerUnmuteBtn) {
       playerUnmuteBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (mainVideo) {
           mainVideo.muted = false;
-          mainVideo.volume = 1;
-          if (volumeSlider) volumeSlider.value = 100;
-          if (volumeBtn) volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+          const savedVol = parseFloat(localStorage.getItem('infinx_player_volume'));
+          mainVideo.volume = (!isNaN(savedVol) && savedVol > 0) ? savedVol : 1;
+          saveUserVolumePreference();
+          updateVolumeUI();
         }
         hideUnmuteBanner();
         showPlayerToast('Audio Unmuted 🔊');
@@ -158,12 +229,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         e.stopPropagation();
         hideClickToPlayOverlay();
         if (mainVideo) {
-          mainVideo.muted = false;
+          applyUserVolumePreference();
           mainVideo.play().catch(err => {
             console.warn('[Player] Manual play attempt failed:', err);
-            mainVideo.muted = true;
-            mainVideo.play();
-            showUnmuteBanner();
           });
         }
       });
@@ -172,6 +240,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function attemptAutoplay(videoEl = mainVideo) {
       if (!videoEl) return;
       hideClickToPlayOverlay();
+      applyUserVolumePreference();
 
       const playPromise = videoEl.play();
       if (playPromise !== undefined) {
@@ -181,19 +250,11 @@ document.addEventListener('DOMContentLoaded', async function () {
           hideClickToPlayOverlay();
           if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
         }).catch(err => {
-          console.warn('[Autoplay] Unmuted autoplay blocked by browser policy, attempting muted fallback...', err);
-          videoEl.muted = true;
-          videoEl.play().then(() => {
-            hidePlayerLoader();
-            showUnmuteBanner();
-            hideClickToPlayOverlay();
-            if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-          }).catch(mutedErr => {
-            console.error('[Autoplay] Muted autoplay also blocked:', mutedErr);
-            hidePlayerLoader();
-            showClickToPlayOverlay();
-            if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-          });
+          console.warn('[Autoplay] Autoplay blocked by browser policy:', err);
+          hidePlayerLoader();
+          // Never auto-mute; prompt user with click-to-play overlay so playback starts with unmuted sound
+          showClickToPlayOverlay();
+          if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
         });
       }
     }
@@ -819,9 +880,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Streaming Server Auto-Fallback Handler (Deep Fix for server stalls)
     function autoFallbackNextServer() {
       if (!currentEpisode || !currentEpisode.servers) return;
-      const order = ['server-1', 'server-2', 'server-4', 'server-3'];
+      const order = (currentAudioType === 'dub')
+        ? ['server-2', 'server-3', 'server-1', 'server-4']
+        : ['server-1', 'server-4', 'server-2', 'server-3'];
       const curIdx = order.indexOf(activeServerId);
-      const nextId = (curIdx >= 0 && curIdx < order.length - 1) ? order[curIdx + 1] : (curIdx !== 0 ? 'server-1' : null);
+      const nextId = (curIdx >= 0 && curIdx < order.length - 1) ? order[curIdx + 1] : (curIdx !== 0 ? order[0] : null);
       if (nextId && nextId !== activeServerId) {
         showPlayerToast(`Stream interrupted, auto-switching to ${nextId.toUpperCase()}...`);
         showPlayerLoader('Switching Server...', 'Connecting to backup streaming host...');
@@ -842,6 +905,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       isSwitchingEpisode = true;
 
       try {
+        saveUserVolumePreference();
         if (targetAudioType) {
           currentAudioType = targetAudioType;
           localStorage.setItem('infinx_preferred_audio_type', targetAudioType);
@@ -900,16 +964,54 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         // Update Playlist Items active state in Sidebar & Drawer
-        document.querySelectorAll('.playlist-item').forEach(item => {
-          const durationEl = item.querySelector('.item-duration');
-          const titleEl = item.querySelector('.item-title');
+        document.querySelectorAll('.playlist-item, .drawer-episode-card').forEach(item => {
+          const durationEl = item.querySelector('.item-duration') || item.querySelector('.drawer-ep-duration');
+          const titleEl = item.querySelector('.item-title') || item.querySelector('.drawer-ep-title');
           const isThisEp = (durationEl && durationEl.textContent.trim().startsWith(`Ep ${targetEpNum}`)) ||
                            (titleEl && (titleEl.textContent.startsWith(`Episode ${targetEpNum}:`) || titleEl.textContent === `Episode ${targetEpNum}`));
           item.classList.toggle('active', !!isThisEp);
-          if (isThisEp) {
-            try { item.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { }
-          }
         });
+
+        // Safely scroll ONLY the playlist container vertically without ever shifting the window horizontally
+        try {
+          const playlistContainer = document.getElementById('playlist-items-container') || document.querySelector('.playlist-items');
+          if (playlistContainer) {
+            const activeSidebarItem = playlistContainer.querySelector('.playlist-item.active');
+            if (activeSidebarItem) {
+              const containerRect = playlistContainer.getBoundingClientRect();
+              const itemRect = activeSidebarItem.getBoundingClientRect();
+              const relativeOffset = itemRect.top - containerRect.top + playlistContainer.scrollTop;
+              playlistContainer.scrollTo({
+                top: Math.max(0, relativeOffset - (playlistContainer.clientHeight / 2) + (activeSidebarItem.clientHeight / 2)),
+                behavior: 'smooth'
+              });
+            }
+          }
+        } catch (scrollErr) { }
+
+        // Safely scroll in-player drawer container vertically if open/present
+        try {
+          const drawerGrid = document.querySelector('.drawer-episodes-grid, #drawer-episodes-grid, .drawer-episodes-container');
+          if (drawerGrid) {
+            const activeDrawerItem = drawerGrid.querySelector('.drawer-episode-card.active, .playlist-item.active');
+            if (activeDrawerItem) {
+              const gridRect = drawerGrid.getBoundingClientRect();
+              const itemRect = activeDrawerItem.getBoundingClientRect();
+              const relOffset = itemRect.top - gridRect.top + drawerGrid.scrollTop;
+              drawerGrid.scrollTo({
+                top: Math.max(0, relOffset - (drawerGrid.clientHeight / 2) + (activeDrawerItem.clientHeight / 2)),
+                behavior: 'smooth'
+              });
+            }
+          }
+        } catch (drawerScrollErr) { }
+
+        // Hard reset any horizontal page drift to guarantee UI is never shifted
+        if (window.scrollX !== 0 || window.pageXOffset !== 0) {
+          window.scrollTo({ left: 0, top: window.scrollY });
+        }
+        if (document.documentElement.scrollLeft > 0) document.documentElement.scrollLeft = 0;
+        if (document.body.scrollLeft > 0) document.body.scrollLeft = 0;
 
         // Update Nav button states (Prev / Next disabled states)
         updateNavButtonsState();
@@ -978,6 +1080,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         if (streamUrl) {
           showPlayerToast(`Now Playing Episode ${targetEpNum}`);
+          applyUserVolumePreference();
           initHLS(streamUrl, targetSeekTime, true);
         } else {
           showPlayerToast(`Could not load stream for Episode ${targetEpNum}. Please try selecting another server.`);
@@ -1182,6 +1285,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             resumeSavedProgress();
           }
 
+          applyUserVolumePreference();
+
           if (autoPlay) {
             attemptAutoplay(mainVideo);
           }
@@ -1262,6 +1367,11 @@ document.addEventListener('DOMContentLoaded', async function () {
           }
         });
 
+        hls.on(Hls.Events.FRAG_LOADED, function () {
+          window._hlsFragFailCount = 0;
+          window._hlsNetworkRetryCount = 0;
+        });
+
         hls.on(Hls.Events.ERROR, function (event, data) {
           console.error('HLS error:', data);
           videoPlayer.classList.remove('loading');
@@ -1270,6 +1380,23 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.warn('HLS buffer stalled, nudging playhead forward...');
             if (!mainVideo.paused && mainVideo.readyState >= 2) {
               mainVideo.currentTime = Math.min(mainVideo.duration || Infinity, mainVideo.currentTime + 0.1);
+            }
+          }
+
+          if (data.details === Hls.ErrorDetails.FRAG_LOAD_ERROR) {
+            const statusCode = (data.response && data.response.code) ? data.response.code : 0;
+            if (statusCode === 403 || statusCode === 404 || statusCode === 502) {
+              if (window._hlsFragFailCount === undefined) window._hlsFragFailCount = 0;
+              window._hlsFragFailCount++;
+              console.warn(`[HLS] Fragment load error (${statusCode}), count: ${window._hlsFragFailCount}`);
+              if (window._hlsFragFailCount >= 3) {
+                window._hlsFragFailCount = 0;
+                console.warn('[HLS] Multiple segment load errors (403/404), triggering auto fallback...');
+                showPlayerLoader('Switching Server...', 'Stream segment error, auto-connecting to backup server...');
+                hls.destroy();
+                autoFallbackNextServer();
+                return;
+              }
             }
           }
 
@@ -1306,6 +1433,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           } else {
             resumeSavedProgress();
           }
+          applyUserVolumePreference();
           if (autoPlay) {
             attemptAutoplay(mainVideo);
           }
@@ -2983,10 +3111,20 @@ document.addEventListener('DOMContentLoaded', async function () {
           updateSeriesProgressUI(rawProg ? JSON.parse(rawProg) : null);
         } catch (e) { }
         setTimeout(() => {
-          const activeEl = inPlayerEpisodeDrawer.querySelector('.drawer-item.active, .playlist-item.active');
-          if (activeEl) {
-            activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
+          try {
+            const activeEl = inPlayerEpisodeDrawer.querySelector('.drawer-item.active, .playlist-item.active, .drawer-episode-card.active');
+            const drawerScroll = inPlayerEpisodeDrawer.querySelector('.drawer-body, .drawer-episodes-grid, .in-player-drawer-panel');
+            if (activeEl && drawerScroll) {
+              const scrollRect = drawerScroll.getBoundingClientRect();
+              const elRect = activeEl.getBoundingClientRect();
+              const offset = elRect.top - scrollRect.top + drawerScroll.scrollTop;
+              drawerScroll.scrollTo({
+                top: Math.max(0, offset - (drawerScroll.clientHeight / 2) + (activeEl.clientHeight / 2)),
+                behavior: 'smooth'
+              });
+            }
+          } catch (e) { }
+          if (window.scrollX !== 0) window.scrollTo({ left: 0, top: window.scrollY });
         }, 120);
       }
     }
@@ -3060,6 +3198,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         return;
       }
       if (mainVideo.paused) {
+        applyUserVolumePreference();
         mainVideo.play();
         playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
       } else {
@@ -3225,35 +3364,19 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Robust Volume Controls for PC and Mobile/Android
     const volumeContainer = document.querySelector('.volume-container');
 
-    function updateVolumeUI() {
-      if (!mainVideo) return;
-      const isMuted = mainVideo.muted || mainVideo.volume === 0;
-      const vol = mainVideo.volume;
-
-      if (volumeBtn) {
-        if (isMuted) {
-          volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-        } else if (vol < 0.5) {
-          volumeBtn.innerHTML = '<i class="fas fa-volume-down"></i>';
-        } else {
-          volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-        }
-      }
-
-      if (volumeSlider) {
-        volumeSlider.value = isMuted ? 0 : Math.round(vol * 100);
-      }
-    }
-
     if (volumeBtn) {
       volumeBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         if (mainVideo.muted || mainVideo.volume === 0) {
           mainVideo.muted = false;
-          if (mainVideo.volume === 0) mainVideo.volume = 1;
+          if (mainVideo.volume === 0) {
+            const savedVol = parseFloat(localStorage.getItem('infinx_player_volume'));
+            mainVideo.volume = (!isNaN(savedVol) && savedVol > 0) ? savedVol : 1;
+          }
         } else {
           mainVideo.muted = true;
         }
+        saveUserVolumePreference();
         updateVolumeUI();
       });
     }
@@ -3264,6 +3387,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const val = parseFloat(this.value) / 100;
         mainVideo.volume = val;
         mainVideo.muted = (val === 0);
+        saveUserVolumePreference();
         updateVolumeUI();
       });
 
@@ -3272,6 +3396,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const val = parseFloat(this.value) / 100;
         mainVideo.volume = val;
         mainVideo.muted = (val === 0);
+        saveUserVolumePreference();
         updateVolumeUI();
       });
     }
@@ -5031,13 +5156,19 @@ document.addEventListener('DOMContentLoaded', async function () {
           break;
         case 'arrowup':
           e.preventDefault();
-          mainVideo.volume = Math.min(1, mainVideo.volume + 0.1);
-          if (volumeSlider) volumeSlider.value = mainVideo.volume * 100;
+          mainVideo.volume = Math.min(1, Math.round((mainVideo.volume + 0.05) * 100) / 100);
+          mainVideo.muted = false;
+          saveUserVolumePreference();
+          updateVolumeUI();
+          showPlayerToast(`Volume: ${Math.round(mainVideo.volume * 100)}%`);
           break;
         case 'arrowdown':
           e.preventDefault();
-          mainVideo.volume = Math.max(0, mainVideo.volume - 0.1);
-          if (volumeSlider) volumeSlider.value = mainVideo.volume * 100;
+          mainVideo.volume = Math.max(0, Math.round((mainVideo.volume - 0.05) * 100) / 100);
+          mainVideo.muted = (mainVideo.volume === 0);
+          saveUserVolumePreference();
+          updateVolumeUI();
+          showPlayerToast(`Volume: ${Math.round(mainVideo.volume * 100)}%`);
           break;
         case 'n':
           e.preventDefault();
@@ -5074,6 +5205,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Initialize
     function initializePlayer() {
+      applyUserVolumePreference();
       setupServerEventListeners();
       setupQualityEventListeners();
       setupAudioEventListeners();
