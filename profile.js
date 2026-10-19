@@ -294,6 +294,18 @@
   AVATAR_PRESETS.forEach(a => { if (a && a.url && !a.url.startsWith('/')) a.url = '/' + a.url; });
   BANNER_PRESETS.forEach(b => { if (b && b.url && !b.url.startsWith('/')) b.url = '/' + b.url; });
 
+  // Strictly sort presets by Level Requirement (Lowest to Highest: Lv.1 -> Lv.5 -> Lv.15 -> Lv.25 -> Lv.50)
+  AVATAR_PRESETS.sort((a, b) => {
+    const diff = (a.levelReq || 1) - (b.levelReq || 1);
+    if (diff !== 0) return diff;
+    return a.name.localeCompare(b.name);
+  });
+  BANNER_PRESETS.sort((a, b) => {
+    const diff = (a.levelReq || 1) - (b.levelReq || 1);
+    if (diff !== 0) return diff;
+    return a.name.localeCompare(b.name);
+  });
+
   // Preset Aura Frames with Level Requirements
   const AURA_PRESETS = [
     { id: 'default', name: 'Neon Glow', levelReq: 1, tier: 'Starter' },
