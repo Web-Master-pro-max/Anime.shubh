@@ -1016,9 +1016,23 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Update Nav button states (Prev / Next disabled states)
         updateNavButtonsState();
 
-        // Reset intro/outro detection markers for new episode
+        // Reset intro/outro detection markers and state for new episode
         detectedIntroOutro = { intro: null, outro: null };
         streamIntroOutro = { intro: null, outro: null };
+        introAutoSkipped = false;
+        preSkipTime = null;
+        outroDismissed = false;
+        outroCountdownActive = false;
+        if (outroCountdownInterval) {
+          clearInterval(outroCountdownInterval);
+          outroCountdownInterval = null;
+        }
+        const outroCard = document.getElementById('outro-countdown-card');
+        if (outroCard) outroCard.classList.add('hidden');
+        const undoToast = document.getElementById('undo-skip-toast');
+        if (undoToast) undoToast.classList.add('hidden');
+        const skipBtnEl = document.getElementById('skip-intro-btn');
+        if (skipBtnEl) skipBtnEl.classList.add('hidden');
         updateTimelineMarkers();
 
         // Fetch stream for new episode
@@ -1031,9 +1045,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             const sData = await sRes.json();
             if (sData.streamUrl) {
               streamUrl = sData.streamUrl;
-              if (sData.intro || sData.outro) {
-                streamIntroOutro = { intro: sData.intro, outro: sData.outro };
-                detectedIntroOutro = { intro: sData.intro, outro: sData.outro };
+              const validIntro = sanitizeIntroOutro(sData.intro);
+              const validOutro = sanitizeIntroOutro(sData.outro);
+              if (validIntro || validOutro) {
+                streamIntroOutro = { intro: validIntro, outro: validOutro };
+                detectedIntroOutro = { intro: validIntro, outro: validOutro };
                 updateTimelineMarkers();
               }
               if (sData.subtitles && sData.subtitles.length > 0) {
@@ -2144,9 +2160,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             const activeServer = (availableServers && availableServers.find(s => s.id === activeServerId)) || (availableServers && availableServers[0]);
             if (activeServer) activeServer.url = data.streamUrl;
-            if (data.intro || data.outro) {
-              streamIntroOutro = { intro: data.intro, outro: data.outro };
-              detectedIntroOutro = { intro: data.intro, outro: data.outro };
+            const validIntro = sanitizeIntroOutro(data.intro);
+            const validOutro = sanitizeIntroOutro(data.outro);
+            if (validIntro || validOutro) {
+              streamIntroOutro = { intro: validIntro, outro: validOutro };
+              detectedIntroOutro = { intro: validIntro, outro: validOutro };
               updateTimelineMarkers();
             }
             if (data.subtitles && data.subtitles.length > 0) {
@@ -2665,6 +2683,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log(`[Player Subtitles] Direct VTT engine loaded ${activeSubCues.length} cues for: ${trackName}`);
                 currentRenderedCaptionText = '';
                 updateActiveSubtitleDisplay();
+                if (!isValidTimeWindow(detectedIntroOutro.intro) || !isValidTimeWindow(detectedIntroOutro.outro)) {
+                  detectedIntroOutro = computeIntroOutroWindows();
+                  updateTimelineMarkers();
+                }
               }
             })
             .catch(err => {
@@ -2845,30 +2867,64 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     }
 
+    function sanitizeIntroOutro(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      const start = Number(raw.start ?? raw.startTime ?? raw.start_time ?? 0);
+      const end = Number(raw.end ?? raw.endTime ?? raw.end_time ?? 0);
+      if (isNaN(start) || isNaN(end) || end <= start || (end - start) < 15) {
+        return null;
+      }
+      return { start: Math.max(0, start), end: end };
+    }
+
+    function isValidTimeWindow(w) {
+      return !!(w && typeof w === 'object' && typeof w.start === 'number' && typeof w.end === 'number' && w.end > w.start && (w.end - w.start) >= 15);
+    }
+
     function computeIntroOutroWindows() {
-      if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration < 120) {
+      if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration < 60) {
         return { intro: null, outro: null };
       }
       const dur = mainVideo.duration;
-      let intro = streamIntroOutro?.intro || detectedIntroOutro?.intro || null;
-      let outro = streamIntroOutro?.outro || detectedIntroOutro?.outro || null;
+      let intro = sanitizeIntroOutro(streamIntroOutro?.intro) || sanitizeIntroOutro(detectedIntroOutro?.intro) || null;
+      let outro = sanitizeIntroOutro(streamIntroOutro?.outro) || sanitizeIntroOutro(detectedIntroOutro?.outro) || null;
 
       // 1. Metadata from episode
       if (currentEpisode) {
         const iStart = currentEpisode.introStart ?? currentEpisode.skipIntroStart;
         const iEnd = currentEpisode.introEnd ?? currentEpisode.skipIntroEnd;
         if (!intro && iStart !== undefined && iEnd !== undefined && Number(iEnd) > Number(iStart)) {
-          intro = { start: Math.max(0, Number(iStart)), end: Math.min(dur, Number(iEnd)) };
+          intro = sanitizeIntroOutro({ start: Math.max(0, Number(iStart)), end: Math.min(dur, Number(iEnd)) });
         }
 
         const oStart = currentEpisode.outroStart ?? currentEpisode.skipOutroStart;
         const oEnd = currentEpisode.outroEnd ?? currentEpisode.skipOutroEnd;
         if (!outro && oStart !== undefined && oEnd !== undefined && Number(oEnd) > Number(oStart)) {
-          outro = { start: Math.max(0, Number(oStart)), end: Math.min(dur, Number(oEnd)) };
+          outro = sanitizeIntroOutro({ start: Math.max(0, Number(oStart)), end: Math.min(dur, Number(oEnd)) });
         }
       }
 
-      // 2. Customizable skip duration (Auto, 60s, 75s, 85s, 90s)
+      // 2. Embedded Video Chapters
+      if (currentEpisode && Array.isArray(currentEpisode.chapters) && currentEpisode.chapters.length > 0) {
+        if (!intro) {
+          const opCh = currentEpisode.chapters.find(c => /\b(op|opening|intro|theme)\b/i.test(c.title || c.name || ''));
+          if (opCh) {
+            const s = Number(opCh.startTime ?? opCh.start ?? 0);
+            const e = Number(opCh.endTime ?? opCh.end ?? (s + 90));
+            intro = sanitizeIntroOutro({ start: s, end: Math.min(dur, e) });
+          }
+        }
+        if (!outro) {
+          const edCh = currentEpisode.chapters.find(c => /\b(ed|ending|outro|credits)\b/i.test(c.title || c.name || ''));
+          if (edCh) {
+            const s = Number(edCh.startTime ?? edCh.start ?? (dur - 90));
+            const e = Number(edCh.endTime ?? edCh.end ?? dur);
+            outro = sanitizeIntroOutro({ start: Math.max(0, s), end: Math.min(dur, e) });
+          }
+        }
+      }
+
+      // 3. Customizable skip duration (Auto, 60s, 75s, 85s, 90s)
       const durationPref = localStorage.getItem('@infinx_skip_intro_duration') || 'auto';
       let standardOpLengthSec = 89.5;
       if (durationPref === '60') standardOpLengthSec = 60;
@@ -2876,13 +2932,61 @@ document.addEventListener('DOMContentLoaded', async function () {
       else if (durationPref === '85') standardOpLengthSec = 85;
       else if (durationPref === '90') standardOpLengthSec = 90;
 
-      // Anime OP fallbacks
-      if (!intro) {
+      // 4. Subtitle Audio / Lyric Pattern Analysis (WebVTT)
+      if (!intro && Array.isArray(activeSubCues) && activeSubCues.length > 0) {
+        const isMusicCue = (text = '') => {
+          return /([♪♫🎶🎵♩])|(\[(music|theme|song|intro|outro|ending|instrumental)\])|(\((music|theme|song|intro|outro|ending|instrumental)\))/i.test(text);
+        };
+        const opMusicCues = activeSubCues.filter(c => c.start <= 300 && isMusicCue(c.text));
+        if (opMusicCues.length >= 1) {
+          const clusterStart = opMusicCues[0].start;
+          const lastMusicCue = opMusicCues[opMusicCues.length - 1];
+          let clusterEnd = lastMusicCue.end;
+          if (clusterEnd - clusterStart < 65) {
+            clusterEnd = clusterStart + standardOpLengthSec;
+          }
+          intro = sanitizeIntroOutro({
+            start: Math.max(0, clusterStart - 1),
+            end: Math.min(dur, clusterEnd + 1)
+          });
+        } else {
+          // Dialogue prologue gap analysis
+          const earlyCues = activeSubCues
+            .filter(c => c.start <= 260)
+            .sort((a, b) => a.start - b.start);
+          if (earlyCues.length >= 1) {
+            let detectedGap = null;
+            for (let i = 0; i < earlyCues.length - 1; i++) {
+              const currentCue = earlyCues[i];
+              const nextCue = earlyCues[i + 1];
+              const gap = nextCue.start - currentCue.end;
+              if (gap >= 65 && gap <= 105 && currentCue.end <= 180) {
+                detectedGap = {
+                  start: Math.max(0, currentCue.end + 0.3),
+                  end: Math.min(dur, nextCue.start - 0.3)
+                };
+                break;
+              }
+            }
+            if (detectedGap) {
+              intro = sanitizeIntroOutro(detectedGap);
+            } else if (earlyCues[0].start >= 65 && earlyCues[0].start <= 110) {
+              intro = sanitizeIntroOutro({
+                start: 0,
+                end: Math.min(dur, earlyCues[0].start - 0.5)
+              });
+            }
+          }
+        }
+      }
+
+      // 5. Anime OP fallbacks
+      if (!intro && dur >= 120) {
         intro = { start: 15, end: Math.min(dur - 60, 15 + standardOpLengthSec) };
       }
 
-      // Anime ED fallbacks
-      if (!outro) {
+      // 6. Anime ED fallbacks
+      if (!outro && dur >= 120) {
         outro = { start: Math.max(intro ? intro.end + 60 : 60, dur - standardOpLengthSec - 5), end: Math.max(0, dur - 5) };
       }
 
@@ -2894,13 +2998,13 @@ document.addEventListener('DOMContentLoaded', async function () {
       const outroMarker = document.getElementById('timeline-outro-marker');
       if (!introMarker && !outroMarker) return;
 
-      if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration < 120) {
+      if (!mainVideo || isNaN(mainVideo.duration) || mainVideo.duration < 60) {
         if (introMarker) introMarker.style.display = 'none';
         if (outroMarker) outroMarker.style.display = 'none';
         return;
       }
 
-      if (!detectedIntroOutro.intro && !detectedIntroOutro.outro) {
+      if (!isValidTimeWindow(detectedIntroOutro.intro) && !isValidTimeWindow(detectedIntroOutro.outro)) {
         detectedIntroOutro = computeIntroOutroWindows();
       }
 
@@ -2941,12 +3045,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function skipIntroAction() {
-      if (!detectedIntroOutro.intro || !mainVideo) return;
+      if (!isValidTimeWindow(detectedIntroOutro.intro) || !mainVideo) return;
       preSkipTime = mainVideo.currentTime;
       mainVideo.currentTime = detectedIntroOutro.intro.end;
       const skipBtn = document.getElementById('skip-intro-btn');
       if (skipBtn) skipBtn.classList.add('hidden');
       showUndoSkipToast();
+      showPlayerToast('Auto-Skipped Intro');
     }
 
     const undoSkipBtn = document.getElementById('undo-skip-btn');
@@ -3052,7 +3157,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function handleSmartIntroOutro(currentTime, duration) {
-      if (!detectedIntroOutro.intro && !detectedIntroOutro.outro) {
+      if (!isValidTimeWindow(detectedIntroOutro.intro) && !isValidTimeWindow(detectedIntroOutro.outro)) {
         detectedIntroOutro = computeIntroOutroWindows();
       }
       const { intro, outro } = detectedIntroOutro;
@@ -3071,7 +3176,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
       } else {
         if (skipIntroFloatingBtn) skipIntroFloatingBtn.classList.add('hidden');
-        if (intro && currentTime < intro.start) {
+        if (intro && (currentTime < intro.start || currentTime <= 2)) {
           introAutoSkipped = false;
         }
       }
@@ -3084,7 +3189,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (hasNext && autoSkipOutroEnabled && !outroCountdownActive && !outroDismissed) {
           startOutroCountdown();
         }
-      } else if (outro && currentTime < outro.start) {
+      } else if (outro && (currentTime < outro.start || currentTime <= 2)) {
         outroDismissed = false;
         if (outroCountdownActive) {
           cancelOutroCountdown();
@@ -5348,9 +5453,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (sData.streamUrl) {
               initialVideoUrl = sData.streamUrl;
               if (initialServer) initialServer.url = sData.streamUrl;
-              if (sData.intro || sData.outro) {
-                streamIntroOutro = { intro: sData.intro, outro: sData.outro };
-                detectedIntroOutro = { intro: sData.intro, outro: sData.outro };
+              const validIntro = sanitizeIntroOutro(sData.intro);
+              const validOutro = sanitizeIntroOutro(sData.outro);
+              if (validIntro || validOutro) {
+                streamIntroOutro = { intro: validIntro, outro: validOutro };
+                detectedIntroOutro = { intro: validIntro, outro: validOutro };
                 updateTimelineMarkers();
               }
               if (sData.subtitles && sData.subtitles.length > 0) {
@@ -5391,8 +5498,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                   });
                   updateAudioOptions();
                   if (initialServer) initialServer.url = fbData.streamUrl;
-                  if (fbData.intro || fbData.outro) {
-                    detectedIntroOutro = { intro: fbData.intro, outro: fbData.outro };
+                  const validIntro = sanitizeIntroOutro(fbData.intro);
+                  const validOutro = sanitizeIntroOutro(fbData.outro);
+                  if (validIntro || validOutro) {
+                    streamIntroOutro = { intro: validIntro, outro: validOutro };
+                    detectedIntroOutro = { intro: validIntro, outro: validOutro };
                     updateTimelineMarkers();
                   }
                   if (fbData.subtitles && fbData.subtitles.length > 0) {
