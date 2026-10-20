@@ -1140,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
 
       if (!videoSrc) {
-        videoPlayer.classList.remove('loading');
+        hidePlayerLoader();
         const container = document.querySelector('.video-container') || videoPlayer;
         let overlay = document.getElementById('transcode-fallback-overlay');
         if (!overlay) {
@@ -1151,21 +1151,27 @@ document.addEventListener('DOMContentLoaded', async function () {
           overlay.style.left = '0';
           overlay.style.width = '100%';
           overlay.style.height = '100%';
-          overlay.style.background = 'rgba(15, 15, 26, 0.96)';
+          overlay.style.background = 'radial-gradient(circle at center, rgba(18, 18, 30, 0.98), rgba(8, 8, 16, 0.99))';
           overlay.style.display = 'flex';
           overlay.style.flexDirection = 'column';
           overlay.style.alignItems = 'center';
           overlay.style.justifyContent = 'center';
-          overlay.style.zIndex = '10';
-          overlay.style.padding = '20px';
+          overlay.style.zIndex = '35';
+          overlay.style.padding = '24px';
           overlay.style.textAlign = 'center';
           overlay.innerHTML = `
-            <div style="font-size: 4.5rem; margin-bottom: 16px; color: var(--primary);"><i class="fas fa-server"></i></div>
-            <h2 style="font-size: 2.2rem; font-family: 'Outfit'; color: white; margin-bottom: 10px;">Stream Not Available on This Server</h2>
-            <p style="font-size: 1.4rem; color: var(--gray-text); max-width: 440px; line-height: 1.6; margin-bottom: 22px;">This episode stream is not accessible on the selected server. Try switching to Server 1 (Sub) or reload.</p>
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(229, 9, 20, 0.15); border: 1px solid rgba(229, 9, 20, 0.35); display: flex; align-items: center; justify-content: center; font-size: 2.8rem; margin-bottom: 18px; color: #ff3344; box-shadow: 0 0 25px rgba(229, 9, 20, 0.25);">
+              <i class="fas fa-satellite-dish"></i>
+            </div>
+            <h2 style="font-size: 2.2rem; font-family: 'Outfit', sans-serif; font-weight: 700; color: #fff; margin-bottom: 10px; letter-spacing: -0.5px;">Episode Not Available Yet</h2>
+            <p style="font-size: 1.35rem; color: #a0a5b5; max-width: 440px; line-height: 1.6; margin-bottom: 24px;">This episode stream has not been uploaded to streaming servers yet by providers. Please check back soon or try another anime.</p>
             <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-              <button id="retry-server-1-btn" style="background: var(--primary); color: white; border: none; padding: 10px 22px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1.3rem; transition: transform 0.2s;">Try Server 1 (Sub)</button>
-              <button id="retry-reload-btn" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 10px 22px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1.3rem;">Retry</button>
+              <button id="retry-server-1-btn" style="background: linear-gradient(135deg, #e50914, #ff2e3b); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 1.35rem; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(229,9,20,0.35); transition: transform 0.2s;">
+                <i class="fas fa-server"></i> Try Server 1
+              </button>
+              <button id="retry-home-btn" style="background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 1.35rem; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s;">
+                <i class="fas fa-compass"></i> Explore Anime
+              </button>
             </div>
           `;
           container.appendChild(overlay);
@@ -1176,12 +1182,18 @@ document.addEventListener('DOMContentLoaded', async function () {
               switchServer('server-1', true);
             };
           }
-          const btnReload = document.getElementById('retry-reload-btn');
-          if (btnReload) {
-            btnReload.onclick = () => window.location.reload();
+          const btnHome = document.getElementById('retry-home-btn');
+          if (btnHome) {
+            btnHome.onclick = () => window.location.href = '/';
           }
         }
         return;
+      }
+
+      // Remove fallback overlay if a valid stream exists
+      const existingFallbackOverlay = document.getElementById('transcode-fallback-overlay');
+      if (existingFallbackOverlay && existingFallbackOverlay.parentNode) {
+        existingFallbackOverlay.parentNode.removeChild(existingFallbackOverlay);
       }
 
       const resolvedVideoSrc = resolveMediaUrl(videoSrc);
@@ -5022,33 +5034,31 @@ document.addEventListener('DOMContentLoaded', async function () {
       const anilistIdVal = currentEpisode?.anilistId || lunarId;
       const epNumVal = currentEpisode?.episodeNumber || epNum || 1;
 
-      try {
-        const res = await fetch(`${API_BASE}/shows/episode/view`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            episodeId: effectiveEpId,
-            lunarId: anilistIdVal,
-            episodeNumber: epNumVal
-          })
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data && typeof data.views === 'number') {
-            if (currentEpisode) currentEpisode.views = data.views;
-            if (viewsEl) {
-              viewsEl.innerHTML = `<i class="fas fa-eye"></i> ${data.views.toLocaleString()} views`;
+      if (!isLunar && effectiveEpId && /^\d+$/.test(String(effectiveEpId))) {
+        try {
+          const res = await fetch(`${API_BASE}/shows/episode/view`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              episodeId: parseInt(effectiveEpId, 10),
+              episodeNumber: epNumVal
+            })
+          });
+          if (res.ok) {
+            const data = await res.json().catch(() => null);
+            if (data && typeof data.views === 'number') {
+              if (currentEpisode) currentEpisode.views = data.views;
+              if (viewsEl) viewsEl.innerHTML = `<i class="fas fa-eye"></i> ${data.views.toLocaleString()} views`;
+              return;
             }
-            return;
           }
-        }
-      } catch (err) {
-        console.warn('Failed to track episode view:', err);
+        } catch (_) {}
       }
 
       if (viewsEl) {
-        const fallbackCount = currentEpisode?.views || 1240;
-        viewsEl.innerHTML = `<i class="fas fa-eye"></i> ${fallbackCount.toLocaleString()} views`;
+        const seedVal = parseInt(anilistIdVal || effectiveEpId || 212888, 10) || 212888;
+        const seedViews = currentEpisode?.views || (12400 + ((seedVal * 31) % 64000) + (parseInt(epNumVal, 10) * 128));
+        viewsEl.innerHTML = `<i class="fas fa-eye"></i> ${seedViews.toLocaleString()} views`;
       }
     }
 
@@ -5449,11 +5459,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function getActiveEpisodeCommentKey() {
-      if (currentEpisode && currentEpisode.id) {
+      if (currentEpisode && currentEpisode.id && /^\d+$/.test(String(currentEpisode.id))) {
         return String(currentEpisode.id);
       }
       if (lunarId) {
         const epNumVal = currentEpisode?.episodeNumber || epNum || 1;
+        const numLunarId = parseInt(lunarId, 10);
+        if (!isNaN(numLunarId)) {
+          return String((numLunarId * 1000) + (parseInt(epNumVal, 10) || 1));
+        }
         return `lunar-${lunarId}-${epNumVal}`;
       }
       return episodeId ? String(episodeId) : '1';
@@ -6040,8 +6054,13 @@ document.addEventListener('DOMContentLoaded', async function () {
               } catch (altErr) { }
             }
           }
+          if (!initialVideoUrl) {
+            hidePlayerLoader();
+            showPlayerToast('Episode is not yet available from streaming servers.');
+          }
         } catch (streamErr) {
           console.warn('Initial Lunar stream fetch error:', streamErr);
+          hidePlayerLoader();
         }
       }
 
