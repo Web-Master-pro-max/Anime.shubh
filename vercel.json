@@ -22,7 +22,7 @@
   "routes": [
     {
       "src": "/api/anime/(.*)",
-      "dest": "http://13.202.95.5:8000/api/lunarx/$1",
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/api/lunarx/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -33,7 +33,7 @@
     },
     {
       "src": "/api/stream/watch/(.*)",
-      "dest": "http://13.202.95.5:8000/api/lunarx/stream/$1",
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/api/lunarx/stream/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -44,7 +44,7 @@
     },
     {
       "src": "/api/stream/(.*)",
-      "dest": "http://13.202.95.5:8000/api/lunarx/$1",
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/api/lunarx/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -55,7 +55,7 @@
     },
     {
       "src": "/api/(.*)",
-      "dest": "http://13.202.95.5:8000/api/$1",
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/api/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -66,7 +66,7 @@
     },
     {
       "src": "/uploads/(.*)",
-      "dest": "https://respondent-learn-surgical-variable.trycloudflare.com/uploads/$1",
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/uploads/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
@@ -76,7 +76,7 @@
     },
     {
       "src": "/ec2-uploads/(.*)",
-      "dest": "http://13.202.95.5:8000/uploads/$1",
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/uploads/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS"
@@ -85,7 +85,7 @@
     },
     {
       "src": "/posters/(.*)",
-      "dest": "http://13.202.95.5:8000/posters/$1",
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/posters/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS"
@@ -94,7 +94,7 @@
     },
     {
       "src": "/banners/(.*)",
-      "dest": "http://13.202.95.5:8000/banners/$1",
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/banners/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS"
@@ -103,7 +103,7 @@
     },
     {
       "src": "/socket.io/(.*)",
-      "dest": "http://13.202.95.5:8000/socket.io/$1",
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/socket.io/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -114,7 +114,7 @@
     },
     {
       "src": "/laptop-api/(.*)",
-      "dest": "https://respondent-learn-surgical-variable.trycloudflare.com/api/$1",
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/api/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -136,39 +136,39 @@
     },
     {
       "src": "/(?:profile|watch|party|video-player)/assets/(.*)",
-      "dest": "http://13.202.95.5:8000/assets/$1"
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/assets/$1"
     },
     {
       "src": "/(?:profile|watch|party|video-player)/Postes/(.*)",
-      "dest": "http://13.202.95.5:8000/Postes/$1"
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/Postes/$1"
     },
     {
       "src": "/(?:profile|watch|party|video-player)/uploads/(.*)",
-      "dest": "http://13.202.95.5:8000/uploads/$1"
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/uploads/$1"
     },
     {
       "src": "/assets/(.*)",
-      "dest": "http://13.202.95.5:8000/assets/$1"
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/assets/$1"
     },
     {
       "src": "/av-(.*)",
-      "dest": "http://13.202.95.5:8000/assets/avatars/av-$1"
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/assets/avatars/av-$1"
     },
     {
       "src": "/Postes/(.*)",
-      "dest": "http://13.202.95.5:8000/Postes/$1"
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/Postes/$1"
     },
     {
       "src": "/img/(.*)",
-      "dest": "http://13.202.95.5:8000/img/$1"
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/img/$1"
     },
     {
       "src": "/AMovies-Poster/(.*)",
-      "dest": "http://13.202.95.5:8000/AMovies-Poster/$1"
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/AMovies-Poster/$1"
     },
     {
       "src": "/Horror-poster/(.*)",
-      "dest": "http://13.202.95.5:8000/Horror-poster/$1"
+      "dest": "https://dude-gel-surgery-oclc.trycloudflare.com/Horror-poster/$1"
     },
     {
       "src": "/video-player/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts))",
