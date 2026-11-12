@@ -21,6 +21,39 @@
   ],
   "routes": [
     {
+      "src": "/api/anime/(.*)",
+      "dest": "http://16.179.30.197:8000/api/lunarx/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
+      "src": "/api/stream/watch/(.*)",
+      "dest": "http://16.179.30.197:8000/api/lunarx/stream/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
+      "src": "/api/stream/(.*)",
+      "dest": "http://16.179.30.197:8000/api/lunarx/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
       "src": "/api/(.*)",
       "dest": "http://16.179.30.197:8000/api/$1",
       "headers": {
@@ -32,21 +65,57 @@
       "continue": false
     },
     {
-      "src": "/uploads/(.*)",
-      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/$1",
+      "src": "/laptop-api/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/api/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Credentials": "true"
       },
       "continue": false
     },
     {
-      "src": "/ec2-uploads/(.*)",
+      "src": "/laptop-uploads/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-posters/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/posters/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-banners/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/banners/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/uploads/(.*)",
       "dest": "http://16.179.30.197:8000/uploads/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS"
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
       },
       "continue": false
     },
@@ -55,7 +124,8 @@
       "dest": "http://16.179.30.197:8000/posters/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS"
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Cross-Origin-Resource-Policy": "cross-origin"
       },
       "continue": false
     },
@@ -64,7 +134,18 @@
       "dest": "http://16.179.30.197:8000/banners/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS"
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/ec2-uploads/(.*)",
+      "dest": "http://16.179.30.197:8000/uploads/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Cross-Origin-Resource-Policy": "cross-origin"
       },
       "continue": false
     },
@@ -74,17 +155,6 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
-        "Access-Control-Allow-Credentials": "true"
-      },
-      "continue": false
-    },
-    {
-      "src": "/laptop-api/(.*)",
-      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/api/$1",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
         "Access-Control-Allow-Credentials": "true"
       },
@@ -103,11 +173,11 @@
     },
     {
       "src": "/(?:profile|watch|party|video-player)/assets/(.*)",
-      "dest": "http://16.179.30.197:8000/assets/$1"
+      "dest": "/assets/$1"
     },
     {
       "src": "/(?:profile|watch|party|video-player)/Postes/(.*)",
-      "dest": "http://16.179.30.197:8000/Postes/$1"
+      "dest": "/Postes/$1"
     },
     {
       "src": "/(?:profile|watch|party|video-player)/uploads/(.*)",
@@ -115,27 +185,27 @@
     },
     {
       "src": "/assets/(.*)",
-      "dest": "http://16.179.30.197:8000/assets/$1"
+      "dest": "/assets/$1"
     },
     {
       "src": "/av-(.*)",
-      "dest": "http://16.179.30.197:8000/assets/avatars/av-$1"
+      "dest": "/assets/avatars/av-$1"
     },
     {
       "src": "/Postes/(.*)",
-      "dest": "http://16.179.30.197:8000/Postes/$1"
+      "dest": "/Postes/$1"
     },
     {
       "src": "/img/(.*)",
-      "dest": "http://16.179.30.197:8000/img/$1"
+      "dest": "/img/$1"
     },
     {
       "src": "/AMovies-Poster/(.*)",
-      "dest": "http://16.179.30.197:8000/AMovies-Poster/$1"
+      "dest": "/AMovies-Poster/$1"
     },
     {
       "src": "/Horror-poster/(.*)",
-      "dest": "http://16.179.30.197:8000/Horror-poster/$1"
+      "dest": "/Horror-poster/$1"
     },
     {
       "src": "/video-player/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts))",
@@ -225,6 +295,10 @@
         {
           "key": "Access-Control-Allow-Origin",
           "value": "*"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
         }
       ]
     },
@@ -238,6 +312,49 @@
         {
           "key": "Access-Control-Allow-Origin",
           "value": "*"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/uploads/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/posters/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/banners/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
         }
       ]
     },
