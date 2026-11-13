@@ -1,23 +1,74 @@
 {
   "version": 2,
   "builds": [
-    { "src": "**/*.html", "use": "@vercel/static" },
-    { "src": "**/*.css", "use": "@vercel/static" },
-    { "src": "**/*.js", "use": "@vercel/static" },
-    { "src": "**/*.png", "use": "@vercel/static" },
-    { "src": "**/*.jpg", "use": "@vercel/static" },
-    { "src": "**/*.jpeg", "use": "@vercel/static" },
-    { "src": "**/*.svg", "use": "@vercel/static" },
-    { "src": "**/*.webp", "use": "@vercel/static" },
-    { "src": "**/*.gif", "use": "@vercel/static" },
-    { "src": "**/*.ico", "use": "@vercel/static" },
-    { "src": "**/*.json", "use": "@vercel/static" },
-    { "src": "assets/**", "use": "@vercel/static" },
-    { "src": "Postes/**", "use": "@vercel/static" },
-    { "src": "img/**", "use": "@vercel/static" },
-    { "src": "AMovies-Poster/**", "use": "@vercel/static" },
-    { "src": "Horror-poster/**", "use": "@vercel/static" },
-    { "src": "video-player/**", "use": "@vercel/static" }
+    {
+      "src": "**/*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.png",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.jpg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.jpeg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.svg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.webp",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.gif",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.ico",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.json",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "assets/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "Postes/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "img/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "AMovies-Poster/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "Horror-poster/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "video-player/**",
+      "use": "@vercel/static"
+    }
   ],
   "routes": [
     {
@@ -26,7 +77,8 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
         "Access-Control-Allow-Credentials": "true"
       },
       "continue": false
@@ -37,7 +89,8 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
         "Access-Control-Allow-Credentials": "true"
       },
       "continue": false
@@ -48,7 +101,8 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
         "Access-Control-Allow-Credentials": "true"
       },
       "continue": false
@@ -59,7 +113,182 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/anime/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/api/lunarx/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/stream/watch/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/api/lunarx/stream/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/stream/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/api/lunarx/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/hls/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/api/stream/hls/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/proxy/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/api/stream/proxy/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/uploads/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/api/uploads/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/api/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/api/uploads/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/uploads/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/posters/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/posters/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/banners/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/banners/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-api/api/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/api/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
         "Access-Control-Allow-Credentials": "true"
       },
       "continue": false
@@ -70,8 +299,22 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
         "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop-uploads/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
       },
       "continue": false
     },
@@ -80,9 +323,11 @@
       "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
-        "Cross-Origin-Resource-Policy": "cross-origin"
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
       },
       "continue": false
     },
@@ -109,6 +354,316 @@
       "continue": false
     },
     {
+      "src": "/laptop-videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop/uploads/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop/uploads/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop/posters/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/posters/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop/banners/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/banners/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop/api/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/api/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
+      "src": "/laptop/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-api/uploads/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-api/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-api/uploads/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-api/posters/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/posters/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-api/banners/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/banners/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-api/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/api/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-uploads/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-uploads/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop/uploads/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/uploads/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/uploads/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/videos/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/uploads/videos/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Accept-Ranges": "bytes"
+      },
+      "continue": false
+    },
+    {
+      "src": "/uploads/posters/(.*)",
+      "dest": "http://16.179.30.197:8000/uploads/posters/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/uploads/banners/(.*)",
+      "dest": "http://16.179.30.197:8000/uploads/banners/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
       "src": "/uploads/(.*)",
       "dest": "http://16.179.30.197:8000/uploads/$1",
       "headers": {
@@ -125,6 +680,7 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
         "Cross-Origin-Resource-Policy": "cross-origin"
       },
       "continue": false
@@ -135,6 +691,7 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
         "Cross-Origin-Resource-Policy": "cross-origin"
       },
       "continue": false
@@ -145,7 +702,42 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
         "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/ec2-posters/(.*)",
+      "dest": "http://16.179.30.197:8000/posters/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/ec2-banners/(.*)",
+      "dest": "http://16.179.30.197:8000/banners/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Cross-Origin-Resource-Policy": "cross-origin"
+      },
+      "continue": false
+    },
+    {
+      "src": "/ec2-api/(.*)",
+      "dest": "http://16.179.30.197:8000/api/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+        "Access-Control-Allow-Credentials": "true"
       },
       "continue": false
     },
@@ -161,12 +753,24 @@
       "continue": false
     },
     {
+      "src": "/laptop-socket.io/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/socket.io/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "continue": false
+    },
+    {
       "src": "/lunar-api/(.*)",
       "dest": "https://api.lunarx.to/api/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin",
+        "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
         "Access-Control-Allow-Credentials": "true"
       },
       "continue": false
@@ -178,6 +782,14 @@
     {
       "src": "/(?:profile|watch|party|video-player)/Postes/(.*)",
       "dest": "/Postes/$1"
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-posters/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/posters/$1"
+    },
+    {
+      "src": "/(?:profile|watch|party|video-player)/laptop-banners/(.*)",
+      "dest": "https://marcus-publishing-calculated-advocacy.trycloudflare.com/banners/$1"
     },
     {
       "src": "/(?:profile|watch|party|video-player)/uploads/(.*)",
@@ -208,15 +820,15 @@
       "dest": "/Horror-poster/$1"
     },
     {
-      "src": "/video-player/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts))",
+      "src": "/video-player/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt))",
       "dest": "/video-player/$1"
     },
     {
-      "src": "/(?:profile|watch|party)/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts))",
+      "src": "/(?:profile|watch|party)/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt))",
       "dest": "/$1"
     },
     {
-      "src": "/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt|m3u8|ts))",
+      "src": "/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|json|map|webp|avif|gif|ttf|woff2?|eot|vtt))",
       "dest": "/$1"
     },
     {
@@ -320,6 +932,64 @@
       ]
     },
     {
+      "source": "/uploads/videos/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, HEAD, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/videos/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, HEAD, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
       "source": "/uploads/(.*)",
       "headers": [
         {
@@ -351,6 +1021,355 @@
         {
           "key": "Access-Control-Allow-Origin",
           "value": "*"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/laptop-api/uploads/videos/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, HEAD, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/laptop-api/videos/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, HEAD, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/laptop-api/uploads/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, HEAD, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/laptop-api/stream/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/laptop-api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/laptop-uploads/videos/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, HEAD, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/laptop-uploads/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, HEAD, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/laptop-posters/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/laptop-banners/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/laptop-videos/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, HEAD, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/laptop/uploads/videos/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, HEAD, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/laptop/videos/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, HEAD, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    },
+    {
+      "source": "/laptop/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Content-Length, Content-Range, Accept-Ranges"
         },
         {
           "key": "Cross-Origin-Resource-Policy",
