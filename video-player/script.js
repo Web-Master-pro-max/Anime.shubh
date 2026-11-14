@@ -482,9 +482,9 @@ document.addEventListener('DOMContentLoaded', async function () {
           },
           servers: [
             { id: 'server-1', name: 'Server 1 (1080p Ultra)', shortName: 'Server 1', badge: '1080p HD', host: 'zuna', type: 'hls' },
-            { id: 'server-2', name: 'Server 2 (English Dub / Fast)', shortName: 'Server 2', badge: 'English Dub', host: 'yuki', type: 'hls' },
-            { id: 'server-3', name: 'Server 3 (Dual Audio / 1080p)', shortName: 'Server 3', badge: 'Dual Audio', host: '3rdprovider', type: 'hls' },
-            { id: 'server-4', name: 'Server 4 (HD Backup)', shortName: 'Server 4', badge: 'Fast Stream', host: 'sora', type: 'hls' }
+            { id: 'server-2', name: 'Server 2 (English Dub / Multi-Audio)', shortName: 'Server 2', badge: 'English Dub', host: '3rdprovider', type: 'hls' },
+            { id: 'server-3', name: 'Server 3 (HD Backup)', shortName: 'Server 3', badge: 'HD Stream', host: 'yuki', type: 'hls' },
+            { id: 'server-4', name: 'Server 4 (HD Fast)', shortName: 'Server 4', badge: 'Fast Stream', host: 'sora', type: 'hls' }
           ]
         };
 
@@ -556,9 +556,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         },
         servers: [
           { id: 'server-1', name: 'Server 1 (1080p Ultra)', shortName: 'Server 1', badge: '1080p HD', host: 'zuna', type: 'hls' },
-          { id: 'server-2', name: 'Server 2 (English Dub / Fast)', shortName: 'Server 2', badge: 'English Dub', host: 'yuki', type: 'hls' },
-          { id: 'server-3', name: 'Server 3 (Dual Audio / 1080p)', shortName: 'Server 3', badge: 'Dual Audio', host: '3rdprovider', type: 'hls' },
-          { id: 'server-4', name: 'Server 4 (HD Backup)', shortName: 'Server 4', badge: 'Fast Stream', host: 'sora', type: 'hls' }
+          { id: 'server-2', name: 'Server 2 (English Dub / Multi-Audio)', shortName: 'Server 2', badge: 'English Dub', host: '3rdprovider', type: 'hls' },
+          { id: 'server-3', name: 'Server 3 (HD Backup)', shortName: 'Server 3', badge: 'HD Stream', host: 'yuki', type: 'hls' },
+          { id: 'server-4', name: 'Server 4 (HD Fast)', shortName: 'Server 4', badge: 'Fast Stream', host: 'sora', type: 'hls' }
         ]
       };
       // Show user-friendly notification inside the UI instead of hard-killing the tab
@@ -808,7 +808,7 @@ document.addEventListener('DOMContentLoaded', async function () {
               localStorage.setItem('infinx_preferred_audio_type', 'sub');
               updateAudioOptions();
             }
-            const hostParam = (currentAudioType === 'dub' && target.host === 'zuna') ? 'yuki' : target.host;
+            const hostParam = (currentAudioType === 'dub') ? '3rdprovider' : target.host;
             const sRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${hostParam}&type=${currentAudioType}`);
             if (sRes.ok) {
               const sData = await sRes.json();
@@ -841,7 +841,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     showPlayerToast('English Dub not available on this server. Playing Japanese Sub.');
                   }
                 }
-              } catch (fbErr) {}
+              } catch (fbErr) { }
             }
           } catch (e) {
             console.warn('Switch lunar stream failed:', e);
@@ -972,7 +972,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           const durationEl = item.querySelector('.item-duration') || item.querySelector('.drawer-ep-duration');
           const titleEl = item.querySelector('.item-title') || item.querySelector('.drawer-ep-title');
           const isThisEp = (durationEl && durationEl.textContent.trim().startsWith(`Ep ${targetEpNum}`)) ||
-                           (titleEl && (titleEl.textContent.startsWith(`Episode ${targetEpNum}:`) || titleEl.textContent === `Episode ${targetEpNum}`));
+            (titleEl && (titleEl.textContent.startsWith(`Episode ${targetEpNum}:`) || titleEl.textContent === `Episode ${targetEpNum}`));
           item.classList.toggle('active', !!isThisEp);
         });
 
@@ -1041,7 +1041,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Fetch stream for new episode
         let streamUrl = null;
-        const hostParam = (currentAudioType === 'dub') ? 'yuki' : (currentEpisode?.servers?.find(s => s.id === activeServerId)?.host || 'zuna');
+        const hostParam = (currentAudioType === 'dub') ? '3rdprovider' : (currentEpisode?.servers?.find(s => s.id === activeServerId)?.host || 'zuna');
 
         try {
           const sRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=${hostParam}&type=${currentAudioType}`);
@@ -1739,7 +1739,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           currentEpisodeWatchedBuckets = new Set(parsed.buckets || []);
           return;
         }
-      } catch (_) {}
+      } catch (_) { }
       currentEpisodeActiveWatchSeconds = 0;
       currentEpisodeWatchedBuckets = new Set();
     }
@@ -1751,7 +1751,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           seconds: Math.floor(currentEpisodeActiveWatchSeconds),
           buckets: Array.from(currentEpisodeWatchedBuckets)
         }));
-      } catch (_) {}
+      } catch (_) { }
     }
 
     function recordActiveWatchTick() {
@@ -1801,11 +1801,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const toast = document.createElement('div');
         toast.className = `player-xp-toast ${inParty ? 'party' : ''} ${leveledUp ? 'levelup' : ''}`;
-        
+
         const titleText = leveledUp
           ? `LEVEL UP! LEVEL ${level}`
           : (inParty ? `+${gained} XP • WATCH PARTY BONUS` : `+${gained} XP EARNED`);
-        
+
         const subText = leveledUp
           ? `Congratulations! You unlocked new Otaku tier rewards.`
           : `Otaku XP: ${(currentXp || 0).toLocaleString()} / ${(nextXp || (level * 200)).toLocaleString()} XP`;
@@ -1857,7 +1857,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           toast.classList.add('fade-out');
           setTimeout(() => { toast.remove(); }, 600);
         }, 4800);
-      } catch (_) {}
+      } catch (_) { }
     }
 
     // Award XP to user for watching episode
@@ -1893,7 +1893,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       const xpReason = inWatchParty ? 'watch_party' : 'episode_watched';
 
       currentEpisodeXpAwarded = true;
-      try { sessionStorage.setItem(sessionKey, 'true'); } catch (_) {}
+      try { sessionStorage.setItem(sessionKey, 'true'); } catch (_) { }
 
       try {
         const payload = {
@@ -1940,7 +1940,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 timestamp: Date.now()
               }));
               window.dispatchEvent(new CustomEvent('infinx:xp-updated', { detail: data }));
-            } catch (_) {}
+            } catch (_) { }
           }
         }
       } catch (err) {
@@ -2023,7 +2023,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 timestamp: Date.now()
               }));
               window.dispatchEvent(new CustomEvent('infinx:xp-updated', { detail: xpRes }));
-            } catch (_) {}
+            } catch (_) { }
           }
         }
       } catch (e) {
@@ -2427,7 +2427,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       try {
         const epNumVal = currentEpisode.episodeNumber || epNum || 1;
-        const hostParam = targetType === 'dub' ? 'yuki' : 'zuna';
+        const hostParam = targetType === 'dub' ? '3rdprovider' : 'zuna';
         const res = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${hostParam}&type=${targetType}`);
 
         if (res.ok) {
@@ -4561,6 +4561,17 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (audioDropdown) {
         audioDropdown.addEventListener('click', handleAudioClick);
       }
+      const audioPillsContainer = document.getElementById('settings-audio-pills');
+      if (audioPillsContainer) {
+        audioPillsContainer.addEventListener('click', function (e) {
+          const pill = e.target.closest('[data-audio-type]');
+          if (pill) {
+            e.stopPropagation();
+            const aType = pill.getAttribute('data-audio-type');
+            if (aType) switchAudioType(aType);
+          }
+        });
+      }
     }
 
     function setupSubtitleEventListeners() {
@@ -5026,44 +5037,44 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
       }
 
-    // Dynamic Views Tracking & Increment
-    async function updateAndTrackEpisodeViews() {
-      const viewsEl = document.querySelector('.views');
-      const isLunar = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
-      const effectiveEpId = currentEpisode?.id || (isLunar ? `lunar-${lunarId}-${epNum}` : episodeId);
-      const anilistIdVal = currentEpisode?.anilistId || lunarId;
-      const epNumVal = currentEpisode?.episodeNumber || epNum || 1;
+      // Dynamic Views Tracking & Increment
+      async function updateAndTrackEpisodeViews() {
+        const viewsEl = document.querySelector('.views');
+        const isLunar = !!(currentEpisode?.isLunar || (lunarId && lunarId !== 'null'));
+        const effectiveEpId = currentEpisode?.id || (isLunar ? `lunar-${lunarId}-${epNum}` : episodeId);
+        const anilistIdVal = currentEpisode?.anilistId || lunarId;
+        const epNumVal = currentEpisode?.episodeNumber || epNum || 1;
 
-      if (!isLunar && effectiveEpId && /^\d+$/.test(String(effectiveEpId))) {
-        try {
-          const res = await fetch(`${API_BASE}/shows/episode/view`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              episodeId: parseInt(effectiveEpId, 10),
-              episodeNumber: epNumVal
-            })
-          });
-          if (res.ok) {
-            const data = await res.json().catch(() => null);
-            if (data && typeof data.views === 'number') {
-              if (currentEpisode) currentEpisode.views = data.views;
-              if (viewsEl) viewsEl.innerHTML = `<i class="fas fa-eye"></i> ${data.views.toLocaleString()} views`;
-              return;
+        if (!isLunar && effectiveEpId && /^\d+$/.test(String(effectiveEpId))) {
+          try {
+            const res = await fetch(`${API_BASE}/shows/episode/view`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                episodeId: parseInt(effectiveEpId, 10),
+                episodeNumber: epNumVal
+              })
+            });
+            if (res.ok) {
+              const data = await res.json().catch(() => null);
+              if (data && typeof data.views === 'number') {
+                if (currentEpisode) currentEpisode.views = data.views;
+                if (viewsEl) viewsEl.innerHTML = `<i class="fas fa-eye"></i> ${data.views.toLocaleString()} views`;
+                return;
+              }
             }
-          }
-        } catch (_) {}
+          } catch (_) { }
+        }
+
+        if (viewsEl) {
+          const seedVal = parseInt(anilistIdVal || effectiveEpId || 212888, 10) || 212888;
+          const seedViews = currentEpisode?.views || (12400 + ((seedVal * 31) % 64000) + (parseInt(epNumVal, 10) * 128));
+          viewsEl.innerHTML = `<i class="fas fa-eye"></i> ${seedViews.toLocaleString()} views`;
+        }
       }
 
-      if (viewsEl) {
-        const seedVal = parseInt(anilistIdVal || effectiveEpId || 212888, 10) || 212888;
-        const seedViews = currentEpisode?.views || (12400 + ((seedVal * 31) % 64000) + (parseInt(epNumVal, 10) * 128));
-        viewsEl.innerHTML = `<i class="fas fa-eye"></i> ${seedViews.toLocaleString()} views`;
-      }
-    }
-
-    // Update views count dynamically & increment view
-    updateAndTrackEpisodeViews();
+      // Update views count dynamically & increment view
+      updateAndTrackEpisodeViews();
 
       if (currentEpisode.show?.type === 'movie') {
         const playlistEl = document.querySelector('.video-playlist');
@@ -5965,7 +5976,7 @@ document.addEventListener('DOMContentLoaded', async function () {
               opt.classList.toggle('active', opt.getAttribute('data-server-id') === 'server-2');
             });
           }
-          const host = (currentAudioType === 'dub') ? 'yuki' : (initialServer?.host || 'zuna');
+          const host = (currentAudioType === 'dub') ? '3rdprovider' : (initialServer?.host || 'zuna');
           const epNumVal = currentEpisode.episodeNumber || epNum || 1;
           const sRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${host}&type=${currentAudioType}`);
           if (sRes.ok) {
