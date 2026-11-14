@@ -1356,8 +1356,11 @@ document.addEventListener('DOMContentLoaded', async function () {
               currentAudioType = 'dub';
               localStorage.setItem('infinx_preferred_audio_type', 'dub');
             } else if (l.startsWith('jp') || l.startsWith('ja') || n.includes('japan')) {
-              currentAudioType = 'sub';
-              localStorage.setItem('infinx_preferred_audio_type', 'sub');
+              // Guard: Only switch to 'sub' if the user wasn't actively expecting 'dub'
+              if (currentAudioType !== 'dub') {
+                currentAudioType = 'sub';
+                localStorage.setItem('infinx_preferred_audio_type', 'sub');
+              }
             }
             updateAudioOptions();
           }
