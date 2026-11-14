@@ -682,6 +682,17 @@
 
           <div class="show-genre-chips" id="showModalGenres"></div>
 
+          <!-- Audio Selection Row for Anime Shows (Sub / Dub) -->
+          <div class="show-audio-toggle-row" id="showModalAudioToggleRow" style="display: none; align-items: center; gap: 8px; margin-bottom: 14px;">
+            <span style="font-size: 0.85rem; color: #a0a5b9; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;"><i class="fas fa-volume-up"></i> Audio:</span>
+            <button type="button" class="show-audio-pill" id="modalAudioPillSub" data-type="sub" style="padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: #fff; transition: all 0.2s;">
+              <i class="fas fa-closed-captioning"></i> Japanese (Sub)
+            </button>
+            <button type="button" class="show-audio-pill" id="modalAudioPillDub" data-type="dub" style="padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: #fff; transition: all 0.2s;">
+              <i class="fas fa-microphone"></i> English (Dub)
+            </button>
+          </div>
+
           <!-- Main Play Action Button -->
           <button class="show-primary-play-btn" id="showModalPrimaryPlayBtn">
             <i class="fas fa-play"></i> <span id="showModalPrimaryPlayText">START WATCHING</span>
@@ -896,7 +907,7 @@
     const rawBanner = show.banner || show.poster;
     const bannerUrl = (typeof window.formatMediaUrl === 'function')
       ? window.formatMediaUrl(rawBanner)
-      : (rawBanner || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800');
+      : (rawBanner || 'Postes/spyfamS3p.jpg');
     if (backdropEl) backdropEl.src = bannerUrl;
 
     // Genres
@@ -971,7 +982,7 @@
         seasonsCarousel.innerHTML = seasonsList.map((s, idx) => {
           const isCurrent = s.isCurrent || (s.anilistId && parseInt(s.anilistId) === parseInt(show.anilistId));
           const seasonNum = s.seasonNumber || idx + 1;
-          const posterImg = s.poster || s.banner || show.poster || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400';
+          const posterImg = s.poster || s.banner || show.poster || 'Postes/spyfamS3p.jpg';
           const typeLabel = s.type || 'TV';
           const yearLabel = s.year ? ` • ${s.year}` : '';
           const epLabel = s.episodes ? ` • ${s.episodes} Ep` : '';
@@ -985,7 +996,7 @@
                  title="${displayTitle}"
                  onclick="window.switchShowSeason('${s.anilistId || s.id}')">
               <div class="season-poster-wrapper">
-                <img src="${posterImg}" alt="${displayTitle}" class="season-poster-img" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400'">
+                <img src="${posterImg}" alt="${displayTitle}" class="season-poster-img" loading="lazy" onerror="this.src='Postes/spyfamS3p.jpg'">
                 <span class="season-badge-pill">${badgeText}</span>
                 ${s.rating ? `<span class="season-rating-pill"><i class="fas fa-star"></i> ${s.rating}</span>` : ''}
               </div>
@@ -1093,6 +1104,82 @@
     const hasResumeProgress = resumePosition > 10 && !progressData.lastWatched?.completed;
     const primaryPlayBtn = document.getElementById('showModalPrimaryPlayBtn');
     const primaryPlayText = document.getElementById('showModalPrimaryPlayText');
+    const audioToggleRow = document.getElementById('showModalAudioToggleRow');
+    const pillSub = document.getElementById('modalAudioPillSub');
+    const pillDub = document.getElementById('modalAudioPillDub');
+
+    let currentAudioType = localStorage.getItem('infinx_preferred_audio_type') || 'sub';
+
+    function setModalAudioPills(activeType) {
+      currentAudioType = activeType;
+      localStorage.setItem('infinx_preferred_audio_type', activeType);
+
+      if (pillSub) {
+        if (activeType === 'sub') {
+          pillSub.style.background = 'rgba(0, 238, 252, 0.2)';
+          pillSub.style.borderColor = '#00eefc';
+          pillSub.style.color = '#00eefc';
+          pillSub.style.boxShadow = '0 0 12px rgba(0, 238, 252, 0.35)';
+        } else {
+          pillSub.style.background = 'rgba(255, 255, 255, 0.08)';
+          pillSub.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+          pillSub.style.color = '#a0a5b9';
+          pillSub.style.boxShadow = 'none';
+        }
+      }
+
+      if (pillDub) {
+        if (activeType === 'dub') {
+          pillDub.style.background = 'rgba(255, 80, 110, 0.25)';
+          pillDub.style.borderColor = '#ff506e';
+          pillDub.style.color = '#ff506e';
+          pillDub.style.boxShadow = '0 0 12px rgba(255, 80, 110, 0.4)';
+        } else {
+          pillDub.style.background = 'rgba(255, 255, 255, 0.08)';
+          pillDub.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+          pillDub.style.color = '#a0a5b9';
+          pillDub.style.boxShadow = 'none';
+        }
+      }
+
+      // Re-bind primary play button and episode card click handlers
+      if (primaryPlayBtn && resumeEpisode) {
+        const seekParam = (hasResumeProgress && resumePosition > 0) ? `&t=${resumePosition}` : '';
+        const epNum = resumeEpisode.episodeNumber || resumeEpisode.number || 1;
+        const audioParam = (show.isLunar && currentAudioType === 'dub') ? '&type=dub' : '';
+        const playUrl = show.isLunar
+          ? `/watch?id=${show.anilistId || anilistId}&ep=${epNum}${seekParam}${audioParam}`
+          : `/watch?id=${resumeEpisode.id}${seekParam}`;
+
+        primaryPlayBtn.onclick = (e) => {
+          if (typeof window.requireAuthPlay === 'function') {
+            if (!window.requireAuthPlay(e, playUrl)) return;
+          }
+          window.location.href = playUrl;
+        };
+      }
+
+      document.querySelectorAll('.ep-row-card[data-ep-num]').forEach(card => {
+        const epNum = card.getAttribute('data-ep-num');
+        const seekParam = card.getAttribute('data-seek') || '';
+        const audioParam = (show.isLunar && currentAudioType === 'dub') ? '&type=dub' : '';
+        const epPlayUrl = show.isLunar
+          ? `/watch?id=${show.anilistId || anilistId}&ep=${epNum}${seekParam}${audioParam}`
+          : `/watch?id=${card.getAttribute('data-ep-id')}${seekParam}`;
+        card.onclick = (e) => window.playModalEpisode(e, epPlayUrl);
+      });
+    }
+
+    if (show.isLunar) {
+      if (audioToggleRow) {
+        audioToggleRow.style.display = 'flex';
+        if (pillSub) pillSub.onclick = (e) => { e.stopPropagation(); setModalAudioPills('sub'); };
+        if (pillDub) pillDub.onclick = (e) => { e.stopPropagation(); setModalAudioPills('dub'); };
+      }
+      setModalAudioPills(currentAudioType);
+    } else {
+      if (audioToggleRow) audioToggleRow.style.display = 'none';
+    }
 
     if (primaryPlayText && resumeEpisode) {
       const epNumDisplay = resumeEpisode.episodeNumber || resumeEpisode.number || 1;
@@ -1104,13 +1191,14 @@
     }
 
     if (primaryPlayBtn && resumeEpisode) {
-      primaryPlayBtn.onclick = (e) => {
-        const seekParam = (hasResumeProgress && resumePosition > 0) ? `&t=${resumePosition}` : '';
-        const epNum = resumeEpisode.episodeNumber || resumeEpisode.number || 1;
-        const playUrl = show.isLunar
-          ? `/watch?id=${show.anilistId || anilistId}&ep=${epNum}${seekParam}`
-          : `/watch?id=${resumeEpisode.id}${seekParam}`;
+      const seekParam = (hasResumeProgress && resumePosition > 0) ? `&t=${resumePosition}` : '';
+      const epNum = resumeEpisode.episodeNumber || resumeEpisode.number || 1;
+      const audioParam = (show.isLunar && currentAudioType === 'dub') ? '&type=dub' : '';
+      const playUrl = show.isLunar
+        ? `/watch?id=${show.anilistId || anilistId}&ep=${epNum}${seekParam}${audioParam}`
+        : `/watch?id=${resumeEpisode.id}${seekParam}`;
 
+      primaryPlayBtn.onclick = (e) => {
         if (typeof window.requireAuthPlay === 'function') {
           if (!window.requireAuthPlay(e, playUrl)) return;
         }
@@ -1143,8 +1231,9 @@
 
           const seekParam = (isInProgress && epProg.positionSeconds > 0) ? `&t=${epProg.positionSeconds}` : '';
           const epNum = ep.episodeNumber || ep.number;
+          const audioParam = (show.isLunar && currentAudioType === 'dub') ? '&type=dub' : '';
           const epPlayUrl = show.isLunar
-            ? `/watch?id=${show.anilistId || anilistId}&ep=${epNum}${seekParam}`
+            ? `/watch?id=${show.anilistId || anilistId}&ep=${epNum}${seekParam}${audioParam}`
             : `/watch?id=${ep.id}${seekParam}`;
 
           const thumbHtml = ep.thumbnail ? `
@@ -1155,6 +1244,7 @@
 
           return `
             <div class="ep-row-card ${isCompleted ? 'completed' : ''} ${isCurrentResume ? 'current' : ''}" 
+                 data-ep-num="${epNum}" data-ep-id="${ep.id}" data-seek="${seekParam}"
                  onclick="window.playModalEpisode(event, '${epPlayUrl}')">
               ${thumbHtml}
               <div class="ep-row-num-badge">
