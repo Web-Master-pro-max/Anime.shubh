@@ -1,6 +1,6 @@
 /**
- * Infinx Anime - Show Details Modal & Series Progress Engine
- * Parity with mobile ShowDetailScreen.js
+ * Infinx Anime - Show Details Modal & Cinema Hub
+ * Cyberpunk Cinema Glass Edition - 100% Theme Parity with DESIGN.md
  */
 
 (function () {
@@ -27,281 +27,715 @@
     const style = document.createElement('style');
     style.id = 'infinx-show-details-styles';
     style.textContent = `
+      /* =========================================================================
+         CYBERPUNK CINEMA GLASS MODAL THEME SPECIFICATION
+         ========================================================================= */
       .show-details-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(4, 4, 8, 0.85);
-        backdrop-filter: blur(18px) saturate(160%);
-        -webkit-backdrop-filter: blur(18px) saturate(160%);
-        z-index: 10000;
+        background: rgba(2, 3, 8, 0.88);
+        backdrop-filter: blur(24px) saturate(190%);
+        -webkit-backdrop-filter: blur(24px) saturate(190%);
+        z-index: 100000;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 20px;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .show-details-overlay.active {
         opacity: 1;
         pointer-events: auto;
       }
       .show-details-dialog {
-        background: linear-gradient(180deg, #14142b 0%, #080812 100%);
+        background: linear-gradient(180deg, #0e101c 0%, #06070e 100%);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 22px;
+        border-radius: 20px;
         width: 100%;
         max-width: 860px;
-        max-height: 92vh;
+        max-height: 90vh;
         overflow-y: auto;
         overflow-x: hidden;
         position: relative;
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 45px rgba(255, 0, 85, 0.15);
-        transform: scale(0.93) translateY(20px);
-        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 45px rgba(0, 238, 252, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        transform: scale(0.96) translateY(14px);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .show-details-overlay.active .show-details-dialog {
         transform: scale(1) translateY(0);
       }
+      @media (max-width: 640px) {
+        .show-details-overlay {
+          padding: 0;
+          align-items: flex-end;
+        }
+        .show-details-dialog {
+          max-height: 93vh;
+          border-radius: 20px 20px 0 0;
+          border-bottom: none;
+          transform: translateY(100%);
+        }
+        .show-details-overlay.active .show-details-dialog {
+          transform: translateY(0);
+        }
+      }
       .show-details-dialog::-webkit-scrollbar {
-        width: 6px;
+        width: 5px;
+      }
+      .show-details-dialog::-webkit-scrollbar-track {
+        background: transparent;
       }
       .show-details-dialog::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.16);
         border-radius: 3px;
       }
       .show-details-dialog::-webkit-scrollbar-thumb:hover {
-        background: var(--primary, #ff0055);
+        background: #00eefc;
       }
+
+      /* Hero Backdrop Banner */
       .show-backdrop-hero {
         position: relative;
         width: 100%;
-        height: 320px;
+        height: 250px;
         overflow: hidden;
+        background: #070810;
       }
-      @media (max-width: 600px) {
+      @media (max-width: 640px) {
         .show-backdrop-hero {
-          height: 220px;
+          height: 180px;
         }
       }
       .show-backdrop-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        object-position: center;
+        filter: brightness(0.85);
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .show-backdrop-hero:hover .show-backdrop-img {
+        transform: scale(1.03);
       }
       .show-backdrop-gradient {
         position: absolute;
         inset: 0;
-        background: linear-gradient(180deg, rgba(4, 4, 8, 0.2) 0%, rgba(8, 8, 18, 0.7) 65%, #14142b 100%);
+        background: linear-gradient(180deg, rgba(3, 4, 10, 0.45) 0%, rgba(7, 8, 16, 0.45) 35%, rgba(14, 16, 28, 0.92) 80%, #0e101c 100%);
+        pointer-events: none;
+      }
+      .show-top-bar {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        right: 14px;
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        padding: 20px;
+        align-items: center;
+        z-index: 20;
       }
       .show-action-btn-circle {
-        width: 42px;
-        height: 42px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
-        background: rgba(10, 10, 20, 0.65);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(12, 14, 26, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.14);
         color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.6rem;
         cursor: pointer;
-        transition: all 0.25s ease;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
       }
       .show-action-btn-circle:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(0, 238, 252, 0.2);
+        border-color: #00eefc;
+        color: #00eefc;
         transform: scale(1.08);
+        box-shadow: 0 0 16px rgba(0, 238, 252, 0.35);
+      }
+      .show-action-btn-circle:active {
+        transform: scale(0.94);
       }
       .show-action-btn-circle.bookmarked {
-        color: var(--primary, #ff0055);
-        border-color: rgba(255, 0, 85, 0.4);
-        box-shadow: 0 0 15px rgba(255, 0, 85, 0.35);
+        color: #ff506e;
+        border-color: rgba(255, 80, 110, 0.6);
+        background: rgba(255, 80, 110, 0.2);
+        box-shadow: 0 0 18px rgba(255, 80, 110, 0.45);
       }
-      .show-details-body {
-        padding: 24px 30px 40px;
+
+      /* Header Wrap & Overlapping Poster Card */
+      .show-details-header-wrap {
+        position: relative;
+        padding: 0 24px 18px;
+        margin-top: -85px;
+        z-index: 15;
       }
-      @media (max-width: 600px) {
-        .show-details-body {
-          padding: 16px 18px 30px;
+      @media (max-width: 640px) {
+        .show-details-header-wrap {
+          padding: 0 16px 14px;
+          margin-top: -65px;
         }
+      }
+      .show-header-row {
+        display: flex;
+        gap: 20px;
+        align-items: flex-end;
+      }
+      @media (max-width: 640px) {
+        .show-header-row {
+          gap: 14px;
+          align-items: flex-end;
+        }
+      }
+      .show-poster-card {
+        position: relative;
+        width: 135px;
+        height: 202px;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #141729;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 24px rgba(0, 238, 252, 0.18);
+        flex-shrink: 0;
+      }
+      @media (max-width: 640px) {
+        .show-poster-card {
+          width: 96px;
+          height: 144px;
+          border-radius: 10px;
+        }
+      }
+      .show-poster-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .show-header-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .show-eyebrow-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 5px;
+      }
+      .show-eyebrow-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #00eefc;
+        background: rgba(0, 238, 252, 0.1);
+        border: 1px solid rgba(0, 238, 252, 0.25);
+        padding: 2px 8px;
+        border-radius: 9999px;
+      }
+      .show-eyebrow-badge .pulse-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #00eefc;
+        box-shadow: 0 0 6px #00eefc;
       }
       .show-title-main {
         font-family: 'Outfit', sans-serif;
-        font-size: 2.8rem;
-        font-weight: 900;
+        font-size: 26px;
+        font-weight: 800;
         color: #fff;
         line-height: 1.2;
-        margin-bottom: 12px;
-        letter-spacing: -0.5px;
+        letter-spacing: -0.02em;
+        margin: 0 0 4px;
       }
-      @media (max-width: 600px) {
+      @media (max-width: 640px) {
         .show-title-main {
-          font-size: 2.1rem;
+          font-size: 18px;
         }
+      }
+      .show-title-sub {
+        font-size: 12px;
+        color: #9499ad;
+        font-weight: 500;
+        margin-bottom: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .show-meta-row {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
         flex-wrap: wrap;
-        margin-bottom: 16px;
+        margin-bottom: 10px;
       }
       .show-rating-chip {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        background: rgba(255, 170, 0, 0.18);
-        border: 1px solid rgba(255, 170, 0, 0.35);
-        color: #ffaa00;
-        font-size: 1.25rem;
+        gap: 4px;
+        background: rgba(255, 180, 0, 0.15);
+        border: 1px solid rgba(255, 180, 0, 0.4);
+        color: #ffb400;
+        font-family: 'Outfit', sans-serif;
+        font-size: 11px;
         font-weight: 800;
-        padding: 4px 9px;
+        padding: 2px 7px;
         border-radius: 6px;
       }
       .show-meta-sub {
-        font-size: 1.3rem;
-        color: #a0a5b9;
-        font-weight: 500;
+        font-size: 12px;
+        color: #9499ad;
+        font-weight: 600;
+      }
+      .show-meta-dot {
+        color: rgba(255, 255, 255, 0.25);
+        font-size: 10px;
       }
       .show-hd-chip {
         display: inline-flex;
-        background: rgba(0, 240, 255, 0.15);
-        border: 1px solid rgba(0, 240, 255, 0.3);
-        color: #00f0ff;
-        font-size: 1.1rem;
+        background: rgba(0, 238, 252, 0.12);
+        border: 1px solid rgba(0, 238, 252, 0.35);
+        color: #00eefc;
+        font-family: 'Outfit', sans-serif;
+        font-size: 10px;
         font-weight: 800;
-        padding: 2px 7px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        letter-spacing: 0.05em;
+      }
+      .show-oled-chip {
+        display: inline-flex;
+        background: rgba(160, 120, 255, 0.12);
+        border: 1px solid rgba(160, 120, 255, 0.35);
+        color: #d0bcff;
+        font-family: 'Outfit', sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
         border-radius: 4px;
       }
       .show-genre-chips {
         display: flex;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
-        margin-bottom: 22px;
+        margin-bottom: 12px;
       }
       .show-genre-tag {
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        color: #d1d5e5;
-        font-size: 1.2rem;
+        color: #b8bdd2;
+        font-family: 'Outfit', sans-serif;
+        font-size: 11px;
         font-weight: 600;
-        padding: 5px 12px;
-        border-radius: 20px;
-        transition: all 0.2s;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        transition: all 0.2s ease;
       }
       .show-genre-tag:hover {
-        border-color: var(--primary, #ff0055);
-        color: #fff;
+        border-color: #00eefc;
+        color: #00eefc;
+        background: rgba(0, 238, 252, 0.1);
       }
-      .show-primary-play-btn {
-        width: 100%;
+
+      /* Action Buttons Cluster */
+      .show-actions-cluster {
         display: flex;
         align-items: center;
-        justify-content: center;
         gap: 10px;
-        background: linear-gradient(135deg, #ff0055 0%, #b800ff 100%);
+        flex-wrap: wrap;
+        margin-top: 2px;
+      }
+      .show-primary-play-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #ff0055 0%, #ff506e 60%, #b800ff 100%);
         border: none;
-        border-radius: 12px;
+        border-radius: 9999px;
         color: #fff;
-        font-size: 1.5rem;
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
         font-weight: 800;
-        padding: 16px 24px;
+        padding: 10px 22px;
         cursor: pointer;
-        box-shadow: 0 10px 30px rgba(255, 0, 85, 0.4);
-        transition: all 0.3s ease;
-        margin-bottom: 24px;
-        letter-spacing: 0.5px;
+        box-shadow: 0 8px 24px rgba(255, 0, 85, 0.45), 0 0 16px rgba(0, 238, 252, 0.2);
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        letter-spacing: 0.04em;
         text-transform: uppercase;
       }
       .show-primary-play-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 14px 40px rgba(255, 0, 85, 0.55);
+        box-shadow: 0 12px 30px rgba(255, 0, 85, 0.65), 0 0 22px rgba(0, 238, 252, 0.3);
       }
-      .show-synopsis-title {
+      .show-primary-play-btn:active {
+        transform: scale(0.97);
+      }
+      .show-secondary-glass-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 9999px;
+        color: #e2e2e2;
         font-family: 'Outfit', sans-serif;
-        font-size: 1.7rem;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 9px 18px;
+        cursor: pointer;
+        backdrop-filter: blur(12px);
+        transition: all 0.22s ease;
+      }
+      .show-secondary-glass-btn:hover {
+        background: rgba(0, 238, 252, 0.12);
+        border-color: #00eefc;
+        color: #00eefc;
+        transform: translateY(-2px);
+      }
+      .show-secondary-glass-btn:active {
+        transform: scale(0.97);
+      }
+      .show-secondary-glass-btn.bookmarked {
+        background: rgba(255, 80, 110, 0.2);
+        border-color: #ff506e;
+        color: #ff506e;
+      }
+      .show-audio-toggle-row {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .show-audio-label {
+        font-family: 'Outfit', sans-serif;
+        font-size: 10px;
         font-weight: 800;
+        color: #8c92a5;
+        letter-spacing: 0.06em;
+      }
+      .show-audio-pill-group {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 9999px;
+        padding: 2px;
+      }
+      .show-audio-pill {
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+        border: 1px solid transparent;
+        background: transparent;
+        color: #8c92a5;
+        transition: all 0.2s ease;
+      }
+      .show-audio-pill.active-sub {
+        background: rgba(0, 238, 252, 0.2) !important;
+        border-color: #00eefc !important;
+        color: #00eefc !important;
+        box-shadow: 0 0 12px rgba(0, 238, 252, 0.35) !important;
+      }
+      .show-audio-pill.active-dub {
+        background: rgba(255, 80, 110, 0.2) !important;
+        border-color: #ff506e !important;
+        color: #ff506e !important;
+        box-shadow: 0 0 12px rgba(255, 80, 110, 0.35) !important;
+      }
+
+      /* Modal Navigation Tabs */
+      .show-modal-nav-tabs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 24px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .show-modal-nav-tabs::-webkit-scrollbar {
+        display: none;
+      }
+      @media (max-width: 640px) {
+        .show-modal-nav-tabs {
+          padding: 0 16px;
+        }
+      }
+      .modal-nav-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 14px;
+        border: none;
+        background: transparent;
+        color: #8c92a5;
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+      .modal-nav-tab:hover {
         color: #fff;
-        margin-bottom: 8px;
       }
-      .show-synopsis-p {
-        font-size: 1.4rem;
-        color: #b3b8ca;
-        line-height: 1.7;
-        margin-bottom: 28px;
+      .modal-nav-tab.active {
+        color: #00eefc;
+        border-bottom-color: #00eefc;
       }
-      .episodes-section-header {
+      .modal-tab-badge {
+        font-size: 10px;
+        padding: 1px 6px;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #b8bdd2;
+      }
+      .modal-nav-tab.active .modal-tab-badge {
+        background: rgba(0, 238, 252, 0.2);
+        color: #00eefc;
+      }
+
+      /* Tab Panels */
+      .show-tab-panels {
+        padding: 0 24px 28px;
+      }
+      @media (max-width: 640px) {
+        .show-tab-panels {
+          padding: 0 16px 24px;
+        }
+      }
+      .show-tab-panel {
+        display: none;
+      }
+      .show-tab-panel.active {
+        display: block;
+      }
+
+      /* Series Progress Card */
+      .series-progress-card {
+        background: rgba(18, 20, 36, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      }
+      .series-progress-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
+        margin-bottom: 8px;
+        gap: 10px;
       }
-      .episodes-section-title {
+      .series-progress-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         font-family: 'Outfit', sans-serif;
-        font-size: 1.9rem;
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.02em;
+      }
+      .series-progress-title span.material-symbols-outlined {
+        color: #00eefc;
+        font-size: 18px;
+      }
+      .series-progress-percent {
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 800;
+        color: #00eefc;
+        background: rgba(0, 238, 252, 0.12);
+        border: 1px solid rgba(0, 238, 252, 0.3);
+        padding: 2px 7px;
+        border-radius: 6px;
+      }
+      .series-progress-track {
+        height: 5px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 9999px;
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+      .series-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff506e 0%, #00eefc 100%);
+        border-radius: 9999px;
+        transition: width 0.4s ease;
+      }
+      .series-progress-stats {
+        display: flex;
+        gap: 6px;
+      }
+      .stat-chip {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 7px 10px;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.2s ease;
+      }
+      .stat-chip:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+      .stat-chip .stat-icon {
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .stat-chip .stat-icon.stat-total { color: #00eefc; }
+      .stat-chip .stat-icon.stat-watched { color: #00ff88; }
+      .stat-chip .stat-icon.stat-left { color: #ff506e; }
+      .stat-chip .stat-content {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .stat-chip .stat-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #8c92a5;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .stat-chip .stat-value {
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
         font-weight: 800;
         color: #fff;
       }
-      .episodes-section-stats {
-        font-size: 1.25rem;
-        color: #a0a5b9;
-        font-weight: 600;
+
+      /* Episodes Header & Season Selector */
+      .episodes-filter-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        gap: 10px;
+        flex-wrap: wrap;
       }
+      .episodes-season-select {
+        background: rgba(22, 25, 44, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .episodes-season-select:hover, .episodes-season-select:focus {
+        border-color: #00eefc;
+        box-shadow: 0 0 12px rgba(0, 238, 252, 0.25);
+      }
+      .episodes-season-select option {
+        background: #0e101c;
+        color: #fff;
+      }
+
+      /* Episode Cards List */
       .episodes-card-list {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
       }
       .ep-row-card {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(16, 18, 32, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.07);
         border-radius: 12px;
-        padding: 12px 14px;
+        padding: 9px 12px;
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 12px;
         cursor: pointer;
         position: relative;
         overflow: hidden;
-        transition: all 0.25s ease;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .ep-row-card:hover {
-        background: rgba(255, 255, 255, 0.07);
-        border-color: rgba(255, 0, 85, 0.35);
+        background: rgba(24, 27, 48, 0.9);
+        border-color: rgba(0, 238, 252, 0.4);
         transform: translateX(4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(0, 238, 252, 0.15);
       }
       .ep-row-card.completed {
         border-left: 3px solid #00ff88;
       }
       .ep-row-card.current {
-        border-left: 3px solid var(--primary, #ff0055);
-        background: rgba(255, 0, 85, 0.08);
+        border-left: 3px solid #00eefc;
+        background: rgba(0, 238, 252, 0.07);
+      }
+      .ep-thumbnail-box {
+        width: 100px;
+        height: 58px;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+        position: relative;
+        background: #070810;
+      }
+      @media (max-width: 640px) {
+        .ep-thumbnail-box {
+          width: 80px;
+          height: 48px;
+        }
+      }
+      .ep-thumbnail-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+      .ep-row-card:hover .ep-thumbnail-box img {
+        transform: scale(1.08);
+      }
+      .ep-duration-pill {
+        position: absolute;
+        bottom: 3px;
+        right: 3px;
+        font-size: 9px;
+        font-weight: 700;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.85);
+        padding: 1px 4px;
+        border-radius: 4px;
+        backdrop-filter: blur(4px);
       }
       .ep-row-num-badge {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
         font-weight: 800;
-        color: #a0a5b9;
+        color: #6d738a;
+        width: 28px;
+        text-align: center;
         flex-shrink: 0;
       }
       .ep-row-card.current .ep-row-num-badge {
-        background: rgba(255, 0, 85, 0.2);
-        color: var(--primary, #ff0055);
+        color: #00eefc;
       }
       .ep-row-card.completed .ep-row-num-badge {
-        background: rgba(0, 255, 136, 0.15);
         color: #00ff88;
       }
       .ep-row-info {
@@ -312,11 +746,12 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
         flex-wrap: wrap;
       }
       .ep-row-title {
-        font-size: 1.4rem;
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
         font-weight: 700;
         color: #fff;
         white-space: nowrap;
@@ -324,96 +759,211 @@
         text-overflow: ellipsis;
       }
       .ep-row-meta {
-        font-size: 1.2rem;
+        font-size: 11px;
         color: #8c92a5;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
+      }
+      .badge-watched {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(0, 255, 136, 0.15);
+        border: 1px solid rgba(0, 255, 136, 0.35);
+        color: #00ff88;
+        font-family: 'Outfit', sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 4px;
+      }
+      .badge-in-progress {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(0, 238, 252, 0.15);
+        border: 1px solid rgba(0, 238, 252, 0.35);
+        color: #00eefc;
+        font-family: 'Outfit', sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 4px;
       }
       .ep-row-progress-track {
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 3px;
-        background: rgba(0, 0, 0, 0.5);
+        height: 2px;
+        background: rgba(0, 0, 0, 0.6);
       }
       .ep-row-progress-fill {
         height: 100%;
-        background: var(--primary, #ff0055);
+        background: #00eefc;
         transition: width 0.3s;
       }
       .ep-row-play-btn {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 14px;
         flex-shrink: 0;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
       }
       .ep-row-card:hover .ep-row-play-btn {
-        background: var(--primary, #ff0055);
+        background: #00eefc;
+        border-color: #00eefc;
+        color: #000;
+        box-shadow: 0 0 14px rgba(0, 238, 252, 0.6);
         transform: scale(1.1);
       }
-      .ep-thumbnail-box {
-        width: 80px;
-        height: 48px;
-        border-radius: 6px;
-        overflow: hidden;
-        flex-shrink: 0;
-        position: relative;
-        background: rgba(255, 255, 255, 0.05);
+
+      /* Seasons Grid Panel */
+      .seasons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 14px;
       }
-      .ep-thumbnail-box img {
+      @media (max-width: 640px) {
+        .seasons-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+      }
+      .season-card {
+        background: rgba(16, 18, 32, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        text-align: left;
+      }
+      .season-card:hover {
+        background: rgba(24, 27, 48, 0.85);
+        border-color: #00eefc;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(0, 238, 252, 0.25);
+      }
+      .season-card.current {
+        border: 2px solid #00eefc;
+        background: rgba(0, 238, 252, 0.08);
+        box-shadow: 0 0 18px rgba(0, 238, 252, 0.35);
+      }
+      .season-poster-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100px;
+        overflow: hidden;
+        background: #0a0a16;
+      }
+      .season-poster-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.3s ease;
       }
-      .show-artworks-section {
-        margin: 20px 0;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 14px;
-        padding: 16px;
+      .season-card:hover .season-poster-img {
+        transform: scale(1.06);
       }
-      .artworks-header {
+      .season-badge-pill {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(8, 8, 16, 0.85);
+        color: #fff;
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .season-card.current .season-badge-pill {
+        background: #00eefc;
+        color: #000;
+        border-color: transparent;
+      }
+      .season-rating-pill {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 5px;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.75);
+        color: #ffd700;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        backdrop-filter: blur(4px);
+      }
+      .season-card-content {
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;
+      }
+      .season-card-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .season-card-meta {
+        font-size: 10px;
+        color: #8c92a5;
+        margin-top: auto;
+      }
+
+      /* Artworks Panel */
+      .artworks-filter-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 12px;
-      }
-      .artworks-title {
-        font-size: 1.35rem;
-        font-weight: 700;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        margin-bottom: 14px;
+        gap: 10px;
+        flex-wrap: wrap;
       }
       .artworks-tabs {
         display: flex;
         gap: 6px;
       }
       .artwork-tab-btn {
-        background: rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        color: #a0a5b9;
-        font-size: 1.1rem;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 6px;
+        color: #9499ad;
+        font-family: 'Outfit', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 9999px;
         cursor: pointer;
         transition: all 0.2s;
       }
       .artwork-tab-btn.active, .artwork-tab-btn:hover {
-        background: var(--primary, #ff0055);
-        color: #fff;
+        background: #00eefc;
+        color: #000;
         border-color: transparent;
+        font-weight: 800;
+        box-shadow: 0 0 10px rgba(0, 238, 252, 0.35);
       }
       .artworks-carousel {
         display: flex;
@@ -426,29 +976,30 @@
         height: 4px;
       }
       .artworks-carousel::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.15);
         border-radius: 2px;
       }
       .artwork-card {
         flex-shrink: 0;
-        border-radius: 8px;
+        border-radius: 10px;
         overflow: hidden;
         border: 2px solid transparent;
         cursor: pointer;
-        transition: all 0.25s ease;
+        transition: all 0.22s ease;
         position: relative;
+        background: #0a0a16;
       }
       .artwork-card:hover {
-        border-color: var(--primary, #ff0055);
+        border-color: #00eefc;
         transform: translateY(-2px);
       }
       .artwork-card.banner-type {
         width: 220px;
-        height: 65px;
+        height: 68px;
       }
       .artwork-card.poster-type {
-        width: 80px;
-        height: 115px;
+        width: 85px;
+        height: 125px;
       }
       .artwork-card.fanart-type {
         width: 180px;
@@ -460,169 +1011,52 @@
         object-fit: cover;
       }
 
-      /* Seasons & Franchise Section */
-      .show-seasons-section {
-        margin-bottom: 26px;
-      }
-      .seasons-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-      }
-      .seasons-title {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #fff;
-      }
-      .seasons-badge {
-        background: rgba(255, 0, 85, 0.18);
-        border: 1px solid rgba(255, 0, 85, 0.4);
-        color: #ff3377;
-        font-size: 0.75rem;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-weight: 700;
-      }
-      .seasons-subtitle {
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.5);
-      }
-      .seasons-carousel {
-        display: flex;
-        gap: 12px;
-        overflow-x: auto;
-        padding: 4px 2px 14px 2px;
-        scroll-behavior: smooth;
-      }
-      .seasons-carousel::-webkit-scrollbar {
-        height: 6px;
-      }
-      .seasons-carousel::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 3px;
-      }
-      .seasons-carousel::-webkit-scrollbar-thumb:hover {
-        background: var(--primary, #ff0055);
-      }
-      .season-card {
-        flex: 0 0 165px;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 14px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      /* Overview Panel */
+      .overview-box {
         display: flex;
         flex-direction: column;
-        position: relative;
-        text-align: left;
+        gap: 16px;
       }
-      .season-card:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 0, 85, 0.5);
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), 0 0 20px rgba(255, 0, 85, 0.3);
-      }
-      .season-card.current {
-        border: 2px solid var(--primary, #ff0055);
-        background: rgba(255, 0, 85, 0.12);
-        box-shadow: 0 0 22px rgba(255, 0, 85, 0.45);
-      }
-      .season-poster-wrapper {
-        position: relative;
-        width: 100%;
-        height: 105px;
-        overflow: hidden;
-        background: #0a0a16;
-      }
-      .season-poster-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-      }
-      .season-card:hover .season-poster-img {
-        transform: scale(1.08);
-      }
-      .season-badge-pill {
-        position: absolute;
-        top: 6px;
-        left: 6px;
-        font-size: 0.68rem;
+      .overview-synopsis-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
         font-weight: 800;
-        padding: 3px 7px;
-        border-radius: 6px;
-        background: rgba(8, 8, 16, 0.8);
         color: #fff;
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        letter-spacing: 0.3px;
+        margin-bottom: 6px;
       }
-      .season-card.current .season-badge-pill {
-        background: var(--primary, #ff0055);
-        color: #fff;
-        border-color: transparent;
-        box-shadow: 0 2px 8px rgba(255, 0, 85, 0.5);
+      .overview-synopsis-p {
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        color: #9da3ba;
+        line-height: 1.7;
+        margin: 0;
       }
-      .season-rating-pill {
-        position: absolute;
-        bottom: 6px;
-        right: 6px;
-        font-size: 0.68rem;
-        font-weight: 700;
-        padding: 2px 6px;
-        border-radius: 6px;
-        background: rgba(0, 0, 0, 0.75);
-        color: #ffd700;
-        display: flex;
-        align-items: center;
-        gap: 3px;
-        backdrop-filter: blur(4px);
+      .overview-specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+        margin-top: 8px;
       }
-      .season-card-content {
-        padding: 10px 10px 12px;
+      .overview-spec-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        padding: 10px 14px;
         display: flex;
         flex-direction: column;
         gap: 3px;
-        flex: 1;
       }
-      .season-card-title {
-        font-size: 0.85rem;
+      .overview-spec-label {
+        font-size: 10px;
         font-weight: 700;
-        color: #fff;
-        line-height: 1.25;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-      .season-card-meta {
-        font-size: 0.75rem;
         color: #8c92a5;
-        margin-top: auto;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
-      .episodes-season-select {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: #fff;
-        font-size: 0.85rem;
-        font-weight: 600;
-        padding: 4px 12px;
-        border-radius: 12px;
-        outline: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .episodes-season-select:hover, .episodes-season-select:focus {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: var(--primary, #ff0055);
-      }
-      .episodes-season-select option {
-        background: #14142b;
+      .overview-spec-val {
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 700;
         color: #fff;
       }
     `;
@@ -651,101 +1085,180 @@
     overlay.className = 'show-details-overlay';
     overlay.innerHTML = `
       <div class="show-details-dialog" id="infinxShowDetailsDialog">
+        <!-- Hero Billboard Backdrop -->
         <div class="show-backdrop-hero">
           <img id="showModalBackdropImg" src="" alt="Show Backdrop" class="show-backdrop-img">
-          <div class="show-backdrop-gradient">
-            <button class="show-action-btn-circle" id="showModalBackBtn" aria-label="Close modal">
-              <i class="fas fa-arrow-left"></i>
+          <div class="show-backdrop-gradient"></div>
+
+          <!-- Top Floating Controls -->
+          <div class="show-top-bar">
+            <button class="show-action-btn-circle" id="showModalBackBtn" aria-label="Close modal" title="Back">
+              <span class="material-symbols-outlined text-[18px]">arrow_back</span>
             </button>
             <div style="display: flex; gap: 8px;">
-              <button class="show-action-btn-circle" id="showModalBookmarkBtn" aria-label="Toggle Watchlist">
-                <i class="far fa-bookmark" id="showModalBookmarkIcon"></i>
+              <button class="show-action-btn-circle" id="showModalBookmarkBtn" aria-label="Toggle Watchlist" title="Add to Watchlist">
+                <span class="material-symbols-outlined text-[18px]" id="showModalBookmarkIcon">bookmark_border</span>
               </button>
-              <button class="show-action-btn-circle" id="showModalCloseBtn" aria-label="Close">
-                <i class="fas fa-times"></i>
+              <button class="show-action-btn-circle" id="showModalCloseBtn" aria-label="Close" title="Close">
+                <span class="material-symbols-outlined text-[18px]">close</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div class="show-details-body">
-          <h2 class="show-title-main" id="showModalTitle">Loading...</h2>
+        <!-- Overlapping Header Content -->
+        <div class="show-details-header-wrap">
+          <div class="show-header-row">
+            <!-- 2:3 Vertical Portrait Poster Card -->
+            <div class="show-poster-card">
+              <img id="showModalPosterImg" src="" alt="Show Poster" class="show-poster-img" onerror="this.src='Postes/spyfamS3p.jpg'">
+            </div>
 
-          <div class="show-meta-row">
-            <div class="show-rating-chip" id="showModalRating"><i class="fas fa-star"></i> 4.9</div>
-            <span class="show-meta-sub" id="showModalYear">2024</span>
-            <span class="show-meta-sub">•</span>
-            <span class="show-meta-sub" id="showModalEpCount">0 Episodes</span>
-            <span class="show-meta-sub">•</span>
-            <span class="show-hd-chip">HD</span>
+            <!-- Title & Key Metadata -->
+            <div class="show-header-info">
+              <div class="show-eyebrow-row">
+                <span class="show-eyebrow-badge">
+                  <span class="pulse-dot"></span>
+                  <span id="showModalFormatBadge">TOKYO MASTER • OLED CUT</span>
+                </span>
+              </div>
+
+              <h2 class="show-title-main" id="showModalTitle">Loading...</h2>
+              <div class="show-title-sub" id="showModalSubTitle" style="display: none;"></div>
+
+              <div class="show-meta-row">
+                <div class="show-rating-chip" id="showModalRating">
+                  <span class="material-symbols-outlined text-[13px]">star</span>
+                  <span id="showModalRatingVal">4.9</span>
+                </div>
+                <span class="show-meta-sub" id="showModalYear">2024</span>
+                <span class="show-meta-dot">•</span>
+                <span class="show-meta-sub" id="showModalEpCount">0 Episodes</span>
+                <span class="show-meta-dot">•</span>
+                <span class="show-hd-chip">4K UHD</span>
+                <span class="show-oled-chip">HDR10+</span>
+              </div>
+
+              <div class="show-genre-chips" id="showModalGenres"></div>
+
+              <!-- High-Contrast Action Cluster -->
+              <div class="show-actions-cluster">
+                <button class="show-primary-play-btn" id="showModalPrimaryPlayBtn">
+                  <span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                  <span id="showModalPrimaryPlayText">START WATCHING</span>
+                </button>
+
+                <button class="show-secondary-glass-btn" id="showModalWatchlistBtn">
+                  <span class="material-symbols-outlined text-[16px]" id="showModalWatchlistBtnIcon">bookmark_border</span>
+                  <span id="showModalWatchlistBtnText">Watchlist</span>
+                </button>
+
+                <!-- Audio Toggle (Sub / Dub) -->
+                <div class="show-audio-toggle-row" id="showModalAudioToggleRow" style="display: none;">
+                  <span class="show-audio-label">AUDIO:</span>
+                  <div class="show-audio-pill-group">
+                    <button type="button" class="show-audio-pill active-sub" id="modalAudioPillSub" data-type="sub">
+                      <span>SUB</span>
+                    </button>
+                    <button type="button" class="show-audio-pill" id="modalAudioPillDub" data-type="dub">
+                      <span>DUB</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <div class="show-genre-chips" id="showModalGenres"></div>
-
-          <!-- Audio Selection Row for Anime Shows (Sub / Dub) -->
-          <div class="show-audio-toggle-row" id="showModalAudioToggleRow" style="display: none; align-items: center; gap: 8px; margin-bottom: 14px;">
-            <span style="font-size: 0.85rem; color: #a0a5b9; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;"><i class="fas fa-volume-up"></i> Audio:</span>
-            <button type="button" class="show-audio-pill" id="modalAudioPillSub" data-type="sub" style="padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: #fff; transition: all 0.2s;">
-              <i class="fas fa-closed-captioning"></i> Japanese (Sub)
-            </button>
-            <button type="button" class="show-audio-pill" id="modalAudioPillDub" data-type="dub" style="padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: #fff; transition: all 0.2s;">
-              <i class="fas fa-microphone"></i> English (Dub)
-            </button>
-          </div>
-
-          <!-- Main Play Action Button -->
-          <button class="show-primary-play-btn" id="showModalPrimaryPlayBtn">
-            <i class="fas fa-play"></i> <span id="showModalPrimaryPlayText">START WATCHING</span>
+        <!-- Navigation Tabs Bar -->
+        <div class="show-modal-nav-tabs">
+          <button class="modal-nav-tab active" data-tab="episodes" id="modalTabEpBtn">
+            <span class="material-symbols-outlined text-[16px]">video_library</span>
+            <span>Episodes</span>
+            <span class="modal-tab-badge" id="modalTabEpCount">0</span>
           </button>
+          <button class="modal-nav-tab" data-tab="seasons" id="modalTabSeasonsBtn" style="display: none;">
+            <span class="material-symbols-outlined text-[16px]">layers</span>
+            <span>All Seasons</span>
+            <span class="modal-tab-badge" id="modalTabSeasonsCount">0</span>
+          </button>
+          <button class="modal-nav-tab" data-tab="artworks" id="modalTabArtworksBtn" style="display: none;">
+            <span class="material-symbols-outlined text-[16px]">photo_library</span>
+            <span>Artworks</span>
+          </button>
+          <button class="modal-nav-tab" data-tab="overview" id="modalTabOverviewBtn">
+            <span class="material-symbols-outlined text-[16px]">info</span>
+            <span>Overview</span>
+          </button>
+        </div>
 
-          <!-- Series Progress Card (Mobile Parity) -->
-          <div class="series-progress-card" id="showModalProgressCard" style="margin-bottom: 24px;">
-            <div class="series-progress-header">
-              <div class="series-progress-title">
-                <i class="fas fa-chart-line"></i>
-                <span>Watch Progress</span>
+        <!-- Tab Content Panels -->
+        <div class="show-tab-panels">
+          <!-- 1. Episodes Panel -->
+          <div class="show-tab-panel active" id="modalTabPanel_episodes">
+            <!-- Series Progress Card -->
+            <div class="series-progress-card" id="showModalProgressCard">
+              <div class="series-progress-header">
+                <div class="series-progress-title">
+                  <span class="material-symbols-outlined">equalizer</span>
+                  <span>Series Watch Progress</span>
+                </div>
+                <span class="series-progress-percent" id="showModalProgressPercent">0%</span>
               </div>
-              <span class="series-progress-percent" id="showModalProgressPercent">0%</span>
-            </div>
-            <div class="series-progress-track">
-              <div class="series-progress-fill" id="showModalProgressFill" style="width: 0%;"></div>
-            </div>
-            <div class="series-progress-stats">
-              <div class="stat-chip">
-                <i class="fas fa-layer-group stat-icon stat-total"></i>
-                <div class="stat-content">
-                  <span class="stat-label">Total</span>
-                  <span class="stat-value" id="showModalTotalEpisodes">0</span>
+              <div class="series-progress-track">
+                <div class="series-progress-fill" id="showModalProgressFill" style="width: 0%;"></div>
+              </div>
+              <div class="series-progress-stats">
+                <div class="stat-chip">
+                  <span class="material-symbols-outlined stat-icon stat-total">layers</span>
+                  <div class="stat-content">
+                    <span class="stat-label">Total</span>
+                    <span class="stat-value" id="showModalTotalEpisodes">0</span>
+                  </div>
+                </div>
+                <div class="stat-chip">
+                  <span class="material-symbols-outlined stat-icon stat-watched">check_circle</span>
+                  <div class="stat-content">
+                    <span class="stat-label">Watched</span>
+                    <span class="stat-value" id="showModalWatchedEpisodes">0</span>
+                  </div>
+                </div>
+                <div class="stat-chip">
+                  <span class="material-symbols-outlined stat-icon stat-left">schedule</span>
+                  <div class="stat-content">
+                    <span class="stat-label">Remaining</span>
+                    <span class="stat-value" id="showModalRemainingEpisodes">0</span>
+                  </div>
                 </div>
               </div>
-              <div class="stat-chip">
-                <i class="fas fa-check-circle stat-icon stat-watched"></i>
-                <div class="stat-content">
-                  <span class="stat-label">Watched</span>
-                  <span class="stat-value" id="showModalWatchedEpisodes">0</span>
-                </div>
+            </div>
+
+            <!-- Episodes Section Filter Header -->
+            <div class="episodes-filter-row">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: #fff;">Episodes</span>
+                <span style="font-size: 11px; color: #8c92a5; font-weight: 600;" id="showModalEpisodesStats">0 Watched • 0 Left</span>
               </div>
-              <div class="stat-chip">
-                <i class="fas fa-clock stat-icon stat-left"></i>
-                <div class="stat-content">
-                  <span class="stat-label">Left</span>
-                  <span class="stat-value" id="showModalRemainingEpisodes">0</span>
-                </div>
+              <div id="episodesSeasonDropdownWrapper" style="display: none;">
+                <select id="episodesSeasonSelect" class="episodes-season-select" aria-label="Select season"></select>
               </div>
             </div>
+            <div class="episodes-card-list" id="showModalEpisodesList"></div>
           </div>
 
-          <!-- Synopsis Section -->
-          <h3 class="show-synopsis-title">Synopsis</h3>
-          <p class="show-synopsis-p" id="showModalSynopsis">...</p>
+          <!-- 2. Seasons & Sequels Panel -->
+          <div class="show-tab-panel" id="modalTabPanel_seasons">
+            <div style="margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: #fff;">Franchise &amp; Connected Seasons</span>
+              <span style="font-size: 11px; color: #8c92a5;">Tap any season to view details</span>
+            </div>
+            <div class="seasons-grid" id="showModalSeasonsGrid"></div>
+          </div>
 
-          <!-- Artworks Gallery Section (Posters, Banners, Fanarts) -->
-          <div class="show-artworks-section" id="showModalArtworksSection" style="display: none;">
-            <div class="artworks-header">
-              <div class="artworks-title">
-                <i class="fas fa-images" style="color: var(--primary, #ff0055);"></i>
-                <span>Artworks & Media</span>
-              </div>
+          <!-- 3. Artworks Gallery Panel -->
+          <div class="show-tab-panel" id="modalTabPanel_artworks">
+            <div class="artworks-filter-row">
+              <span style="font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: #fff;">Official Artworks &amp; Banners</span>
               <div class="artworks-tabs" id="showModalArtworkTabs">
                 <button class="artwork-tab-btn active" data-tab="all">All</button>
                 <button class="artwork-tab-btn" data-tab="banners">Banners</button>
@@ -756,30 +1269,33 @@
             <div class="artworks-carousel" id="showModalArtworksCarousel"></div>
           </div>
 
-          <!-- Seasons & Sequels Section (Multi-Season Anime Switcher) -->
-          <div class="show-seasons-section" id="showModalSeasonsSection" style="display: none;">
-            <div class="seasons-header">
-              <div class="seasons-title">
-                <i class="fas fa-layer-group" style="color: var(--primary, #ff0055);"></i>
-                <span>All Seasons & Sequels</span>
-                <span class="seasons-badge" id="showModalSeasonsBadge">0</span>
+          <!-- 4. Overview Panel -->
+          <div class="show-tab-panel" id="modalTabPanel_overview">
+            <div class="overview-box">
+              <div>
+                <h3 class="overview-synopsis-title">Synopsis</h3>
+                <p class="overview-synopsis-p" id="showModalSynopsis">...</p>
               </div>
-              <span class="seasons-subtitle">Switch to watch any season</span>
-            </div>
-            <div class="seasons-carousel" id="showModalSeasonsCarousel"></div>
-          </div>
-
-          <!-- Episodes Section -->
-          <div class="episodes-section-header">
-            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-              <h3 class="episodes-section-title">Episodes</h3>
-              <div class="episodes-season-selector-wrapper" id="episodesSeasonDropdownWrapper" style="display: none;">
-                <select id="episodesSeasonSelect" class="episodes-season-select" aria-label="Select season"></select>
+              <div class="overview-specs-grid" id="showModalOverviewSpecs">
+                <div class="overview-spec-card">
+                  <span class="overview-spec-label">Format</span>
+                  <span class="overview-spec-val" id="specFormat">TV Series</span>
+                </div>
+                <div class="overview-spec-card">
+                  <span class="overview-spec-label">Broadcast</span>
+                  <span class="overview-spec-val" id="specSeason">Winter 2026</span>
+                </div>
+                <div class="overview-spec-card">
+                  <span class="overview-spec-label">Video Stream</span>
+                  <span class="overview-spec-val">1080p Ultra HLS • OLED</span>
+                </div>
+                <div class="overview-spec-card">
+                  <span class="overview-spec-label">Audio Tracks</span>
+                  <span class="overview-spec-val">Original JP (Sub) &amp; EN (Dub)</span>
+                </div>
               </div>
             </div>
-            <span class="episodes-section-stats" id="showModalEpisodesStats">0 Watched • 0 Left</span>
           </div>
-          <div class="episodes-card-list" id="showModalEpisodesList"></div>
         </div>
       </div>
     `;
@@ -792,8 +1308,7 @@
     const dialog = overlay.querySelector('#infinxShowDetailsDialog');
 
     const closeModal = () => {
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
+      window.closeShowDetails();
     };
 
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
@@ -811,8 +1326,32 @@
       }
     });
 
+    // Tab switcher listeners
+    const tabBtns = overlay.querySelectorAll('.modal-nav-tab');
+    const tabPanels = overlay.querySelectorAll('.show-tab-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabKey = btn.getAttribute('data-tab');
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabPanels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const activePanel = overlay.querySelector(`#modalTabPanel_${tabKey}`);
+        if (activePanel) activePanel.classList.add('active');
+      });
+    });
+
     return overlay;
   }
+
+  // Close Show Details
+  window.closeShowDetails = function () {
+    const overlay = document.getElementById('infinxShowDetailsModal');
+    if (overlay) {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  };
 
   // Open Show Details
   window.openShowDetails = async function (showInput) {
@@ -830,6 +1369,12 @@
     }
 
     if (!showId && !showInput?.anilistId) return;
+
+    // Reset tabs to Episodes default
+    const tabBtns = overlay.querySelectorAll('.modal-nav-tab');
+    const tabPanels = overlay.querySelectorAll('.show-tab-panel');
+    tabBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === 'episodes'));
+    tabPanels.forEach(p => p.classList.toggle('active', p.id === 'modalTabPanel_episodes'));
 
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -850,6 +1395,10 @@
             anilistId: anilistId,
             isLunar: true,
             title: lData.title || (show && show.title),
+            englishTitle: lData.titleEnglish || lData.englishTitle,
+            romajiTitle: lData.titleRomaji || lData.romajiTitle,
+            format: lData.format || 'TV',
+            seasonYear: lData.seasonYear || lData.year || '2026',
             description: cleanHtmlText(lData.description || (show && show.description)),
             rating: lData.rating || (show && show.rating) || '8.8',
             year: lData.year || (show && show.year) || '2024',
@@ -890,25 +1439,55 @@
 
     // Render Basic Details
     const titleEl = document.getElementById('showModalTitle');
+    const subTitleEl = document.getElementById('showModalSubTitle');
     const backdropEl = document.getElementById('showModalBackdropImg');
-    const ratingEl = document.getElementById('showModalRating');
+    const posterEl = document.getElementById('showModalPosterImg');
+    const ratingValEl = document.getElementById('showModalRatingVal');
     const yearEl = document.getElementById('showModalYear');
     const epCountEl = document.getElementById('showModalEpCount');
     const genresEl = document.getElementById('showModalGenres');
     const synopsisEl = document.getElementById('showModalSynopsis');
     const bookmarkIcon = document.getElementById('showModalBookmarkIcon');
     const bookmarkBtn = document.getElementById('showModalBookmarkBtn');
+    const watchlistBtn = document.getElementById('showModalWatchlistBtn');
+    const watchlistBtnIcon = document.getElementById('showModalWatchlistBtnIcon');
+    const watchlistBtnText = document.getElementById('showModalWatchlistBtnText');
+    const formatBadgeEl = document.getElementById('showModalFormatBadge');
+    const specFormat = document.getElementById('specFormat');
+    const specSeason = document.getElementById('specSeason');
 
     if (titleEl) titleEl.textContent = show.title;
-    if (ratingEl) ratingEl.innerHTML = `<i class="fas fa-star"></i> ${show.rating ? parseFloat(show.rating).toFixed(1) : '4.9'}`;
+
+    // Subtitle (English or Romaji title if different)
+    if (subTitleEl) {
+      const altTitle = show.englishTitle || show.romajiTitle;
+      if (altTitle && altTitle.toLowerCase() !== (show.title || '').toLowerCase()) {
+        subTitleEl.textContent = altTitle;
+        subTitleEl.style.display = 'block';
+      } else {
+        subTitleEl.style.display = 'none';
+      }
+    }
+
+    if (ratingValEl) ratingValEl.textContent = show.rating ? parseFloat(show.rating).toFixed(1) : '4.9';
     if (yearEl) yearEl.textContent = show.year || '2024';
     if (synopsisEl) synopsisEl.textContent = cleanHtmlText(show.description) || 'No synopsis available for this show.';
+    if (formatBadgeEl) formatBadgeEl.textContent = (show.format ? `${show.format.toUpperCase()} • OLED CUT` : 'TOKYO MASTER • OLED CUT');
+    if (specFormat) specFormat.textContent = show.format ? `${show.format} Series` : 'Anime Series';
+    if (specSeason) specSeason.textContent = `${show.year || '2026'} Release`;
 
+    // Banner and Poster Media URLs
     const rawBanner = show.banner || show.poster;
     const bannerUrl = (typeof window.formatMediaUrl === 'function')
       ? window.formatMediaUrl(rawBanner)
       : (rawBanner || 'Postes/spyfamS3p.jpg');
     if (backdropEl) backdropEl.src = bannerUrl;
+
+    const rawPoster = show.poster || show.banner;
+    const posterUrl = (typeof window.formatMediaUrl === 'function')
+      ? window.formatMediaUrl(rawPoster)
+      : (rawPoster || 'Postes/spyfamS3p.jpg');
+    if (posterEl) posterEl.src = posterUrl;
 
     // Genres
     if (genresEl) {
@@ -922,10 +1501,10 @@
     }
 
     // Artworks Gallery
-    const artworksSec = document.getElementById('showModalArtworksSection');
+    const artworksTabBtn = document.getElementById('modalTabArtworksBtn');
     const artworksCarousel = document.getElementById('showModalArtworksCarousel');
     const artworkTabs = document.getElementById('showModalArtworkTabs');
-    if (artworksSec && artworksCarousel && show.artworks) {
+    if (show.artworks && artworksCarousel) {
       const { banners = [], posters = [], fanarts = [] } = show.artworks;
       const allArts = [
         ...banners.map(u => ({ url: u, type: 'banner' })),
@@ -934,7 +1513,7 @@
       ];
 
       if (allArts.length > 0) {
-        artworksSec.style.display = 'block';
+        if (artworksTabBtn) artworksTabBtn.style.display = 'inline-flex';
 
         const renderArtworks = (filterType = 'all') => {
           const list = filterType === 'all'
@@ -944,7 +1523,7 @@
                 : fanarts.map(u => ({ url: u, type: 'fanart' }))));
 
           artworksCarousel.innerHTML = list.map(art => `
-            <div class="artwork-card ${art.type}-type" onclick="document.getElementById('showModalBackdropImg').src='${art.url}'" title="Click to preview backdrop">
+            <div class="artwork-card ${art.type}-type" onclick="document.getElementById('showModalBackdropImg').src='${art.url}'" title="Tap to preview backdrop">
               <img src="${art.url}" alt="Artwork" loading="lazy">
             </div>
           `).join('');
@@ -962,24 +1541,26 @@
           };
         }
       } else {
-        artworksSec.style.display = 'none';
+        if (artworksTabBtn) artworksTabBtn.style.display = 'none';
       }
+    } else {
+      if (artworksTabBtn) artworksTabBtn.style.display = 'none';
     }
 
     // Render Seasons & Sequels Section (Multi-Season Anime Switcher)
-    const seasonsSec = document.getElementById('showModalSeasonsSection');
-    const seasonsCarousel = document.getElementById('showModalSeasonsCarousel');
-    const seasonsBadge = document.getElementById('showModalSeasonsBadge');
+    const seasonsTabBtn = document.getElementById('modalTabSeasonsBtn');
+    const seasonsTabCount = document.getElementById('modalTabSeasonsCount');
+    const seasonsGrid = document.getElementById('showModalSeasonsGrid');
     const seasonSelectWrapper = document.getElementById('episodesSeasonDropdownWrapper');
     const seasonSelect = document.getElementById('episodesSeasonSelect');
 
     const seasonsList = (show.seasons && show.seasons.length > 0) ? show.seasons : [];
-    if (seasonsSec && seasonsCarousel) {
-      if (seasonsList.length > 1) {
-        seasonsSec.style.display = 'block';
-        if (seasonsBadge) seasonsBadge.textContent = `${seasonsList.length} Seasons`;
+    if (seasonsList.length > 1) {
+      if (seasonsTabBtn) seasonsTabBtn.style.display = 'inline-flex';
+      if (seasonsTabCount) seasonsTabCount.textContent = seasonsList.length;
 
-        seasonsCarousel.innerHTML = seasonsList.map((s, idx) => {
+      if (seasonsGrid) {
+        seasonsGrid.innerHTML = seasonsList.map((s, idx) => {
           const isCurrent = s.isCurrent || (s.anilistId && parseInt(s.anilistId) === parseInt(show.anilistId));
           const seasonNum = s.seasonNumber || idx + 1;
           const posterImg = s.poster || s.banner || show.poster || 'Postes/spyfamS3p.jpg';
@@ -998,7 +1579,7 @@
               <div class="season-poster-wrapper">
                 <img src="${posterImg}" alt="${displayTitle}" class="season-poster-img" loading="lazy" onerror="this.src='Postes/spyfamS3p.jpg'">
                 <span class="season-badge-pill">${badgeText}</span>
-                ${s.rating ? `<span class="season-rating-pill"><i class="fas fa-star"></i> ${s.rating}</span>` : ''}
+                ${s.rating ? `<span class="season-rating-pill"><span class="material-symbols-outlined text-[11px]">star</span> ${s.rating}</span>` : ''}
               </div>
               <div class="season-card-content">
                 <span class="season-card-title">${displayTitle}</span>
@@ -1007,25 +1588,25 @@
             </div>
           `;
         }).join('');
-
-        // Populate inline quick season selector dropdown in episodes header
-        if (seasonSelectWrapper && seasonSelect) {
-          seasonSelectWrapper.style.display = 'block';
-          seasonSelect.innerHTML = seasonsList.map((s, idx) => {
-            const isCurrent = s.isCurrent || (s.anilistId && parseInt(s.anilistId) === parseInt(show.anilistId));
-            const displayTitle = s.titleEnglish || s.title || `Season ${idx + 1}`;
-            return `<option value="${s.anilistId || s.id}" ${isCurrent ? 'selected' : ''}>${displayTitle}</option>`;
-          }).join('');
-
-          seasonSelect.onchange = (e) => {
-            const targetId = e.target.value;
-            if (targetId) window.switchShowSeason(targetId);
-          };
-        }
-      } else {
-        seasonsSec.style.display = 'none';
-        if (seasonSelectWrapper) seasonSelectWrapper.style.display = 'none';
       }
+
+      // Inline quick season selector dropdown in episodes header
+      if (seasonSelectWrapper && seasonSelect) {
+        seasonSelectWrapper.style.display = 'block';
+        seasonSelect.innerHTML = seasonsList.map((s, idx) => {
+          const isCurrent = s.isCurrent || (s.anilistId && parseInt(s.anilistId) === parseInt(show.anilistId));
+          const displayTitle = s.titleEnglish || s.title || `Season ${idx + 1}`;
+          return `<option value="${s.anilistId || s.id}" ${isCurrent ? 'selected' : ''}>${displayTitle}</option>`;
+        }).join('');
+
+        seasonSelect.onchange = (e) => {
+          const targetId = e.target.value;
+          if (targetId) window.switchShowSeason(targetId);
+        };
+      }
+    } else {
+      if (seasonsTabBtn) seasonsTabBtn.style.display = 'none';
+      if (seasonSelectWrapper) seasonSelectWrapper.style.display = 'none';
     }
 
     // Watchlist Bookmark status
@@ -1034,27 +1615,49 @@
       userWatchlist = JSON.parse(localStorage.getItem('infinx_watchlist') || '[]');
     } catch (e) { }
     const isBookmarked = userWatchlist.includes(show.id);
-    if (bookmarkIcon && bookmarkBtn) {
-      bookmarkIcon.className = isBookmarked ? 'fas fa-bookmark' : 'far fa-bookmark';
-      bookmarkBtn.classList.toggle('bookmarked', isBookmarked);
-      bookmarkBtn.onclick = async (e) => {
-        e.stopPropagation();
-        if (typeof window.toggleWatchlist === 'function') {
-          await window.toggleWatchlist(bookmarkBtn, show.id);
-        } else if (typeof window.toggleWatchlistItem === 'function') {
-          await window.toggleWatchlistItem(bookmarkBtn, show.id);
-        }
-        let updatedList = [];
-        try { updatedList = JSON.parse(localStorage.getItem('infinx_watchlist') || '[]'); } catch (err) { }
-        const nowBookmarked = updatedList.includes(show.id);
-        bookmarkIcon.className = nowBookmarked ? 'fas fa-bookmark' : 'far fa-bookmark';
-        bookmarkBtn.classList.toggle('bookmarked', nowBookmarked);
-      };
+
+    function updateBookmarkUi(bookmarked) {
+      if (bookmarkIcon) {
+        bookmarkIcon.textContent = bookmarked ? 'bookmark' : 'bookmark_border';
+      }
+      if (bookmarkBtn) {
+        bookmarkBtn.classList.toggle('bookmarked', bookmarked);
+      }
+      if (watchlistBtn) {
+        watchlistBtn.classList.toggle('bookmarked', bookmarked);
+      }
+      if (watchlistBtnIcon) {
+        watchlistBtnIcon.textContent = bookmarked ? 'bookmark' : 'bookmark_border';
+      }
+      if (watchlistBtnText) {
+        watchlistBtnText.textContent = bookmarked ? 'In Watchlist' : 'Watchlist';
+      }
     }
+
+    updateBookmarkUi(isBookmarked);
+
+    const handleBookmarkToggle = async (e) => {
+      e.stopPropagation();
+      const triggerEl = bookmarkBtn || watchlistBtn;
+      if (typeof window.toggleWatchlist === 'function') {
+        await window.toggleWatchlist(triggerEl, show.id);
+      } else if (typeof window.toggleWatchlistItem === 'function') {
+        await window.toggleWatchlistItem(triggerEl, show.id);
+      }
+      let updatedList = [];
+      try { updatedList = JSON.parse(localStorage.getItem('infinx_watchlist') || '[]'); } catch (err) { }
+      const nowBookmarked = updatedList.includes(show.id);
+      updateBookmarkUi(nowBookmarked);
+    };
+
+    if (bookmarkBtn) bookmarkBtn.onclick = handleBookmarkToggle;
+    if (watchlistBtn) watchlistBtn.onclick = handleBookmarkToggle;
 
     // Episodes & Progress calculations
     const episodes = (show.episodes && show.episodes.length > 0) ? show.episodes : [];
     if (epCountEl) epCountEl.textContent = `${episodes.length} Episodes`;
+    const tabEpCount = document.getElementById('modalTabEpCount');
+    if (tabEpCount) tabEpCount.textContent = episodes.length;
 
     let progressData = { episodes: {}, lastWatched: null };
     try {
@@ -1115,31 +1718,10 @@
       localStorage.setItem('infinx_preferred_audio_type', activeType);
 
       if (pillSub) {
-        if (activeType === 'sub') {
-          pillSub.style.background = 'rgba(0, 238, 252, 0.2)';
-          pillSub.style.borderColor = '#00eefc';
-          pillSub.style.color = '#00eefc';
-          pillSub.style.boxShadow = '0 0 12px rgba(0, 238, 252, 0.35)';
-        } else {
-          pillSub.style.background = 'rgba(255, 255, 255, 0.08)';
-          pillSub.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-          pillSub.style.color = '#a0a5b9';
-          pillSub.style.boxShadow = 'none';
-        }
+        pillSub.classList.toggle('active-sub', activeType === 'sub');
       }
-
       if (pillDub) {
-        if (activeType === 'dub') {
-          pillDub.style.background = 'rgba(255, 80, 110, 0.25)';
-          pillDub.style.borderColor = '#ff506e';
-          pillDub.style.color = '#ff506e';
-          pillDub.style.boxShadow = '0 0 12px rgba(255, 80, 110, 0.4)';
-        } else {
-          pillDub.style.background = 'rgba(255, 255, 255, 0.08)';
-          pillDub.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-          pillDub.style.color = '#a0a5b9';
-          pillDub.style.boxShadow = 'none';
-        }
+        pillDub.classList.toggle('active-dub', activeType === 'dub');
       }
 
       // Re-bind primary play button and episode card click handlers
@@ -1172,7 +1754,7 @@
 
     if (show.isLunar) {
       if (audioToggleRow) {
-        audioToggleRow.style.display = 'flex';
+        audioToggleRow.style.display = 'inline-flex';
         if (pillSub) pillSub.onclick = (e) => { e.stopPropagation(); setModalAudioPills('sub'); };
         if (pillDub) pillDub.onclick = (e) => { e.stopPropagation(); setModalAudioPills('dub'); };
       }
@@ -1184,7 +1766,7 @@
     if (primaryPlayText && resumeEpisode) {
       const epNumDisplay = resumeEpisode.episodeNumber || resumeEpisode.number || 1;
       if (hasResumeProgress) {
-        primaryPlayText.textContent = `RESUME EPISODE ${epNumDisplay} (${formatDuration(resumePosition)})`;
+        primaryPlayText.textContent = `RESUME EP ${epNumDisplay} (${formatDuration(resumePosition)})`;
       } else {
         primaryPlayText.textContent = `PLAY EPISODE ${epNumDisplay}`;
       }
@@ -1210,7 +1792,7 @@
     const episodesListEl = document.getElementById('showModalEpisodesList');
     if (episodesListEl) {
       if (episodes.length === 0) {
-        episodesListEl.innerHTML = `<div style="color: #a0a5b9; padding: 20px; text-align: center;">No episodes currently uploaded.</div>`;
+        episodesListEl.innerHTML = `<div style="color: #8c92a5; padding: 30px; text-align: center; font-size: 13px;">No episodes currently uploaded for this season.</div>`;
       } else {
         episodesListEl.innerHTML = episodes.map(ep => {
           const epProg = episodesMap[ep.id] || null;
@@ -1222,7 +1804,7 @@
           let progressTrackHtml = '';
 
           if (isCompleted) {
-            badgeHtml = `<span class="badge-watched"><i class="fas fa-check-circle"></i> Watched</span>`;
+            badgeHtml = `<span class="badge-watched"><span class="material-symbols-outlined text-[12px]">check_circle</span> Watched</span>`;
             progressTrackHtml = `<div class="ep-row-progress-track"><div class="ep-row-progress-fill" style="width: 100%; background: #00ff88;"></div></div>`;
           } else if (isInProgress) {
             badgeHtml = `<span class="badge-in-progress">${epProg.progressPercent}%</span>`;
@@ -1236,33 +1818,34 @@
             ? `/watch?id=${show.anilistId || anilistId}&ep=${epNum}${seekParam}${audioParam}`
             : `/watch?id=${ep.id}${seekParam}`;
 
-          const thumbHtml = ep.thumbnail ? `
+          const thumbImg = ep.thumbnail || show.banner || show.poster || 'Postes/spyfamS3p.jpg';
+          const thumbHtml = `
             <div class="ep-thumbnail-box">
-              <img src="${ep.thumbnail}" alt="Ep ${epNum}" loading="lazy" onerror="this.style.display='none'">
+              <img src="${thumbImg}" alt="Ep ${epNum}" loading="lazy" onerror="this.src='Postes/spyfamS3p.jpg'">
+              <span class="ep-duration-pill">${ep.duration || '24m'}</span>
             </div>
-          ` : '';
+          `;
 
           return `
             <div class="ep-row-card ${isCompleted ? 'completed' : ''} ${isCurrentResume ? 'current' : ''}" 
                  data-ep-num="${epNum}" data-ep-id="${ep.id}" data-seek="${seekParam}"
                  onclick="window.playModalEpisode(event, '${epPlayUrl}')">
+              <div class="ep-row-num-badge">${epNum < 10 ? '0' + epNum : epNum}</div>
               ${thumbHtml}
-              <div class="ep-row-num-badge">
-                <span>EP</span>
-                <span>${epNum}</span>
-              </div>
               <div class="ep-row-info">
                 <div class="ep-row-title-line">
-                  <span class="ep-row-title">${ep.title}</span>
+                  <span class="ep-row-title">${ep.title || `Episode ${epNum}`}</span>
                   ${badgeHtml}
                 </div>
                 <div class="ep-row-meta">
-                  <span>${ep.duration || '24m'} • HD</span>
+                  <span>HD • 1080p</span>
                   ${ep.airDate ? `<span>• ${ep.airDate}</span>` : ''}
                   ${isInProgress ? `<span>• Left at ${formatDuration(epProg.positionSeconds)}</span>` : ''}
                 </div>
               </div>
-              <div class="ep-row-play-btn"><i class="fas fa-play"></i></div>
+              <div class="ep-row-play-btn">
+                <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+              </div>
               ${progressTrackHtml}
             </div>
           `;
@@ -1284,8 +1867,8 @@
     if (epList) {
       epList.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: #a0a5b9; gap: 12px;">
-          <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--primary, #ff0055);"></i>
-          <span>Loading season...</span>
+          <span class="material-symbols-outlined text-[28px] text-[#00eefc] animate-spin">progress_activity</span>
+          <span style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;">Loading season...</span>
         </div>
       `;
     }
