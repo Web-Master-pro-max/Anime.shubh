@@ -584,7 +584,7 @@
       `;
 
       const adminLink = role === 'ADMIN' ?
-        `<a href="${prefix}admin.html" class="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-surface-container-high text-secondary hover:text-white font-label-sm text-xs font-semibold hover:bg-surface-container-highest transition-all shrink-0"><span class="material-symbols-outlined text-[15px]">admin_panel_settings</span>Admin</a>` : '';
+        `<a href="${prefix}admin.html" class="hidden sm:inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-surface-container-high text-secondary hover:text-white font-label-sm text-xs font-semibold hover:bg-surface-container-highest transition-all shrink-0"><span class="material-symbols-outlined text-[15px]">admin_panel_settings</span>Admin</a>` : '';
 
       if (authHeader) {
         authHeader.innerHTML = `

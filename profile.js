@@ -551,10 +551,10 @@
     const bannerEl = document.getElementById('profileBannerImg');
     const defaultBan = BANNER_PRESETS[0];
     const activeBannerUrl = normalizeAssetUrl(p.bannerUrl || defaultBan.url);
-    const banMatch = BANNER_PRESETS.find(b => 
+    const banMatch = BANNER_PRESETS.find(b =>
       b && (
-        b.url === activeBannerUrl || 
-        b.fallback === activeBannerUrl || 
+        b.url === activeBannerUrl ||
+        b.fallback === activeBannerUrl ||
         (activeBannerUrl && activeBannerUrl.endsWith(b.url.replace(/^\//, '')))
       )
     );
@@ -574,10 +574,10 @@
     const avatarSeed = p.email || p.username || 'AnimeFan';
     const defaultAv = AVATAR_PRESETS[0];
     const activeAvatarUrl = normalizeAssetUrl(p.avatarUrl || defaultAv.url);
-    const avMatch = AVATAR_PRESETS.find(a => 
+    const avMatch = AVATAR_PRESETS.find(a =>
       a && (
-        a.url === activeAvatarUrl || 
-        a.fallback === activeAvatarUrl || 
+        a.url === activeAvatarUrl ||
+        a.fallback === activeAvatarUrl ||
         (activeAvatarUrl && activeAvatarUrl.endsWith(a.url.replace(/^\//, '')))
       )
     );
@@ -602,6 +602,28 @@
     document.getElementById('profileUsername').innerText = p.username || (p.email ? p.email.split('@')[0] : 'Otaku');
     document.getElementById('profileEmailTag').innerText = p.email ? `@${p.username || p.email.split('@')[0]} • ${p.email}` : `@${p.username}`;
     document.getElementById('profileBio').innerText = p.bio || 'Shinobi streaming enthusiast. Exploring infinite anime worlds on Infinx Anime.';
+
+    // Member Since / Join Date (Authentic database createdAt)
+    const joinDateContainer = document.getElementById('profileJoinDateContainer');
+    const joinDateDot = document.getElementById('profileJoinDateDot');
+    const joinDateEl = document.getElementById('profileJoinDate');
+    if (joinDateContainer && joinDateEl) {
+      if (p.createdAt) {
+        const createdDate = new Date(p.createdAt);
+        if (!isNaN(createdDate.getTime())) {
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          joinDateEl.innerText = `Member since ${monthNames[createdDate.getMonth()]} ${createdDate.getFullYear()}`;
+          joinDateContainer.style.display = 'inline-flex';
+          if (joinDateDot) joinDateDot.style.display = 'inline';
+        } else {
+          joinDateContainer.style.display = 'none';
+          if (joinDateDot) joinDateDot.style.display = 'none';
+        }
+      } else {
+        joinDateContainer.style.display = 'none';
+        if (joinDateDot) joinDateDot.style.display = 'none';
+      }
+    }
 
     const badgeConfig = getRankBadgeConfig(p.vipRank);
     const badgeEl = document.getElementById('profileRankBadge');
@@ -638,6 +660,16 @@
     const xpNext = p.xpNextLevel || ((p.level || 1) * 200);
     const xpPct = p.xpPercent !== undefined ? p.xpPercent : Math.min(100, Math.round((xpVal / xpNext) * 100));
     document.getElementById('profileLevelBadge').innerText = `LEVEL ${p.level} • ${p.vipRank ? p.vipRank.replace('_', ' ') : 'GENIN'}`;
+    const hexBadge = document.getElementById('profileLevelHexBadge');
+    if (hexBadge) hexBadge.innerText = `LV.${p.level || 1}`;
+
+    const radialCircle = document.getElementById('profileRadialXpCircle');
+    if (radialCircle) {
+      const circumference = 289.02;
+      const offset = circumference - (circumference * xpPct / 100);
+      radialCircle.style.strokeDashoffset = offset;
+    }
+
     document.getElementById('profileXpRatio').innerText = `${xpVal.toLocaleString()} / ${xpNext.toLocaleString()} XP (${xpPct}%)`;
     document.getElementById('profileXpFill').style.width = `${xpPct}%`;
 
@@ -936,7 +968,7 @@
     const filtered = (list || []).filter(item => {
       if (!searchTerm) return true;
       return (item.title && item.title.toLowerCase().includes(searchTerm)) ||
-             (item.genres && item.genres.toLowerCase().includes(searchTerm));
+        (item.genres && item.genres.toLowerCase().includes(searchTerm));
     });
 
     if (filtered.length === 0) {
@@ -1340,27 +1372,27 @@
       // Validation: verify level requirements before saving
       const userLvl = currentUserProfile?.level || 1;
       const avMatch = AVATAR_PRESETS.find(a => a.url === selectedAvatarUrl || a.fallback === selectedAvatarUrl || (selectedAvatarUrl && selectedAvatarUrl.endsWith(a.url.replace(/^\//, ''))));
-        if (avMatch && avMatch.levelReq > userLvl) {
-          showToast(`🔒 Cannot equip ${avMatch.name}: requires Level ${avMatch.levelReq}!`);
+      if (avMatch && avMatch.levelReq > userLvl) {
+        showToast(`🔒 Cannot equip ${avMatch.name}: requires Level ${avMatch.levelReq}!`);
+        return;
+      }
+      const banMatch = BANNER_PRESETS.find(b => b.url === selectedBannerUrl || b.fallback === selectedBannerUrl || (selectedBannerUrl && selectedBannerUrl.endsWith(b.url.replace(/^\//, ''))));
+      if (banMatch && banMatch.levelReq > userLvl) {
+        showToast(`🔒 Cannot equip "${banMatch.name}": requires Level ${banMatch.levelReq}!`);
+        return;
+      }
+      const auraMatch = AURA_PRESETS.find(a => a.id === selectedAuraFrame);
+      if (auraMatch) {
+        const isUserAdmin = currentUserProfile?.role === 'ADMIN';
+        if (auraMatch.adminOnly && !isUserAdmin) {
+          showToast(`👑 Cannot equip ${auraMatch.name}: Administrator privileges required!`);
           return;
         }
-        const banMatch = BANNER_PRESETS.find(b => b.url === selectedBannerUrl || b.fallback === selectedBannerUrl || (selectedBannerUrl && selectedBannerUrl.endsWith(b.url.replace(/^\//, ''))));
-        if (banMatch && banMatch.levelReq > userLvl) {
-          showToast(`🔒 Cannot equip "${banMatch.name}": requires Level ${banMatch.levelReq}!`);
+        if (auraMatch.levelReq > userLvl) {
+          showToast(`🔒 Cannot equip ${auraMatch.name}: requires Level ${auraMatch.levelReq}!`);
           return;
         }
-        const auraMatch = AURA_PRESETS.find(a => a.id === selectedAuraFrame);
-        if (auraMatch) {
-          const isUserAdmin = currentUserProfile?.role === 'ADMIN';
-          if (auraMatch.adminOnly && !isUserAdmin) {
-            showToast(`👑 Cannot equip ${auraMatch.name}: Administrator privileges required!`);
-            return;
-          }
-          if (auraMatch.levelReq > userLvl) {
-            showToast(`🔒 Cannot equip ${auraMatch.name}: requires Level ${auraMatch.levelReq}!`);
-            return;
-          }
-        }
+      }
 
       const payload = {
         username,
@@ -1677,7 +1709,7 @@
     const role = (safeProfile && safeProfile.role) || localStorage.getItem('infinx_user_role');
     const rawUser = localStorage.getItem('infinx_user');
     let parsedUser = null;
-    try { if (rawUser) parsedUser = JSON.parse(rawUser); } catch(e) {}
+    try { if (rawUser) parsedUser = JSON.parse(rawUser); } catch (e) { }
 
     const username = (safeProfile && safeProfile.username) || localStorage.getItem('infinx_username') || (parsedUser && parsedUser.username) || email.split('@')[0];
     const displayName = username.charAt(0).toUpperCase() + username.slice(1);
@@ -1686,22 +1718,44 @@
     const avatarFrame = (safeProfile && safeProfile.avatarFrame) || localStorage.getItem('infinx_avatar_frame') || (parsedUser && parsedUser.avatarFrame) || 'default';
     const initial = (displayName || email || 'U')[0].toUpperCase();
 
+    // Keep localStorage synchronized so navbar.js renders the live state
+    if (safeProfile) {
+      if (username) localStorage.setItem('infinx_username', username);
+      if (role) localStorage.setItem('infinx_user_role', role);
+      if (avatarUrl) localStorage.setItem('infinx_avatar', avatarUrl);
+      if (avatarFrame) localStorage.setItem('infinx_avatar_frame', avatarFrame);
+    }
+
+    // Prefer universal master navbar updater from navbar.js if available
+    if (typeof window.updateAuthHeader === 'function') {
+      window.updateAuthHeader();
+      return;
+    }
+
+    const fallbackSrc = 'https://s4.anilist.co/file/anilistcdn/character/large/b129928-BCEjVaP0AQSw.png';
     const avatarHtml = avatarUrl
-      ? `<div class="user-avatar aura-${avatarFrame}" title="${displayName} (${email})"><img src="${avatarUrl}" alt="${displayName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" /><span style="display:none;">${initial}</span></div>`
-      : `<div class="user-avatar aura-${avatarFrame}" title="${displayName} (${email})">${initial}</div>`;
+      ? `<div class="user-avatar aura-${avatarFrame}" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center;" title="${displayName} (${email})"><img src="${avatarUrl}" alt="${displayName}" class="w-full h-full object-cover" onerror="if(this.src!=='${fallbackSrc}'){this.src='${fallbackSrc}';}else{this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex';}" /><span style="display:none; font-weight:700; font-size:13px;">${initial}</span></div>`
+      : `<div class="user-avatar aura-${avatarFrame}" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight:700; font-size:13px;" title="${displayName} (${email})">${initial}</div>`;
 
     if (token) {
-      const adminLink = role === 'ADMIN' ? `<a href="/admin.html" class="nav-link" style="color: var(--secondary);"><i class="fas fa-lock"></i> Admin</a>` : '';
+      const adminLink = role === 'ADMIN' ?
+        `<a href="/admin.html" class="hidden sm:inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-surface-container-high text-secondary hover:text-white font-label-sm text-xs font-semibold hover:bg-surface-container-highest transition-all shrink-0"><span class="material-symbols-outlined text-[15px]">admin_panel_settings</span>Admin</a>` : '';
 
       if (authHeader) {
         authHeader.innerHTML = `
-          <div class="user-profile-menu">
+          <div class="user-profile-menu flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             ${adminLink}
-            <a href="/profile.html" class="nav-link profile-name-text"><i class="fas fa-user-ninja" style="color: var(--primary);"></i> <span>${displayName}</span></a>
-            <a href="/profile.html" class="user-avatar-link" title="View Profile (${displayName})">
+            <a href="/profile.html" class="profile-name-text text-xs sm:text-sm font-extrabold text-white hover:text-secondary-container transition-colors hidden sm:inline-flex items-center gap-1.5 shrink-0" title="View Profile (${displayName})">
+              <i class="fas fa-user-ninja text-primary-container text-xs sm:text-sm" style="color: #ff0055;"></i>
+              <span class="font-extrabold uppercase tracking-wide max-w-[85px] sm:max-w-[140px] md:max-w-[180px] truncate">${displayName}</span>
+            </a>
+            <a href="/profile.html" class="user-avatar-link shrink-0" title="View Profile (${displayName})">
               ${avatarHtml}
             </a>
-            <button class="btn btn-secondary btn-small" id="headerLogoutBtn">Logout</button>
+            <button class="hidden lg:inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-red-950/40 text-on-surface-variant hover:text-red-400 font-label-sm text-xs font-semibold transition-all cursor-pointer shrink-0" id="headerLogoutBtn" type="button" title="Sign Out">
+              <span class="material-symbols-outlined text-[16px] align-middle">logout</span>
+              <span class="hidden xl:inline">Logout</span>
+            </button>
           </div>
         `;
         const logoutBtn = document.getElementById('headerLogoutBtn');
@@ -1710,8 +1764,8 @@
 
       if (drawerAuthHeader) {
         const drawerAvatarHtml = avatarUrl
-          ? `<div class="user-avatar aura-${avatarFrame}" style="width: 44px; height: 44px; flex-shrink: 0;"><img src="${avatarUrl}" alt="${displayName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" /><span style="display:none;">${initial}</span></div>`
-          : `<div class="user-avatar aura-${avatarFrame}" style="width: 44px; height: 44px; flex-shrink: 0;">${initial}</div>`;
+          ? `<div class="user-avatar aura-${avatarFrame}" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><img src="${avatarUrl}" alt="${displayName}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" /><span style="display:none;">${initial}</span></div>`
+          : `<div class="user-avatar aura-${avatarFrame}" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">${initial}</div>`;
 
         drawerAuthHeader.innerHTML = `
           <a href="/profile.html" style="text-decoration: none; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
@@ -1730,12 +1784,12 @@
       }
     } else {
       if (authHeader) {
-        authHeader.innerHTML = `<a href="index.html#login" class="btn btn-secondary btn-small">Sign In</a>`;
+        authHeader.innerHTML = `<a href="login.html" class="px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-xs sm:text-label-sm font-semibold transition-all cursor-pointer shrink-0">Sign In</a>`;
       }
       if (drawerAuthHeader) {
         drawerAuthHeader.innerHTML = `
-          <a href="index.html#login" class="btn btn-primary" style="width: 100%; justify-content: center; text-transform: uppercase; margin-bottom: 8px;"><i class="fas fa-sign-in-alt"></i> Sign In</a>
-          <a href="index.html#register" class="btn btn-secondary" style="width: 100%; justify-content: center; text-transform: uppercase;"><i class="fas fa-user-plus"></i> Register</a>
+          <a href="login.html" class="btn btn-primary" style="width: 100%; justify-content: center; text-transform: uppercase; margin-bottom: 8px;"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+          <a href="login.html#register" class="btn btn-secondary" style="width: 100%; justify-content: center; text-transform: uppercase;"><i class="fas fa-user-plus"></i> Register</a>
         `;
       }
     }
@@ -1748,6 +1802,11 @@
   }
 
   function setupMobileMenu() {
+    // If master navbar.js already handles mobileDrawer, don't double-bind
+    if (document.getElementById('mobileDrawer')) {
+      return;
+    }
+
     const toggle = document.getElementById('mobileMenuToggle');
     const navbar = document.getElementById('mainNavbar');
     const closeBtn = document.getElementById('closeDrawer');
@@ -1810,7 +1869,7 @@
         const q = searchInput.value.trim();
         if (q) {
           if (liveDropdown) liveDropdown.style.display = 'none';
-          window.location.href = `view.html#search?q=${encodeURIComponent(q)}`;
+          window.location.href = `anime.html?search=${encodeURIComponent(q)}`;
         }
       }
     });
@@ -1856,7 +1915,7 @@
             }).join('');
             liveDropdown.innerHTML = `
               ${itemsHtml}
-              <div class="live-search-footer" onclick="window.location.href='view.html#search?q=${encodeURIComponent(term)}'">
+              <div class="live-search-footer" onclick="window.location.href='anime.html?search=${encodeURIComponent(term)}'">
                 View all results for "${term}" <i class="fas fa-arrow-right"></i>
               </div>
             `;
@@ -1890,6 +1949,17 @@
       }
       if (badgeEl && d.level) {
         badgeEl.innerText = `LEVEL ${d.level} • ${(d.vipRank || 'GENIN').replace('_', ' ')}`;
+        const hexBadge = document.getElementById('profileLevelHexBadge');
+        if (hexBadge) hexBadge.innerText = `LV.${d.level}`;
+      }
+      if (d.xp !== undefined) {
+        const next = d.xpNextLevel || ((d.level || 1) * 200);
+        const pct = d.xpPercent !== undefined ? d.xpPercent : Math.min(100, Math.round((d.xp / next) * 100));
+        const radialCircle = document.getElementById('profileRadialXpCircle');
+        if (radialCircle) {
+          const circumference = 289.02;
+          radialCircle.style.strokeDashoffset = circumference - (circumference * pct / 100);
+        }
       }
     }
   });
@@ -1907,11 +1977,18 @@
           const pct = Math.min(100, Math.round((d.xp / next) * 100));
           ratioEl.innerText = `${(d.xp || 0).toLocaleString()} / ${next.toLocaleString()} XP (${pct}%)`;
           if (fillEl) fillEl.style.width = `${pct}%`;
+          const radialCircle = document.getElementById('profileRadialXpCircle');
+          if (radialCircle) {
+            const circumference = 289.02;
+            radialCircle.style.strokeDashoffset = circumference - (circumference * pct / 100);
+          }
         }
         if (badgeEl && d.level) {
           badgeEl.innerText = `LEVEL ${d.level} • ${(d.vipRank || 'GENIN').replace('_', ' ')}`;
+          const hexBadge = document.getElementById('profileLevelHexBadge');
+          if (hexBadge) hexBadge.innerText = `LV.${d.level}`;
         }
-      } catch (_) {}
+      } catch (_) { }
     }
   });
 

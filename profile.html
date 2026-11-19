@@ -1,791 +1,730 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <meta name="description"
-    content="Customize your Infinx Anime profile, view your Otaku Passport, level progression, and showcase your Hall of Fame favorite anime.">
-  <title>Otaku Profile & Passport | Infinx Anime</title>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover"
+    name="viewport" />
+  <meta content="web_standard" name="shell-type" />
+  <meta
+    content="Customize your Infinx Anime profile, view your Otaku Passport, level progression, and showcase your Hall of Fame favorite anime."
+    name="description" />
+  <title>Otaku Profile & Passport | Infinx Cinema</title>
 
   <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap"
+    rel="stylesheet" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
-
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="profile.css">
+  <!-- Profile Widget & Component Stylesheet -->
+  <link rel="stylesheet" href="profile.css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "error-container": "#93000a",
+            "primary-fixed": "#ffdadb",
+            "outline": "#ae8789",
+            "on-tertiary-container": "#340080",
+            "primary-fixed-dim": "#ffb2b8",
+            "tertiary-container": "#a078ff",
+            "secondary": "#d3fbff",
+            "on-surface": "#e2e2e2",
+            "on-background": "#e2e2e2",
+            "tertiary-fixed-dim": "#d0bcff",
+            "on-primary": "#67001d",
+            "primary-container": "#ff506e",
+            "background": "#131313",
+            "on-secondary": "#00363a",
+            "on-tertiary-fixed": "#23005c",
+            "surface": "#131313",
+            "on-primary-fixed-variant": "#91002d",
+            "surface-tint": "#ffb2b8",
+            "surface-container-lowest": "#0e0e0e",
+            "on-secondary-container": "#00686f",
+            "on-primary-fixed": "#40000f",
+            "secondary-fixed-dim": "#00dbe9",
+            "inverse-on-surface": "#303030",
+            "inverse-primary": "#be003d",
+            "on-error": "#690005",
+            "surface-dim": "#131313",
+            "on-surface-variant": "#e8bcbe",
+            "tertiary-fixed": "#e9ddff",
+            "error": "#ffb4ab",
+            "surface-variant": "#353535",
+            "primary": "#ffb2b8",
+            "secondary-container": "#00eefc",
+            "surface-container-high": "#2a2a2a",
+            "on-tertiary": "#3c0091",
+            "surface-container-low": "#1b1b1b",
+            "inverse-surface": "#e2e2e2",
+            "outline-variant": "#5e3e41",
+            "surface-container-highest": "#353535",
+            "on-error-container": "#ffdad6",
+            "surface-container": "#1f1f1f",
+            "on-primary-container": "#5b0018",
+            "on-secondary-fixed-variant": "#004f54",
+            "surface-bright": "#393939",
+            "tertiary": "#d0bcff",
+            "on-secondary-fixed": "#002022",
+            "secondary-fixed": "#7df4ff",
+            "on-tertiary-fixed-variant": "#5516be"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xl": "2.5rem",
+            "space-md": "1rem",
+            "margin-mobile": "1rem",
+            "margin": "3rem",
+            "gutter": "1.5rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem"
+          },
+          fontFamily: {
+            "label-md": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "headline-lg": ["Outfit", "sans-serif"],
+            "headline-sm": ["Outfit", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"],
+            "label-lg": ["Inter", "sans-serif"],
+            "display-hero": ["Outfit", "sans-serif"],
+            "display-hero-mobile": ["Outfit", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "headline-lg-mobile": ["Outfit", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "headline-md": ["Outfit", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
 
   <style>
-    :root {
-      --primary: #ff0055;
-      --primary-dark: #d60047;
-      --primary-glow: rgba(255, 0, 85, 0.45);
-      --secondary: #00f0ff;
-      --accent: #b800ff;
-      --light-text: #f3f3f6;
-      --gray-text: #a0a5b9;
-      --gray-border: rgba(255, 255, 255, 0.08);
-      --radius: 16px;
-      --radius-sm: 10px;
-      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      --header-height: 54px;
-      --gradient: linear-gradient(135deg, #ff0055 0%, #a200ff 50%, #00f0ff 100%);
+    @layer base {
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #0e0e0e;
+        color: #e2e2e2;
+        font-family: 'Inter', sans-serif;
+      }
+
+      body {
+        overscroll-behavior: none;
+      }
     }
 
-    /* ====== COMPACT SLEEK HEADER ====== */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 54px;
-      background: rgba(6, 6, 12, 0.96);
-      border-bottom: 1px solid var(--gray-border);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      z-index: 2500;
-      transition: var(--transition);
-      box-sizing: border-box;
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
     }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      font-family: 'Outfit', sans-serif;
-      font-size: 19px;
-      font-weight: 800;
-      color: white;
-      text-decoration: none;
-      transition: var(--transition);
-      letter-spacing: -0.3px;
-      background: linear-gradient(to right, #fff 20%, var(--primary) 80%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      white-space: nowrap;
-      flex-shrink: 0;
+    ::-webkit-scrollbar-track {
+      background: #0e0e0e;
     }
 
-    .logo i {
-      color: var(--primary);
-      margin-right: 7px;
-      font-size: 20px;
-      transition: var(--transition);
-      -webkit-text-fill-color: var(--primary);
-      filter: drop-shadow(0 0 8px var(--primary-glow));
-    }
-
-    .logo:hover {
-      transform: scale(1.02);
-    }
-
-    .logo:hover i {
-      transform: rotate(180deg) scale(1.1);
-      color: var(--secondary);
-      -webkit-text-fill-color: var(--secondary);
-      filter: drop-shadow(0 0 12px var(--secondary));
-    }
-
-    /* Navigation */
-    .navbar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-link {
-      color: var(--gray-text);
-      text-decoration: none;
-      font-family: 'Outfit', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 20px;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      letter-spacing: 0.3px;
-      border: 1px solid transparent;
-      white-space: nowrap;
-    }
-
-    .nav-link:hover,
-    .nav-link.active {
-      color: white;
-      background: rgba(255, 0, 85, 0.1);
-      border-color: rgba(255, 0, 85, 0.25);
-      text-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
-    }
-
-    .nav-chat-link {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .nav-live-dot {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: #fff;
-      background: linear-gradient(135deg, #ff0055, #ff5500);
-      padding: 1.5px 6px;
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
       border-radius: 999px;
-      box-shadow: 0 0 8px rgba(255, 0, 85, 0.6);
-      animation: pulseLiveBadge 1.8s infinite ease-in-out;
-      margin-left: 2px;
     }
 
-    @keyframes pulseLiveBadge {
-
-      0%,
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 8px rgba(255, 0, 85, 0.6);
-      }
-
-      50% {
-        transform: scale(1.08);
-        box-shadow: 0 0 14px rgba(255, 0, 85, 0.9);
-      }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00eefc;
     }
 
-    /* Header Actions */
-    .header-actions {
+    /* Modal Glassmorphism Overrides */
+    .profile-modal-overlay {
+      background: rgba(8, 8, 12, 0.88) !important;
+      backdrop-filter: blur(24px) !important;
+      -webkit-backdrop-filter: blur(24px) !important;
+      z-index: 9999;
+    }
+
+    .profile-modal-card {
+      background: #141416 !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 238, 252, 0.15) !important;
+    }
+
+    /* Tabs Styling */
+    .profile-tabs-nav {
       display: flex;
       align-items: center;
       gap: 12px;
-      flex-shrink: 0;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
     }
 
-    /* Auth Buttons & Profile Menu in Header */
-    .auth-buttons {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .user-profile-menu {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position: relative;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .profile-name-text {
-      color: #fff;
+    .profile-tabs-nav .tab-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-weight: 700;
-      font-size: 12.5px;
-      text-decoration: none;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 999px;
       font-family: 'Outfit', sans-serif;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: rgba(255, 0, 85, 0.12);
-      border: 1px solid rgba(255, 0, 85, 0.25);
-    }
-
-    .user-avatar-link {
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--gradient);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
       font-size: 14px;
-      box-shadow: 0 0 12px rgba(255, 0, 85, 0.4);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      transition: var(--transition);
-      overflow: hidden;
-      position: relative;
-      flex-shrink: 0;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.25s ease;
+      cursor: pointer;
     }
 
-    .user-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
+    .profile-tabs-nav .tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(0, 238, 252, 0.3);
+    }
+
+    .profile-tabs-nav .tab-btn.active {
+      color: #00eefc;
+      background: rgba(0, 238, 252, 0.12);
+      border-color: rgba(0, 238, 252, 0.4);
+      box-shadow: 0 0 16px rgba(0, 238, 252, 0.25);
+    }
+
+    .tab-content-panel {
+      display: none;
+    }
+
+    .tab-content-panel.active {
       display: block;
     }
 
-    .user-avatar.aura-gold {
-      box-shadow: 0 0 14px rgba(255, 183, 0, 0.8) !important;
-      border-color: #ffd700 !important;
-    }
-
-    .user-avatar.aura-cyan {
-      box-shadow: 0 0 14px rgba(0, 240, 255, 0.8) !important;
-      border-color: #00f0ff !important;
-    }
-
-    .user-avatar.aura-flame {
-      box-shadow: 0 0 14px rgba(255, 0, 85, 0.8) !important;
-      border-color: #ff0055 !important;
-    }
-
-    .user-avatar.aura-void {
-      box-shadow: 0 0 14px rgba(184, 0, 255, 0.8) !important;
-      border-color: #b800ff !important;
-    }
-
-    .user-avatar.aura-sakura {
-      box-shadow: 0 0 14px rgba(255, 117, 140, 0.8) !important;
-      border-color: #ff758c !important;
-    }
-
-    .user-avatar:hover {
-      transform: scale(1.06);
-      box-shadow: 0 0 18px rgba(0, 240, 255, 0.6);
-      border-color: var(--secondary);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      text-decoration: none;
-      cursor: pointer;
-      border: none;
-      transition: var(--transition);
-    }
-
-    .btn-primary {
-      background: var(--gradient);
-      background-size: 200% auto;
-      color: white;
-      box-shadow: 0 4px 15px rgba(255, 0, 85, 0.3);
-    }
-
-    .btn-primary:hover {
-      background-position: right center;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 0, 85, 0.45);
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      color: white;
-      border: 1px solid var(--gray-border);
-      backdrop-filter: blur(5px);
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--primary);
-      background: rgba(255, 0, 85, 0.1);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(255, 0, 85, 0.15);
-    }
-
-    .btn-small {
-      padding: 5px 14px;
-      font-size: 12px;
-      border-radius: 18px;
-    }
-
-    /* Mobile toggle and drawer elements */
-    .mobile-toggle {
-      display: none;
-      font-size: 20px;
-      color: white;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .mobile-toggle:hover {
-      color: var(--primary);
-      transform: scale(1.1);
-    }
-
-    .drawer-close {
-      display: none;
-    }
-
-    .drawer-auth {
-      display: none;
-    }
-
-    .nav-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background: rgba(4, 4, 8, 0.55);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 2400;
-      opacity: 0;
-      pointer-events: none;
-      transition: var(--transition);
-    }
-
-    .nav-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    /* Mobile Bottom Tab Bar */
-    .mobile-tab-bar {
-      position: fixed;
-      bottom: 0;
+    /* Live Search Dropdown */
+    #liveSearchDropdown {
+      position: absolute;
+      top: calc(100% + 8px);
       left: 0;
       right: 0;
-      height: 60px;
-      background: rgba(10, 10, 18, 0.85);
+      background: rgba(19, 19, 19, 0.96);
       backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(0, 238, 252, 0.25);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 238, 252, 0.2);
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 100;
       display: none;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 2000;
-      padding-bottom: env(safe-area-inset-bottom, 0px);
-      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
     }
 
-    .tab-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #a0a5b9;
-      text-decoration: none;
-      font-family: 'Outfit', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      min-width: 44px;
-      min-height: 44px;
-      flex: 1;
-      padding-top: 5px;
+    #liveSearchDropdown.active {
+      display: block;
     }
 
-    .tab-item i {
-      font-size: 18px;
-      margin-bottom: 3px;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .tab-item:hover,
-    .tab-item.active {
-      color: #ff0055 !important;
-      text-shadow: 0 0 10px rgba(255, 0, 85, 0.3) !important;
-    }
-
-    /* Tablet & Mobile Breakpoint (<= 768px) */
-    @media (max-width: 768px) {
-      header {
-        padding: 0 16px !important;
-        height: 52px !important;
-      }
-
-      .logo {
-        font-size: 18px !important;
-      }
-
-      .logo i {
-        font-size: 19px !important;
-      }
-
-      .navbar {
-        position: fixed;
-        top: 0;
-        right: -300px;
-        width: 260px;
-        height: 100vh;
-        background: rgba(10, 10, 18, 0.97);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        display: flex !important;
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 24px 20px 80px 20px;
-        gap: 8px;
-        z-index: 2500;
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.7);
-        transition: var(--transition);
-        border-left: 1px solid rgba(255, 255, 255, 0.08);
-        overflow-y: auto;
-      }
-
-      .navbar.active {
-        right: 0 !important;
-      }
-
-      .nav-link {
-        width: 100% !important;
-        padding: 10px 14px !important;
-        border-radius: var(--radius-sm) !important;
-        font-size: 14px !important;
-        justify-content: flex-start !important;
-        text-transform: none !important;
-        letter-spacing: 0.3px !important;
-      }
-
-      .drawer-close {
-        display: flex !important;
-        align-self: flex-end;
-        font-size: 18px;
-        color: var(--gray-text);
-        cursor: pointer;
-        transition: var(--transition);
-        margin-bottom: 12px;
-        width: 36px;
-        height: 36px;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid var(--gray-border);
-      }
-
-      .drawer-close:hover {
-        color: white;
-        background: rgba(255, 0, 85, 0.1);
-        border-color: var(--primary);
-        transform: rotate(90deg);
-      }
-
-      .drawer-auth {
-        width: 100% !important;
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid var(--gray-border);
-        display: flex !important;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .mobile-toggle {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid var(--gray-border);
-        font-size: 16px;
-        cursor: pointer;
-      }
-
-      .mobile-toggle:hover {
-        color: var(--primary);
-        background: rgba(255, 0, 85, 0.1);
-        border-color: var(--primary);
-      }
-
-      .header-actions .btn-secondary,
-      .header-actions .user-profile-menu .btn-secondary,
-      .header-actions .user-profile-menu a[href="/admin.html"],
-      .header-actions .user-profile-menu .profile-name-text {
-        display: none !important;
-      }
-
-      .header-actions .user-profile-menu {
-        gap: 0;
-        flex-shrink: 0;
-      }
-
-      .mobile-tab-bar {
-        display: flex !important;
-      }
-
-      body.profile-body {
-        padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important;
-      }
-
-      .header-actions {
-        gap: 8px !important;
-        flex-shrink: 0;
-      }
-
-      .mobile-toggle {
-        margin-right: 0 !important;
-        flex-shrink: 0 !important;
-      }
-    }
-
-    .mobile-search-btn {
-      display: inline-flex;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--gray-border);
-      color: var(--light-text);
-      font-size: 14px;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: var(--transition);
-      flex-shrink: 0;
-      text-decoration: none;
-    }
-
-    .mobile-search-btn:hover,
-    .mobile-search-btn:active {
-      background: rgba(255, 0, 85, 0.2);
-      border-color: var(--primary);
-      color: var(--primary);
-      box-shadow: 0 0 12px rgba(255, 0, 85, 0.4);
-      transform: scale(1.05);
+    /* Drawer Mobile Nav */
+    #mainNavbar.drawer-open {
+      transform: translateX(0) !important;
     }
   </style>
 </head>
 
-<body class="profile-body">
-  <!-- Dynamic Ambient Glow based on user's accent color -->
-  <div class="profile-ambient-glow" id="profileAmbientGlow"></div>
+<body
+  class="bg-surface-container-lowest font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen">
 
-  <!-- ====== STREAMLINED SLEEK HEADER ====== -->
-  <header>
-    <div class="nav-overlay" id="navOverlay"></div>
-    <a href="index.html" class="logo"><i class="fas fa-infinity"></i>Infinx Anime</a>
+  <!-- =========================================================================
+       FIXED CYBERPUNK CINEMA HEADER
+       ========================================================================= -->
+  <header
+    class="fixed top-0 left-0 right-0 z-50 w-full bg-surface-container-lowest/80 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.85)] border-b border-surface-container-high/40 transition-all"
+    id="siteHeader">
+    <div class="h-16 sm:h-20 w-full px-3 sm:px-gutter flex items-center justify-between gap-2 sm:gap-space-md">
+      <!-- Brand Logo & Desktop Navigation -->
+      <div class="flex items-center gap-space-md xl:gap-space-lg flex-shrink-0">
+        <a class="flex items-center gap-space-xs sm:gap-space-sm group" href="index.html">
+          <div
+            class="relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-surface-container-high/80 shadow-[0_0_18px_rgba(0,238,252,0.4)] group-hover:shadow-[0_0_24px_rgba(0,238,252,0.6)] transition-all duration-300">
+            <svg
+              class="w-5 h-5 sm:w-6 sm:h-6 transform -rotate-12 group-hover:scale-110 transition-transform duration-300"
+              fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18.178 8c-1.38 0-2.61.644-3.414 1.645C13.606 8.167 11.758 7 9.5 7 5.91 7 3 9.91 3 13.5S5.91 20 9.5 20c2.258 0 4.106-1.167 5.264-2.645C15.568 18.356 16.798 19 18.178 19 20.84 19 23 16.84 23 14.178c0-2.662-2.16-4.178-4.822-4.178zm-8.678 9.5c-2.206 0-4-1.794-4-4s1.794-4 4-4c1.862 0 3.398 1.282 3.824 3.013a5.55 5.55 0 0 1 0 1.974c-.426 1.731-1.962 3.013-3.824 3.013zm8.678-1c-1.396 0-2.533-.946-2.85-2.23a4.015 4.015 0 0 1 0-1.54c.317-1.284 1.454-2.23 2.85-2.23 1.556 0 2.822 1.266 2.822 2.822 0 1.556-1.266 2.822-2.822 2.822z"
+                fill="#00eefc"></path>
+              <circle cx="9.5" cy="13.5" fill="#ff506e" r="1.5"></circle>
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span
+              class="font-headline-sm text-sm sm:text-headline-sm tracking-wider font-extrabold text-secondary-container drop-shadow-[0_0_12px_rgba(0,238,252,0.6)]">
+              INFINX<span
+                class="text-primary-container drop-shadow-[0_0_12px_rgba(255,80,110,0.6)] ml-0.5 sm:ml-1">ANIME</span>
+            </span>
+          </div>
+        </a>
 
-    <nav class="navbar" id="mainNavbar">
-      <div class="drawer-close" id="closeDrawer"><i class="fas fa-times"></i></div>
-      <a href="view.html#history" class="nav-link"><i class="fas fa-history"></i> History</a>
-      <a href="view.html#watchlist" class="nav-link"><i class="fas fa-heart"></i> Watchlist</a>
-      <a href="index.html#publicLiveChatSection" class="nav-link nav-chat-link" id="navChatLink">
-        <i class="fas fa-comments" style="color: var(--secondary);"></i> <span>Live Chat</span> <span
-          class="nav-live-dot">LIVE</span>
-      </a>
-      <div class="drawer-auth" id="drawerAuthHeader"></div>
-    </nav>
-
-    <div class="header-actions">
-      <!--<a href="view.html#search" class="mobile-search-btn" id="mobileHeaderSearchBtn" aria-label="Search anime and movies">
-        <i class="fas fa-search"></i>
-      </a>-->
-
-      <!-- Dynamic Authentication Header Section -->
-      <div class="auth-buttons" id="authHeader">
-        <a href="index.html#login" class="btn btn-secondary btn-small">Sign In</a>
+        <!-- Desktop Navigation Bar -->
+        <nav
+          class="hidden xl:flex items-center gap-space-xs p-1 rounded-full bg-surface-container-lowest/60 backdrop-blur-md">
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="index.html">Home</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="anime.html">Catalog / Browse</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="view.html">Watchlist &amp; Hub</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="download.html">Get App</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg bg-secondary-container/15 text-secondary-container shadow-[0_0_16px_rgba(0,238,252,0.25)] rounded-full transition-all duration-200"
+            href="profile.html">Otaku Passport</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="admin.html">Admin Studio</a>
+        </nav>
       </div>
 
-      <div class="mobile-toggle" id="mobileMenuToggle">
-        <i class="fas fa-bars"></i>
+      <!-- Live Search Box with Key Shortcut -->
+      <div class="flex-1 max-w-md mx-space-md hidden md:block relative">
+        <div class="relative flex items-center w-full">
+          <span
+            class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">search</span>
+          <input id="searchInput"
+            class="w-full pl-11 pr-14 py-2 bg-surface-container-low/90 backdrop-blur-xl rounded-full font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-secondary-container focus:shadow-[0_0_20px_rgba(0,238,252,0.3)] transition-all"
+            placeholder="Search anime, studios, 4K releases..." type="text" />
+          <div
+            class="absolute right-3 px-2 py-0.5 rounded bg-surface-container-highest/80 font-label-sm text-label-sm text-on-surface-variant shadow-inner pointer-events-none">
+            ⌘K</div>
+        </div>
+        <!-- Live Search Dropdown Panel -->
+        <div id="liveSearchDropdown"></div>
+      </div>
+
+      <!-- Right Action Cluster & Dynamic Auth -->
+      <div class="flex items-center gap-1.5 sm:gap-2 lg:gap-space-md flex-shrink-0">
+        <!-- Mobile Quick Search Trigger -->
+        <button class="md:hidden p-1.5 sm:p-2 text-outline hover:text-white transition-colors cursor-pointer shrink-0"
+          id="mobileHeaderSearchBtn" aria-label="Open Search" type="button"
+          onclick="window.location.href='view.html#search'">
+          <span class="material-symbols-outlined text-[22px] sm:text-[24px]">search</span>
+        </button>
+
+        <!-- Dynamic Auth Header Hook (Populated by navbar.js / profile.js) -->
+        <div id="authHeader" class="auth-buttons flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <a href="login.html"
+            class="px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-xs sm:text-label-sm font-semibold transition-all cursor-pointer shrink-0">
+            Sign In
+          </a>
+        </div>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobileMenuToggle"
+          class="inline-flex xl:hidden p-1.5 sm:p-2 text-outline hover:text-secondary-container active:scale-95 transition-all cursor-pointer mobile-toggle shrink-0"
+          aria-label="Toggle mobile menu" type="button">
+          <span class="material-symbols-outlined text-[24px] sm:text-[26px]">menu</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Loading State -->
-  <div id="profileLoadingState"
-    style="text-align: center; padding: 160px 20px; color: #94a3b8; font-family: 'Outfit'; font-size: 1.8rem;">
-    <i class="fas fa-circle-notch fa-spin"
-      style="font-size: 3rem; color: var(--user-accent); margin-bottom: 16px; display: block;"></i>
-    Loading Otaku Passport & Profile...
+  <!-- =========================================================================
+       LOADING STATE (Controlled by profile.js)
+       ========================================================================= -->
+  <div id="profileLoadingState" class="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
+    <div class="relative w-20 h-20 mb-6">
+      <div class="absolute inset-0 rounded-full border-4 border-secondary-container/20 animate-ping"></div>
+      <div
+        class="w-20 h-20 rounded-full border-4 border-transparent border-t-secondary-container border-r-primary-container animate-spin shadow-[0_0_30px_rgba(0,238,252,0.5)]">
+      </div>
+    </div>
+    <h2 class="font-headline-md text-headline-md font-extrabold text-on-surface tracking-tight">Decrypting Otaku
+      Passport &amp; Telemetry...</h2>
+    <p class="font-body-sm text-body-sm text-outline mt-2 max-w-sm">Synchronizing Tokyo 10G stream records, collectible
+      badges, and completed anime archive.</p>
   </div>
 
-  <!-- Auth Required Warning -->
-  <div id="profileAuthRequired"
-    style="display: none; text-align: center; padding: 160px 20px; max-width: 500px; margin: 0 auto;">
+  <!-- =========================================================================
+       AUTH REQUIRED STATE (Controlled by profile.js)
+       ========================================================================= -->
+  <div id="profileAuthRequired" style="display: none;"
+    class="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center max-w-lg mx-auto">
     <div
-      style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255,0,85,0.15); border: 1px solid #ff0055; color: #ff0055; font-size: 2.4rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
-      <i class="fas fa-lock"></i>
+      class="w-20 h-20 rounded-2xl bg-primary-container/15 border border-primary-container/40 flex items-center justify-center text-primary-container text-4xl mb-6 shadow-[0_0_30px_rgba(255,80,110,0.3)]">
+      <span class="material-symbols-outlined text-[40px]">lock</span>
     </div>
-    <h2 style="font-family: 'Outfit'; font-size: 2.6rem; color: #fff; margin-bottom: 10px;">Shinobi Gate Locked</h2>
-    <p style="color: #94a3b8; font-size: 1.4rem; margin-bottom: 24px; line-height: 1.5;">Please sign in to your Infinx
-      Anime account to access your personal profile, aura frames, and watch statistics.</p>
-    <a href="index.html" class="btn-profile-primary" style="text-decoration: none; padding: 12px 28px;">
-      <i class="fas fa-sign-in-alt"></i> Go to Sign In
+    <h2 class="font-headline-lg text-headline-lg font-black text-on-surface tracking-tight mb-2">Shinobi Gate Locked
+    </h2>
+    <p class="font-body-md text-body-md text-outline mb-8 leading-relaxed">
+      Please sign in to your Infinx Anime account to access your personal profile, animated aura frames, Tokyo telemetry
+      metrics, and Hall of Fame showcase.
+    </p>
+    <a href="login.html"
+      class="inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-gradient-to-r from-primary-container to-secondary-container text-white font-label-lg text-label-lg font-extrabold uppercase tracking-wider shadow-[0_0_24px_rgba(255,80,110,0.4)] hover:shadow-[0_0_32px_rgba(0,238,252,0.6)] hover:scale-105 transition-all">
+      <span class="material-symbols-outlined text-[20px]">login</span>
+      <span>Authenticate Shinobi Pass</span>
     </a>
   </div>
 
-  <!-- Main Profile Content -->
-  <main class="profile-container" id="profileMainContent" style="display: none;">
-    <!-- 1. Hero Banner Area -->
-    <section class="profile-banner-wrapper">
-      <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1400&auto=format&fit=crop&q=80"
-        alt="Anime Hero Banner" class="profile-banner-img" id="profileBannerImg" />
-      <div class="profile-banner-overlay"></div>
-      <!-- <div class="banner-level-tag-display" id="profileBannerLevelTag">
-        <i class="fas fa-crown"></i> <span id="bannerLevelText">Lv. 50 Monarch Poster</span>
-      </div>-->
-      <button type="button" class="banner-edit-btn" id="openBannerEditBtn">
-        <i class="fas fa-camera"></i> <span>Change Banner</span>
-      </button>
-    </section>
+  <!-- =========================================================================
+       MAIN PROFILE CONTENT (Controlled by profile.js)
+       ========================================================================= -->
+  <main class="w-full pt-16 sm:pt-20 bg-surface-container-lowest min-h-screen overflow-x-hidden" id="profileMainContent"
+    style="display: none;">
+    <div class="flex flex-col w-full">
 
-    <!-- 2. Profile Card & Avatar -->
-    <section class="profile-card">
-      <div class="profile-header-top">
-        <div class="profile-user-identity">
-          <!-- Animated Avatar Frame -->
-          <div class="avatar-frame-container aura-default" id="avatarFrameContainer">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Shinobi" alt="User Avatar" class="profile-avatar-img"
-              id="profileAvatarImg" />
-          </div>
-
-          <div class="profile-meta">
-            <div class="profile-name-row">
-              <h1 class="profile-username" id="profileUsername">SupremeHokage</h1>
-              <span class="rank-badge hokage" id="profileRankBadge">👑 HOKAGE VIP</span>
-              <span class="badge-private-indicator" id="profilePrivateBadge" style="display: none;">
-                <i class="fas fa-lock"></i> Private Profile
-              </span>
-            </div>
-            <div class="profile-email-tag" id="profileEmailTag">@SupremeHokage • admin@infinx.com</div>
-            <p class="profile-bio" id="profileBio">
-              Shinobi streaming enthusiast. Exploring infinite anime worlds on Infinx Anime.
-            </p>
-          </div>
+      <!-- Top Profile Hero Scrim & Glass Passport Header -->
+      <section class="relative w-full overflow-hidden bg-surface-container-lowest pb-space-lg sm:pb-space-xl">
+        <!-- Atmospheric Ambient Neon Cones -->
+        <div
+          class="absolute -top-32 left-1/4 w-96 h-96 bg-secondary-container/10 rounded-full blur-[128px] pointer-events-none">
+        </div>
+        <div
+          class="absolute top-12 right-10 w-[30rem] h-[30rem] bg-primary-container/10 rounded-full blur-[140px] pointer-events-none">
+        </div>
+        <div
+          class="absolute top-1/2 left-2/3 w-80 h-80 bg-tertiary-container/15 rounded-full blur-[120px] pointer-events-none">
         </div>
 
-        <div class="profile-actions-group">
-          <button type="button" class="btn-profile-primary" id="openEditProfileBtn">
-            <i class="fas fa-user-edit"></i> <span>Edit Profile</span>
+        <!-- Cinematic Backdrop Banner with Tokyo Cyber Ingestion Overlay -->
+        <div class="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 overflow-hidden">
+          <img id="profileBannerImg"
+            class="w-full h-full object-cover object-center filter brightness-75 contrast-125 transform scale-105 transition-transform duration-1000 ease-out"
+            src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1400&auto=format&fit=crop&q=80"
+            alt="Anime Hero Banner" />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/70 to-transparent">
+          </div>
+
+          <!-- Banner Level Tag Display -->
+          <div
+            class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-lowest/80 backdrop-blur-md border border-white/10"
+            id="profileBannerLevelTag">
+            <span class="material-symbols-outlined text-secondary-container text-[16px]">military_tech</span>
+            <span id="bannerLevelText" class="font-label-sm text-label-sm text-on-surface font-mono">Lv. 50 Monarch
+              Poster</span>
+          </div>
+
+          <!-- Change Banner Action Button -->
+          <button type="button"
+            class="absolute top-3 left-3 sm:top-6 sm:left-6 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-label-md rounded-full bg-surface-container-lowest/80 backdrop-blur-md border border-white/10 hover:border-secondary-container text-on-surface flex items-center gap-1.5 sm:gap-2 font-label-md transition-all shadow-lg hover:shadow-[0_0_16px_rgba(0,238,252,0.3)] cursor-pointer"
+            id="openBannerEditBtn">
+            <span
+              class="material-symbols-outlined text-[16px] sm:text-[18px] text-secondary-container">photo_camera</span>
+            <span>Change Banner</span>
           </button>
-          <div class="profile-secondary-actions">
-            <button type="button" class="btn-profile-secondary" id="shareProfileBtn">
-              <i class="fas fa-share-alt"></i> <span>Share</span>
-            </button>
-            <a href="admin.html" class="btn-profile-secondary" id="profileAdminLinkBtn"
-              style="display: none; text-decoration: none; border-color: rgba(255, 183, 0, 0.4); color: #ffb700;">
-              <i class="fas fa-shield-alt"></i> <span>Admin Panel</span>
-            </a>
+        </div>
+
+        <!-- Main Identity Card Overlap -->
+        <div class="relative max-w-7xl mx-auto px-3 sm:px-margin-mobile md:px-margin -mt-16 sm:-mt-24 md:-mt-36 z-10">
+          <div
+            class="relative p-4 sm:p-space-md md:p-space-lg rounded-2xl bg-surface-container/70 backdrop-blur-2xl shadow-2xl flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-space-lg overflow-hidden border border-white/5">
+            <!-- Laser Accent Light Strips -->
+            <div
+              class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary-container via-primary-container to-tertiary-container opacity-90">
+            </div>
+
+            <!-- Left: Avatar, Level Ring & Identity -->
+            <div class="flex flex-col sm:flex-row items-center sm:items-end gap-3 sm:gap-space-lg">
+              <!-- Stylized Avatar with Circular SVG XP Progress Ring -->
+              <div class="relative flex-shrink-0 group">
+                <!-- Neon Glow Base behind Avatar -->
+                <div
+                  class="absolute -inset-1 rounded-full bg-gradient-to-tr from-secondary-container to-primary-container opacity-40 blur-md group-hover:opacity-75 transition-opacity duration-300">
+                </div>
+
+                <div
+                  class="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-1 bg-surface-container-lowest flex items-center justify-center">
+                  <!-- Radial Progress SVG Ring -->
+                  <svg class="absolute inset-0 w-full h-full transform -rotate-90 pointer-events-none"
+                    viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" fill="transparent" r="46" stroke="rgba(255,255,255,0.08)" stroke-width="4">
+                    </circle>
+                    <circle id="profileRadialXpCircle"
+                      class="text-secondary-container transition-all duration-1000 ease-out" cx="50" cy="50"
+                      fill="transparent" r="46" stroke="currentColor" stroke-dasharray="289.02"
+                      stroke-dashoffset="46.24" stroke-linecap="round" stroke-width="5"></circle>
+                  </svg>
+
+                  <!-- Animated Aura Frame Container -->
+                  <div class="avatar-frame-container aura-default rounded-full flex items-center justify-center"
+                    id="avatarFrameContainer">
+                    <img id="profileAvatarImg" class="profile-avatar-img w-full h-full object-cover rounded-full"
+                      src="https://api.dicebear.com/7.x/bottts/svg?seed=Shinobi" alt="User Avatar" />
+                  </div>
+
+                  <!-- Level Hex Badge -->
+                  <div
+                    class="profile-level-badge-pill absolute bottom-0 right-0 z-20 px-2 py-0.5 sm:px-2.5 rounded-full bg-[#0e0e0e] shadow-[0_0_14px_rgba(0,238,252,0.5)] flex items-center gap-1 border border-secondary-container/60 select-none">
+                    <span
+                      class="material-symbols-outlined text-secondary-container text-[12px] sm:text-[13px] leading-none">shield</span>
+                    <span
+                      class="font-label-sm text-[11px] sm:text-xs font-black tracking-wider text-secondary-container leading-none"
+                      id="profileLevelHexBadge">LV.18</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- User Title & Credentials -->
+              <div class="flex flex-col text-center sm:text-left w-full sm:w-auto">
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-space-sm mb-1">
+                  <h1
+                    class="font-headline-lg text-2xl sm:text-headline-lg font-extrabold text-on-surface tracking-tight break-words"
+                    id="profileUsername">SupremeHokage</h1>
+                  <!-- Dynamic Rank Badge -->
+                  <span
+                    class="rank-badge hokage inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-primary-container text-on-primary-container font-label-sm text-xs sm:text-label-sm font-black uppercase tracking-wider shadow-[0_0_16px_rgba(255,80,110,0.5)]"
+                    id="profileRankBadge">
+                    👑 HOKAGE VIP
+                  </span>
+                  <!-- Private Badge -->
+                  <span
+                    class="badge-private-indicator inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-highest text-outline font-label-sm text-xs"
+                    id="profilePrivateBadge" style="display: none;">
+                    <i class="fas fa-lock text-[11px]"></i> Private Profile
+                  </span>
+                  <!-- Viewing Other User Indicator -->
+                  <span
+                    class="badge-viewing inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/20 text-tertiary font-label-sm text-xs"
+                    id="viewingOtherUserBadge" style="display: none;">
+                    <i class="fas fa-eye text-[11px]"></i> Visiting Profile
+                  </span>
+                </div>
+
+                <div
+                  class="flex flex-wrap items-center justify-center sm:justify-start gap-x-2 sm:gap-x-space-md gap-y-1 font-body-sm text-xs sm:text-body-sm text-outline">
+                  <span class="text-secondary-container font-label-md text-xs sm:text-label-md break-all"
+                    id="profileEmailTag">@SupremeHokage
+                    • admin@infinx.com</span>
+                  <span>•</span>
+                  <span class="text-tertiary-fixed font-label-md text-xs sm:text-label-md" id="profileLevelBadge">Level
+                    18 — Otaku
+                    Grandmaster</span>
+                    <span class="hidden sm:inline" id="profileJoinDateDot" style="display: none;">•</span>
+                    <span class="items-center gap-1" id="profileJoinDateContainer" style="display: none;">
+                      <span
+                        class="material-symbols-outlined text-[14px] sm:text-[15px] text-outline">calendar_month</span>
+                      <span id="profileJoinDate"></span>
+                    </span>
+                </div>
+
+                <p class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant max-w-xl mt-2 line-clamp-2 break-words"
+                  id="profileBio">
+                  Shinobi streaming enthusiast. Exploring infinite anime worlds on Infinx Anime.
+                </p>
+
+                <!-- XP Progress Track -->
+                <div class="mt-3 sm:mt-space-md w-full max-w-md flex flex-col gap-1.5">
+                  <div class="flex items-center justify-between font-label-sm text-xs sm:text-label-sm">
+                    <span class="text-on-surface-variant font-semibold">XP PROGRESS</span>
+                    <span class="text-secondary tracking-wide font-mono" id="profileXpRatio">8,450 / 10,000 XP
+                      (84%)</span>
+                  </div>
+                  <div class="w-full h-2 rounded-full bg-surface-container-lowest overflow-hidden p-0.5">
+                    <div
+                      class="h-full rounded-full bg-gradient-to-r from-secondary-container via-tertiary-container to-primary-container shadow-[0_0_12px_rgba(0,238,252,0.7)] transition-all duration-500"
+                      id="profileXpFill" style="width: 84%"></div>
+                  </div>
+                  <div class="font-label-sm text-[10px] sm:text-[11px] text-outline flex items-center gap-1 mt-0.5">
+                    <span
+                      class="material-symbols-outlined text-secondary-container text-[12px] sm:text-[13px]">bolt</span>
+                    <span>Earn +10 XP per episode • +25 XP in Watch Party rooms</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Passport Action Suite -->
+            <div class="flex items-center justify-center gap-2 sm:gap-space-sm w-full lg:w-auto mt-2 lg:mt-0">
+              <button type="button"
+                class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2 sm:py-2.5 rounded-full bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-lg text-xs sm:text-label-lg shadow-md transition-all duration-200 cursor-pointer"
+                id="openEditProfileBtn">
+                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">edit</span>
+                <span>Edit Profile</span>
+              </button>
+              <button type="button"
+                class="p-2 sm:p-2.5 rounded-full bg-surface-container-high hover:bg-surface-bright text-outline hover:text-on-surface transition-colors cursor-pointer shrink-0"
+                id="shareProfileBtn" title="Share Otaku Passport Link">
+                <span class="material-symbols-outlined text-[18px] sm:text-[20px]">share</span>
+              </button>
+              <a href="admin.html"
+                class="p-2 sm:p-2.5 rounded-full bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 transition-colors shrink-0"
+                id="profileAdminLinkBtn" style="display: none;" title="Admin Studio Dashboard">
+                <span class="material-symbols-outlined text-[18px] sm:text-[20px]">admin_panel_settings</span>
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- 3. Level & XP Progression Bar -->
-      <div class="profile-xp-box">
-        <div class="xp-header-row">
-          <span class="xp-level-badge" id="profileLevelBadge">LEVEL 50 • HOKAGE VIP</span>
-          <span style="color: #cbd5e1; font-weight: 600;" id="profileXpRatio">4,500 / 10,000 XP (45%)</span>
-        </div>
-        <div class="xp-progress-track">
-          <div class="xp-progress-fill" id="profileXpFill" style="width: 45%;"></div>
-        </div>
-        <div class="xp-hint">
-          <i class="fas fa-bolt" style="color: var(--user-accent);"></i>
-          <span>Earn +10 XP per episode watched • +25 XP in Watch Party rooms</span>
-        </div>
-      </div>
-    </section>
+      <!-- =======================================================================
+           TELEMETRY & STREAM METRICS HUB (4 Dynamic Metric Cards)
+           ======================================================================= -->
+      <section class="max-w-7xl mx-auto px-3 sm:px-margin-mobile md:px-margin w-full mt-2 sm:-mt-6 z-20">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-space-md">
+          <!-- Metric 1: Watch Time -->
+          <div
+            class="relative p-3 sm:p-space-md rounded-xl bg-surface-container/60 backdrop-blur-xl shadow-lg flex flex-col justify-between overflow-hidden group hover:bg-surface-container/90 transition-all border border-white/5">
+            <div class="flex items-center justify-between">
+              <span
+                class="font-label-sm text-[10px] sm:text-label-sm text-outline tracking-wider uppercase font-semibold">WATCH
+                TIME</span>
+              <span
+                class="material-symbols-outlined text-secondary-container text-[18px] sm:text-[20px]">schedule</span>
+            </div>
+            <div class="my-2 sm:my-space-sm">
+              <div
+                class="font-headline-lg text-lg sm:text-2xl lg:text-headline-lg font-black text-on-surface tracking-tight"
+                id="statWatchTime">1,136.5 hrs</div>
+            </div>
+            <div
+              class="flex items-center gap-1 font-label-sm text-[10px] sm:text-label-sm text-secondary-container truncate">
+              <span class="material-symbols-outlined text-[13px] sm:text-[14px]">trending_up</span>
+              <span class="truncate">Top 2.4% Archive Depth</span>
+            </div>
+          </div>
 
-    <!-- 4. Otaku Passport Stats Showcase -->
-    <section class="passport-stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon time"><i class="fas fa-clock"></i></div>
-        <div class="stat-data">
-          <span class="stat-value" id="statWatchTime">57.4 hrs</span>
-          <span class="stat-label">Watch Time</span>
-        </div>
-      </div>
+          <!-- Metric 2: Episodes Watched -->
+          <div
+            class="relative p-3 sm:p-space-md rounded-xl bg-surface-container/60 backdrop-blur-xl shadow-lg flex flex-col justify-between overflow-hidden group hover:bg-surface-container/90 transition-all border border-white/5">
+            <div class="flex items-center justify-between">
+              <span
+                class="font-label-sm text-[10px] sm:text-label-sm text-outline tracking-wider uppercase font-semibold">EPISODES
+                WATCHED</span>
+              <span class="material-symbols-outlined text-primary-container text-[18px] sm:text-[20px]">movie</span>
+            </div>
+            <div class="my-2 sm:my-space-sm">
+              <div
+                class="font-headline-lg text-lg sm:text-2xl lg:text-headline-lg font-black text-on-surface tracking-tight"
+                id="statEpisodes">2,840</div>
+            </div>
+            <div class="flex items-center gap-1 font-label-sm text-[10px] sm:text-label-sm text-primary-fixed truncate">
+              <span class="material-symbols-outlined text-[13px] sm:text-[14px]">bolt</span>
+              <span class="truncate">Zero Filler Skips Detected</span>
+            </div>
+          </div>
 
-      <div class="stat-card">
-        <div class="stat-icon episodes"><i class="fas fa-play-circle"></i></div>
-        <div class="stat-data">
-          <span class="stat-value" id="statEpisodes">214</span>
-          <span class="stat-label">Episodes Completed</span>
-        </div>
-      </div>
+          <!-- Metric 3: In Watchlist -->
+          <div
+            class="relative p-3 sm:p-space-md rounded-xl bg-surface-container/60 backdrop-blur-xl shadow-lg flex flex-col justify-between overflow-hidden group hover:bg-surface-container/90 transition-all border border-white/5">
+            <div class="flex items-center justify-between">
+              <span
+                class="font-label-sm text-[10px] sm:text-label-sm text-outline tracking-wider uppercase font-semibold">IN
+                WATCHLIST</span>
+              <span class="material-symbols-outlined text-tertiary-container text-[18px] sm:text-[20px]">bookmark</span>
+            </div>
+            <div class="my-2 sm:my-space-sm">
+              <div
+                class="font-headline-lg text-lg sm:text-2xl lg:text-headline-lg font-black text-on-surface tracking-tight"
+                id="statWatchlist">48</div>
+            </div>
+            <div class="flex items-center gap-1 font-label-sm text-[10px] sm:text-label-sm text-tertiary truncate">
+              <span class="material-symbols-outlined text-[13px] sm:text-[14px]">equalizer</span>
+              <span class="truncate">Tokyo Night Shift Sync</span>
+            </div>
+          </div>
 
-      <div class="stat-card">
-        <div class="stat-icon watchlist"><i class="fas fa-heart"></i></div>
-        <div class="stat-data">
-          <span class="stat-value" id="statWatchlist">18</span>
-          <span class="stat-label">In Watchlist</span>
+          <!-- Metric 4: Otaku Standing -->
+          <div
+            class="relative p-3 sm:p-space-md rounded-xl bg-surface-container/60 backdrop-blur-xl shadow-lg flex flex-col justify-between overflow-hidden group hover:bg-surface-container/90 transition-all border border-white/5">
+            <div class="flex items-center justify-between">
+              <span
+                class="font-label-sm text-[10px] sm:text-label-sm text-outline tracking-wider uppercase font-semibold">OTAKU
+                STANDING</span>
+              <span class="material-symbols-outlined text-secondary text-[18px] sm:text-[20px]">military_tech</span>
+            </div>
+            <div class="my-2 sm:my-space-sm">
+              <div
+                class="font-headline-lg text-lg sm:text-2xl lg:text-headline-lg font-black text-on-surface tracking-tight"
+                id="statStanding">Top 1% Shinobi</div>
+            </div>
+            <div class="flex items-center gap-1 font-label-sm text-[10px] sm:text-label-sm text-secondary truncate">
+              <span class="material-symbols-outlined text-[13px] sm:text-[14px]">memory</span>
+              <span class="truncate">AV1 CineMaster Engine</span>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="stat-card">
-        <div class="stat-icon rank"><i class="fas fa-trophy"></i></div>
-        <div class="stat-data">
-          <span class="stat-value" id="statStanding">Top 1% Shinobi</span>
-          <span class="stat-label">Otaku Standing</span>
+      <!-- =======================================================================
+           HALL OF FAME SPOTLIGHT SHOWCASE (Managed by profile.js)
+           ======================================================================= -->
+      <section class="max-w-7xl mx-auto px-3 sm:px-margin-mobile md:px-margin w-full py-6 sm:py-space-xl"
+        id="hallOfFameSection">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-4 sm:mb-space-lg gap-3">
+          <div class="flex flex-col">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-label-sm text-xs sm:text-label-sm uppercase tracking-widest text-primary-fixed">PERSONAL
+                ARCHIVE</span>
+              <span class="h-px w-8 sm:w-10 bg-primary-container"></span>
+            </div>
+            <h2 class="font-headline-lg text-xl sm:text-headline-lg text-on-surface font-extrabold tracking-tight">Hall
+              of Fame
+              Showcase</h2>
+          </div>
+          <div class="flex items-center gap-space-sm">
+            <button type="button"
+              class="customize-showcase-btn inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-surface-container-high hover:bg-surface-bright text-secondary-container font-label-md text-xs sm:text-label-md font-bold transition-all border border-secondary-container/30 shadow-[0_0_12px_rgba(0,238,252,0.15)] cursor-pointer"
+              id="openShowcaseModalBtn">
+              <span class="material-symbols-outlined text-[16px] sm:text-[18px]">tune</span>
+              <span>Customize Showcase</span>
+            </button>
+          </div>
         </div>
-      </div>
-    </section>
 
-    <!-- 5. Hall of Fame (Top 3 Favorite Anime) -->
-    <section class="hall-of-fame-section" id="hallOfFameSection">
-      <div class="section-header">
-        <div class="section-header-left">
-          <h2 class="section-title"><i class="fas fa-crown"></i> Hall of Fame Showcase</h2>
-          <span class="section-subtitle">Showcasing your verified completed anime achievements</span>
+        <!-- Hall of Fame Grid Container -->
+        <div class="hall-of-fame-grid grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-space-lg" id="hallOfFameGrid">
+          <!-- Dynamically populated by profile.js: real completed anime or interactive empty slots -->
         </div>
-        <button type="button" class="customize-showcase-btn" id="openShowcaseModalBtn">
-          <i class="fas fa-sliders-h"></i> Customize Showcase
-        </button>
-      </div>
-      <div class="hall-of-fame-grid" id="hallOfFameGrid">
-        <!-- Dynamically rendered (Real completed anime or interactive empty slots) -->
-      </div>
-    </section>
+      </section>
 
-    <!-- 6. History & Watchlist Tabs -->
-    <section>
-      <div class="profile-tabs-nav">
-        <button type="button" class="tab-btn active" data-target="history">
-          <i class="fas fa-history"></i> Recent Episodes
-        </button>
-        <button type="button" class="tab-btn" data-target="watchlist">
-          <i class="fas fa-heart"></i> My Watchlist
-        </button>
-      </div>
-
-      <div class="tab-content-panel active" id="panel-history">
-        <div class="profile-media-grid" id="recentHistoryGrid">
-          <!-- Dynamically populated -->
+      <!-- =======================================================================
+           EPISODES & WATCHLIST TABS (Managed by profile.js)
+           ======================================================================= -->
+      <section class="max-w-7xl mx-auto px-3 sm:px-margin-mobile md:px-margin w-full pb-16 sm:pb-space-xl">
+        <div class="profile-tabs-nav">
+          <button type="button" class="tab-btn active" data-target="history">
+            <i class="fas fa-history text-secondary-container"></i>
+            <span>Recent Episodes</span>
+          </button>
+          <button type="button" class="tab-btn" data-target="watchlist">
+            <i class="fas fa-heart text-primary-container"></i>
+            <span>My Watchlist</span>
+          </button>
         </div>
-      </div>
 
-      <div class="tab-content-panel" id="panel-watchlist">
-        <div class="profile-media-grid" id="watchlistGrid">
-          <!-- Dynamically populated -->
+        <!-- Tab 1: History Grid -->
+        <div class="tab-content-panel active" id="panel-history">
+          <div class="profile-media-grid" id="recentHistoryGrid">
+            <!-- Dynamically populated by profile.js -->
+          </div>
         </div>
-      </div>
-    </section>
+
+        <!-- Tab 2: Watchlist Grid -->
+        <div class="tab-content-panel" id="panel-watchlist">
+          <div class="profile-media-grid" id="watchlistGrid">
+            <!-- Dynamically populated by profile.js -->
+          </div>
+        </div>
+      </section>
+
+    </div>
   </main>
 
-  <!-- Edit Profile Modal -->
+  <!-- =========================================================================
+       EDIT PROFILE MODAL (Managed by profile.js)
+       ========================================================================= -->
   <div class="profile-modal-overlay" id="editProfileModal">
     <div class="profile-modal-card">
       <div class="modal-header">
         <div class="modal-title">
-          <i class="fas fa-sliders-h" style="color: var(--user-accent);"></i>
+          <i class="fas fa-sliders-h" style="color: #00eefc;"></i>
           <span>Customize Otaku Profile</span>
         </div>
         <button type="button" class="modal-close-btn" id="closeEditProfileModal">&times;</button>
@@ -803,7 +742,8 @@
         </div>
         <!-- Admin-only level override chips (strictly hidden for regular users) -->
         <div class="level-simulator-chips" id="levelSimulatorChips" style="display: none;">
-          <span class="level-sim-label"><i class="fas fa-shield-alt" style="color: #ff0055;"></i> Admin Level Override:</span>
+          <span class="level-sim-label"><i class="fas fa-shield-alt" style="color: #ff0055;"></i> Admin Level
+            Override:</span>
           <button type="button" class="sim-chip" data-sim-lvl="1">Lv. 1</button>
           <button type="button" class="sim-chip" data-sim-lvl="5">Lv. 5</button>
           <button type="button" class="sim-chip" data-sim-lvl="15">Lv. 15</button>
@@ -815,8 +755,8 @@
 
       <!-- Modal Tabs -->
       <div class="modal-tabs">
-        <button type="button" class="modal-tab-btn active" data-tab="identity">Identity & Colors</button>
-        <button type="button" class="modal-tab-btn" data-tab="avatar">Avatar & Auras</button>
+        <button type="button" class="modal-tab-btn active" data-tab="identity">Identity &amp; Colors</button>
+        <button type="button" class="modal-tab-btn" data-tab="avatar">Avatar &amp; Auras</button>
         <button type="button" class="modal-tab-btn" data-tab="banner">Hero Banners</button>
       </div>
 
@@ -839,19 +779,22 @@
             <div class="form-group-custom">
               <label class="form-label-custom">Profile Ambient Accent Color</label>
               <div class="accent-palette-row" id="modalAccentRow">
-                <!-- Dynamically rendered -->
+                <!-- Dynamically rendered by profile.js -->
               </div>
             </div>
 
             <div class="form-group-custom"
               style="display: flex; flex-direction: row; align-items: flex-start; gap: 14px; margin-top: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px 16px; border-radius: 12px;">
-              <input type="checkbox" id="editPrivateToggle" style="width: 22px; height: 22px; cursor: pointer; accent-color: #ff0055; margin-top: 2px;" />
+              <input type="checkbox" id="editPrivateToggle"
+                style="width: 22px; height: 22px; cursor: pointer; accent-color: #ff0055; margin-top: 2px;" />
               <div>
-                <label for="editPrivateToggle" style="color: #f8fafc; font-size: 1.35rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <label for="editPrivateToggle"
+                  style="color: #f8fafc; font-size: 1.35rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                   <i class="fas fa-user-shield" style="color: #ff0055;"></i> Private Profile
                 </label>
                 <div style="color: var(--text-muted); font-size: 1.15rem; margin-top: 4px; line-height: 1.45;">
-                  Hide watch history and watchlist from public visitors. Only you and InfinX Administrators will be able to view all your profile details.
+                  Hide watch history and watchlist from public visitors. Only you and InfinX Administrators will be able
+                  to view all your profile details.
                 </div>
               </div>
             </div>
@@ -862,7 +805,7 @@
             <div class="form-group-custom">
               <label class="form-label-custom">Choose Anime Avatar Preset</label>
               <div class="avatar-presets-grid" id="modalAvatarPresetsGrid">
-                <!-- Dynamically rendered -->
+                <!-- Dynamically rendered by profile.js -->
               </div>
             </div>
 
@@ -913,7 +856,8 @@
                   <div class="aura-preview-pip" style="background: linear-gradient(135deg, #ffd700, #ff9900);"></div>
                   <div>
                     <div style="font-weight: 700; color: #fff; font-size: 1.25rem;">Super Saiyan God</div>
-                    <div style="color: var(--text-muted); font-size: 1.05rem;">Radiant gold majesty • Admin exclusive</div>
+                    <div style="color: var(--text-muted); font-size: 1.05rem;">Radiant gold majesty • Admin exclusive
+                    </div>
                   </div>
                 </div>
               </div>
@@ -925,7 +869,7 @@
             <div class="form-group-custom">
               <label class="form-label-custom">Select Anime Widescreen Banner</label>
               <div id="modalBannerPresetsGrid" class="banner-presets-grid">
-                <!-- Dynamically populated -->
+                <!-- Dynamically populated by profile.js -->
               </div>
             </div>
           </div>
@@ -941,7 +885,9 @@
     </div>
   </div>
 
-  <!-- Edit Hall of Fame Showcase Modal -->
+  <!-- =========================================================================
+       EDIT HALL OF FAME SHOWCASE MODAL (Managed by profile.js)
+       ========================================================================= -->
   <div class="profile-modal-overlay" id="editShowcaseModal">
     <div class="profile-modal-card showcase-modal-card">
       <div class="modal-header">
@@ -964,7 +910,8 @@
           <div class="showcase-slot-card" id="showcaseSlotCard-0" data-slot="0">
             <div class="showcase-slot-header">
               <span class="showcase-slot-badge rank-1"><i class="fas fa-crown"></i> #1 Champion</span>
-              <button type="button" class="showcase-slot-clear-btn" id="clearSlotBtn-0" title="Remove anime from Slot 1" style="display: none;">&times;</button>
+              <button type="button" class="showcase-slot-clear-btn" id="clearSlotBtn-0" title="Remove anime from Slot 1"
+                style="display: none;">&times;</button>
             </div>
             <div class="showcase-slot-preview" id="slotPreview-0">
               <div class="slot-empty-state">
@@ -981,7 +928,8 @@
           <div class="showcase-slot-card" id="showcaseSlotCard-1" data-slot="1">
             <div class="showcase-slot-header">
               <span class="showcase-slot-badge rank-2"><i class="fas fa-medal"></i> #2 Contender</span>
-              <button type="button" class="showcase-slot-clear-btn" id="clearSlotBtn-1" title="Remove anime from Slot 2" style="display: none;">&times;</button>
+              <button type="button" class="showcase-slot-clear-btn" id="clearSlotBtn-1" title="Remove anime from Slot 2"
+                style="display: none;">&times;</button>
             </div>
             <div class="showcase-slot-preview" id="slotPreview-1">
               <div class="slot-empty-state">
@@ -998,7 +946,8 @@
           <div class="showcase-slot-card" id="showcaseSlotCard-2" data-slot="2">
             <div class="showcase-slot-header">
               <span class="showcase-slot-badge rank-3"><i class="fas fa-award"></i> #3 Favorite</span>
-              <button type="button" class="showcase-slot-clear-btn" id="clearSlotBtn-2" title="Remove anime from Slot 3" style="display: none;">&times;</button>
+              <button type="button" class="showcase-slot-clear-btn" id="clearSlotBtn-2" title="Remove anime from Slot 3"
+                style="display: none;">&times;</button>
             </div>
             <div class="showcase-slot-preview" id="slotPreview-2">
               <div class="slot-empty-state">
@@ -1029,9 +978,9 @@
             <input type="text" id="completedAnimeSearchInput" placeholder="Filter your completed anime..." />
           </div>
 
-          <!-- Completed Anime List -->
+          <!-- Completed Anime List Grid -->
           <div class="completed-anime-grid" id="completedAnimePickerGrid">
-            <!-- Dynamically populated -->
+            <!-- Dynamically populated by profile.js -->
           </div>
 
           <!-- Mark Watched Anime as Completed Quick Helper -->
@@ -1042,7 +991,7 @@
             </div>
             <div class="accordion-body" id="markCompletedBody" style="display: none;">
               <div class="uncompleted-history-list" id="uncompletedHistoryList">
-                <!-- Dynamically populated from recent history -->
+                <!-- Dynamically populated from recent history by profile.js -->
               </div>
             </div>
           </div>
@@ -1057,18 +1006,177 @@
       </div>
     </div>
   </div>
-  <nav class="mobile-tab-bar">
-    <a href="index.html" class="tab-item" id="tabHome"><i class="fas fa-home"></i><span>Home</span></a>
-    <a href="anime.html" class="tab-item" id="tabAnime"><i class="fas fa-tv"></i><span>Anime</span></a>
-    <a href="view.html#search" class="tab-item" id="tabSearch"><i class="fas fa-search"></i><span>Search</span></a>
-    <a href="index.html#publicLiveChatSection" class="tab-item" id="tabChat"><i
-        class="fas fa-comments"></i><span>Chat</span></a>
-    <a href="view.html#watchlist" class="tab-item" id="tabWatchlist"><i
-        class="fas fa-heart"></i><span>Watchlist</span></a>
-    <a href="profile.html" class="tab-item active" id="tabProfile"><i
-        class="fas fa-user-ninja"></i><span>Profile</span></a>
-  </nav>
 
+  <!-- =========================================================================
+       OTAKU PASSPORT TELEMETRY QR MODAL (From Stitch Design)
+       ========================================================================= -->
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface-container-lowest/90 backdrop-blur-3xl hidden"
+    id="passport-modal">
+    <div
+      class="relative w-full max-w-md p-space-lg rounded-xl bg-surface-container/90 shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col items-center text-center overflow-hidden border border-white/10">
+      <!-- Glow rim border accent -->
+      <div
+        class="absolute -top-24 left-1/2 -translate-x-1/2 w-48 h-48 bg-secondary-container/30 rounded-full blur-3xl pointer-events-none">
+      </div>
+
+      <!-- Close Button -->
+      <button
+        class="absolute top-4 right-4 p-2 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+        id="close-modal-btn">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+
+      <span class="font-label-sm text-label-sm tracking-widest uppercase text-secondary-container mb-1">INFINX VERIFIED
+        PASSPORT</span>
+      <h3 class="font-headline-md text-headline-md font-extrabold text-on-surface">Otaku Telemetry Card</h3>
+      <p class="font-body-sm text-body-sm text-outline mt-1 mb-space-lg">Scan to view complete watchlist, 10/10 master
+        reviews, and verified Tokyo stream logs.</p>
+
+      <!-- High-Fidelity Futuristic QR Display Box -->
+      <div
+        class="relative p-space-md rounded-xl bg-surface-container-lowest shadow-2xl flex flex-col items-center border border-white/5">
+        <!-- SVG QR Matrix Illustration -->
+        <svg class="w-44 h-44 text-on-surface" fill="currentColor" viewBox="0 0 100 100">
+          <!-- Corner Position Markers -->
+          <rect fill="none" height="28" rx="2" stroke="currentColor" stroke-width="4" width="28" x="5" y="5"></rect>
+          <rect fill="#00eefc" height="16" width="16" x="11" y="11"></rect>
+          <rect fill="none" height="28" rx="2" stroke="currentColor" stroke-width="4" width="28" x="67" y="5"></rect>
+          <rect fill="#00eefc" height="16" width="16" x="73" y="11"></rect>
+          <rect fill="none" height="28" rx="2" stroke="currentColor" stroke-width="4" width="28" x="5" y="67"></rect>
+          <rect fill="#00eefc" height="16" width="16" x="11" y="73"></rect>
+          <!-- Data blocks -->
+          <rect height="8" width="8" x="38" y="10"></rect>
+          <rect height="6" width="6" x="50" y="14"></rect>
+          <rect height="6" width="6" x="38" y="24"></rect>
+          <rect height="8" width="8" x="48" y="28"></rect>
+          <rect height="6" width="6" x="10" y="38"></rect>
+          <rect height="8" width="8" x="22" y="42"></rect>
+          <rect fill="#ff506e" height="12" width="12" x="38" y="40"></rect>
+          <rect height="12" width="6" x="56" y="38"></rect>
+          <rect height="8" width="8" x="68" y="44"></rect>
+          <rect height="6" width="8" x="82" y="38"></rect>
+          <rect height="6" width="8" x="14" y="54"></rect>
+          <rect height="6" width="6" x="42" y="56"></rect>
+          <rect height="8" width="8" x="52" y="54"></rect>
+          <rect height="6" width="6" x="70" y="58"></rect>
+          <rect height="10" width="6" x="84" y="52"></rect>
+          <rect height="8" width="8" x="38" y="68"></rect>
+          <rect height="8" width="6" x="50" y="72"></rect>
+          <rect height="6" width="10" x="40" y="82"></rect>
+          <rect height="6" width="8" x="68" y="72"></rect>
+          <rect height="8" width="8" x="80" y="80"></rect>
+        </svg>
+        <div
+          class="mt-space-sm font-label-sm text-label-sm text-secondary-container tracking-widest uppercase font-mono">
+          ID: INFX-JP-88402-99K
+        </div>
+      </div>
+
+      <div class="mt-space-lg w-full flex items-center justify-center gap-space-sm">
+        <button type="button"
+          class="w-full py-2.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md uppercase tracking-wider font-extrabold shadow-[0_0_16px_rgba(0,238,252,0.4)] hover:shadow-[0_0_24px_rgba(0,238,252,0.6)] transition-all cursor-pointer"
+          onclick="navigator.clipboard?.writeText(window.location.href); alert('Otaku Passport Public Link copied to clipboard!')">
+          Copy Public Link
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Element Hook -->
+  <div id="profileToast" class="profile-toast"></div>
+
+  <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+  <footer
+    class="w-full bg-surface-container-lowest shadow-[0_-8px_32px_rgba(0,0,0,0.9)] border-t border-surface-container-high/40 mt-space-xl">
+    <div class="w-full px-gutter py-space-xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl">
+        <div class="lg:col-span-2 flex flex-col gap-space-md">
+          <div class="flex items-center gap-space-sm">
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container shadow-[0_0_12px_rgba(0,238,252,0.3)]">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M18.178 8c-1.38 0-2.61.644-3.414 1.645C13.606 8.167 11.758 7 9.5 7 5.91 7 3 9.91 3 13.5S5.91 20 9.5 20c2.258 0 4.106-1.167 5.264-2.645C15.568 18.356 16.798 19 18.178 19 20.84 19 23 16.84 23 14.178c0-2.662-2.16-4.178-4.822-4.178z"
+                  fill="#00eefc"></path>
+              </svg>
+            </div>
+            <span class="font-headline-sm text-headline-sm font-extrabold tracking-wide text-secondary-container">
+              INFINX<span class="text-primary-container ml-1">ANIME</span>
+            </span>
+          </div>
+          <p class="font-body-md text-body-md text-outline max-w-sm">
+            Theatre Grade OLED Anime Streaming. Pure AMOLED zero-floor masterings, uncompressed audio bitrate, and
+            simultaneous Tokyo transmissions.
+          </p>
+          <div class="flex items-center gap-space-xs mt-space-xs">
+            <div
+              class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-label-sm text-secondary tracking-widest uppercase shadow-[0_0_8px_rgba(0,238,252,0.2)]">
+              4K UHD</div>
+            <div
+              class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-label-sm text-primary-fixed tracking-widest uppercase shadow-[0_0_8px_rgba(255,80,110,0.2)]">
+              HDR10+</div>
+            <div
+              class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-label-sm text-tertiary tracking-widest uppercase shadow-[0_0_8px_rgba(160,120,255,0.2)]">
+              ATMOS</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-space-sm">
+          <span class="font-label-lg text-label-lg text-on-surface tracking-wider uppercase font-bold">Browse</span>
+          <ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-outline">
+            <li class="hover:text-secondary-container transition-colors"><a href="anime.html">Top Airing
+                Masterpieces</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="anime.html">New Spring Releases</a>
+            </li>
+            <li class="hover:text-secondary-container transition-colors"><a href="anime.html">Dual-Audio Dubbed</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="anime.html">Dolby Vision Features</a>
+            </li>
+            <li class="hover:text-secondary-container transition-colors"><a href="anime.html">Classic Remasters</a></li>
+          </ul>
+        </div>
+
+        <div class="flex flex-col gap-space-sm">
+          <span class="font-label-lg text-label-lg text-on-surface tracking-wider uppercase font-bold">Community</span>
+          <ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-outline">
+            <li class="hover:text-secondary-container transition-colors"><a href="view.html">Infinx Discord Core</a>
+            </li>
+            <li class="hover:text-secondary-container transition-colors"><a href="view.html">Watch Parties</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="view.html">Soundtrack Lounge</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="profile.html">Otaku Passports</a></li>
+          </ul>
+        </div>
+
+        <div class="flex flex-col gap-space-sm">
+          <span class="font-label-lg text-label-lg text-on-surface tracking-wider uppercase font-bold">Legal &amp;
+            System</span>
+          <ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-outline">
+            <li class="hover:text-secondary-container transition-colors"><a href="#">License Agreements</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="#">Privacy Protocols</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="download.html">Device
+                Compatibility</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="admin.html">DRM Calibration</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        class="mt-space-xl pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md border-t border-surface-container-high/40 bg-surface-container-lowest">
+        <span class="font-body-sm text-body-sm text-outline">© 2025 INFINX ANIME BROADCAST CORP. ALL RIGHTS RESERVED.
+          ZERO RE-COMPRESSION STANDARD.</span>
+        <div class="flex items-center gap-space-md">
+          <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse shadow-[0_0_8px_#00eefc]"></span>
+          <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Tokyo Ingestion
+            Telemetry: 100% Operational (9.8ms)</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Core Profile Engine Script -->
+  <script src="navbar.js?v=2.6"></script>
   <script src="profile.js"></script>
 </body>
 

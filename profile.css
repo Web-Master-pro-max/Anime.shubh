@@ -167,6 +167,24 @@ body.profile-body {
   border: 3px solid #0d0f1a;
 }
 
+/* Avatar Level Badge Pill */
+.profile-level-badge-pill {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 20;
+  background-color: #0e0e0e !important;
+  border: 1px solid rgba(0, 238, 252, 0.6) !important;
+  box-shadow: 0 0 14px rgba(0, 238, 252, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  user-select: none;
+  pointer-events: auto;
+}
+
 /* --- ANIMATED AURA FRAMES --- */
 /* 1. Default */
 .avatar-frame-container.aura-default::before {
@@ -190,6 +208,7 @@ body.profile-body {
   filter: blur(4px);
   z-index: 1;
 }
+
 .avatar-frame-container.aura-fire::after {
   content: '';
   position: absolute;
@@ -211,6 +230,7 @@ body.profile-body {
   filter: blur(4px);
   z-index: 1;
 }
+
 .avatar-frame-container.aura-purple::after {
   content: '';
   position: absolute;
@@ -232,6 +252,7 @@ body.profile-body {
   filter: blur(3px);
   z-index: 1;
 }
+
 .avatar-frame-container.aura-electric::after {
   content: '';
   position: absolute;
@@ -253,6 +274,7 @@ body.profile-body {
   filter: blur(4px);
   z-index: 1;
 }
+
 .avatar-frame-container.aura-gold::after {
   content: '';
   position: absolute;
@@ -274,6 +296,7 @@ body.profile-body {
   filter: blur(3px);
   z-index: 1;
 }
+
 .avatar-frame-container.aura-sakura::after {
   content: '';
   position: absolute;
@@ -285,8 +308,13 @@ body.profile-body {
 }
 
 @keyframes rotateFlame {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .profile-meta {
@@ -333,8 +361,13 @@ body.profile-body {
 }
 
 @keyframes goldPulse {
-  0% { box-shadow: 0 0 12px rgba(255, 183, 0, 0.4); }
-  100% { box-shadow: 0 0 25px rgba(255, 0, 85, 0.8), 0 0 35px rgba(255, 183, 0, 0.6); }
+  0% {
+    box-shadow: 0 0 12px rgba(255, 183, 0, 0.4);
+  }
+
+  100% {
+    box-shadow: 0 0 25px rgba(255, 0, 85, 0.8), 0 0 35px rgba(255, 183, 0, 0.6);
+  }
 }
 
 .rank-badge.hashira {
@@ -525,10 +558,25 @@ body.profile-body {
   flex-shrink: 0;
 }
 
-.stat-icon.time { background: rgba(0, 240, 255, 0.12); color: #00f0ff; }
-.stat-icon.episodes { background: rgba(255, 0, 85, 0.12); color: #ff0055; }
-.stat-icon.watchlist { background: rgba(184, 0, 255, 0.12); color: #b800ff; }
-.stat-icon.rank { background: rgba(255, 183, 0, 0.12); color: #ffb700; }
+.stat-icon.time {
+  background: rgba(0, 240, 255, 0.12);
+  color: #00f0ff;
+}
+
+.stat-icon.episodes {
+  background: rgba(255, 0, 85, 0.12);
+  color: #ff0055;
+}
+
+.stat-icon.watchlist {
+  background: rgba(184, 0, 255, 0.12);
+  color: #b800ff;
+}
+
+.stat-icon.rank {
+  background: rgba(255, 183, 0, 0.12);
+  color: #ffb700;
+}
 
 .stat-data {
   display: flex;
@@ -971,7 +1019,7 @@ body.profile-body {
 .slot-filled-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(10,12,20,0.92) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(10, 12, 20, 0.92) 100%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -1254,6 +1302,7 @@ body.profile-body {
   .showcase-slots-row {
     grid-template-columns: 1fr;
   }
+
   .completed-anime-grid {
     grid-template-columns: 1fr;
   }
@@ -1711,9 +1760,21 @@ body.profile-body {
 }
 
 @keyframes lockShake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-5px); }
-  40%, 80% { transform: translateX(5px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
 }
 
 .shake-locked {
@@ -2067,9 +2128,11 @@ body.profile-body {
   .passport-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .hall-of-fame-grid {
     grid-template-columns: 1fr;
   }
+
   .profile-media-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2137,7 +2200,7 @@ body.profile-body {
   .avatar-frame-container {
     width: 104px !important;
     height: 104px !important;
-    margin: -52px auto 0 auto !important;
+    margin: 0 auto !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9) !important;
   }
 
@@ -2213,7 +2276,7 @@ body.profile-body {
     box-sizing: border-box !important;
   }
 
-  .profile-secondary-actions > * {
+  .profile-secondary-actions>* {
     flex: 1 !important;
     width: 100% !important;
     justify-content: center !important;
@@ -2585,3 +2648,199 @@ body.profile-body {
   margin: 0 auto;
 }
 
+/* Header User Profile & Avatar Aura Styling */
+.user-profile-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .user-profile-menu {
+    gap: 12px;
+  }
+}
+
+.profile-name-text {
+  display: none !important;
+}
+
+@media (min-width: 640px) {
+  .profile-name-text {
+    color: #fff;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+  }
+}
+
+.profile-name-text:hover {
+  color: #00eefc;
+}
+
+.profile-name-text i {
+  color: #ff0055;
+  font-size: 13px;
+  filter: drop-shadow(0 0 6px rgba(255, 0, 85, 0.6));
+}
+
+@media (min-width: 640px) {
+  .profile-name-text i {
+    font-size: 15px;
+  }
+}
+
+.user-avatar-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff0055, #00eefc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  box-shadow: 0 0 14px rgba(255, 0, 85, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    font-size: 15px;
+  }
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.user-avatar:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(0, 238, 252, 0.7);
+  border-color: #00eefc;
+}
+
+/* User Avatar Auras */
+.user-avatar.aura-gold {
+  box-shadow: 0 0 16px rgba(255, 183, 0, 0.95), inset 0 0 8px rgba(255, 183, 0, 0.5) !important;
+  border: 2.5px solid #ffd700 !important;
+}
+
+.user-avatar.aura-cyan,
+.user-avatar.aura-electric {
+  box-shadow: 0 0 16px rgba(0, 238, 252, 0.95) !important;
+  border: 2px solid #00eefc !important;
+}
+
+.user-avatar.aura-flame,
+.user-avatar.aura-fire {
+  box-shadow: 0 0 16px rgba(255, 80, 110, 0.95) !important;
+  border: 2px solid #ff506e !important;
+}
+
+.user-avatar.aura-void,
+.user-avatar.aura-purple {
+  box-shadow: 0 0 16px rgba(160, 120, 255, 0.95) !important;
+  border: 2px solid #a078ff !important;
+}
+
+.user-avatar.aura-sakura {
+  box-shadow: 0 0 16px rgba(255, 182, 193, 0.95) !important;
+  border: 2px solid #ffdadb !important;
+}
+
+.user-avatar.aura-default,
+.user-avatar.aura-neon {
+  box-shadow: 0 0 12px rgba(0, 238, 252, 0.5) !important;
+  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ========================================================
+   RESPONSIVE HEADER & MOBILE TOP BAR REFINEMENTS
+   ======================================================== */
+#siteHeader {
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+/* Strictly hide top bar Logout button on mobile and tablet */
+@media (max-width: 1023px) {
+  #headerLogoutBtn,
+  .user-profile-menu #headerLogoutBtn,
+  #masterLogoutBtn {
+    display: none !important;
+  }
+}
+
+/* Hide admin text button in top bar on narrow mobile view (<640px) */
+@media (max-width: 639px) {
+  .user-profile-menu a[href*="admin.html"],
+  #authHeader a[href*="admin.html"],
+  .profile-name-text {
+    display: none !important;
+  }
+
+  .user-profile-menu {
+    gap: 6px !important;
+  }
+}
+
+/* Empty Hall of Fame Card Responsive Scaling */
+@media (max-width: 768px) {
+  .fame-empty-inner {
+    padding: 10px 14px !important;
+    gap: 4px !important;
+  }
+  .fame-empty-icon {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+  }
+  .fame-empty-title {
+    font-size: 1.3rem !important;
+  }
+  .fame-empty-hint {
+    font-size: 1.05rem !important;
+  }
+}
+
+/* Universal No-Horizontal-Scroll Enforcer */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden !important;
+}
