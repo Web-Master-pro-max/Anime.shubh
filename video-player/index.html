@@ -509,7 +509,8 @@
                     <!-- Watch Party (Sync Room) - Hidden in tight player bar; dedicated button is on page below player -->
                     <button
                       class="control-btn watch-party-btn party-btn p-2 rounded-full text-on-surface hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors cursor-pointer hidden"
-                      id="watch-party-btn" aria-label="Watch Party" title="Watch Party (Watch with Friends)" style="display: none !important;">
+                      id="watch-party-btn" aria-label="Watch Party" title="Watch Party (Watch with Friends)"
+                      style="display: none !important;">
                       <span class="material-symbols-outlined text-[20px]">group</span>
                     </button>
 
@@ -635,25 +636,34 @@
 
               <!-- In-Player Tabbed Micro-Dock Settings Panel (Cinema Redesign Spec) -->
               <div class="settings-mobile-backdrop" id="settings-mobile-backdrop"></div>
-              <div class="settings-dropdown compact-popover-shell" id="player-settings-dropdown" aria-label="Playback Settings">
+              <div class="settings-dropdown compact-popover-shell" id="player-settings-dropdown"
+                aria-label="Playback Settings">
                 <!-- Mobile Drag / Dismiss Grabber Handle -->
                 <div class="mobile-grab-handle sm:hidden"></div>
 
                 <!-- 3 Top Tabs: Stream, Subtitles, Smart -->
-                <div class="settings-tab-bar grid grid-cols-3 border-b border-white/10 bg-white/[0.03] p-1 gap-1 flex-shrink-0">
-                  <button type="button" class="settings-tab-btn active min-h-[38px] rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors" data-tab="stream">
+                <div
+                  class="settings-tab-bar grid grid-cols-3 border-b border-white/10 bg-white/[0.03] p-1 gap-1 flex-shrink-0">
+                  <button type="button"
+                    class="settings-tab-btn active min-h-[38px] rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                    data-tab="stream">
                     <span class="material-symbols-outlined text-[15px]">tune</span> Stream
                   </button>
-                  <button type="button" class="settings-tab-btn min-h-[38px] rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors" data-tab="subs">
+                  <button type="button"
+                    class="settings-tab-btn min-h-[38px] rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                    data-tab="subs">
                     <span class="material-symbols-outlined text-[15px]">closed_caption</span> Subtitles
                   </button>
-                  <button type="button" class="settings-tab-btn min-h-[38px] rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors" data-tab="smart">
+                  <button type="button"
+                    class="settings-tab-btn min-h-[38px] rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                    data-tab="smart">
                     <span class="material-symbols-outlined text-[15px]">bolt</span> Smart
                   </button>
                 </div>
 
                 <!-- TAB 1: STREAM -->
-                <div class="settings-tab-pane p-3 flex flex-col gap-3 popover-scroll-body custom-scrollbar anim-sub-in" data-tab-pane="stream" id="settings-pane-stream">
+                <div class="settings-tab-pane p-3 flex flex-col gap-3 popover-scroll-body custom-scrollbar anim-sub-in"
+                  data-tab-pane="stream" id="settings-pane-stream">
                   <!-- Audio Track & Server Route -->
                   <div class="settings-group">
                     <div class="flex items-center justify-between text-[10px] font-mono uppercase text-slate-400 mb-1">
@@ -661,7 +671,8 @@
                       <span class="text-secondary-container font-semibold" id="settings-server-badge">Server 1</span>
                     </div>
                     <div class="grid grid-cols-2 gap-1.5 mb-1.5" id="settings-audio-pills">
-                      <button type="button" class="micro-chip settings-pill active" data-audio-type="sub" id="pill-audio-sub">
+                      <button type="button" class="micro-chip settings-pill active" data-audio-type="sub"
+                        id="pill-audio-sub">
                         <i class="fas fa-closed-captioning"></i> Japanese (Sub)
                       </button>
                       <button type="button" class="micro-chip settings-pill" data-audio-type="dub" id="pill-audio-dub">
@@ -672,7 +683,8 @@
                       <button type="button" class="micro-chip settings-pill active" data-server-id="s3">S1 HD</button>
                       <button type="button" class="micro-chip settings-pill" data-server-id="local">S2 Dub</button>
                       <button type="button" class="micro-chip settings-pill" data-server-id="server-3">S3 CDN</button>
-                      <button type="button" class="micro-chip settings-pill" data-server-id="server-4">S4 Direct</button>
+                      <button type="button" class="micro-chip settings-pill" data-server-id="server-4">S4
+                        Direct</button>
                     </div>
                   </div>
 
@@ -709,13 +721,17 @@
                 </div>
 
                 <!-- TAB 2: SUBTITLES -->
-                <div class="settings-tab-pane p-3 flex flex-col gap-2.5 popover-scroll-body custom-scrollbar anim-sub-in" data-tab-pane="subs" id="settings-pane-subs" style="display: none;">
+                <div
+                  class="settings-tab-pane p-3 flex flex-col gap-2.5 popover-scroll-body custom-scrollbar anim-sub-in"
+                  data-tab-pane="subs" id="settings-pane-subs" style="display: none;">
                   <div class="settings-group">
                     <div class="flex items-center justify-between text-[10px] font-mono uppercase text-slate-400 mb-1">
                       <span>Caption Track</span>
                       <span class="text-secondary-container font-semibold current-sub-badge">OFF</span>
                     </div>
-                    <div class="sub-track-list flex flex-col gap-1 max-h-[125px] overflow-y-auto custom-scrollbar p-1 rounded-xl bg-white/[0.02] border border-white/5" id="settings-subtitle-pills">
+                    <div
+                      class="sub-track-list flex flex-col gap-1 max-h-[125px] overflow-y-auto custom-scrollbar p-1 rounded-xl bg-white/[0.02] border border-white/5"
+                      id="settings-subtitle-pills">
                       <button type="button" class="settings-pill sub-track-pill active" data-subtitle="off">
                         <span class="flex items-center gap-2 truncate min-w-0">
                           <i class="fas fa-ban text-[11px] opacity-70 flex-shrink-0"></i>
@@ -729,7 +745,9 @@
                   <div class="settings-group">
                     <div class="flex items-center justify-between text-[10px] font-mono uppercase text-slate-400 mb-1">
                       <span>Subtitle Appearance</span>
-                      <button type="button" class="settings-inline-btn text-[10px] text-primary hover:underline flex items-center gap-0.5 cursor-pointer" id="open-caption-settings" title="Full Customizer Modal">
+                      <button type="button"
+                        class="settings-inline-btn text-[10px] text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                        id="open-caption-settings" title="Full Customizer Modal">
                         <span class="material-symbols-outlined text-[13px]">tune</span> Customizer
                       </button>
                     </div>
@@ -738,26 +756,41 @@
                       <div class="flex items-center justify-between min-h-[32px]">
                         <span class="text-[11px] text-slate-400 font-medium">Text Color</span>
                         <div class="flex items-center gap-2" id="settings-sub-color-row">
-                          <button type="button" class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform scale-110 ring-2 ring-secondary-container" data-color="#ffffff" title="White" style="background:#ffffff;"></button>
-                          <button type="button" class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform opacity-75 hover:opacity-100" data-color="#00eefc" title="Cyan" style="background:#00eefc;"></button>
-                          <button type="button" class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform opacity-75 hover:opacity-100" data-color="#fde047" title="Yellow" style="background:#fde047;"></button>
-                          <button type="button" class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform opacity-75 hover:opacity-100" data-color="#ff506e" title="Pink" style="background:#ff506e;"></button>
+                          <button type="button"
+                            class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform scale-110 ring-2 ring-secondary-container"
+                            data-color="#ffffff" title="White" style="background:#ffffff;"></button>
+                          <button type="button"
+                            class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform opacity-75 hover:opacity-100"
+                            data-color="#00eefc" title="Cyan" style="background:#00eefc;"></button>
+                          <button type="button"
+                            class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform opacity-75 hover:opacity-100"
+                            data-color="#fde047" title="Yellow" style="background:#fde047;"></button>
+                          <button type="button"
+                            class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform opacity-75 hover:opacity-100"
+                            data-color="#ff506e" title="Pink" style="background:#ff506e;"></button>
                         </div>
                       </div>
                       <div class="flex items-center justify-between min-h-[32px]">
                         <span class="text-[11px] text-slate-400 font-medium">Font Size</span>
                         <div class="flex items-center gap-1" id="settings-sub-size-row">
-                          <button type="button" class="micro-chip sub-size-pill !min-h-[28px] !px-2.5 !text-[10px]" data-size="14px">S</button>
-                          <button type="button" class="micro-chip sub-size-pill active !min-h-[28px] !px-2.5 !text-[10px]" data-size="18px">M</button>
-                          <button type="button" class="micro-chip sub-size-pill !min-h-[28px] !px-2.5 !text-[10px]" data-size="24px">L</button>
+                          <button type="button" class="micro-chip sub-size-pill !min-h-[28px] !px-2.5 !text-[10px]"
+                            data-size="14px">S</button>
+                          <button type="button"
+                            class="micro-chip sub-size-pill active !min-h-[28px] !px-2.5 !text-[10px]"
+                            data-size="18px">M</button>
+                          <button type="button" class="micro-chip sub-size-pill !min-h-[28px] !px-2.5 !text-[10px]"
+                            data-size="24px">L</button>
                         </div>
                       </div>
                       <div class="flex items-center justify-between min-h-[32px]">
                         <span class="text-[11px] text-slate-400 font-medium">Backdrop</span>
                         <div class="flex items-center gap-1" id="settings-sub-bg-row">
-                          <button type="button" class="micro-chip sub-bg-pill !min-h-[28px] !px-2 !text-[10px]" data-bg="0">0%</button>
-                          <button type="button" class="micro-chip sub-bg-pill active !min-h-[28px] !px-2 !text-[10px]" data-bg="0.5">50%</button>
-                          <button type="button" class="micro-chip sub-bg-pill !min-h-[28px] !px-2 !text-[10px]" data-bg="0.8">80%</button>
+                          <button type="button" class="micro-chip sub-bg-pill !min-h-[28px] !px-2 !text-[10px]"
+                            data-bg="0">0%</button>
+                          <button type="button" class="micro-chip sub-bg-pill active !min-h-[28px] !px-2 !text-[10px]"
+                            data-bg="0.5">50%</button>
+                          <button type="button" class="micro-chip sub-bg-pill !min-h-[28px] !px-2 !text-[10px]"
+                            data-bg="0.8">80%</button>
                         </div>
                       </div>
                     </div>
@@ -765,7 +798,9 @@
                 </div>
 
                 <!-- TAB 3: SMART -->
-                <div class="settings-tab-pane p-3 flex flex-col gap-1.5 popover-scroll-body custom-scrollbar anim-sub-in" data-tab-pane="smart" id="settings-pane-smart" style="display: none;">
+                <div
+                  class="settings-tab-pane p-3 flex flex-col gap-1.5 popover-scroll-body custom-scrollbar anim-sub-in"
+                  data-tab-pane="smart" id="settings-pane-smart" style="display: none;">
                   <div class="flex items-center justify-between min-h-[42px] text-xs">
                     <div>
                       <div class="font-semibold text-white">Auto-Skip Intro (OP)</div>
@@ -1333,15 +1368,15 @@
        CORE VIDEO PLAYER SCRIPTS (Exact dependency order preserved)
        ========================================================================= -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
-  <script src="../navbar.js"></script>
-  <script src="/video-player/script.js"></script>
+  <script src="/navbar.js?v=2.6"></script>
+  <script src="/video-player/script.js?v=2.6"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     if (typeof io === 'undefined') {
       document.write('<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"><\/script>');
     }
   </script>
-  <script src="/video-player/watch-party.js"></script>
+  <script src="/video-player/watch-party.js?v=2.6"></script>
 
   <script>
     // Sync exterior title with internal player title
