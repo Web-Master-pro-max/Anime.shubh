@@ -1486,6 +1486,9 @@ document.addEventListener('DOMContentLoaded', async function () {
               return;
             }
           }
+          if (data.id === -1 && currentSubtitleTrack >= 0) {
+            return;
+          }
           currentSubtitleTrack = data.id;
           document.querySelectorAll('.subtitle-option, #settings-subtitle-pills .settings-pill').forEach(option => {
             option.classList.remove('active');
@@ -1494,7 +1497,39 @@ document.addEventListener('DOMContentLoaded', async function () {
               option.classList.add('active');
             }
           });
+          updateActiveSubtitleDisplay();
         });
+
+        if (Hls.Events.CUES_PARSED) {
+          hls.on(Hls.Events.CUES_PARSED, function (event, data) {
+            if (currentSubtitleTrack >= 0 && data && data.cues && data.cues.length > 0) {
+              if (!activeSubCues || activeSubCues.length === 0) {
+                const parsed = [];
+                for (let i = 0; i < data.cues.length; i++) {
+                  const c = data.cues[i];
+                  parsed.push({
+                    start: c.startTime,
+                    end: c.endTime,
+                    text: c.text || ''
+                  });
+                }
+                if (parsed.length > 0) {
+                  activeSubCues = (activeSubCues || []).concat(parsed);
+                  activeSubCues.sort((a, b) => a.start - b.start);
+                  updateActiveSubtitleDisplay();
+                }
+              }
+            }
+          });
+        }
+
+        if (Hls.Events.SUBTITLE_FRAG_PROCESSED) {
+          hls.on(Hls.Events.SUBTITLE_FRAG_PROCESSED, function () {
+            if (currentSubtitleTrack >= 0) {
+              updateActiveSubtitleDisplay();
+            }
+          });
+        }
 
         hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
           if (hls.autoLevelEnabled || hls.currentLevel === -1) {
@@ -3047,17 +3082,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
           }
         }
-        hideCaption();
-        return;
-      }
-
-      // 1b. Auto-fetch direct VTT cues if track is active but cues haven't loaded yet
-      if (currentSubtitleTrack >= 0 && subtitleTracks && subtitleTracks[currentSubtitleTrack]) {
-        const trk = subtitleTracks[currentSubtitleTrack];
-        const subCand = trk.url || trk.file || trk.rawUrl || '';
-        if (subCand && !activeSubUrl) {
-          setSubtitle(currentSubtitleTrack);
-        }
       }
 
       // 2. Native textTracks fallback (from HLS.js or <track>)
@@ -3074,6 +3098,19 @@ document.addEventListener('DOMContentLoaded', async function () {
               return;
             }
           }
+        }
+      }
+
+      // 3. Fallback: Check custom-subtitle-track element directly
+      const customTrkEl = document.getElementById('custom-subtitle-track');
+      if (customTrkEl && customTrkEl.track && customTrkEl.track.activeCues && customTrkEl.track.activeCues.length > 0) {
+        const activeTexts = [];
+        for (let c = 0; c < customTrkEl.track.activeCues.length; c++) {
+          if (customTrkEl.track.activeCues[c].text) activeTexts.push(customTrkEl.track.activeCues[c].text);
+        }
+        if (activeTexts.length > 0) {
+          showCaption(activeTexts.join('\n'));
+          return;
         }
       }
 
@@ -3230,83 +3267,17 @@ document.addEventListener('DOMContentLoaded', async function () {
         const trackInfo = subtitleTracks[trackIndex];
         const trackName = getTrackDisplayName(trackInfo, trackIndex, true);
 
+        // 1. Immediately reset prior cues and clear caption display
+        activeSubCues = [];
+        currentRenderedCaptionText = '';
+        hideCaption();
         removeCustomTrackElement();
         detachAllTextTrackListeners();
 
-        // 1. Activate in HLS.js if stream uses HLS in-band subtitles
-        if (hls && typeof hls.subtitleTrack !== 'undefined') {
-          try { hls.subtitleTrack = trackIndex; } catch (e) { }
-        }
-
-        // 2. Fetch and parse direct subtitle track (WebVTT, ASS, SRT)
-        const subCandidate = trackInfo.url || trackInfo.file || trackInfo.rawUrl || '';
-        if (subCandidate && !subCandidate.includes('.m3u8')) {
-          let rawUrl = '';
-          if (subCandidate.startsWith('http://') || subCandidate.startsWith('https://')) {
-            rawUrl = subCandidate;
-          } else {
-            const origin = (SERVER_ORIGIN && SERVER_ORIGIN.trim())
-              ? SERVER_ORIGIN
-              : (window.location.protocol === 'file:' || !window.location.origin || window.location.origin === 'null' ? 'http://localhost:8000' : window.location.origin);
-            rawUrl = `${origin}${subCandidate.startsWith('/') ? '' : '/'}${subCandidate}`;
-          }
-          const fetchUrl = sanitizeStreamUrl(rawUrl);
-          activeSubUrl = fetchUrl;
-          fetch(fetchUrl)
-            .then(r => {
-              if (!r.ok) throw new Error(`HTTP ${r.status}`);
-              return r.text();
-            })
-            .then(text => {
-              if (activeSubUrl === fetchUrl) {
-                activeSubCues = parseVttCues(text);
-                console.log(`[Player Subtitles] Subtitle engine loaded ${activeSubCues.length} cues for: ${trackName}`);
-                currentRenderedCaptionText = '';
-                updateActiveSubtitleDisplay();
-                if (!detectedIntroOutro?.introVerified || !detectedIntroOutro?.outroVerified) {
-                  detectedIntroOutro = computeIntroOutroWindows();
-                  updateTimelineMarkers();
-                }
-              }
-            })
-            .catch(err => {
-              console.warn('[Player Subtitles] Direct fetch failed:', err);
-              // Fallback: If fetch failed due to origin/port mismatch, retry with backend host
-              if (subCandidate.startsWith('/api/') && !fetchUrl.includes(':8000')) {
-                const fbUrl = `http://localhost:8000${subCandidate}`;
-                fetch(fbUrl)
-                  .then(r => r.text())
-                  .then(t => {
-                    activeSubCues = parseVttCues(t);
-                    console.log(`[Player Subtitles] Fallback loaded ${activeSubCues.length} cues`);
-                    currentRenderedCaptionText = '';
-                    updateActiveSubtitleDisplay();
-                  })
-                  .catch(() => { });
-              }
-            });
-
-          // Add native <track> with mode = 'hidden' for browser synchronization fallback
-          try {
-            const trackEl = document.createElement('track');
-            trackEl.id = 'custom-subtitle-track';
-            trackEl.kind = 'subtitles';
-            trackEl.label = trackName;
-            trackEl.srclang = trackInfo.lang || 'en';
-            trackEl.src = fetchUrl;
-            trackEl.default = true;
-            mainVideo.appendChild(trackEl);
-            if (trackEl.track) {
-              trackEl.track.mode = 'hidden';
-              trackEl.track.oncuechange = function () {
-                updateActiveSubtitleDisplay();
-              };
-            }
-          } catch (trackErr) { }
-        }
-
         currentSubtitleTrack = trackIndex;
         try { localStorage.setItem('infinx_subtitles_enabled', 'true'); } catch (e) { }
+
+        // Update badge and text labels across UI immediately
         document.querySelectorAll('.current-subtitle').forEach(el => { el.textContent = trackName; });
         if (subtitleBtn) {
           subtitleBtn.classList.add('active');
@@ -3322,6 +3293,120 @@ document.addEventListener('DOMContentLoaded', async function () {
             subtitleBtn.innerHTML = `<span class="material-symbols-outlined text-[16px]">closed_caption</span><span class="font-bold current-sub-badge text-[11px]">${shortBadge}</span>`;
           }
         }
+
+        // 2. Activate in HLS.js if stream uses HLS in-band subtitles
+        if (hls && typeof hls.subtitleTrack !== 'undefined') {
+          try { hls.subtitleTrack = trackIndex; } catch (e) { }
+        }
+
+        // Enable matching text tracks in mainVideo.textTracks with 'hidden' mode so browser loads cues
+        if (mainVideo && mainVideo.textTracks && mainVideo.textTracks.length > 0) {
+          for (let i = 0; i < mainVideo.textTracks.length; i++) {
+            const tt = mainVideo.textTracks[i];
+            try {
+              if (i === trackIndex || (tt.label && tt.label.toLowerCase() === trackName.toLowerCase())) {
+                tt.mode = 'hidden';
+                tt.oncuechange = function () {
+                  updateActiveSubtitleDisplay();
+                };
+              }
+            } catch (e) { }
+          }
+        }
+
+        // 3. Fetch and parse direct subtitle track (WebVTT, ASS, SRT)
+        const subCandidate = trackInfo.url || trackInfo.file || trackInfo.rawUrl || '';
+        if (subCandidate && !subCandidate.includes('.m3u8')) {
+          let rawUrl = '';
+          if (subCandidate.startsWith('http://') || subCandidate.startsWith('https://')) {
+            rawUrl = subCandidate;
+          } else {
+            const origin = (SERVER_ORIGIN && SERVER_ORIGIN.trim())
+              ? SERVER_ORIGIN
+              : (window.location.protocol === 'file:' || !window.location.origin || window.location.origin === 'null' ? 'http://localhost:8000' : window.location.origin);
+            rawUrl = `${origin}${subCandidate.startsWith('/') ? '' : '/'}${subCandidate}`;
+          }
+          const fetchUrl = sanitizeStreamUrl(rawUrl);
+          activeSubUrl = fetchUrl;
+
+          const applyParsedCues = (text) => {
+            if (activeSubUrl === fetchUrl && currentSubtitleTrack === trackIndex) {
+              activeSubCues = parseVttCues(text);
+              console.log(`[Player Subtitles] Subtitle engine loaded ${activeSubCues.length} cues for: ${trackName}`);
+              currentRenderedCaptionText = '';
+              updateActiveSubtitleDisplay();
+              if (!detectedIntroOutro?.introVerified || !detectedIntroOutro?.outroVerified) {
+                detectedIntroOutro = computeIntroOutroWindows();
+                updateTimelineMarkers();
+              }
+            }
+          };
+
+          fetch(fetchUrl)
+            .then(r => {
+              if (!r.ok) throw new Error(`HTTP ${r.status}`);
+              return r.text();
+            })
+            .then(text => {
+              applyParsedCues(text);
+            })
+            .catch(err => {
+              console.warn('[Player Subtitles] Direct fetch failed, attempting proxy fallback:', err);
+              // Fallback 1: Backend proxy with encoded target url
+              const proxyUrl = `/api/lunarx/proxy/subtitle?url=${encodeURIComponent(subCandidate)}`;
+              fetch(proxyUrl)
+                .then(r => {
+                  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                  return r.text();
+                })
+                .then(text => {
+                  applyParsedCues(text);
+                })
+                .catch(proxyErr => {
+                  console.warn('[Player Subtitles] Proxy fallback failed:', proxyErr);
+                  // Fallback 2: Localhost 8000
+                  if (subCandidate.startsWith('/api/') && !fetchUrl.includes(':8000')) {
+                    fetch(`http://localhost:8000${subCandidate}`)
+                      .then(r => r.text())
+                      .then(t => applyParsedCues(t))
+                      .catch(() => { });
+                  }
+                });
+            });
+
+          // Add native <track> with mode = 'hidden' for browser synchronization fallback
+          try {
+            const trackEl = document.createElement('track');
+            trackEl.id = 'custom-subtitle-track';
+            trackEl.kind = 'subtitles';
+            trackEl.label = trackName;
+            trackEl.srclang = trackInfo.lang || 'en';
+            trackEl.src = fetchUrl;
+            trackEl.default = true;
+            trackEl.addEventListener('load', function () {
+              if ((!activeSubCues || activeSubCues.length === 0) && trackEl.track && trackEl.track.cues && trackEl.track.cues.length > 0) {
+                const cues = [];
+                for (let i = 0; i < trackEl.track.cues.length; i++) {
+                  const c = trackEl.track.cues[i];
+                  cues.push({ start: c.startTime, end: c.endTime, text: c.text });
+                }
+                activeSubCues = cues;
+                updateActiveSubtitleDisplay();
+              }
+            });
+            mainVideo.appendChild(trackEl);
+            if (trackEl.track) {
+              trackEl.track.mode = 'hidden';
+              trackEl.track.oncuechange = function () {
+                updateActiveSubtitleDisplay();
+              };
+            }
+          } catch (trackErr) { }
+        } else {
+          // In-band HLS or non-direct stream subtitle track
+          activeSubUrl = subCandidate || `hls-sub-${trackIndex}`;
+        }
+
         showPlayerToast(`Subtitles: ${trackName}`);
       }
 
@@ -4596,7 +4681,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     // Unified Scaling, Aspect Ratio & Crop Manager
-    const fitScreenBtn = document.querySelector('.fit-screen-btn');
+    const fitScreenBtn = document.getElementById('aspect-ratio-toggle-btn') || document.querySelector('.fit-screen-btn');
     const fitModes = ['cover', 'contain', 'fill'];
     let currentFitMode = localStorage.getItem('infinx_video_fit_mode') || 'cover';
     let currentAspectRatio = localStorage.getItem('infinx_video_aspect_ratio') || 'default';
@@ -6641,17 +6726,11 @@ document.addEventListener('DOMContentLoaded', async function () {
               break;
             }
           }
-          currentSubtitleTrack = showingTrackIndex;
-
-          document.querySelectorAll('.subtitle-option').forEach(option => {
-            option.classList.remove('active');
-            const optionIndex = option.getAttribute('data-subtitle');
-            if (showingTrackIndex === -1 && optionIndex === 'off') {
-              option.classList.add('active');
-            } else if (parseInt(optionIndex) === showingTrackIndex) {
-              option.classList.add('active');
-            }
-          });
+          // Only switch if a track was explicitly set to 'showing' through native controls.
+          // Never override an active custom subtitle track when tracks are kept in 'hidden' mode for custom overlay styling.
+          if (showingTrackIndex !== -1 && showingTrackIndex !== currentSubtitleTrack) {
+            setSubtitle(showingTrackIndex);
+          }
         });
       }
 
@@ -7160,3 +7239,4 @@ document.addEventListener('DOMContentLoaded', async function () {
     initCaptionSettingsEngine();
   }
 })();
+s

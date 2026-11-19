@@ -513,12 +513,12 @@
                       <span class="material-symbols-outlined text-[20px]">group</span>
                     </button>
 
-                    <!-- Theater Wide / Fit Screen Mode Toggle (Only on wide desktop, handled in Settings on compact) -->
+                    <!-- Aspect Ratio / Screen Fit Mode Toggle -->
                     <button
-                      class="control-btn fit-screen-btn p-2 rounded-full text-on-surface hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors hidden xl:inline-flex cursor-pointer"
+                      class="control-btn fit-screen-btn p-2 rounded-full text-on-surface hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors cursor-pointer"
                       id="aspect-ratio-toggle-btn" aria-label="Toggle Screen Fit"
                       title="Screen Fit: Contain / Cover / Stretch">
-                      <span class="material-symbols-outlined text-[20px]">crop_landscape</span>
+                      <i class="fas fa-expand-arrows-alt"></i>
                     </button>
 
                     <!-- Episode Playlist Drawer (Removed as requested) -->
@@ -631,7 +631,7 @@
               </div>
 
               <!-- Custom caption overlay (JS-rendered for consistent styling across PC & Mobile) -->
-              <div id="caption-overlay" class="caption-overlay" aria-hidden="true"></div>
+              <div id="caption-overlay" class="caption-overlay hidden" aria-hidden="true"></div>
 
               <!-- In-Player Tabbed Micro-Dock Settings Panel (Cinema Redesign Spec) -->
               <div class="settings-mobile-backdrop" id="settings-mobile-backdrop"></div>

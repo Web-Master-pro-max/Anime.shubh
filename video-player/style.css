@@ -4944,6 +4944,7 @@ input:checked+.slider:before {
   position: absolute;
   bottom: 105px;
   left: 50%;
+  right: auto !important;
   transform: translateX(-50%);
   z-index: 60 !important;
   pointer-events: none !important;
@@ -4966,6 +4967,22 @@ input:checked+.slider:before {
 .video-player:hover .caption-overlay,
 .custom-controls:not(.hidden)~.caption-overlay {
   bottom: 105px;
+}
+
+@media (max-width: 640px) {
+  .caption-overlay {
+    bottom: 75px;
+    width: 94%;
+  }
+  .custom-controls.hidden~.caption-overlay,
+  .video-player.controls-hidden .caption-overlay,
+  .video-player:not(:hover) .caption-overlay {
+    bottom: 25px;
+  }
+  .video-player:hover .caption-overlay,
+  .custom-controls:not(.hidden)~.caption-overlay {
+    bottom: 75px;
+  }
 }
 
 .caption-overlay.pos-raised {
@@ -6731,6 +6748,15 @@ video::-webkit-media-text-track-background {
     line-height: 1 !important;
   }
 
+  .custom-controls .control-btn i,
+  .custom-controls .control-btn .fas {
+    font-size: 15px !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
   /* Hero Play/Pause Button on mobile */
   .custom-controls .control-btn.play-pause,
   .custom-controls .play-pause {
@@ -6843,10 +6869,38 @@ video::-webkit-media-text-track-background {
     display: none !important;
   }
 
-  /* Hide watch-party & fit-screen in video controls bar on mobile (accessible on page / inside settings) */
-  .custom-controls .watch-party-btn,
-  .custom-controls .fit-screen-btn {
+  /* Hide watch-party on mobile controls bar (accessible below player on page) */
+  .custom-controls .watch-party-btn {
     display: none !important;
+  }
+
+  /* In non-fullscreen portrait mobile, hide fit-screen to keep the compact 16:9 bar clean */
+  .video-player:not(.is-fullscreen):not(:fullscreen):not(:-webkit-full-screen) .custom-controls .fit-screen-btn {
+    display: none !important;
+  }
+
+  /* Always show Aspect Ratio / Screen Fit button in Fullscreen on mobile & desktop */
+  :fullscreen .custom-controls .fit-screen-btn,
+  :-webkit-full-screen .custom-controls .fit-screen-btn,
+  :-moz-full-screen .custom-controls .fit-screen-btn,
+  :-ms-fullscreen .custom-controls .fit-screen-btn,
+  .video-player:fullscreen .custom-controls .fit-screen-btn,
+  .video-player:-webkit-full-screen .custom-controls .fit-screen-btn,
+  .video-player.is-fullscreen .custom-controls .fit-screen-btn,
+  body.is-player-fullscreen .custom-controls .fit-screen-btn,
+  .video-player.portrait-fullscreen .custom-controls .fit-screen-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Also show Aspect Ratio / Screen Fit in landscape orientation on mobile */
+  @media (orientation: landscape) {
+    .custom-controls .fit-screen-btn {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
   }
 }
 
