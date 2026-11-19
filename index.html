@@ -3,10 +3,12 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" name="viewport" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover"
+    name="viewport" />
   <meta content="web_standard" name="shell-type" />
   <meta name="theme-color" content="#ff506e" />
-  <meta name="description" content="Infinx Anime - Theatre Grade OLED Anime & Movie Streaming. Pure AMOLED zero-floor masterings, uncompressed audio bitrate, and simultaneous Tokyo transmissions." />
+  <meta name="description"
+    content="Infinx Anime - Theatre Grade OLED Anime & Movie Streaming. Pure AMOLED zero-floor masterings, uncompressed audio bitrate, and simultaneous Tokyo transmissions." />
   <title>Infinx Anime | Theatre Grade OLED Anime Streaming</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
@@ -15,11 +17,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://s4.anilist.co" crossorigin />
   <link rel="dns-prefetch" href="https://s4.anilist.co" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap"
+    rel="stylesheet" />
 
   <!-- Google Material Symbols Outlined -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
 
   <!-- Font Awesome 6.4.0 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -146,6 +152,7 @@
         scrollbar-width: thin;
         scrollbar-color: rgba(255, 255, 255, 0.22) #0e0e0e;
       }
+
       body {
         margin: 0;
         padding: 0;
@@ -155,8 +162,14 @@
         overscroll-behavior-y: auto;
         -webkit-font-smoothing: antialiased;
       }
-      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
-      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+
+      .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      .pt-safe {
+        padding-top: env(safe-area-inset-top, 0px);
+      }
     }
 
     /* OLED Precision Cyberpunk Scrollbar */
@@ -164,15 +177,18 @@
       width: 8px;
       height: 8px;
     }
+
     ::-webkit-scrollbar-track {
       background: #0e0e0e;
     }
+
     ::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.22);
       border-radius: 4px;
       border: 2px solid #0e0e0e;
       transition: background 0.2s ease;
     }
+
     ::-webkit-scrollbar-thumb:hover {
       background: #ff506e;
       box-shadow: 0 0 12px rgba(255, 80, 110, 0.6);
@@ -191,6 +207,7 @@
       justify-content: center;
       padding: 1rem;
     }
+
     .modal.active {
       display: flex;
     }
@@ -201,6 +218,7 @@
       display: inline-flex;
       align-items: center;
     }
+
     .nav-item-dropdown:hover .dropdown-menu,
     .nav-item-dropdown.active .dropdown-menu {
       opacity: 1;
@@ -208,11 +226,13 @@
       pointer-events: auto;
       transform: translateX(-50%) translateY(0) scale(1);
     }
+
     .nav-item-dropdown:hover .dropdown-chevron,
     .nav-item-dropdown.active .dropdown-chevron {
       transform: rotate(180deg);
       color: #00eefc;
     }
+
     .dropdown-menu {
       position: absolute;
       top: calc(100% + 8px);
@@ -231,12 +251,15 @@
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 1000;
     }
+
     .dropdown-menu.genres-menu {
       min-width: 350px;
     }
+
     .dropdown-menu.categories-menu {
       min-width: 250px;
     }
+
     .dropdown-item {
       display: flex;
       align-items: center;
@@ -249,12 +272,14 @@
       font-weight: 600;
       transition: all 0.2s ease;
     }
+
     .dropdown-item:hover {
       background: rgba(0, 238, 252, 0.12);
       color: #ffffff;
       transform: translateX(3px);
       box-shadow: 0 0 14px rgba(0, 238, 252, 0.25);
     }
+
     .dropdown-item i {
       font-size: 14px;
       color: #ff506e;
@@ -262,6 +287,7 @@
       text-align: center;
       transition: all 0.2s ease;
     }
+
     .dropdown-item:hover i {
       color: #00eefc;
       transform: scale(1.15);
@@ -278,10 +304,12 @@
       pointer-events: none;
       transition: opacity 0.3s ease;
     }
+
     .mobile-drawer-overlay.active {
       opacity: 1;
       pointer-events: auto;
     }
+
     .mobile-drawer {
       position: fixed;
       top: 0;
@@ -296,6 +324,7 @@
       transform: translateX(100%);
       transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .mobile-drawer.active {
       transform: translateX(0);
     }
@@ -310,6 +339,7 @@
       padding: 1rem;
       flex-direction: column;
     }
+
     .mobile-search-overlay.active {
       display: flex;
     }
@@ -319,6 +349,7 @@
       max-height: 480px;
       overflow-y: auto;
     }
+
     .search-item {
       display: flex;
       align-items: center;
@@ -328,9 +359,11 @@
       transition: background 0.2s ease;
       cursor: pointer;
     }
+
     .search-item:hover {
       background: rgba(0, 238, 252, 0.1);
     }
+
     .search-poster {
       width: 44px;
       height: 60px;
@@ -348,6 +381,7 @@
       cursor: pointer;
       flex-shrink: 0;
     }
+
     @media (min-width: 640px) {
       .user-profile-menu {
         gap: 12px;
@@ -357,6 +391,7 @@
     .profile-name-text {
       display: none !important;
     }
+
     @media (min-width: 640px) {
       .profile-name-text {
         color: #fff;
@@ -373,14 +408,17 @@
         flex-shrink: 0;
       }
     }
+
     .profile-name-text:hover {
       color: #00eefc;
     }
+
     .profile-name-text i {
       color: #ff0055;
       font-size: 13px;
       filter: drop-shadow(0 0 6px rgba(255, 0, 85, 0.6));
     }
+
     @media (min-width: 640px) {
       .profile-name-text i {
         font-size: 15px;
@@ -416,6 +454,7 @@
       position: relative;
       flex-shrink: 0;
     }
+
     @media (min-width: 640px) {
       .user-avatar {
         width: 38px;
@@ -425,6 +464,7 @@
         font-size: 15px;
       }
     }
+
     .user-avatar img {
       width: 100%;
       height: 100%;
@@ -432,6 +472,7 @@
       border-radius: 50%;
       display: block;
     }
+
     .user-avatar:hover {
       transform: scale(1.08);
       box-shadow: 0 0 20px rgba(0, 238, 252, 0.7);
@@ -443,23 +484,32 @@
       box-shadow: 0 0 16px rgba(255, 183, 0, 0.95), inset 0 0 8px rgba(255, 183, 0, 0.5) !important;
       border: 2.5px solid #ffd700 !important;
     }
-    .user-avatar.aura-cyan, .user-avatar.aura-electric {
+
+    .user-avatar.aura-cyan,
+    .user-avatar.aura-electric {
       box-shadow: 0 0 16px rgba(0, 238, 252, 0.95) !important;
       border: 2px solid #00eefc !important;
     }
-    .user-avatar.aura-flame, .user-avatar.aura-fire {
+
+    .user-avatar.aura-flame,
+    .user-avatar.aura-fire {
       box-shadow: 0 0 16px rgba(255, 80, 110, 0.95) !important;
       border: 2px solid #ff506e !important;
     }
-    .user-avatar.aura-void, .user-avatar.aura-purple {
+
+    .user-avatar.aura-void,
+    .user-avatar.aura-purple {
       box-shadow: 0 0 16px rgba(160, 120, 255, 0.95) !important;
       border: 2px solid #a078ff !important;
     }
+
     .user-avatar.aura-sakura {
       box-shadow: 0 0 16px rgba(255, 182, 193, 0.95) !important;
       border: 2px solid #ffdadb !important;
     }
-    .user-avatar.aura-default, .user-avatar.aura-neon {
+
+    .user-avatar.aura-default,
+    .user-avatar.aura-neon {
       box-shadow: 0 0 12px rgba(0, 238, 252, 0.5) !important;
       border: 2px solid rgba(255, 255, 255, 0.4) !important;
     }
@@ -483,6 +533,7 @@
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       cursor: pointer;
     }
+
     .hero-pagination .swiper-pagination-bullet-active {
       width: 40px;
       height: 6px;
@@ -506,20 +557,26 @@
       padding-top: 4px;
       padding-bottom: 8px;
     }
+
     .continue-rail::-webkit-scrollbar {
       display: none;
     }
+
     .continue-card {
       flex: 0 0 138px !important;
       width: 138px !important;
       min-width: 138px !important;
       max-width: 138px !important;
+      height: auto !important;
+      align-self: flex-start !important;
       scroll-snap-align: start;
     }
+
     @media (min-width: 640px) {
       .continue-rail {
         gap: 16px;
       }
+
       .continue-card {
         flex: 0 0 160px !important;
         width: 160px !important;
@@ -527,6 +584,7 @@
         max-width: 160px !important;
       }
     }
+
     @media (min-width: 768px) {
       .continue-card {
         flex: 0 0 175px !important;
@@ -535,10 +593,12 @@
         max-width: 175px !important;
       }
     }
+
     @media (min-width: 1024px) {
       .continue-rail {
         gap: 20px;
       }
+
       .continue-card {
         flex: 0 0 190px !important;
         width: 190px !important;
@@ -569,6 +629,7 @@
       padding-top: 4px;
       padding-bottom: 12px;
     }
+
     .top10-slider:not(.swiper-initialized) .swiper-wrapper {
       display: flex;
       gap: 14px;
@@ -576,9 +637,11 @@
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
     }
+
     .top10-slider:not(.swiper-initialized) .swiper-wrapper::-webkit-scrollbar {
       display: none;
     }
+
     .top10-slider .swiper-slide {
       flex-shrink: 0;
       height: auto;
@@ -611,6 +674,7 @@
       background: #141729;
       border-radius: 12px 12px 0 0;
     }
+
     .top10-poster-wrap img {
       position: absolute;
       top: 0;
@@ -634,17 +698,19 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
       transform: translateZ(0);
       backface-visibility: hidden;
-      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), 
-                  box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1), 
-                  border-color 0.25s ease;
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.25s ease;
       will-change: transform, box-shadow;
     }
+
     .group:hover .top10-card-body,
     .top10-card-wrap:hover .top10-card-body {
       transform: translateY(-6px) scale(1.02);
       box-shadow: 0 16px 36px -8px rgba(0, 238, 252, 0.28), 0 0 18px rgba(255, 80, 110, 0.16);
       border-color: rgba(0, 238, 252, 0.5);
     }
+
     .top10-card-wrap:active .top10-card-body {
       transform: scale(0.98);
     }
@@ -666,6 +732,7 @@
       0% {
         background-position: -200% 0;
       }
+
       100% {
         background-position: 200% 0;
       }
@@ -673,13 +740,11 @@
 
     .skeleton,
     .skeleton-shimmer {
-      background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.03) 25%,
-        rgba(0, 238, 252, 0.08) 40%,
-        rgba(255, 80, 110, 0.08) 55%,
-        rgba(255, 255, 255, 0.03) 70%
-      ) !important;
+      background: linear-gradient(90deg,
+          rgba(255, 255, 255, 0.03) 25%,
+          rgba(0, 238, 252, 0.08) 40%,
+          rgba(255, 80, 110, 0.08) 55%,
+          rgba(255, 255, 255, 0.03) 70%) !important;
       background-size: 200% 100% !important;
       animation: skeletonShimmer 1.8s infinite linear !important;
       position: relative;
@@ -699,29 +764,50 @@
         opacity: 0;
         transform: translateY(22px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
+
     @keyframes heartPulse {
-      0% { transform: scale(1); }
-      35% { transform: scale(1.35); }
-      60% { transform: scale(0.9); }
-      100% { transform: scale(1); }
+      0% {
+        transform: scale(1);
+      }
+
+      35% {
+        transform: scale(1.35);
+      }
+
+      60% {
+        transform: scale(0.9);
+      }
+
+      100% {
+        transform: scale(1);
+      }
     }
+
     @keyframes cyberGlowPulse {
-      0%, 100% {
+
+      0%,
+      100% {
         box-shadow: 0 0 10px rgba(0, 238, 252, 0.4);
       }
+
       50% {
         box-shadow: 0 0 22px rgba(0, 238, 252, 0.85), 0 0 36px rgba(0, 238, 252, 0.35);
       }
     }
+
     @keyframes crimsonGlowPulse {
-      0%, 100% {
+
+      0%,
+      100% {
         box-shadow: 0 0 10px rgba(255, 80, 110, 0.4);
       }
+
       50% {
         box-shadow: 0 0 22px rgba(255, 80, 110, 0.85), 0 0 36px rgba(255, 80, 110, 0.35);
       }
@@ -729,15 +815,19 @@
 
     /* Hardware-Accelerated Fast Smooth Cards */
     .movie-card,
-    .continue-card,
     .category-card {
       content-visibility: auto;
       contain-intrinsic-size: 150px 290px;
+    }
+
+    .movie-card,
+    .continue-card,
+    .category-card {
       transform: translateZ(0);
       backface-visibility: hidden;
-      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), 
-                  box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1), 
-                  border-color 0.25s ease;
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.25s ease;
       will-change: transform, box-shadow;
     }
 
@@ -760,6 +850,7 @@
       transition: transform 8s cubic-bezier(0.16, 1, 0.3, 1);
       will-change: transform;
     }
+
     .hero-slider .swiper-slide-active .hero-bg-layer {
       transform: scale(1.06);
     }
@@ -772,18 +863,22 @@
     .btn-play {
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
     }
+
     .group:hover .btn-play {
       transform: scale(1.12);
       box-shadow: 0 0 22px #ff506e, 0 0 36px rgba(255, 80, 110, 0.5);
     }
 
     /* Interactive UI spring feedback */
-    .pill-btn, .tab-item {
+    .pill-btn,
+    .tab-item {
       transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .pill-btn:active {
       transform: scale(0.94);
     }
+
     .tab-item:active {
       transform: scale(0.88);
     }
@@ -803,6 +898,7 @@
       transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       will-change: opacity, transform;
     }
+
     .reveal-fade-up.in-view {
       opacity: 1;
       transform: translateY(0);
@@ -815,47 +911,60 @@
   </style>
 </head>
 
-<body class="bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen">
+<body
+  class="bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen">
 
   <!-- =========================================================================
        1. FIXED CYBERPUNK HEADER (Pixel-Perfect to Stitch)
        ========================================================================= -->
-  <header class="fixed top-0 left-0 right-0 z-50 w-full bg-surface-container-lowest/80 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.85)] border-b border-surface-container-high/40 transition-all" id="siteHeader">
-    <div class="h-16 sm:h-20 w-full max-w-full px-3 sm:px-gutter flex items-center justify-between gap-1.5 sm:gap-space-md">
+  <header
+    class="fixed top-0 left-0 right-0 z-50 w-full bg-surface-container-lowest/80 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.85)] border-b border-surface-container-high/40 transition-all"
+    id="siteHeader">
+    <div
+      class="h-16 sm:h-20 w-full max-w-full px-3 sm:px-gutter flex items-center justify-between gap-1.5 sm:gap-space-md">
       <!-- Logo & Desktop Navigation Ribbon -->
       <div class="flex items-center gap-space-md xl:gap-space-lg flex-shrink-0">
         <a class="flex items-center gap-2 sm:gap-space-sm group flex-shrink-0" href="index.html">
-          <div class="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-container-high/80 shadow-[0_0_16px_rgba(0,238,252,0.35)] group-hover:shadow-[0_0_24px_rgba(0,238,252,0.6)] transition-all duration-300">
-            <svg class="w-6 h-6 transform -rotate-12 group-hover:scale-110 transition-transform duration-300" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18.178 8c-1.38 0-2.61.644-3.414 1.645C13.606 8.167 11.758 7 9.5 7 5.91 7 3 9.91 3 13.5S5.91 20 9.5 20c2.258 0 4.106-1.167 5.264-2.645C15.568 18.356 16.798 19 18.178 19 20.84 19 23 16.84 23 14.178c0-2.662-2.16-4.178-4.822-4.178zm-8.678 9.5c-2.206 0-4-1.794-4-4s1.794-4 4-4c1.862 0 3.398 1.282 3.824 3.013a5.55 5.55 0 0 1 0 1.974c-.426 1.731-1.962 3.013-3.824 3.013zm8.678-1c-1.396 0-2.533-.946-2.85-2.23a4.015 4.015 0 0 1 0-1.54c.317-1.284 1.454-2.23 2.85-2.23 1.556 0 2.822 1.266 2.822 2.822 0 1.556-1.266 2.822-2.822 2.822z" fill="#00eefc"></path>
+          <div
+            class="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-container-high/80 shadow-[0_0_16px_rgba(0,238,252,0.35)] group-hover:shadow-[0_0_24px_rgba(0,238,252,0.6)] transition-all duration-300">
+            <svg class="w-6 h-6 transform -rotate-12 group-hover:scale-110 transition-transform duration-300"
+              fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18.178 8c-1.38 0-2.61.644-3.414 1.645C13.606 8.167 11.758 7 9.5 7 5.91 7 3 9.91 3 13.5S5.91 20 9.5 20c2.258 0 4.106-1.167 5.264-2.645C15.568 18.356 16.798 19 18.178 19 20.84 19 23 16.84 23 14.178c0-2.662-2.16-4.178-4.822-4.178zm-8.678 9.5c-2.206 0-4-1.794-4-4s1.794-4 4-4c1.862 0 3.398 1.282 3.824 3.013a5.55 5.55 0 0 1 0 1.974c-.426 1.731-1.962 3.013-3.824 3.013zm8.678-1c-1.396 0-2.533-.946-2.85-2.23a4.015 4.015 0 0 1 0-1.54c.317-1.284 1.454-2.23 2.85-2.23 1.556 0 2.822 1.266 2.822 2.822 0 1.556-1.266 2.822-2.822 2.822z"
+                fill="#00eefc"></path>
               <circle cx="9.5" cy="13.5" fill="#ff506e" r="1.5"></circle>
             </svg>
           </div>
           <div class="flex flex-col">
-            <span class="font-headline-sm text-sm sm:text-headline-sm tracking-wider font-extrabold text-secondary-container drop-shadow-[0_0_12px_rgba(0,238,252,0.6)]">
+            <span
+              class="font-headline-sm text-sm sm:text-headline-sm tracking-wider font-extrabold text-secondary-container drop-shadow-[0_0_12px_rgba(0,238,252,0.6)]">
               INFINX<span class="text-primary-container drop-shadow-[0_0_12px_rgba(255,80,110,0.6)] ml-1">ANIME</span>
             </span>
-            <span class="font-label-sm text-[9px] sm:text-label-sm tracking-widest uppercase text-outline">Samosa Labs</span>
           </div>
         </a>
 
         <!-- Desktop Navigation Ribbon (>= 1280px) with All Classic Features Restored -->
         <nav class="hidden xl:flex items-center gap-1 p-1 rounded-full bg-surface-container-lowest/60 backdrop-blur-md">
           <!-- 1. Home -->
-          <a aria-current="page" class="px-3.5 py-1.5 font-label-lg transition-all duration-200 bg-secondary-container/15 text-secondary-container shadow-[0_0_16px_rgba(0,238,252,0.25)] rounded-full font-bold inline-flex items-center gap-1.5" href="index.html">
+          <a aria-current="page"
+            class="px-3.5 py-1.5 font-label-lg transition-all duration-200 bg-secondary-container/15 text-secondary-container shadow-[0_0_16px_rgba(0,238,252,0.25)] rounded-full font-bold inline-flex items-center gap-1.5"
+            href="index.html">
             <i class="fas fa-home text-xs"></i>
             <span>Home</span>
           </a>
 
           <!-- 2. Anime -->
-          <a class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5" href="anime.html">
+          <a class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5"
+            href="anime.html">
             <i class="fas fa-tv text-xs"></i>
             <span>Anime</span>
           </a>
 
           <!-- 3. Genres Dropdown (Restored) -->
           <div class="nav-item-dropdown">
-            <button type="button" class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5 dropdown-toggle cursor-pointer" aria-haspopup="true" aria-expanded="false">
+            <button type="button"
+              class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5 dropdown-toggle cursor-pointer"
+              aria-haspopup="true" aria-expanded="false">
               <i class="fas fa-layer-group text-xs text-secondary-container"></i>
               <span>Genres</span>
               <i class="fas fa-chevron-down text-[10px] ml-0.5 transition-transform duration-200 dropdown-chevron"></i>
@@ -863,16 +972,23 @@
             <div class="dropdown-menu genres-menu">
               <div class="grid grid-cols-2 gap-1">
                 <a href="view.html#action" class="dropdown-item"><i class="fas fa-fire"></i><span>Action</span></a>
-                <a href="view.html#adventure" class="dropdown-item"><i class="fas fa-compass"></i><span>Adventure</span></a>
-                <a href="view.html#animation" class="dropdown-item"><i class="fas fa-magic"></i><span>Animation</span></a>
-                <a href="view.html#comedy" class="dropdown-item"><i class="fas fa-laugh-beam"></i><span>Comedy</span></a>
+                <a href="view.html#adventure" class="dropdown-item"><i
+                    class="fas fa-compass"></i><span>Adventure</span></a>
+                <a href="view.html#animation" class="dropdown-item"><i
+                    class="fas fa-magic"></i><span>Animation</span></a>
+                <a href="view.html#comedy" class="dropdown-item"><i
+                    class="fas fa-laugh-beam"></i><span>Comedy</span></a>
                 <a href="view.html#crime" class="dropdown-item"><i class="fas fa-user-ninja"></i><span>Crime</span></a>
-                <a href="view.html#drama" class="dropdown-item"><i class="fas fa-theater-masks"></i><span>Drama</span></a>
+                <a href="view.html#drama" class="dropdown-item"><i
+                    class="fas fa-theater-masks"></i><span>Drama</span></a>
                 <a href="view.html#fantasy" class="dropdown-item"><i class="fas fa-dragon"></i><span>Fantasy</span></a>
-                <a href="view.html#historical" class="dropdown-item"><i class="fas fa-landmark"></i><span>Historical</span></a>
+                <a href="view.html#historical" class="dropdown-item"><i
+                    class="fas fa-landmark"></i><span>Historical</span></a>
                 <a href="view.html#horror" class="dropdown-item"><i class="fas fa-ghost"></i><span>Horror</span></a>
-                <a href="view.html#mystery" class="dropdown-item"><i class="fas fa-user-secret"></i><span>Mystery</span></a>
-                <a href="view.html#political" class="dropdown-item"><i class="fas fa-building-columns"></i><span>Political</span></a>
+                <a href="view.html#mystery" class="dropdown-item"><i
+                    class="fas fa-user-secret"></i><span>Mystery</span></a>
+                <a href="view.html#political" class="dropdown-item"><i
+                    class="fas fa-building-columns"></i><span>Political</span></a>
                 <a href="view.html#romance" class="dropdown-item"><i class="fas fa-heart"></i><span>Romance</span></a>
                 <a href="view.html#sci-fi" class="dropdown-item"><i class="fas fa-atom"></i><span>Sci-Fi</span></a>
                 <a href="view.html#thriller" class="dropdown-item"><i class="fas fa-bolt"></i><span>Thriller</span></a>
@@ -882,41 +998,54 @@
 
           <!-- 4. Categories Dropdown (Restored) -->
           <div class="nav-item-dropdown">
-            <button type="button" class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5 dropdown-toggle cursor-pointer" aria-haspopup="true" aria-expanded="false">
+            <button type="button"
+              class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5 dropdown-toggle cursor-pointer"
+              aria-haspopup="true" aria-expanded="false">
               <i class="fas fa-list-ul text-xs text-secondary-container"></i>
               <span>Categories</span>
               <i class="fas fa-chevron-down text-[10px] ml-0.5 transition-transform duration-200 dropdown-chevron"></i>
             </button>
             <div class="dropdown-menu categories-menu">
               <div class="flex flex-col gap-1">
-                <a href="view.html#south-hindi-dubbed" class="dropdown-item"><i class="fas fa-language"></i><span>South Hindi Dubbed</span></a>
-                <a href="view.html#hollywood" class="dropdown-item"><i class="fas fa-film"></i><span>Hollywood Movies</span></a>
-                <a href="view.html#bollywood" class="dropdown-item"><i class="fas fa-clapperboard"></i><span>Bollywood Movies</span></a>
+                <a href="view.html#south-hindi-dubbed" class="dropdown-item"><i class="fas fa-language"></i><span>South
+                    Hindi Dubbed</span></a>
+                <a href="view.html#hollywood" class="dropdown-item"><i class="fas fa-film"></i><span>Hollywood
+                    Movies</span></a>
+                <a href="view.html#bollywood" class="dropdown-item"><i class="fas fa-clapperboard"></i><span>Bollywood
+                    Movies</span></a>
                 <a href="anime.html" class="dropdown-item"><i class="fas fa-play-circle"></i><span>Anime Hub</span></a>
-                <a href="view.html#web-series" class="dropdown-item"><i class="fas fa-tv"></i><span>Web Series</span></a>
-                <a href="view.html#kids" class="dropdown-item"><i class="fas fa-child"></i><span>Kids &amp; Family</span></a>
-                <a href="view.html#kdrama" class="dropdown-item"><i class="fas fa-video"></i><span>Korean Drama</span></a>
+                <a href="view.html#web-series" class="dropdown-item"><i class="fas fa-tv"></i><span>Web
+                    Series</span></a>
+                <a href="view.html#kids" class="dropdown-item"><i class="fas fa-child"></i><span>Kids &amp;
+                    Family</span></a>
+                <a href="view.html#kdrama" class="dropdown-item"><i class="fas fa-video"></i><span>Korean
+                    Drama</span></a>
               </div>
             </div>
           </div>
 
           <!-- 5. Watchlist -->
-          <a class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5" href="view.html#watchlist">
+          <a class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5"
+            href="view.html#watchlist">
             <i class="fas fa-heart text-xs text-primary-container"></i>
             <span>Watchlist</span>
           </a>
 
           <!-- 6. History -->
-          <a class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5" href="view.html#history">
+          <a class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5"
+            href="view.html#history">
             <i class="fas fa-history text-xs text-secondary-container"></i>
             <span>History</span>
           </a>
 
           <!-- 7. Live Chat with Pulsing Live Dot -->
-          <a class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5 nav-chat-link group" href="#publicLiveChatSection" id="navChatLink" onclick="if(typeof window.scrollToPublicChat==='function'){window.scrollToPublicChat(event);}">
+          <a class="px-3 py-1.5 rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200 inline-flex items-center gap-1.5 nav-chat-link group"
+            href="#publicLiveChatSection" id="navChatLink"
+            onclick="if(typeof window.scrollToPublicChat==='function'){window.scrollToPublicChat(event);}">
             <i class="fas fa-comments text-xs text-secondary-container group-hover:scale-110 transition-transform"></i>
             <span>Live Chat</span>
-            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider text-white bg-gradient-to-r from-primary-container to-red-600 shadow-[0_0_8px_#ff506e] animate-pulse ml-0.5">LIVE</span>
+            <span
+              class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider text-white bg-gradient-to-r from-primary-container to-red-600 shadow-[0_0_8px_#ff506e] animate-pulse ml-0.5">LIVE</span>
           </a>
         </nav>
       </div>
@@ -924,45 +1053,64 @@
       <!-- Desktop Search Bar -->
       <div class="flex-1 max-w-md mx-space-md hidden md:block relative">
         <div class="relative flex items-center w-full">
-          <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">search</span>
-          <input id="searchInput" class="w-full pl-11 pr-14 py-2 bg-surface-container-low/90 backdrop-blur-xl rounded-full font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-secondary-container focus:shadow-[0_0_20px_rgba(0,238,252,0.3)] transition-all" placeholder="Search anime, shows, movies..." type="text" autocomplete="off" />
-          <div class="absolute right-3 px-2 py-0.5 rounded bg-surface-container-highest/80 font-label-sm text-label-sm text-on-surface-variant shadow-inner pointer-events-none">⌘K</div>
+          <span
+            class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">search</span>
+          <input id="searchInput"
+            class="w-full pl-11 pr-14 py-2 bg-surface-container-low/90 backdrop-blur-xl rounded-full font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-secondary-container focus:shadow-[0_0_20px_rgba(0,238,252,0.3)] transition-all"
+            placeholder="Search anime, shows, movies..." type="text" autocomplete="off" />
+          <div
+            class="absolute right-3 px-2 py-0.5 rounded bg-surface-container-highest/80 font-label-sm text-label-sm text-on-surface-variant shadow-inner pointer-events-none">
+            ⌘K</div>
         </div>
         <!-- Live Search Dropdown -->
-        <div id="liveSearchDropdown" class="live-search-dropdown absolute top-full left-0 right-0 mt-2 rounded-xl bg-surface-container-lowest/95 backdrop-blur-2xl border border-white/10 shadow-2xl z-50" style="display: none;"></div>
+        <div id="liveSearchDropdown"
+          class="live-search-dropdown absolute top-full left-0 right-0 mt-2 rounded-xl bg-surface-container-lowest/95 backdrop-blur-2xl border border-white/10 shadow-2xl z-50"
+          style="display: none;"></div>
       </div>
 
       <!-- Header Actions: Notifications, Search, User/Auth, Mobile Menu Toggle -->
       <div class="flex items-center gap-1 sm:gap-2 lg:gap-space-md flex-shrink-0">
         <!-- VIP Pass Button (Hidden) -->
-        <a class="relative hidden items-center gap-space-xs px-3.5 py-1.5 rounded-full bg-surface-container-low text-primary shadow-[0_0_14px_rgba(255,80,110,0.35)] hover:bg-primary-container hover:text-on-primary-container transition-all duration-200 group" href="view.html#vip" style="display: none !important;">
-          <span class="material-symbols-outlined text-[16px] text-primary group-hover:text-on-primary-container">local_fire_department</span>
+        <a class="relative hidden items-center gap-space-xs px-3.5 py-1.5 rounded-full bg-surface-container-low text-primary shadow-[0_0_14px_rgba(255,80,110,0.35)] hover:bg-primary-container hover:text-on-primary-container transition-all duration-200 group"
+          href="view.html#vip" style="display: none !important;">
+          <span
+            class="material-symbols-outlined text-[16px] text-primary group-hover:text-on-primary-container">local_fire_department</span>
           <span class="font-label-sm text-label-sm tracking-wider uppercase font-bold">VIP PASS</span>
         </a>
 
         <!-- Notification Bell (Hidden) -->
-        <button class="relative hidden p-1.5 sm:p-2 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all cursor-pointer shrink-0" title="Notifications" id="headerNotificationsBtn" type="button" style="display: none !important;">
+        <button
+          class="relative hidden p-1.5 sm:p-2 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all cursor-pointer shrink-0"
+          title="Notifications" id="headerNotificationsBtn" type="button" style="display: none !important;">
           <span class="material-symbols-outlined text-[20px] sm:text-[22px]">notifications</span>
-          <span class="absolute top-1 sm:top-1.5 right-1 sm:right-1.5 w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_#ff506e]"></span>
+          <span
+            class="absolute top-1 sm:top-1.5 right-1 sm:right-1.5 w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_#ff506e]"></span>
         </button>
 
         <!-- Mobile Quick Search Trigger Button -->
-        <button class="md:hidden p-1.5 sm:p-2 text-outline hover:text-white transition-colors cursor-pointer shrink-0" id="mobileHeaderSearchBtn" aria-label="Open search" type="button">
+        <button class="md:hidden p-1.5 sm:p-2 text-outline hover:text-white transition-colors cursor-pointer shrink-0"
+          id="mobileHeaderSearchBtn" aria-label="Open search" type="button">
           <span class="material-symbols-outlined text-[22px] sm:text-[24px]">search</span>
         </button>
 
         <!-- Dynamic User Auth Header Mount -->
         <div id="authHeader" class="auth-buttons flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <button class="px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-xs sm:text-label-sm font-semibold transition-all cursor-pointer shrink-0" onclick="openModal('login')" type="button">
+          <button
+            class="px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-xs sm:text-label-sm font-semibold transition-all cursor-pointer shrink-0"
+            onclick="openModal('login')" type="button">
             Sign In
           </button>
-          <button class="hidden sm:inline-block px-3 sm:px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-xs sm:text-label-sm font-bold shadow-[0_0_14px_rgba(255,80,110,0.4)] hover:brightness-110 transition-all cursor-pointer shrink-0" onclick="openModal('register')" type="button">
+          <button
+            class="hidden sm:inline-block px-3 sm:px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-xs sm:text-label-sm font-bold shadow-[0_0_14px_rgba(255,80,110,0.4)] hover:brightness-110 transition-all cursor-pointer shrink-0"
+            onclick="openModal('register')" type="button">
             Register
           </button>
         </div>
 
         <!-- Mobile Hamburger Toggle (Visible on all screens < 1280px / xl) -->
-        <button id="mobileMenuToggle" class="inline-flex xl:hidden p-1.5 sm:p-2 text-outline hover:text-secondary-container active:scale-95 transition-all cursor-pointer mobile-toggle shrink-0" aria-label="Toggle navigation menu" type="button">
+        <button id="mobileMenuToggle"
+          class="inline-flex xl:hidden p-1.5 sm:p-2 text-outline hover:text-secondary-container active:scale-95 transition-all cursor-pointer mobile-toggle shrink-0"
+          aria-label="Toggle navigation menu" type="button">
           <span class="material-symbols-outlined text-[24px] sm:text-[26px]">menu</span>
         </button>
       </div>
@@ -977,97 +1125,155 @@
     <div class="flex flex-col gap-4">
       <div class="flex items-center justify-between pb-4 border-b border-white/[0.08]">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center shadow-[0_0_12px_rgba(0,238,252,0.35)]">
+          <div
+            class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center shadow-[0_0_12px_rgba(0,238,252,0.35)]">
             <span class="material-symbols-outlined text-secondary-container text-[20px]">movie_filter</span>
           </div>
           <span class="font-headline-sm font-bold text-on-surface">INFINX ANIME</span>
         </div>
-        <button id="closeDrawer" class="text-outline hover:text-on-surface text-2xl cursor-pointer drawer-close">&times;</button>
+        <button id="closeDrawer"
+          class="text-outline hover:text-on-surface text-2xl cursor-pointer drawer-close">&times;</button>
       </div>
 
       <nav class="flex flex-col gap-1.5 overflow-y-auto max-h-[calc(100vh-220px)] pr-1">
-        <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-secondary-container/15 text-secondary-container font-label-md">
+        <a href="index.html"
+          class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-secondary-container/15 text-secondary-container font-label-md">
           <i class="fas fa-home text-sm text-secondary-container w-5"></i>
           <span>Home</span>
         </a>
-        <a href="anime.html" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
+        <a href="anime.html"
+          class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
           <i class="fas fa-tv text-sm text-secondary-container w-5"></i>
           <span>Browse Anime</span>
         </a>
 
         <!-- Genres Accordion -->
         <div class="flex flex-col">
-          <button type="button" class="drawer-accordion-toggle flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all cursor-pointer">
+          <button type="button"
+            class="drawer-accordion-toggle flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all cursor-pointer">
             <div class="flex items-center gap-3">
               <i class="fas fa-layer-group text-sm text-secondary-container w-5"></i>
               <span>Genres</span>
             </div>
             <i class="fas fa-chevron-down text-xs accordion-chevron transition-transform duration-200"></i>
           </button>
-          <div class="hidden flex-col pl-4 py-1.5 gap-0.5 bg-surface-container-lowest/50 rounded-xl mt-1 border border-white/5">
+          <div
+            class="hidden flex-col pl-4 py-1.5 gap-0.5 bg-surface-container-lowest/50 rounded-xl mt-1 border border-white/5">
             <div class="grid grid-cols-2 gap-0.5">
-              <a href="view.html#action" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-fire text-primary-container text-xs w-4"></i>Action</a>
-              <a href="view.html#adventure" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-compass text-primary-container text-xs w-4"></i>Adventure</a>
-              <a href="view.html#animation" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-magic text-primary-container text-xs w-4"></i>Animation</a>
-              <a href="view.html#comedy" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-laugh-beam text-primary-container text-xs w-4"></i>Comedy</a>
-              <a href="view.html#crime" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-user-ninja text-primary-container text-xs w-4"></i>Crime</a>
-              <a href="view.html#drama" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-theater-masks text-primary-container text-xs w-4"></i>Drama</a>
-              <a href="view.html#fantasy" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-dragon text-primary-container text-xs w-4"></i>Fantasy</a>
-              <a href="view.html#historical" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-landmark text-primary-container text-xs w-4"></i>Historical</a>
-              <a href="view.html#horror" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-ghost text-primary-container text-xs w-4"></i>Horror</a>
-              <a href="view.html#mystery" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-user-secret text-primary-container text-xs w-4"></i>Mystery</a>
-              <a href="view.html#political" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-building-columns text-primary-container text-xs w-4"></i>Political</a>
-              <a href="view.html#romance" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-heart text-primary-container text-xs w-4"></i>Romance</a>
-              <a href="view.html#sci-fi" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-atom text-primary-container text-xs w-4"></i>Sci-Fi</a>
-              <a href="view.html#thriller" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-bolt text-primary-container text-xs w-4"></i>Thriller</a>
+              <a href="view.html#action"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-fire text-primary-container text-xs w-4"></i>Action</a>
+              <a href="view.html#adventure"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-compass text-primary-container text-xs w-4"></i>Adventure</a>
+              <a href="view.html#animation"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-magic text-primary-container text-xs w-4"></i>Animation</a>
+              <a href="view.html#comedy"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-laugh-beam text-primary-container text-xs w-4"></i>Comedy</a>
+              <a href="view.html#crime"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-user-ninja text-primary-container text-xs w-4"></i>Crime</a>
+              <a href="view.html#drama"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-theater-masks text-primary-container text-xs w-4"></i>Drama</a>
+              <a href="view.html#fantasy"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-dragon text-primary-container text-xs w-4"></i>Fantasy</a>
+              <a href="view.html#historical"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-landmark text-primary-container text-xs w-4"></i>Historical</a>
+              <a href="view.html#horror"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-ghost text-primary-container text-xs w-4"></i>Horror</a>
+              <a href="view.html#mystery"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-user-secret text-primary-container text-xs w-4"></i>Mystery</a>
+              <a href="view.html#political"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-building-columns text-primary-container text-xs w-4"></i>Political</a>
+              <a href="view.html#romance"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-heart text-primary-container text-xs w-4"></i>Romance</a>
+              <a href="view.html#sci-fi"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-atom text-primary-container text-xs w-4"></i>Sci-Fi</a>
+              <a href="view.html#thriller"
+                class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                  class="fas fa-bolt text-primary-container text-xs w-4"></i>Thriller</a>
             </div>
           </div>
         </div>
 
         <!-- Categories Accordion -->
         <div class="flex flex-col">
-          <button type="button" class="drawer-accordion-toggle flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all cursor-pointer">
+          <button type="button"
+            class="drawer-accordion-toggle flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all cursor-pointer">
             <div class="flex items-center gap-3">
               <i class="fas fa-list-ul text-sm text-secondary-container w-5"></i>
               <span>Categories</span>
             </div>
             <i class="fas fa-chevron-down text-xs accordion-chevron transition-transform duration-200"></i>
           </button>
-          <div class="hidden flex-col pl-3 py-1.5 gap-0.5 bg-surface-container-lowest/50 rounded-xl mt-1 border border-white/5">
-            <a href="view.html#south-hindi-dubbed" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-language text-primary-container text-xs w-4"></i>South Hindi Dubbed</a>
-            <a href="view.html#hollywood" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-film text-primary-container text-xs w-4"></i>Hollywood Movies</a>
-            <a href="view.html#bollywood" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-clapperboard text-primary-container text-xs w-4"></i>Bollywood Movies</a>
-            <a href="anime.html" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-play-circle text-primary-container text-xs w-4"></i>Anime Hub</a>
-            <a href="view.html#web-series" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-tv text-primary-container text-xs w-4"></i>Web Series</a>
-            <a href="view.html#kids" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-child text-primary-container text-xs w-4"></i>Kids &amp; Family</a>
-            <a href="view.html#kdrama" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i class="fas fa-video text-primary-container text-xs w-4"></i>Korean Drama</a>
+          <div
+            class="hidden flex-col pl-3 py-1.5 gap-0.5 bg-surface-container-lowest/50 rounded-xl mt-1 border border-white/5">
+            <a href="view.html#south-hindi-dubbed"
+              class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                class="fas fa-language text-primary-container text-xs w-4"></i>South Hindi Dubbed</a>
+            <a href="view.html#hollywood"
+              class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                class="fas fa-film text-primary-container text-xs w-4"></i>Hollywood Movies</a>
+            <a href="view.html#bollywood"
+              class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                class="fas fa-clapperboard text-primary-container text-xs w-4"></i>Bollywood Movies</a>
+            <a href="anime.html"
+              class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                class="fas fa-play-circle text-primary-container text-xs w-4"></i>Anime Hub</a>
+            <a href="view.html#web-series"
+              class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                class="fas fa-tv text-primary-container text-xs w-4"></i>Web Series</a>
+            <a href="view.html#kids"
+              class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                class="fas fa-child text-primary-container text-xs w-4"></i>Kids &amp; Family</a>
+            <a href="view.html#kdrama"
+              class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
+                class="fas fa-video text-primary-container text-xs w-4"></i>Korean Drama</a>
           </div>
         </div>
 
-        <a href="view.html#watchlist" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
+        <a href="view.html#watchlist"
+          class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
           <i class="fas fa-heart text-sm text-primary-container w-5"></i>
           <span>Watchlist</span>
         </a>
-        <a href="view.html#history" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
+        <a href="view.html#history"
+          class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
           <i class="fas fa-history text-sm text-secondary-container w-5"></i>
           <span>History Hub</span>
         </a>
-        <a href="#publicLiveChatSection" class="flex items-center justify-between px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all" onclick="if(typeof window.scrollToPublicChat==='function'){window.scrollToPublicChat(event); if(typeof window.closeMobileMenu==='function') window.closeMobileMenu();}">
+        <a href="#publicLiveChatSection"
+          class="flex items-center justify-between px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all"
+          onclick="if(typeof window.scrollToPublicChat==='function'){window.scrollToPublicChat(event); if(typeof window.closeMobileMenu==='function') window.closeMobileMenu();}">
           <div class="flex items-center gap-3">
             <i class="fas fa-comments text-sm text-secondary-container w-5"></i>
             <span>Live Chat</span>
           </div>
-          <span class="px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase text-white bg-gradient-to-r from-primary-container to-red-600 animate-pulse">LIVE</span>
+          <span
+            class="px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase text-white bg-gradient-to-r from-primary-container to-red-600 animate-pulse">LIVE</span>
         </a>
-        <a href="download.html" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
+        <a href="download.html"
+          class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
           <i class="fas fa-mobile-alt text-sm text-secondary-container w-5"></i>
           <span>Get Mobile App</span>
         </a>
-        <a href="profile.html" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
+        <a href="profile.html"
+          class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
           <i class="fas fa-user-ninja text-sm text-secondary-container w-5"></i>
           <span>Otaku Passport</span>
         </a>
-        <a href="admin.html" id="drawerAdminLink" class="hidden items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
+        <a href="admin.html" id="drawerAdminLink"
+          class="hidden items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-all">
           <i class="fas fa-user-shield text-sm text-secondary-container w-5"></i>
           <span>Admin Studio</span>
         </a>
@@ -1076,10 +1282,16 @@
 
     <!-- Drawer Auth Block -->
     <div id="drawerAuthHeader" class="pt-4 border-t border-white/[0.08] flex flex-col gap-2.5">
-      <button class="w-full py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md font-bold shadow-[0_0_16px_rgba(0,238,252,0.35)] cursor-pointer" onclick="openModal('login'); if(typeof window.closeMobileMenu==='function') window.closeMobileMenu();" type="button">
+      <button
+        class="w-full py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md font-bold shadow-[0_0_16px_rgba(0,238,252,0.35)] cursor-pointer"
+        onclick="openModal('login'); if(typeof window.closeMobileMenu==='function') window.closeMobileMenu();"
+        type="button">
         Sign In
       </button>
-      <button class="w-full py-2 rounded-xl bg-surface-container-high text-on-surface font-label-md font-medium cursor-pointer" onclick="openModal('register'); if(typeof window.closeMobileMenu==='function') window.closeMobileMenu();" type="button">
+      <button
+        class="w-full py-2 rounded-xl bg-surface-container-high text-on-surface font-label-md font-medium cursor-pointer"
+        onclick="openModal('register'); if(typeof window.closeMobileMenu==='function') window.closeMobileMenu();"
+        type="button">
         Create Account
       </button>
     </div>
@@ -1099,15 +1311,23 @@
           <div class="swiper-wrapper" id="carouselWrapper">
 
             <!-- Hero Spotlight Shimmer Skeleton (Shown while live slides load) -->
-            <div class="swiper-slide relative w-full min-h-[580px] h-[85vh] max-h-[780px] sm:h-[720px] lg:h-[840px] overflow-hidden hero-skeleton-slide">
+            <div
+              class="swiper-slide relative w-full min-h-[580px] h-[85vh] max-h-[780px] sm:h-[720px] lg:h-[840px] overflow-hidden hero-skeleton-slide">
               <!-- Shimmer Background -->
               <div class="absolute inset-0 skeleton w-full h-full opacity-25"></div>
-              <div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/80 sm:via-surface-container-lowest/40 to-transparent"></div>
-              <div class="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-surface-container-lowest/60 to-transparent"></div>
-              <div class="absolute inset-0 bg-gradient-to-b from-surface-container-lowest/90 via-transparent to-transparent h-28 sm:h-48"></div>
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/80 sm:via-surface-container-lowest/40 to-transparent">
+              </div>
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-surface-container-lowest/60 to-transparent">
+              </div>
+              <div
+                class="absolute inset-0 bg-gradient-to-b from-surface-container-lowest/90 via-transparent to-transparent h-28 sm:h-48">
+              </div>
 
               <!-- Hero Content Plate Skeleton -->
-              <div class="relative z-10 w-full h-full max-w-7xl mx-auto px-4 sm:px-gutter flex flex-col justify-end pb-8 sm:pb-16 lg:pb-24 pt-20 sm:pt-28 lg:pt-32">
+              <div
+                class="relative z-10 w-full h-full max-w-7xl mx-auto px-4 sm:px-gutter flex flex-col justify-end pb-8 sm:pb-16 lg:pb-24 pt-20 sm:pt-28 lg:pt-32">
                 <div class="flex flex-col max-w-2xl gap-3 sm:gap-4">
                   <!-- Metatags / Master Badges Skeleton -->
                   <div class="flex flex-wrap items-center gap-2">
@@ -1162,36 +1382,56 @@
            ===================================================================== -->
       <section class="w-full max-w-7xl mx-auto px-gutter py-space-md">
         <div class="flex items-center justify-between gap-space-md mb-2">
-          <div class="flex items-center gap-space-xs overflow-x-auto pb-space-xs scrollbar-none genre-quick-pills flex-1" id="genreQuickPills">
-            <button class="px-4 py-2 rounded-full bg-secondary-container text-on-secondary-fixed font-label-md text-label-md uppercase tracking-wider shadow-[0_0_16px_rgba(0,238,252,0.35)] shrink-0 cursor-pointer pill-btn active" onclick="window.location.href='index.html'">
+          <div
+            class="flex items-center gap-space-xs overflow-x-auto pb-space-xs scrollbar-none genre-quick-pills flex-1"
+            id="genreQuickPills">
+            <button
+              class="px-4 py-2 rounded-full bg-secondary-container text-on-secondary-fixed font-label-md text-label-md uppercase tracking-wider shadow-[0_0_16px_rgba(0,238,252,0.35)] shrink-0 cursor-pointer pill-btn active"
+              onclick="window.location.href='index.html'">
               All Master Catalog
             </button>
-            <button class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn" onclick="window.location.href='anime.html?filter=simulcast'">
+            <button
+              class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn"
+              onclick="window.location.href='anime.html?filter=simulcast'">
               Simulcasts
             </button>
-            <button class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn" onclick="window.location.href='anime.html?filter=action'">
+            <button
+              class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn"
+              onclick="window.location.href='anime.html?filter=action'">
               Action &amp; Sci-Fi
             </button>
-            <button class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn" onclick="window.location.href='anime.html?filter=mappa'">
+            <button
+              class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn"
+              onclick="window.location.href='anime.html?filter=mappa'">
               Studio MAPPA &amp; Trigger
             </button>
-            <button class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn" onclick="window.location.href='anime.html?filter=fantasy'">
+            <button
+              class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn"
+              onclick="window.location.href='anime.html?filter=fantasy'">
               Dark Fantasy
             </button>
-            <button class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn" onclick="window.location.href='anime.html?filter=cyberpunk'">
+            <button
+              class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn"
+              onclick="window.location.href='anime.html?filter=cyberpunk'">
               Cyberpunk
             </button>
-            <button class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn" onclick="window.location.href='anime.html?filter=remasters'">
+            <button
+              class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn"
+              onclick="window.location.href='anime.html?filter=remasters'">
               OLED Master Remasters
             </button>
-            <button class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn" onclick="window.location.href='anime.html?filter=movies'">
+            <button
+              class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md uppercase tracking-wider shrink-0 transition-all cursor-pointer pill-btn"
+              onclick="window.location.href='anime.html?filter=movies'">
               Dolby Atmos Movies
             </button>
           </div>
           <!-- Sort Dropdown -->
           <div class="hidden md:flex items-center gap-2 shrink-0">
             <label for="homeSortSelect" class="text-xs text-outline font-semibold">Sort By:</label>
-            <select id="homeSortSelect" class="sort-select px-3 py-1.5 rounded-full bg-surface-container-high text-xs text-on-surface border border-white/10 focus:outline-none focus:border-secondary-container cursor-pointer" onchange="changeHomeSort(this.value)">
+            <select id="homeSortSelect"
+              class="sort-select px-3 py-1.5 rounded-full bg-surface-container-high text-xs text-on-surface border border-white/10 focus:outline-none focus:border-secondary-container cursor-pointer"
+              onchange="changeHomeSort(this.value)">
               <option value="default">Default</option>
               <option value="title-asc">A to Z</option>
               <option value="title-desc">Z to A</option>
@@ -1208,21 +1448,30 @@
         <div class="flex items-center justify-between mb-2.5 sm:mb-3.5 gap-2">
           <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
             <div class="w-1 h-4 sm:h-5 rounded-full bg-primary-container shadow-[0_0_10px_#ff506e] shrink-0"></div>
-            <h2 class="font-headline-sm text-sm sm:text-base md:text-lg tracking-tight font-bold text-white whitespace-nowrap">Continue Watching</h2>
-            <span class="font-label-sm text-[9px] sm:text-[10px] text-outline px-1.5 py-0.5 rounded bg-surface-container-high whitespace-nowrap shrink-0" id="continueCountBadge">In-Flight</span>
+            <h2
+              class="font-headline-sm text-sm sm:text-base md:text-lg tracking-tight font-bold text-white whitespace-nowrap">
+              Continue Watching</h2>
+            <span
+              class="font-label-sm text-[9px] sm:text-[10px] text-outline px-1.5 py-0.5 rounded bg-surface-container-high whitespace-nowrap shrink-0"
+              id="continueCountBadge">In-Flight</span>
           </div>
 
           <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            <a class="font-label-sm sm:font-label-md text-[11px] sm:text-xs text-secondary-container hover:text-secondary flex items-center gap-0.5 transition-colors whitespace-nowrap" href="view.html#history">
+            <a class="font-label-sm sm:font-label-md text-[11px] sm:text-xs text-secondary-container hover:text-secondary flex items-center gap-0.5 transition-colors whitespace-nowrap"
+              href="view.html#history">
               <span>History Hub</span>
               <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             </a>
             <!-- Prev / Next Slider Navigation Buttons (Cleanly in header, never obscuring cards) -->
             <div class="flex items-center gap-1">
-              <button id="continuePrevBtn" class="continue-prev-btn w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-surface-container-high/90 hover:bg-secondary-container hover:text-black text-white border border-white/10 flex items-center justify-center transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer active:scale-90" aria-label="Previous watched show" type="button">
+              <button id="continuePrevBtn"
+                class="continue-prev-btn w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-surface-container-high/90 hover:bg-secondary-container hover:text-black text-white border border-white/10 flex items-center justify-center transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer active:scale-90"
+                aria-label="Previous watched show" type="button">
                 <span class="material-symbols-outlined text-[14px] sm:text-[16px]">chevron_left</span>
               </button>
-              <button id="continueNextBtn" class="continue-next-btn w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-surface-container-high/90 hover:bg-secondary-container hover:text-black text-white border border-white/10 flex items-center justify-center transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer active:scale-90" aria-label="Next watched show" type="button">
+              <button id="continueNextBtn"
+                class="continue-next-btn w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-surface-container-high/90 hover:bg-secondary-container hover:text-black text-white border border-white/10 flex items-center justify-center transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer active:scale-90"
+                aria-label="Next watched show" type="button">
                 <span class="material-symbols-outlined text-[14px] sm:text-[16px]">chevron_right</span>
               </button>
             </div>
@@ -1231,30 +1480,35 @@
 
         <!-- Vertical Cards Touch Slider Rail Container (Native smooth 120Hz touch scroll & scroll-snap) -->
         <div class="relative group/continue w-full">
-          <div class="continue-rail flex items-start gap-3 -mx-1 px-1 touch-pan-x overscroll-x-contain" id="continueWatchingGrid">
+          <div class="continue-rail flex items-start gap-3 -mx-1 px-1 touch-pan-x overscroll-x-contain"
+            id="continueWatchingGrid">
             <!-- Continue Watching Shimmer Skeletons (Shown while watch history loads) -->
-            <div class="continue-card shrink-0 flex flex-col rounded-xl overflow-hidden bg-surface-container-low border border-white/5">
+            <div
+              class="continue-card shrink-0 flex flex-col rounded-xl overflow-hidden bg-surface-container-low border border-white/5">
               <div class="aspect-[2/3] w-full skeleton"></div>
               <div class="p-2 flex flex-col gap-1 bg-surface-container-low">
                 <div class="skeleton h-3 w-3/4 rounded"></div>
                 <div class="skeleton h-2.5 w-1/2 rounded"></div>
               </div>
             </div>
-            <div class="continue-card shrink-0 flex flex-col rounded-xl overflow-hidden bg-surface-container-low border border-white/5">
+            <div
+              class="continue-card shrink-0 flex flex-col rounded-xl overflow-hidden bg-surface-container-low border border-white/5">
               <div class="aspect-[2/3] w-full skeleton"></div>
               <div class="p-2 flex flex-col gap-1 bg-surface-container-low">
                 <div class="skeleton h-3 w-3/4 rounded"></div>
                 <div class="skeleton h-2.5 w-1/2 rounded"></div>
               </div>
             </div>
-            <div class="continue-card shrink-0 flex flex-col rounded-xl overflow-hidden bg-surface-container-low border border-white/5">
+            <div
+              class="continue-card shrink-0 flex flex-col rounded-xl overflow-hidden bg-surface-container-low border border-white/5">
               <div class="aspect-[2/3] w-full skeleton"></div>
               <div class="p-2 flex flex-col gap-1 bg-surface-container-low">
                 <div class="skeleton h-3 w-3/4 rounded"></div>
                 <div class="skeleton h-2.5 w-1/2 rounded"></div>
               </div>
             </div>
-            <div class="continue-card shrink-0 flex flex-col rounded-xl overflow-hidden bg-surface-container-low border border-white/5">
+            <div
+              class="continue-card shrink-0 flex flex-col rounded-xl overflow-hidden bg-surface-container-low border border-white/5">
               <div class="aspect-[2/3] w-full skeleton"></div>
               <div class="p-2 flex flex-col gap-1 bg-surface-container-low">
                 <div class="skeleton h-3 w-3/4 rounded"></div>
@@ -1271,11 +1525,13 @@
       <section class="w-full max-w-7xl mx-auto px-gutter pt-space-lg" id="lunarAnimeSection">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-3 sm:mb-4 gap-2.5 sm:gap-3">
           <div class="flex flex-col min-w-0">
-            <div class="flex items-center gap-1.5 font-label-sm text-[11px] sm:text-xs text-secondary-container uppercase tracking-widest font-bold">
+            <div
+              class="flex items-center gap-1.5 font-label-sm text-[11px] sm:text-xs text-secondary-container uppercase tracking-widest font-bold">
               <span class="material-symbols-outlined text-[15px] sm:text-[16px]">equalizer</span>
               <span class="whitespace-nowrap">Tokyo &amp; Global Metrics</span>
             </div>
-            <h2 class="font-headline-sm sm:font-headline-md md:font-headline-lg text-lg sm:text-2xl md:text-3xl tracking-tight font-extrabold text-white mt-0.5 whitespace-nowrap">
+            <h2
+              class="font-headline-sm sm:font-headline-md md:font-headline-lg text-lg sm:text-2xl md:text-3xl tracking-tight font-extrabold text-white mt-0.5 whitespace-nowrap">
               Top 10 Masterpieces Today
             </h2>
           </div>
@@ -1283,17 +1539,27 @@
           <div class="flex items-center justify-between sm:justify-end gap-2 shrink-0">
             <!-- Filter Pills -->
             <div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-full border border-white/5">
-              <button class="px-2.5 sm:px-3 py-1 rounded-full bg-secondary-container text-black font-bold shadow-[0_0_12px_rgba(0,238,252,0.35)] font-label-sm sm:font-label-md text-xs cursor-pointer transition-all active:scale-95" onclick="switchLunarTab('popularThisSeason')">Popular</button>
-              <button class="px-2.5 sm:px-3 py-1 rounded-full text-on-surface-variant hover:text-white font-label-sm sm:font-label-md text-xs cursor-pointer transition-all active:scale-95" onclick="switchLunarTab('trendingNow')">Trending</button>
-              <button class="px-2.5 sm:px-3 py-1 rounded-full text-on-surface-variant hover:text-white font-label-sm sm:font-label-md text-xs cursor-pointer transition-all active:scale-95" onclick="switchLunarTab('upcomingNextSeason')">Upcoming</button>
+              <button
+                class="px-2.5 sm:px-3 py-1 rounded-full bg-secondary-container text-black font-bold shadow-[0_0_12px_rgba(0,238,252,0.35)] font-label-sm sm:font-label-md text-xs cursor-pointer transition-all active:scale-95"
+                onclick="switchLunarTab('popularThisSeason')">Popular</button>
+              <button
+                class="px-2.5 sm:px-3 py-1 rounded-full text-on-surface-variant hover:text-white font-label-sm sm:font-label-md text-xs cursor-pointer transition-all active:scale-95"
+                onclick="switchLunarTab('trendingNow')">Trending</button>
+              <button
+                class="px-2.5 sm:px-3 py-1 rounded-full text-on-surface-variant hover:text-white font-label-sm sm:font-label-md text-xs cursor-pointer transition-all active:scale-95"
+                onclick="switchLunarTab('upcomingNextSeason')">Upcoming</button>
             </div>
 
             <!-- Navigation Arrow Buttons (Never floating on top of cards) -->
             <div class="flex items-center gap-1 shrink-0">
-              <button class="top10-prev-btn w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-high/90 hover:bg-secondary-container hover:text-black text-white border border-white/10 flex items-center justify-center transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer active:scale-90" aria-label="Previous masterpiece" type="button">
+              <button
+                class="top10-prev-btn w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-high/90 hover:bg-secondary-container hover:text-black text-white border border-white/10 flex items-center justify-center transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer active:scale-90"
+                aria-label="Previous masterpiece" type="button">
                 <span class="material-symbols-outlined text-[16px] sm:text-[18px]">chevron_left</span>
               </button>
-              <button class="top10-next-btn w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-high/90 hover:bg-secondary-container hover:text-black text-white border border-white/10 flex items-center justify-center transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer active:scale-90" aria-label="Next masterpiece" type="button">
+              <button
+                class="top10-next-btn w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-high/90 hover:bg-secondary-container hover:text-black text-white border border-white/10 flex items-center justify-center transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer active:scale-90"
+                aria-label="Next masterpiece" type="button">
                 <span class="material-symbols-outlined text-[16px] sm:text-[18px]">chevron_right</span>
               </button>
             </div>
@@ -1308,7 +1574,8 @@
               <!-- Top 10 Masterpieces Shimmer Skeletons (Shown while Tokyo metrics load) -->
               <div class="swiper-slide w-[150px] sm:w-[185px] md:w-[210px] lg:w-[225px] shrink-0">
                 <div class="top10-card-wrap">
-                  <span class="absolute -left-2 sm:-left-3 top-0 font-display-hero text-[88px] sm:text-[112px] leading-none font-black text-surface-container-highest/20 select-none pointer-events-none z-0">1</span>
+                  <span
+                    class="absolute -left-2 sm:-left-3 top-0 font-display-hero text-[88px] sm:text-[112px] leading-none font-black text-surface-container-highest/20 select-none pointer-events-none z-0">1</span>
                   <div class="top10-card-body">
                     <div class="top10-poster-wrap">
                       <div class="absolute inset-0 skeleton"></div>
@@ -1322,7 +1589,8 @@
               </div>
               <div class="swiper-slide w-[150px] sm:w-[185px] md:w-[210px] lg:w-[225px] shrink-0">
                 <div class="top10-card-wrap">
-                  <span class="absolute -left-2 sm:-left-3 top-0 font-display-hero text-[88px] sm:text-[112px] leading-none font-black text-surface-container-highest/20 select-none pointer-events-none z-0">2</span>
+                  <span
+                    class="absolute -left-2 sm:-left-3 top-0 font-display-hero text-[88px] sm:text-[112px] leading-none font-black text-surface-container-highest/20 select-none pointer-events-none z-0">2</span>
                   <div class="top10-card-body">
                     <div class="top10-poster-wrap">
                       <div class="absolute inset-0 skeleton"></div>
@@ -1336,7 +1604,8 @@
               </div>
               <div class="swiper-slide w-[150px] sm:w-[185px] md:w-[210px] lg:w-[225px] shrink-0">
                 <div class="top10-card-wrap">
-                  <span class="absolute -left-2 sm:-left-3 top-0 font-display-hero text-[88px] sm:text-[112px] leading-none font-black text-surface-container-highest/20 select-none pointer-events-none z-0">3</span>
+                  <span
+                    class="absolute -left-2 sm:-left-3 top-0 font-display-hero text-[88px] sm:text-[112px] leading-none font-black text-surface-container-highest/20 select-none pointer-events-none z-0">3</span>
                   <div class="top10-card-body">
                     <div class="top10-poster-wrap">
                       <div class="absolute inset-0 skeleton"></div>
@@ -1350,7 +1619,8 @@
               </div>
               <div class="swiper-slide w-[150px] sm:w-[185px] md:w-[210px] lg:w-[225px] shrink-0">
                 <div class="top10-card-wrap">
-                  <span class="absolute -left-2 sm:-left-3 top-0 font-display-hero text-[88px] sm:text-[112px] leading-none font-black text-surface-container-highest/20 select-none pointer-events-none z-0">4</span>
+                  <span
+                    class="absolute -left-2 sm:-left-3 top-0 font-display-hero text-[88px] sm:text-[112px] leading-none font-black text-surface-container-highest/20 select-none pointer-events-none z-0">4</span>
                   <div class="top10-card-body">
                     <div class="top10-poster-wrap">
                       <div class="absolute inset-0 skeleton"></div>
@@ -1364,7 +1634,8 @@
               </div>
               <div class="swiper-slide w-[150px] sm:w-[185px] md:w-[210px] lg:w-[225px] shrink-0">
                 <div class="top10-card-wrap">
-                  <span class="absolute -left-2 sm:-left-3 top-0 font-display-hero text-[88px] sm:text-[112px] leading-none font-black text-surface-container-highest/20 select-none pointer-events-none z-0">5</span>
+                  <span
+                    class="absolute -left-2 sm:-left-3 top-0 font-display-hero text-[88px] sm:text-[112px] leading-none font-black text-surface-container-highest/20 select-none pointer-events-none z-0">5</span>
                   <div class="top10-card-body">
                     <div class="top10-poster-wrap">
                       <div class="absolute inset-0 skeleton"></div>
@@ -1384,10 +1655,12 @@
       <!-- =====================================================================
            SECTION 5: SEASONAL SIMULCASTS GRID (Hidden)
            ===================================================================== -->
-      <section class="w-full max-w-7xl mx-auto px-gutter pt-space-xl hidden" id="simulcastSchedule" style="display: none !important;">
+      <section class="w-full max-w-7xl mx-auto px-gutter pt-space-xl hidden" id="simulcastSchedule"
+        style="display: none !important;">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-space-lg gap-space-sm">
           <div class="flex flex-col">
-            <div class="flex items-center gap-space-xs font-label-sm text-label-sm text-primary-container uppercase tracking-widest font-bold">
+            <div
+              class="flex items-center gap-space-xs font-label-sm text-label-sm text-primary-container uppercase tracking-widest font-bold">
               <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
               <span>Tokyo Simultaneous Broadcasts</span>
             </div>
@@ -1397,11 +1670,16 @@
           </div>
           <!-- Schedule Day Selector -->
           <div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-full overflow-x-auto scrollbar-none">
-            <button class="px-3 py-1 rounded-full bg-surface-container-highest text-secondary-container font-label-md text-label-md cursor-pointer">Today</button>
-            <button class="px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer transition-colors">Fri</button>
-            <button class="px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer transition-colors">Sat</button>
-            <button class="px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer transition-colors">Sun</button>
-            <button class="px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer transition-colors">Mon</button>
+            <button
+              class="px-3 py-1 rounded-full bg-surface-container-highest text-secondary-container font-label-md text-label-md cursor-pointer">Today</button>
+            <button
+              class="px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer transition-colors">Fri</button>
+            <button
+              class="px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer transition-colors">Sat</button>
+            <button
+              class="px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer transition-colors">Sun</button>
+            <button
+              class="px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer transition-colors">Mon</button>
           </div>
         </div>
         <!-- Simulcast Grid (Hidden) -->
@@ -1453,15 +1731,22 @@
       <!-- =====================================================================
            SECTION 6: COMMUNITY & VIP CINEMA PROMO (Hidden)
            ===================================================================== -->
-      <section class="w-full max-w-7xl mx-auto px-gutter pt-space-xl hidden" id="vipCommunitySection" style="display: none !important;">
-        <div class="relative w-full rounded-2xl overflow-hidden bg-gradient-to-r from-surface-container to-surface-container-low p-space-lg lg:p-space-xl flex flex-col lg:flex-row items-center justify-between gap-space-xl shadow-2xl">
+      <section class="w-full max-w-7xl mx-auto px-gutter pt-space-xl hidden" id="vipCommunitySection"
+        style="display: none !important;">
+        <div
+          class="relative w-full rounded-2xl overflow-hidden bg-gradient-to-r from-surface-container to-surface-container-low p-space-lg lg:p-space-xl flex flex-col lg:flex-row items-center justify-between gap-space-xl shadow-2xl">
           <!-- Ambient Glow Behind Panel -->
-          <div class="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-secondary-container/10 filter blur-3xl pointer-events-none"></div>
-          <div class="absolute -left-20 -bottom-20 w-96 h-96 rounded-full bg-primary-container/10 filter blur-3xl pointer-events-none"></div>
+          <div
+            class="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-secondary-container/10 filter blur-3xl pointer-events-none">
+          </div>
+          <div
+            class="absolute -left-20 -bottom-20 w-96 h-96 rounded-full bg-primary-container/10 filter blur-3xl pointer-events-none">
+          </div>
 
           <!-- Left Text Content -->
           <div class="relative z-10 flex flex-col max-w-xl gap-space-sm">
-            <div class="inline-flex items-center gap-space-xs px-3 py-1 rounded-full bg-primary-container/15 text-primary font-label-sm text-label-sm uppercase tracking-widest w-fit">
+            <div
+              class="inline-flex items-center gap-space-xs px-3 py-1 rounded-full bg-primary-container/15 text-primary font-label-sm text-label-sm uppercase tracking-widest w-fit">
               <span class="material-symbols-outlined text-[16px]">verified</span>
               <span>Zero-Compression Theatre Guild</span>
             </div>
@@ -1469,7 +1754,8 @@
               Unlock Pure Bitrate Mastery with <span class="text-secondary-container">INFINX VIP</span>
             </h3>
             <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-              Experience uncompressed 80 Mbps master streams directly from studio render pipelines in Tokyo. Zero artifacting, Dolby Atmos true surround, and early 1-hour premiere access.
+              Experience uncompressed 80 Mbps master streams directly from studio render pipelines in Tokyo. Zero
+              artifacting, Dolby Atmos true surround, and early 1-hour premiere access.
             </p>
             <!-- Feature List Metrics -->
             <div class="grid grid-cols-3 gap-space-md pt-space-sm">
@@ -1491,13 +1777,15 @@
           <!-- Right Interactive VIP Card Deck -->
           <div class="relative z-10 flex flex-col sm:flex-row items-center gap-space-md w-full lg:w-auto shrink-0">
             <!-- VIP Pass Card -->
-            <div class="p-space-lg rounded-xl bg-surface-container-highest/60 backdrop-blur-xl flex flex-col gap-space-md w-full sm:w-72 shadow-xl border border-white/5">
+            <div
+              class="p-space-lg rounded-xl bg-surface-container-highest/60 backdrop-blur-xl flex flex-col gap-space-md w-full sm:w-72 shadow-xl border border-white/5">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-space-xs">
                   <span class="material-symbols-outlined text-primary-container text-[22px]">workspace_premium</span>
                   <span class="font-label-md text-label-md font-bold uppercase tracking-wider">VIP PASS</span>
                 </div>
-                <span class="font-headline-sm text-headline-sm font-bold text-on-surface">$12.99<span class="font-body-sm text-body-sm text-outline">/mo</span></span>
+                <span class="font-headline-sm text-headline-sm font-bold text-on-surface">$12.99<span
+                    class="font-body-sm text-body-sm text-outline">/mo</span></span>
               </div>
               <ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface-variant">
                 <li class="flex items-center gap-2">
@@ -1513,13 +1801,16 @@
                   <span>Offline Master Downloads</span>
                 </li>
               </ul>
-              <button class="w-full py-2.5 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md uppercase tracking-wider font-bold shadow-[0_0_20px_rgba(255,80,110,0.5)] hover:shadow-[0_0_28px_rgba(255,80,110,0.8)] transition-all cursor-pointer" onclick="window.location.href='view.html#vip'">
+              <button
+                class="w-full py-2.5 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md uppercase tracking-wider font-bold shadow-[0_0_20px_rgba(255,80,110,0.5)] hover:shadow-[0_0_28px_rgba(255,80,110,0.8)] transition-all cursor-pointer"
+                onclick="window.location.href='view.html#vip'">
                 Activate VIP Pass
               </button>
             </div>
 
             <!-- Discord Lounge Card -->
-            <div class="p-space-lg rounded-xl bg-surface-container-low flex flex-col justify-between gap-space-md w-full sm:w-64 shadow-xl border border-white/5">
+            <div
+              class="p-space-lg rounded-xl bg-surface-container-low flex flex-col justify-between gap-space-md w-full sm:w-64 shadow-xl border border-white/5">
               <div class="flex items-center gap-space-xs text-secondary-container">
                 <span class="material-symbols-outlined text-[20px]">groups</span>
                 <span class="font-label-md text-label-md font-bold uppercase tracking-wider">Discord Core</span>
@@ -1528,7 +1819,8 @@
                 <span class="font-headline-sm text-headline-sm font-bold text-on-surface">148,200+</span>
                 <span class="font-body-sm text-body-sm text-outline">Active Cinephiles &amp; Critics</span>
               </div>
-              <a class="inline-flex items-center justify-center gap-2 py-2 px-4 rounded-full bg-surface-container-high text-on-surface hover:text-secondary-container transition-colors font-label-md text-label-md" href="https://discord.gg" target="_blank" rel="noopener">
+              <a class="inline-flex items-center justify-center gap-2 py-2 px-4 rounded-full bg-surface-container-high text-on-surface hover:text-secondary-container transition-colors font-label-md text-label-md"
+                href="https://discord.gg" target="_blank" rel="noopener">
                 <span>Join Broadcast Core</span>
                 <span class="material-symbols-outlined text-[16px]">open_in_new</span>
               </a>
@@ -1540,7 +1832,8 @@
       <!-- =====================================================================
            SECTION 7: INFINX COMMUNITY LIVE CHAT & DANMAKU LOUNGE
            ===================================================================== -->
-      <div id="publicLiveChatMount" class="w-full max-w-7xl mx-auto px-3 sm:px-gutter pt-4 sm:pt-space-xl pb-24 md:pb-0"></div>
+      <div id="publicLiveChatMount"
+        class="w-full max-w-7xl mx-auto px-3 sm:px-gutter pt-4 sm:pt-space-xl pb-24 md:pb-0"></div>
 
     </div>
   </main>
@@ -1548,45 +1841,66 @@
   <!-- =========================================================================
        3. CYBERPUNK FOOTER (Exact from Stitch code.html)
        ========================================================================= -->
-  <footer class="w-full bg-surface-container-lowest shadow-[0_-8px_32px_rgba(0,0,0,0.9)] border-t border-surface-container-high/40">
+  <footer
+    class="w-full bg-surface-container-lowest shadow-[0_-8px_32px_rgba(0,0,0,0.9)] border-t border-surface-container-high/40">
     <div class="w-full max-w-7xl mx-auto px-gutter py-space-xl">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl">
         <div class="lg:col-span-2 flex flex-col gap-space-md">
           <div class="flex items-center gap-space-sm">
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container shadow-[0_0_12px_rgba(0,238,252,0.3)]">
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container shadow-[0_0_12px_rgba(0,238,252,0.3)]">
               <svg class="w-5 h-5" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18.178 8c-1.38 0-2.61.644-3.414 1.645C13.606 8.167 11.758 7 9.5 7 5.91 7 3 9.91 3 13.5S5.91 20 9.5 20c2.258 0 4.106-1.167 5.264-2.645C15.568 18.356 16.798 19 18.178 19 20.84 19 23 16.84 23 14.178c0-2.662-2.16-4.178-4.822-4.178z" fill="#00eefc"></path>
+                <path
+                  d="M18.178 8c-1.38 0-2.61.644-3.414 1.645C13.606 8.167 11.758 7 9.5 7 5.91 7 3 9.91 3 13.5S5.91 20 9.5 20c2.258 0 4.106-1.167 5.264-2.645C15.568 18.356 16.798 19 18.178 19 20.84 19 23 16.84 23 14.178c0-2.662-2.16-4.178-4.822-4.178z"
+                  fill="#00eefc"></path>
               </svg>
             </div>
-            <span class="font-headline-sm text-headline-sm font-extrabold tracking-wide text-secondary-container">INFINX<span class="text-primary-container ml-1">ANIME</span></span>
+            <span
+              class="font-headline-sm text-headline-sm font-extrabold tracking-wide text-secondary-container">INFINX<span
+                class="text-primary-container ml-1">ANIME</span></span>
           </div>
           <p class="font-body-md text-body-md text-outline max-w-sm">
-            Theatre Grade OLED Anime Streaming. Pure AMOLED zero-floor masterings, uncompressed audio bitrate, and simultaneous Tokyo transmissions.
+            Theatre Grade OLED Anime Streaming. Pure AMOLED zero-floor masterings, uncompressed audio bitrate, and
+            simultaneous Tokyo transmissions.
           </p>
           <div class="flex items-center gap-space-xs mt-space-xs">
-            <div class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-label-sm text-secondary tracking-widest uppercase shadow-[0_0_8px_rgba(0,238,252,0.2)]">4K UHD</div>
-            <div class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-label-sm text-primary-fixed tracking-widest uppercase shadow-[0_0_8px_rgba(255,80,110,0.2)]">HDR10+</div>
-            <div class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-label-sm text-tertiary tracking-widest uppercase shadow-[0_0_8px_rgba(160,120,255,0.2)]">ATMOS</div>
+            <div
+              class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-label-sm text-secondary tracking-widest uppercase shadow-[0_0_8px_rgba(0,238,252,0.2)]">
+              4K UHD</div>
+            <div
+              class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-label-sm text-primary-fixed tracking-widest uppercase shadow-[0_0_8px_rgba(255,80,110,0.2)]">
+              HDR10+</div>
+            <div
+              class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-label-sm text-tertiary tracking-widest uppercase shadow-[0_0_8px_rgba(160,120,255,0.2)]">
+              ATMOS</div>
           </div>
         </div>
 
         <div class="flex flex-col gap-space-sm">
           <span class="font-label-lg text-label-lg text-on-surface tracking-wider uppercase font-bold">Browse</span>
           <ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-outline">
-            <li class="hover:text-secondary-container transition-colors"><a href="anime.html">Top Airing Masterpieces</a></li>
-            <li class="hover:text-secondary-container transition-colors"><a href="anime.html?filter=simulcast">New Spring Releases</a></li>
-            <li class="hover:text-secondary-container transition-colors"><a href="anime.html?filter=dub">Dual-Audio Dubbed</a></li>
-            <li class="hover:text-secondary-container transition-colors"><a href="anime.html?filter=movies">Dolby Vision Features</a></li>
-            <li class="hover:text-secondary-container transition-colors"><a href="anime.html?filter=classic">Classic Remasters</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="anime.html">Top Airing
+                Masterpieces</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="anime.html?filter=simulcast">New
+                Spring Releases</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="anime.html?filter=dub">Dual-Audio
+                Dubbed</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="anime.html?filter=movies">Dolby Vision
+                Features</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="anime.html?filter=classic">Classic
+                Remasters</a></li>
           </ul>
         </div>
 
         <div class="flex flex-col gap-space-sm">
           <span class="font-label-lg text-label-lg text-on-surface tracking-wider uppercase font-bold">Community</span>
           <ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-outline">
-            <li class="hover:text-secondary-container transition-colors"><a href="https://discord.gg" target="_blank" rel="noopener">Infinx Discord Core</a></li>
-            <li class="hover:text-secondary-container transition-colors"><a href="video-player/index.html">Watch Parties</a></li>
-            <li class="hover:text-secondary-container transition-colors"><a href="#publicLiveChatSection">Tokyo Danmaku Lounge</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="https://discord.gg" target="_blank"
+                rel="noopener">Infinx Discord Core</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="video-player/index.html">Watch
+                Parties</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="#publicLiveChatSection">Tokyo Danmaku
+                Lounge</a></li>
             <li class="hover:text-secondary-container transition-colors"><a href="profile.html">Fan Art Matrix</a></li>
           </ul>
         </div>
@@ -1594,19 +1908,24 @@
         <div class="flex flex-col gap-space-sm">
           <span class="font-label-lg text-label-lg text-on-surface tracking-wider uppercase font-bold">System</span>
           <ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-outline">
-            <li class="hover:text-secondary-container transition-colors"><a href="download.html">Mobile Applications</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="download.html">Mobile Applications</a>
+            </li>
             <li class="hover:text-secondary-container transition-colors"><a href="admin.html">Admin Studio</a></li>
-            <li class="hover:text-secondary-container transition-colors"><a href="view.html#vip">VIP Subscription</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a href="view.html#vip">VIP Subscription</a>
+            </li>
             <li class="hover:text-secondary-container transition-colors"><a href="profile.html">Otaku Passport</a></li>
           </ul>
         </div>
       </div>
 
-      <div class="mt-space-xl pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md border-t border-white/5">
-        <span class="font-body-sm text-body-sm text-outline">© 2026 INFINX ANIME BROADCAST CORP. ALL RIGHTS RESERVED. ZERO RE-COMPRESSION STANDARD.</span>
+      <div
+        class="mt-space-xl pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md border-t border-white/5">
+        <span class="font-body-sm text-body-sm text-outline">© 2026 INFINX ANIME BROADCAST CORP. ALL RIGHTS RESERVED.
+          ZERO RE-COMPRESSION STANDARD.</span>
         <div class="flex items-center gap-space-md">
           <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse shadow-[0_0_8px_#00eefc]"></span>
-          <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">All Tokyo Feeds Nominal</span>
+          <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">All Tokyo Feeds
+            Nominal</span>
         </div>
       </div>
     </div>
@@ -1617,28 +1936,36 @@
        ========================================================================= -->
   <nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none md:hidden">
     <div class="px-gutter-mobile pb-space-sm pt-space-xs max-w-lg mx-auto pointer-events-auto">
-      <div class="flex items-center justify-around h-16 rounded-full bg-surface-container-lowest/85 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] border border-white/[0.08] px-space-xs">
-        <a aria-current="page" class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full transition-all text-secondary-fixed bg-surface-variant/70 shadow-[0_0_16px_rgba(0,238,252,0.3)] tab-item" href="index.html" id="tabHome">
+      <div
+        class="flex items-center justify-around h-16 rounded-full bg-surface-container-lowest/85 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] border border-white/[0.08] px-space-xs">
+        <a aria-current="page"
+          class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full transition-all text-secondary-fixed bg-surface-variant/70 shadow-[0_0_16px_rgba(0,238,252,0.3)] tab-item"
+          href="index.html" id="tabHome">
           <span class="material-symbols-outlined text-[20px]">home</span>
           <span class="text-[10px] font-semibold">Home</span>
         </a>
-        <a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full text-on-surface-variant transition-all hover:text-on-surface tab-item" href="anime.html" id="tabAnime">
+        <a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full text-on-surface-variant transition-all hover:text-on-surface tab-item"
+          href="anime.html" id="tabAnime">
           <span class="material-symbols-outlined text-[20px]">explore</span>
           <span class="text-[10px] font-semibold">Browse</span>
         </a>
-        <a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full text-on-surface-variant transition-all hover:text-on-surface tab-item" href="javascript:void(0)" id="tabSearch" onclick="document.getElementById('mobileHeaderSearchBtn')?.click()">
+        <a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full text-on-surface-variant transition-all hover:text-on-surface tab-item"
+          href="javascript:void(0)" id="tabSearch" onclick="document.getElementById('mobileHeaderSearchBtn')?.click()">
           <span class="material-symbols-outlined text-[20px]">search</span>
           <span class="text-[10px] font-semibold">Search</span>
         </a>
-        <a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full text-on-surface-variant transition-all hover:text-on-surface tab-item" href="#publicLiveChatSection" id="tabChat" onclick="window.scrollToPublicChat(event)">
+        <a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full text-on-surface-variant transition-all hover:text-on-surface tab-item"
+          href="#publicLiveChatSection" id="tabChat" onclick="window.scrollToPublicChat(event)">
           <span class="material-symbols-outlined text-[20px]">chat</span>
           <span class="text-[10px] font-semibold">Live Chat</span>
         </a>
-        <a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full text-on-surface-variant transition-all hover:text-on-surface tab-item" href="view.html#watchlist" id="tabWatchlist">
+        <a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full text-on-surface-variant transition-all hover:text-on-surface tab-item"
+          href="view.html#watchlist" id="tabWatchlist">
           <span class="material-symbols-outlined text-[20px]">bookmarks</span>
           <span class="text-[10px] font-semibold">Watchlist</span>
         </a>
-        <a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full text-on-surface-variant transition-all hover:text-on-surface tab-item" href="profile.html" id="tabProfile">
+        <a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-sm rounded-full text-on-surface-variant transition-all hover:text-on-surface tab-item"
+          href="profile.html" id="tabProfile">
           <span class="material-symbols-outlined text-[20px]">person</span>
           <span class="text-[10px] font-semibold">Profile</span>
         </a>
@@ -1651,54 +1978,72 @@
        ========================================================================= -->
   <!-- Login Modal -->
   <div class="modal" id="loginModal">
-    <div class="relative w-full max-w-md p-space-xl rounded-2xl bg-surface-container-low/95 backdrop-blur-2xl border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] flex flex-col gap-space-md">
-      <button class="absolute top-4 right-4 text-outline hover:text-on-surface text-xl cursor-pointer" onclick="closeModal('login')">&times;</button>
+    <div
+      class="relative w-full max-w-md p-space-xl rounded-2xl bg-surface-container-low/95 backdrop-blur-2xl border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] flex flex-col gap-space-md">
+      <button class="absolute top-4 right-4 text-outline hover:text-on-surface text-xl cursor-pointer"
+        onclick="closeModal('login')">&times;</button>
       <div class="flex flex-col">
         <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Sign In to Infinx</h3>
-        <p class="font-body-sm text-body-sm text-outline">Access your custom watch history and 4K bitrate stream credentials.</p>
+        <p class="font-body-sm text-body-sm text-outline">Access your custom watch history and 4K bitrate stream
+          credentials.</p>
       </div>
       <form id="loginForm" class="flex flex-col gap-space-sm">
         <div class="flex flex-col gap-1">
-          <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider" for="loginEmail">Email Address</label>
-          <input type="email" id="loginEmail" required placeholder="name@example.com" class="w-full px-4 py-2.5 rounded-xl bg-surface-container-high border border-white/10 text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-secondary-container transition-all" />
+          <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider" for="loginEmail">Email
+            Address</label>
+          <input type="email" id="loginEmail" required placeholder="name@example.com"
+            class="w-full px-4 py-2.5 rounded-xl bg-surface-container-high border border-white/10 text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-secondary-container transition-all" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider" for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-surface-container-high border border-white/10 text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-secondary-container transition-all" />
+          <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider"
+            for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" required placeholder="••••••••"
+            class="w-full px-4 py-2.5 rounded-xl bg-surface-container-high border border-white/10 text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-secondary-container transition-all" />
         </div>
-        <button type="submit" class="w-full py-3 mt-2 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(255,80,110,0.5)] hover:shadow-[0_0_28px_rgba(255,80,110,0.8)] transition-all cursor-pointer">
+        <button type="submit"
+          class="w-full py-3 mt-2 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(255,80,110,0.5)] hover:shadow-[0_0_28px_rgba(255,80,110,0.8)] transition-all cursor-pointer">
           Sign In
         </button>
       </form>
       <p class="text-center font-body-sm text-body-sm text-outline">
-        Don't have an account? <a href="javascript:void(0)" onclick="switchModal('login', 'register')" class="text-secondary-container hover:underline">Create Account</a>
+        Don't have an account? <a href="javascript:void(0)" onclick="switchModal('login', 'register')"
+          class="text-secondary-container hover:underline">Create Account</a>
       </p>
     </div>
   </div>
 
   <!-- Register Modal -->
   <div class="modal" id="registerModal">
-    <div class="relative w-full max-w-md p-space-xl rounded-2xl bg-surface-container-low/95 backdrop-blur-2xl border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] flex flex-col gap-space-md">
-      <button class="absolute top-4 right-4 text-outline hover:text-on-surface text-xl cursor-pointer" onclick="closeModal('register')">&times;</button>
+    <div
+      class="relative w-full max-w-md p-space-xl rounded-2xl bg-surface-container-low/95 backdrop-blur-2xl border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] flex flex-col gap-space-md">
+      <button class="absolute top-4 right-4 text-outline hover:text-on-surface text-xl cursor-pointer"
+        onclick="closeModal('register')">&times;</button>
       <div class="flex flex-col">
         <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Create Infinx Account</h3>
-        <p class="font-body-sm text-body-sm text-outline">Join the theatre guild and sync watch progression across all devices.</p>
+        <p class="font-body-sm text-body-sm text-outline">Join the theatre guild and sync watch progression across all
+          devices.</p>
       </div>
       <form id="registerForm" class="flex flex-col gap-space-sm">
         <div class="flex flex-col gap-1">
-          <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider" for="registerEmail">Email Address</label>
-          <input type="email" id="registerEmail" required placeholder="name@example.com" class="w-full px-4 py-2.5 rounded-xl bg-surface-container-high border border-white/10 text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-secondary-container transition-all" />
+          <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider" for="registerEmail">Email
+            Address</label>
+          <input type="email" id="registerEmail" required placeholder="name@example.com"
+            class="w-full px-4 py-2.5 rounded-xl bg-surface-container-high border border-white/10 text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-secondary-container transition-all" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider" for="registerPassword">Password</label>
-          <input type="password" id="registerPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-surface-container-high border border-white/10 text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-secondary-container transition-all" />
+          <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider"
+            for="registerPassword">Password</label>
+          <input type="password" id="registerPassword" required placeholder="••••••••"
+            class="w-full px-4 py-2.5 rounded-xl bg-surface-container-high border border-white/10 text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-secondary-container transition-all" />
         </div>
-        <button type="submit" class="w-full py-3 mt-2 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md text-label-md font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(0,238,252,0.4)] hover:shadow-[0_0_28px_rgba(0,238,252,0.7)] transition-all cursor-pointer">
+        <button type="submit"
+          class="w-full py-3 mt-2 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md text-label-md font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(0,238,252,0.4)] hover:shadow-[0_0_28px_rgba(0,238,252,0.7)] transition-all cursor-pointer">
           Create Account
         </button>
       </form>
       <p class="text-center font-body-sm text-body-sm text-outline">
-        Already have an account? <a href="javascript:void(0)" onclick="switchModal('register', 'login')" class="text-primary hover:underline">Sign In</a>
+        Already have an account? <a href="javascript:void(0)" onclick="switchModal('register', 'login')"
+          class="text-primary hover:underline">Sign In</a>
       </p>
     </div>
   </div>
@@ -1710,7 +2055,8 @@
         <span class="material-symbols-outlined text-[24px]">arrow_back</span>
       </button>
       <div class="relative flex-1 flex items-center">
-        <input type="text" id="mobileSearchInput" placeholder="Search anime, movies, studios..." class="w-full pl-4 pr-10 py-2.5 rounded-full bg-surface-container-high text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-secondary-container text-sm" />
+        <input type="text" id="mobileSearchInput" placeholder="Search anime, movies, studios..."
+          class="w-full pl-4 pr-10 py-2.5 rounded-full bg-surface-container-high text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-secondary-container text-sm" />
         <button id="clearMobileSearch" class="absolute right-3 text-outline hover:text-white" style="display: none;">
           <span class="material-symbols-outlined text-[18px]">close</span>
         </button>
@@ -1727,15 +2073,16 @@
   <script src="index.js?v=2.5"></script>
   <script src="show-details-modal.js"></script>
   <script src="welcome.js"></script>
-  <script src="/socket.io/socket.io.js" onerror="this.onerror=null;this.src='https://cdn.socket.io/4.7.5/socket.io.min.js'"></script>
+  <script src="/socket.io/socket.io.js"
+    onerror="this.onerror=null;this.src='https://cdn.socket.io/4.7.5/socket.io.min.js'"></script>
   <script src="public-chat.js?v=2.4"></script>
   <!-- Inline UI Helpers for Day Selection & Modal Interactions -->
   <script>
-    (function() {
+    (function () {
       // Simulcast schedule day switching
       const dayTabs = document.querySelectorAll('#simulcastSchedule .flex button');
       dayTabs.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
           dayTabs.forEach(b => {
             b.className = 'px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer transition-colors';
           });
@@ -1744,7 +2091,7 @@
       });
 
       // Global safety check: never stay scroll-locked
-      window.addEventListener('load', function() {
+      window.addEventListener('load', function () {
         if (!document.querySelector('.modal.active') && !document.querySelector('.mobile-drawer.active')) {
           document.body.style.overflow = '';
         }

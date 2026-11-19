@@ -284,7 +284,6 @@
             <span class="font-headline-sm text-headline-sm tracking-wider font-extrabold text-secondary-container drop-shadow-[0_0_12px_rgba(0,238,252,0.6)]">
               INFINX<span class="text-primary-container drop-shadow-[0_0_12px_rgba(255,80,110,0.6)] ml-1">ANIME</span>
             </span>
-            <span class="font-label-sm text-label-sm tracking-widest uppercase text-outline">CINEMA LABS</span>
           </div>
         </a>
 
