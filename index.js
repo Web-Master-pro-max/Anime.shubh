@@ -5,7 +5,7 @@ const getLocalBackend = () => {
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return 'http://localhost:8000';
   }
-  return 'http://13.202.95.5:8000';
+  return 'http://16.179.30.197:8000';
 };
 const DEFAULT_BACKEND = getLocalBackend();
 const isHttps = window.location.protocol === 'https:';
@@ -29,10 +29,10 @@ document.addEventListener('DOMContentLoaded', function () {
   // Load homepage configurations
   initApp();
 
-  // Open login modal if redirected with login=true param
+  // Redirect to login page if redirected with login=true param
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('login') === 'true' && !isLoggedIn()) {
-    setTimeout(() => openModal('login'), 300);
+    window.location.href = 'login.html';
   }
 
   // Header scroll effect
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const term = this.value.trim();
         if (term) {
           if (liveDropdown) liveDropdown.style.display = 'none';
-          window.location.href = `view.html#search?q=${encodeURIComponent(term)}`;
+          window.location.href = `anime.html?search=${encodeURIComponent(term)}`;
         }
       }
     });
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const term = this.value.trim();
         if (term) {
           if (mobileSearchOverlay) mobileSearchOverlay.classList.remove('active');
-          window.location.href = `view.html#search?q=${encodeURIComponent(term)}`;
+          window.location.href = `anime.html?search=${encodeURIComponent(term)}`;
         }
       }
     });
@@ -686,10 +686,10 @@ function updateAuthHeader() {
   } else {
     headerDiv.innerHTML = `
           <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <button class="px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-xs sm:text-label-sm font-semibold transition-all cursor-pointer shrink-0" onclick="openModal('login')">
+            <button class="px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-xs sm:text-label-sm font-semibold transition-all cursor-pointer shrink-0" onclick="window.location.href='login.html'">
               Sign In
             </button>
-            <button class="hidden sm:inline-block px-3 sm:px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-xs sm:text-label-sm font-bold shadow-[0_0_14px_rgba(255,80,110,0.4)] hover:brightness-110 transition-all cursor-pointer shrink-0" onclick="openModal('register')">
+            <button class="hidden sm:inline-block px-3 sm:px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-xs sm:text-label-sm font-bold shadow-[0_0_14px_rgba(255,80,110,0.4)] hover:brightness-110 transition-all cursor-pointer shrink-0" onclick="window.location.href='login.html#register'">
               Register
             </button>
           </div>
@@ -697,10 +697,10 @@ function updateAuthHeader() {
 
     if (drawerDiv) {
       drawerDiv.innerHTML = `
-            <button class="w-full py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md font-bold shadow-[0_0_16px_rgba(0,238,252,0.35)] cursor-pointer" onclick="closeMobileMenu(); openModal('login')">
+            <button class="w-full py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md font-bold shadow-[0_0_16px_rgba(0,238,252,0.35)] cursor-pointer" onclick="closeMobileMenu(); window.location.href='login.html';">
               Sign In
             </button>
-            <button class="w-full py-2.5 rounded-xl bg-surface-container-high text-on-surface font-label-md font-medium cursor-pointer" onclick="closeMobileMenu(); openModal('register')">
+            <button class="w-full py-2.5 rounded-xl bg-surface-container-high text-on-surface font-label-md font-medium cursor-pointer" onclick="closeMobileMenu(); window.location.href='login.html#register';">
               Create Account
             </button>
           `;
@@ -1185,6 +1185,14 @@ function renderDynamicHomeSections() {
             `;
       });
 
+      // Determine correct routing for "View All":
+      // All dynamic home sections from categories should route to anime.html?category=slug
+      // (or anime.html for anime / anime-hub) so the actual category shows are displayed
+      let viewAllUrl = `anime.html?category=${encodeURIComponent(cat.slug)}`;
+      if (cat.slug === 'anime' || cat.slug === 'anime-hub') {
+        viewAllUrl = 'anime.html';
+      }
+
       sectionsHtml += `
             <section class="w-full max-w-7xl mx-auto px-gutter pt-space-xl" id="section-${cat.slug}">
               <div class="flex items-center justify-between mb-space-md">
@@ -1193,7 +1201,7 @@ function renderDynamicHomeSections() {
                   <h2 class="font-headline-md text-headline-md tracking-tight font-bold text-on-surface">${info.name}</h2>
                   <span class="font-label-sm text-label-sm text-outline px-2 py-0.5 rounded bg-surface-container-low">${shows.length} Masterpieces</span>
                 </div>
-                <a class="font-label-md text-label-md text-secondary-container hover:text-secondary flex items-center gap-0.5 transition-colors" href="anime.html?category=${cat.slug}">
+                <a class="font-label-md text-label-md text-secondary-container hover:text-secondary flex items-center gap-0.5 transition-colors" href="${viewAllUrl}">
                   <span>View All</span>
                   <span class="material-symbols-outlined text-[16px]">chevron_right</span>
                 </a>
@@ -1214,7 +1222,7 @@ function renderDynamicHomeSections() {
 // Toggle favorite watchlist item
 async function toggleWatchlist(btnOrId, maybeShowId) {
   if (!isLoggedIn()) {
-    openModal('login');
+    window.location.href = 'login.html';
     return;
   }
   let btn = null;
@@ -1278,8 +1286,7 @@ window.requireAuthPlay = function (e, playUrl) {
     if (playUrl && playUrl !== '#') {
       sessionStorage.setItem('infinx_redirect_after_auth', playUrl);
     }
-    // Open registration modal by default to encourage signing up
-    openModal('register');
+    window.location.href = 'login.html';
     return false;
   }
   if (playUrl && playUrl !== '#') {
@@ -1392,6 +1399,14 @@ function handleLogout(e) {
 
 // Modal triggers
 function openModal(type) {
+  if (type === 'login') {
+    window.location.href = 'login.html';
+    return;
+  }
+  if (type === 'register') {
+    window.location.href = 'login.html#register';
+    return;
+  }
   const modal = document.getElementById(`${type}Modal`);
   if (modal) {
     modal.classList.add('active');

@@ -1160,7 +1160,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           }
 
           if (!streamUrl) {
-            for (const altHost of ['sora', '3rdprovider']) {
+            for (const altHost of ['yuki', '3rdprovider', 'sora']) {
               try {
                 const altRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode?.anilistId || lunarId}/${targetEpNum}?host=${altHost}&type=sub`);
                 if (altRes.ok) {
@@ -4737,13 +4737,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Update Screen Fit Button icon & title
         if (fitScreenBtn) {
           if (currentFitMode === 'cover') {
-            fitScreenBtn.innerHTML = '<i class="fas fa-expand-arrows-alt"></i>';
+            fitScreenBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">aspect_ratio</span>';
             fitScreenBtn.title = 'Fill Notch Screen (Cover)';
           } else if (currentFitMode === 'fill') {
-            fitScreenBtn.innerHTML = '<i class="fas fa-arrows-alt"></i>';
+            fitScreenBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">fit_screen</span>';
             fitScreenBtn.title = 'Stretch Video (Fill)';
           } else {
-            fitScreenBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>';
+            fitScreenBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">crop_free</span>';
             fitScreenBtn.title = 'Fit to Screen (Contain)';
           }
         }
@@ -6443,6 +6443,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             addCommentBox.innerHTML = `
             <div class="comment-login-prompt">
               <p>Join the conversation! Please <a href="/index.html?login=true">Login</a> or <a href="/index.html?login=true">Register</a> to post a comment.</p>
+              <p>Join the conversation! Please <a href="../login.html">Login</a> or <a href="../login.html#register">Register</a> to post a comment.</p>
             </div>
           `;
           }
@@ -6477,6 +6478,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (!token) {
           alert('Please login to reply.');
           window.location.href = '/index.html?login=true';
+          window.location.href = '../login.html';
           return;
         }
         const replyBox = document.getElementById(`reply-box-${commentId}`);
@@ -6533,6 +6535,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (!token) {
           alert('Please login to like comments.');
           window.location.href = '/index.html?login=true';
+          window.location.href = '../login.html';
           return;
         }
 
@@ -6962,9 +6965,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.warn('[Player] Fallback to sub failed:', fbErr);
               }
             }
-            // If still no streamUrl, try alternative hosts (sora, 3rdprovider)
+            // If still no streamUrl, try alternative hosts (yuki, 3rdprovider, sora)
             if (!initialVideoUrl) {
-              for (const altHost of ['sora', '3rdprovider']) {
+              for (const altHost of ['yuki', '3rdprovider', 'sora']) {
                 try {
                   const altRes = await fetch(`${API_BASE}/lunarx/stream/${currentEpisode.anilistId}/${epNumVal}?host=${altHost}&type=sub`);
                   if (altRes.ok) {

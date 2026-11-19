@@ -971,27 +971,34 @@
             </button>
             <div class="dropdown-menu genres-menu">
               <div class="grid grid-cols-2 gap-1">
-                <a href="view.html#action" class="dropdown-item"><i class="fas fa-fire"></i><span>Action</span></a>
-                <a href="view.html#adventure" class="dropdown-item"><i
+                <a href="anime.html?genre=action" class="dropdown-item"><i
+                    class="fas fa-fire"></i><span>Action</span></a>
+                <a href="anime.html?genre=adventure" class="dropdown-item"><i
                     class="fas fa-compass"></i><span>Adventure</span></a>
-                <a href="view.html#animation" class="dropdown-item"><i
+                <a href="anime.html?genre=animation" class="dropdown-item"><i
                     class="fas fa-magic"></i><span>Animation</span></a>
-                <a href="view.html#comedy" class="dropdown-item"><i
+                <a href="anime.html?genre=comedy" class="dropdown-item"><i
                     class="fas fa-laugh-beam"></i><span>Comedy</span></a>
-                <a href="view.html#crime" class="dropdown-item"><i class="fas fa-user-ninja"></i><span>Crime</span></a>
-                <a href="view.html#drama" class="dropdown-item"><i
+                <a href="anime.html?genre=crime" class="dropdown-item"><i
+                    class="fas fa-user-ninja"></i><span>Crime</span></a>
+                <a href="anime.html?genre=drama" class="dropdown-item"><i
                     class="fas fa-theater-masks"></i><span>Drama</span></a>
-                <a href="view.html#fantasy" class="dropdown-item"><i class="fas fa-dragon"></i><span>Fantasy</span></a>
-                <a href="view.html#historical" class="dropdown-item"><i
+                <a href="anime.html?genre=fantasy" class="dropdown-item"><i
+                    class="fas fa-dragon"></i><span>Fantasy</span></a>
+                <a href="anime.html?genre=historical" class="dropdown-item"><i
                     class="fas fa-landmark"></i><span>Historical</span></a>
-                <a href="view.html#horror" class="dropdown-item"><i class="fas fa-ghost"></i><span>Horror</span></a>
-                <a href="view.html#mystery" class="dropdown-item"><i
+                <a href="anime.html?genre=horror" class="dropdown-item"><i
+                    class="fas fa-ghost"></i><span>Horror</span></a>
+                <a href="anime.html?genre=mystery" class="dropdown-item"><i
                     class="fas fa-user-secret"></i><span>Mystery</span></a>
-                <a href="view.html#political" class="dropdown-item"><i
+                <a href="anime.html?genre=political" class="dropdown-item"><i
                     class="fas fa-building-columns"></i><span>Political</span></a>
-                <a href="view.html#romance" class="dropdown-item"><i class="fas fa-heart"></i><span>Romance</span></a>
-                <a href="view.html#sci-fi" class="dropdown-item"><i class="fas fa-atom"></i><span>Sci-Fi</span></a>
-                <a href="view.html#thriller" class="dropdown-item"><i class="fas fa-bolt"></i><span>Thriller</span></a>
+                <a href="anime.html?genre=romance" class="dropdown-item"><i
+                    class="fas fa-heart"></i><span>Romance</span></a>
+                <a href="anime.html?genre=sci-fi" class="dropdown-item"><i
+                    class="fas fa-atom"></i><span>Sci-Fi</span></a>
+                <a href="anime.html?genre=thriller" class="dropdown-item"><i
+                    class="fas fa-bolt"></i><span>Thriller</span></a>
               </div>
             </div>
           </div>
@@ -1007,18 +1014,20 @@
             </button>
             <div class="dropdown-menu categories-menu">
               <div class="flex flex-col gap-1">
-                <a href="view.html#south-hindi-dubbed" class="dropdown-item"><i class="fas fa-language"></i><span>South
+                <a href="anime.html?category=south-hindi-dubbed" class="dropdown-item"><i
+                    class="fas fa-language"></i><span>South
                     Hindi Dubbed</span></a>
-                <a href="view.html#hollywood" class="dropdown-item"><i class="fas fa-film"></i><span>Hollywood
+                <a href="anime.html?category=hollywood" class="dropdown-item"><i class="fas fa-film"></i><span>Hollywood
                     Movies</span></a>
-                <a href="view.html#bollywood" class="dropdown-item"><i class="fas fa-clapperboard"></i><span>Bollywood
+                <a href="anime.html?category=bollywood" class="dropdown-item"><i
+                    class="fas fa-clapperboard"></i><span>Bollywood
                     Movies</span></a>
                 <a href="anime.html" class="dropdown-item"><i class="fas fa-play-circle"></i><span>Anime Hub</span></a>
-                <a href="view.html#web-series" class="dropdown-item"><i class="fas fa-tv"></i><span>Web
+                <a href="anime.html?category=web-series" class="dropdown-item"><i class="fas fa-tv"></i><span>Web
                     Series</span></a>
-                <a href="view.html#kids" class="dropdown-item"><i class="fas fa-child"></i><span>Kids &amp;
+                <a href="anime.html?category=kids" class="dropdown-item"><i class="fas fa-child"></i><span>Kids &amp;
                     Family</span></a>
-                <a href="view.html#kdrama" class="dropdown-item"><i class="fas fa-video"></i><span>Korean
+                <a href="anime.html?category=kdrama" class="dropdown-item"><i class="fas fa-video"></i><span>Korean
                     Drama</span></a>
               </div>
             </div>
@@ -1098,11 +1107,13 @@
           <button
             class="px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-xs sm:text-label-sm font-semibold transition-all cursor-pointer shrink-0"
             onclick="openModal('login')" type="button">
+            onclick="window.location.href='login.html'" type="button">
             Sign In
           </button>
           <button
             class="hidden sm:inline-block px-3 sm:px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-xs sm:text-label-sm font-bold shadow-[0_0_14px_rgba(255,80,110,0.4)] hover:brightness-110 transition-all cursor-pointer shrink-0"
             onclick="openModal('register')" type="button">
+            onclick="window.location.href='login.html#register'" type="button">
             Register
           </button>
         </div>
@@ -1160,46 +1171,46 @@
           <div
             class="hidden flex-col pl-4 py-1.5 gap-0.5 bg-surface-container-lowest/50 rounded-xl mt-1 border border-white/5">
             <div class="grid grid-cols-2 gap-0.5">
-              <a href="view.html#action"
+              <a href="anime.html?genre=action"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-fire text-primary-container text-xs w-4"></i>Action</a>
-              <a href="view.html#adventure"
+              <a href="anime.html?genre=adventure"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-compass text-primary-container text-xs w-4"></i>Adventure</a>
-              <a href="view.html#animation"
+              <a href="anime.html?genre=animation"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-magic text-primary-container text-xs w-4"></i>Animation</a>
-              <a href="view.html#comedy"
+              <a href="anime.html?genre=comedy"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-laugh-beam text-primary-container text-xs w-4"></i>Comedy</a>
-              <a href="view.html#crime"
+              <a href="anime.html?genre=crime"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-user-ninja text-primary-container text-xs w-4"></i>Crime</a>
-              <a href="view.html#drama"
+              <a href="anime.html?genre=drama"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-theater-masks text-primary-container text-xs w-4"></i>Drama</a>
-              <a href="view.html#fantasy"
+              <a href="anime.html?genre=fantasy"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-dragon text-primary-container text-xs w-4"></i>Fantasy</a>
-              <a href="view.html#historical"
+              <a href="anime.html?genre=historical"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-landmark text-primary-container text-xs w-4"></i>Historical</a>
-              <a href="view.html#horror"
+              <a href="anime.html?genre=horror"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-ghost text-primary-container text-xs w-4"></i>Horror</a>
-              <a href="view.html#mystery"
+              <a href="anime.html?genre=mystery"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-user-secret text-primary-container text-xs w-4"></i>Mystery</a>
-              <a href="view.html#political"
+              <a href="anime.html?genre=political"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-building-columns text-primary-container text-xs w-4"></i>Political</a>
-              <a href="view.html#romance"
+              <a href="anime.html?genre=romance"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-heart text-primary-container text-xs w-4"></i>Romance</a>
-              <a href="view.html#sci-fi"
+              <a href="anime.html?genre=sci-fi"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-atom text-primary-container text-xs w-4"></i>Sci-Fi</a>
-              <a href="view.html#thriller"
+              <a href="anime.html?genre=thriller"
                 class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                   class="fas fa-bolt text-primary-container text-xs w-4"></i>Thriller</a>
             </div>
@@ -1218,25 +1229,25 @@
           </button>
           <div
             class="hidden flex-col pl-3 py-1.5 gap-0.5 bg-surface-container-lowest/50 rounded-xl mt-1 border border-white/5">
-            <a href="view.html#south-hindi-dubbed"
+            <a href="anime.html?category=south-hindi-dubbed"
               class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                 class="fas fa-language text-primary-container text-xs w-4"></i>South Hindi Dubbed</a>
-            <a href="view.html#hollywood"
+            <a href="anime.html?category=hollywood"
               class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                 class="fas fa-film text-primary-container text-xs w-4"></i>Hollywood Movies</a>
-            <a href="view.html#bollywood"
+            <a href="anime.html?category=bollywood"
               class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                 class="fas fa-clapperboard text-primary-container text-xs w-4"></i>Bollywood Movies</a>
             <a href="anime.html"
               class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                 class="fas fa-play-circle text-primary-container text-xs w-4"></i>Anime Hub</a>
-            <a href="view.html#web-series"
+            <a href="anime.html?category=web-series"
               class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                 class="fas fa-tv text-primary-container text-xs w-4"></i>Web Series</a>
-            <a href="view.html#kids"
+            <a href="anime.html?category=kids"
               class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                 class="fas fa-child text-primary-container text-xs w-4"></i>Kids &amp; Family</a>
-            <a href="view.html#kdrama"
+            <a href="anime.html?category=kdrama"
               class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-white"><i
                 class="fas fa-video text-primary-container text-xs w-4"></i>Korean Drama</a>
           </div>
@@ -1285,12 +1296,14 @@
       <button
         class="w-full py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md font-bold shadow-[0_0_16px_rgba(0,238,252,0.35)] cursor-pointer"
         onclick="openModal('login'); if(typeof window.closeMobileMenu==='function') window.closeMobileMenu();"
+        onclick="if(typeof window.closeMobileMenu==='function') window.closeMobileMenu(); window.location.href='login.html';"
         type="button">
         Sign In
       </button>
       <button
         class="w-full py-2 rounded-xl bg-surface-container-high text-on-surface font-label-md font-medium cursor-pointer"
         onclick="openModal('register'); if(typeof window.closeMobileMenu==='function') window.closeMobileMenu();"
+        onclick="if(typeof window.closeMobileMenu==='function') window.closeMobileMenu(); window.location.href='login.html#register';"
         type="button">
         Create Account
       </button>
@@ -2069,8 +2082,8 @@
        6. SCRIPTS & ENGINE LOGIC (Exact dependency order preserved)
        ========================================================================= -->
   <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
-  <script src="navbar.js"></script>
-  <script src="index.js?v=2.5"></script>
+  <script src="navbar.js?v=2.6"></script>
+  <script src="index.js?v=2.6"></script>
   <script src="show-details-modal.js"></script>
   <script src="welcome.js"></script>
   <script src="/socket.io/socket.io.js"

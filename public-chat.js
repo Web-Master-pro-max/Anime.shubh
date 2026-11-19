@@ -210,22 +210,25 @@
           </div>
         </div>
 
-        <!-- Public Chat User Profile Popover / Modal -->
+        <!-- Public Chat User Profile Popover / Modal (Matches Design Reference) -->
         <div class="chat-user-modal-overlay" id="chatUserModalOverlay">
           <div class="chat-user-modal-card">
-            <button type="button" class="chat-user-modal-close" id="chatUserModalClose" aria-label="Close Profile Card">&times;</button>
-            <div class="chat-user-modal-banner" id="chatUserModalBanner"></div>
+            <button type="button" class="chat-user-modal-close" id="chatUserModalClose" aria-label="Close Profile Card">
+              <i class="fas fa-times"></i>
+            </button>
             <div class="chat-user-modal-header">
               <div class="chat-user-modal-avatar-wrap aura-default" id="chatUserModalAvatarWrap">
                 <img class="chat-user-modal-avatar" id="chatUserModalAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Shinobi" alt="Avatar" />
               </div>
               <div class="chat-user-modal-info">
-                <div class="chat-user-modal-name" id="chatUserModalName">Shinobi</div>
-                <div class="chat-user-modal-rank" id="chatUserModalRank"></div>
+                <div class="chat-user-modal-name" id="chatUserModalName">user1</div>
+                <div class="chat-user-modal-rank" id="chatUserModalRank">
+                  <span class="chat-rank-badge genin">🌱 GENIN • LV.1</span>
+                </div>
               </div>
             </div>
             <div class="chat-user-modal-body">
-              <p class="chat-user-modal-bio" id="chatUserModalBio">Loading shinobi profile...</p>
+              <p class="chat-user-modal-bio" id="chatUserModalBio">Exploring infinite anime worlds on Infinx Anime.</p>
               <div class="chat-user-modal-stats">
                 <div class="chat-user-stat">
                   <span class="stat-num" id="chatModalHours">--</span>
@@ -236,18 +239,14 @@
                   <span class="stat-lbl">Episodes</span>
                 </div>
                 <div class="chat-user-stat">
-                  <span class="stat-num" id="chatModalLevel">--</span>
+                  <span class="stat-num" id="chatModalLevel">Lv.1</span>
                   <span class="stat-lbl">Level</span>
                 </div>
-              </div>
-              <div class="chat-user-modal-showcase" id="chatUserModalShowcase" style="display:none;">
-                <div class="chat-user-showcase-title"><i class="fas fa-crown" style="color:#ffd700;"></i> Favorite Anime Showcase</div>
-                <div class="chat-user-showcase-list" id="chatUserModalShowcaseList"></div>
               </div>
             </div>
             <div class="chat-user-modal-actions">
               <a href="#" class="chat-user-btn-profile" id="chatUserModalViewProfileBtn">
-                <i class="fas fa-id-card"></i> View Profile
+                <i class="far fa-address-card"></i> View Profile
               </a>
               <button type="button" class="chat-user-btn-mention" id="chatUserModalMentionBtn">
                 <i class="fas fa-at"></i> Mention in Chat
@@ -590,7 +589,7 @@
               <span class="chat-sticker-icon">${msg.sticker.icon}</span>
               <div>
                 <div class="chat-sticker-label">${msg.sticker.name}</div>
-                <div style="font-size: 1.1rem; color: #a0aec0;">"${msg.sticker.quote}"</div>
+                <div class="chat-sticker-quote">"${msg.sticker.quote}"</div>
               </div>
             </div>
           </div>
@@ -630,7 +629,7 @@
         <div class="chat-msg-content">
           <div class="chat-msg-header">
             <span class="chat-msg-user" data-chat-user="${encodeURIComponent(msg.user)}" title="Click to view @${msg.user}'s profile">${msg.user}</span>
-            ${rankBadge}
+            <span class="chat-rank-badge-wrap" data-chat-user="${encodeURIComponent(msg.user)}" title="Click to view @${msg.user}'s profile">${rankBadge}</span>
             <span class="chat-msg-time">${msg.time || 'Now'}</span>
             ${deleteBtnHtml}
           </div>
@@ -642,10 +641,9 @@
       feed.scrollTop = feed.scrollHeight;
     }
 
-    // 5b. User Profile Quick-Card Modal Controller
+    // 5b. User Profile Quick-Card Modal Controller (Matches Design Reference)
     const userModalOverlay = document.getElementById('chatUserModalOverlay');
     const userModalClose = document.getElementById('chatUserModalClose');
-    const userModalBanner = document.getElementById('chatUserModalBanner');
     const userModalAvatarWrap = document.getElementById('chatUserModalAvatarWrap');
     const userModalAvatar = document.getElementById('chatUserModalAvatar');
     const userModalName = document.getElementById('chatUserModalName');
@@ -654,10 +652,13 @@
     const chatModalHours = document.getElementById('chatModalHours');
     const chatModalEpisodes = document.getElementById('chatModalEpisodes');
     const chatModalLevel = document.getElementById('chatModalLevel');
-    const userModalShowcase = document.getElementById('chatUserModalShowcase');
-    const userModalShowcaseList = document.getElementById('chatUserModalShowcaseList');
     const userModalViewProfileBtn = document.getElementById('chatUserModalViewProfileBtn');
     const userModalMentionBtn = document.getElementById('chatUserModalMentionBtn');
+
+    // Stacking Context: Mount overlay to document.body so position:fixed is never trapped by container overflow/filter
+    if (userModalOverlay && userModalOverlay.parentElement !== document.body) {
+      document.body.appendChild(userModalOverlay);
+    }
 
     function closeUserProfileCard() {
       if (userModalOverlay) userModalOverlay.classList.remove('active');
@@ -684,27 +685,31 @@
       const fallbackAvatar = avatarImg ? avatarImg.src : `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
       const fallbackFrame = avatarWrap ? avatarWrap.className.replace('chat-msg-avatar-wrap', '').trim() : 'aura-default';
 
-      userModalName.innerText = username;
-      userModalAvatar.src = fallbackAvatar;
-      userModalAvatarWrap.className = `chat-user-modal-avatar-wrap ${fallbackFrame}`;
-      userModalRank.innerHTML = rankBadge ? rankBadge.outerHTML : `<span class="chat-rank-badge genin">🌱 Shinobi</span>`;
-      userModalBio.innerText = 'Exploring infinite anime worlds on Infinx Anime.';
-      userModalBanner.style.backgroundImage = 'linear-gradient(135deg, #1f233e 0%, #0e101f 100%)';
-      chatModalHours.innerText = '--';
-      chatModalEpisodes.innerText = '--';
-      chatModalLevel.innerText = 'Lv.1';
-      if (userModalShowcase) userModalShowcase.style.display = 'none';
+      if (userModalName) userModalName.innerText = username;
+      if (userModalAvatar) userModalAvatar.src = fallbackAvatar;
+      if (userModalAvatarWrap) userModalAvatarWrap.className = `chat-user-modal-avatar-wrap ${fallbackFrame}`;
+      if (userModalRank) {
+        userModalRank.innerHTML = rankBadge ? rankBadge.outerHTML : `<span class="chat-rank-badge genin">🌱 GENIN • LV.1</span>`;
+      }
+      if (userModalBio) userModalBio.innerText = 'Exploring infinite anime worlds on Infinx Anime.';
+      if (chatModalHours) chatModalHours.innerText = '--';
+      if (chatModalEpisodes) chatModalEpisodes.innerText = '--';
+      if (chatModalLevel) chatModalLevel.innerText = 'Lv.1';
 
-      userModalViewProfileBtn.href = `/profile.html?user=${encodeURIComponent(username)}`;
-      userModalViewProfileBtn.innerHTML = `<i class="fas fa-id-card"></i> View Profile`;
+      if (userModalViewProfileBtn) {
+        userModalViewProfileBtn.href = `/profile.html?user=${encodeURIComponent(username)}`;
+        userModalViewProfileBtn.innerHTML = `<i class="far fa-address-card"></i> View Profile`;
+      }
 
-      userModalMentionBtn.onclick = () => {
-        if (input) {
-          input.value = `@${username} ` + input.value;
-          input.focus();
-        }
-        closeUserProfileCard();
-      };
+      if (userModalMentionBtn) {
+        userModalMentionBtn.onclick = () => {
+          if (input) {
+            input.value = `@${username} ` + input.value;
+            input.focus();
+          }
+          closeUserProfileCard();
+        };
+      }
 
       userModalOverlay.classList.add('active');
 
@@ -713,35 +718,29 @@
         const res = await fetch(`/api/user/profile/${encodeURIComponent(username)}`);
         if (res.ok) {
           const profile = await res.json();
-          if (profile.bannerUrl) {
-            userModalBanner.style.backgroundImage = `url('${normalizeBannerUrl(profile.bannerUrl)}')`;
-          }
-          if (profile.avatarUrl) {
+          if (profile.avatarUrl && userModalAvatar) {
             userModalAvatar.src = normalizeAvatarUrl(profile.avatarUrl, username);
           }
-          if (profile.avatarFrame) {
+          if (profile.avatarFrame && userModalAvatarWrap) {
             const raw = profile.avatarFrame.toLowerCase().replace(/^aura-/, '').replace(/^frame-/, '');
             userModalAvatarWrap.className = `chat-user-modal-avatar-wrap aura-${raw} frame-${raw} ${raw}`;
           }
-          if (profile.bio) {
+          if (profile.bio && userModalBio) {
             userModalBio.innerText = profile.bio;
           }
-          if (profile.vipRank) {
+          if (profile.vipRank && userModalRank) {
             userModalRank.innerHTML = renderRankBadge(profile.vipRank, profile.level);
           }
-          chatModalHours.innerText = `${(profile.stats && profile.stats.totalHoursWatched) || 0}h`;
-          chatModalEpisodes.innerText = `${(profile.stats && profile.stats.totalEpisodesWatched) || 0}`;
-          chatModalLevel.innerText = `Lv.${profile.level || 1}`;
-
-          // Top Anime Showcase
-          if (Array.isArray(profile.topAnime) && profile.topAnime.length > 0 && userModalShowcaseList) {
-            userModalShowcaseList.innerHTML = profile.topAnime.slice(0, 3).map(a => `
-              <div class="chat-user-showcase-item">
-                <img src="${a.poster || a.banner || '/assets/avatars/av-jin-u-seong.png'}" class="chat-user-showcase-poster" alt="${a.title}" />
-                <div class="chat-user-showcase-name">${a.title}</div>
-              </div>
-            `).join('');
-            if (userModalShowcase) userModalShowcase.style.display = 'block';
+          if (chatModalHours) {
+            const hrs = (profile.stats && profile.stats.totalHoursWatched);
+            chatModalHours.innerText = (hrs !== undefined && hrs !== null) ? `${hrs}h` : '--';
+          }
+          if (chatModalEpisodes) {
+            const eps = (profile.stats && profile.stats.totalEpisodesWatched);
+            chatModalEpisodes.innerText = (eps !== undefined && eps !== null) ? `${eps}` : '--';
+          }
+          if (chatModalLevel) {
+            chatModalLevel.innerText = `Lv.${profile.level || 1}`;
           }
         }
       } catch (e) {

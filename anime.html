@@ -1772,7 +1772,7 @@
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         return 'http://localhost:8000';
       }
-      return 'http://13.202.95.5:8000';
+      return 'http://16.179.30.197:8000';
     };
 
     const API_BASE = (window.location.protocol === 'file:')
@@ -1792,11 +1792,98 @@
     let currentTab = 'trending';
     let activeAudio = localStorage.getItem('infinx_audio_pref') || 'SUB';
     let isLoadingCatalog = false;
+    let catalogRequestId = 0;
+    let catalogAbortController = null;
 
     // Parse URL Search Parameters if passed from other views / search bar
+    // Master Genre & Category Dictionaries
+    const ANILIST_GENRE_MAP = {
+      'action': 'Action',
+      'adventure': 'Adventure',
+      'animation': 'Animation',
+      'comedy': 'Comedy',
+      'crime': 'Crime',
+      'drama': 'Drama',
+      'fantasy': 'Fantasy',
+      'historical': 'Historical',
+      'horror': 'Horror',
+      'mystery': 'Mystery',
+      'political': 'Political',
+      'romance': 'Romance',
+      'sci-fi': 'Sci-Fi',
+      'scifi': 'Sci-Fi',
+      'supernatural': 'Supernatural',
+      'psychological': 'Psychological',
+      'slice-of-life': 'Slice of Life',
+      'sports': 'Sports',
+      'thriller': 'Thriller'
+    };
+
+    const CATEGORY_NAMES = {
+      'south-hindi-dubbed': 'South Hindi Dubbed',
+      'hollywood': 'Hollywood Movies',
+      'bollywood': 'Bollywood Movies',
+      'anime': 'Anime Series',
+      'anime-hub': 'Anime Hub',
+      'web-series': 'Web Series',
+      'kids': 'Kids & Family',
+      'kdrama': 'Korean Drama',
+      'action': 'Action Movies',
+      'horror': 'Horror Movies',
+      'adventure': 'Adventure',
+      'animation': 'Animation',
+      'comedy': 'Comedy',
+      'crime': 'Crime',
+      'drama': 'Drama',
+      'fantasy': 'Fantasy',
+      'historical': 'Historical',
+      'mystery': 'Mystery',
+      'political': 'Political',
+      'romance': 'Romance',
+      'sci-fi': 'Sci-Fi',
+      'scifi': 'Sci-Fi',
+      'thriller': 'Thriller'
+    };
+
+    // Highlight Genre Pill Helper (Callable globally)
+    function highlightGenrePill(genreName) {
+      const target = (genreName || 'all').toLowerCase().trim();
+      document.querySelectorAll('.genre-pill').forEach(p => {
+        const g = (p.getAttribute('data-genre') || '').toLowerCase().trim();
+        const isMatch = (target === 'all' && (g === 'all' || g === '')) ||
+          (target !== 'all' && (g === target || g === target.replace(/-/g, ' ') || target.replace(/-/g, ' ') === g));
+        if (isMatch) {
+          p.className = 'genre-pill shrink-0 h-8 px-4 rounded-full bg-secondary-container text-on-secondary-fixed font-label-md text-label-md font-bold flex items-center gap-1.5 shadow-md active:scale-95 transition-all';
+        } else {
+          p.className = 'genre-pill shrink-0 h-8 px-3.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md hover:bg-surface-container active:scale-95 transition-all';
+        }
+      });
+    }
+    window.highlightGenrePill = highlightGenrePill;
+
+    // Filter clear helpers
+    window.clearCategoryFilter = function () {
+      currentFilters.category = '';
+      currentFilters.search = '';
+      window.history.pushState({}, '', 'anime.html');
+      currentPage = 1;
+      loadCatalog();
+    };
+
+    window.clearGenreFilter = function () {
+      currentFilters.genre = 'all';
+      currentFilters.search = '';
+      highlightGenrePill('all');
+      window.history.pushState({}, '', 'anime.html');
+      currentPage = 1;
+      loadCatalog();
+    };
+
+    // Parse URL Search Parameters if passed from other views / search bar / navbar
     const urlParams = new URLSearchParams(window.location.search);
     let currentFilters = {
       search: urlParams.get('search') || '',
+      category: urlParams.get('category') || '',
       genre: urlParams.get('genre') || 'all',
       format: urlParams.get('format') || 'all',
       season: urlParams.get('season') || 'all',
@@ -1874,6 +1961,7 @@
       loadAnimeContinueWatching();
 
       // 3. Sync initial URL params to inputs
+      // 3. Sync initial URL params to inputs & genre pills
       if (currentFilters.search) {
         const desktopSearch = document.getElementById('catalogSearchInput');
         const mobileSearch = document.getElementById('mobileCatalogSearch');
@@ -1881,8 +1969,81 @@
         if (mobileSearch) mobileSearch.value = currentFilters.search;
       }
 
+      if (currentFilters.genre && currentFilters.genre !== 'all') {
+        highlightGenrePill(currentFilters.genre);
+      }
+
       // 4. Load catalog records
       await loadCatalog();
+
+      // 5. Scroll smoothly to catalog section if user arrived via direct category, genre, or search filter
+      if (urlParams.has('genre') || urlParams.has('category') || urlParams.has('search')) {
+        setTimeout(() => {
+          const target = document.getElementById('catalogSectionTitle') || animeGrid;
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 320);
+      }
+    });
+
+    // Intercept clicks on navbar links pointing to anime.html while already on anime.html
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a');
+      if (!link) return;
+      const href = link.getAttribute('href');
+      if (!href) return;
+
+      try {
+        const url = new URL(link.href, window.location.origin);
+        const isCurrentAnimePage = window.location.pathname.includes('anime');
+        const isTargetAnimePage = url.pathname.includes('anime');
+
+        if (isCurrentAnimePage && isTargetAnimePage) {
+          e.preventDefault();
+          window.history.pushState({}, '', url.pathname + url.search);
+          const newParams = new URLSearchParams(url.search);
+          currentFilters.genre = newParams.get('genre') || 'all';
+          currentFilters.category = newParams.get('category') || '';
+          currentFilters.search = newParams.get('search') || '';
+          currentPage = 1;
+
+          if (!currentFilters.search) {
+            const dSearch = document.getElementById('catalogSearchInput');
+            const mSearch = document.getElementById('mobileCatalogSearch');
+            if (dSearch) dSearch.value = '';
+            if (mSearch) mSearch.value = '';
+          }
+
+          highlightGenrePill(currentFilters.genre);
+          loadCatalog();
+
+          const target = document.getElementById('catalogSectionTitle') || animeGrid;
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+          if (typeof window.closeMobileMenu === 'function') {
+            window.closeMobileMenu();
+          }
+          document.querySelectorAll('.nav-item-dropdown').forEach(d => d.classList.remove('active'));
+        }
+      } catch (err) { }
+    });
+
+    window.addEventListener('popstate', () => {
+      const newParams = new URLSearchParams(window.location.search);
+      currentFilters.genre = newParams.get('genre') || 'all';
+      currentFilters.category = newParams.get('category') || '';
+      currentFilters.search = newParams.get('search') || '';
+      currentPage = 1;
+      if (!currentFilters.search) {
+        const dSearch = document.getElementById('catalogSearchInput');
+        const mSearch = document.getElementById('mobileCatalogSearch');
+        if (dSearch) dSearch.value = '';
+        if (mSearch) mSearch.value = '';
+      }
+      highlightGenrePill(currentFilters.genre);
+      loadCatalog();
     });
 
     // Navigation Arrow Controls for Continue Transmission Slide Rail
@@ -2126,7 +2287,13 @@
 
     // Load Catalog Records with current filters & pagination
     async function loadCatalog() {
-      if (isLoadingCatalog) return;
+      const thisRequestId = ++catalogRequestId;
+      if (catalogAbortController) {
+        try { catalogAbortController.abort(); } catch (e) { }
+      }
+      catalogAbortController = new AbortController();
+      const signal = catalogAbortController.signal;
+
       isLoadingCatalog = true;
 
       if (currentPage === 1) {
@@ -2141,6 +2308,34 @@
       }
 
       try {
+        if (currentFilters.category && currentFilters.category !== 'all' && currentFilters.category !== 'anime-hub') {
+          await loadCategoryCatalog(currentFilters.category, thisRequestId, signal);
+        } else {
+          await loadLunarCatalog(thisRequestId, signal);
+        }
+      } catch (err) {
+        if (err.name === 'AbortError' || thisRequestId !== catalogRequestId) {
+          return;
+        }
+        console.error('Catalog load error:', err);
+        if (currentPage === 1) {
+          animeGrid.innerHTML = `
+            <div class="col-span-full py-16 text-center text-error font-body-md text-sm">
+              <i class="fas fa-exclamation-triangle text-2xl mb-2 block"></i>
+              Transmission stream error. Please check your network connection.
+            </div>
+          `;
+        }
+      } finally {
+        if (thisRequestId === catalogRequestId) {
+          isLoadingCatalog = false;
+          if (mobileSyncingIndicator) mobileSyncingIndicator.style.display = 'none';
+        }
+      }
+    }
+
+    // Master Anime / Lunar Catalog loader
+    async function loadLunarCatalog(requestId, signal) {
         const params = new URLSearchParams({
           page: currentPage,
           limit: 24,
@@ -2148,15 +2343,49 @@
         });
 
         if (currentFilters.search) params.append('search', currentFilters.search);
-        if (currentFilters.genre && currentFilters.genre !== 'all') params.append('genre', currentFilters.genre);
+
+        let cleanGenre = '';
+        if (currentFilters.genre && currentFilters.genre !== 'all') {
+          const rawG = currentFilters.genre.toLowerCase().trim();
+          cleanGenre = ANILIST_GENRE_MAP[rawG] || currentFilters.genre;
+          params.append('genre', cleanGenre);
+        }
+
         if (currentFilters.format && currentFilters.format !== 'all') params.append('format', currentFilters.format);
         if (currentFilters.season && currentFilters.season !== 'all') params.append('season', currentFilters.season);
         if (currentFilters.year && currentFilters.year !== 'all') params.append('year', currentFilters.year);
         if (currentFilters.status && currentFilters.status !== 'all') params.append('status', currentFilters.status);
 
-        const res = await fetch(`${API_BASE}/lunarx/browse?${params.toString()}`);
+        // Immediate visual title update
+        if (catalogSectionTitle) {
+          if (cleanGenre) {
+            catalogSectionTitle.innerHTML = `
+            <span class="text-secondary-container">${cleanGenre}</span> Anime Vault
+            <span class="ml-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary-container/20 text-secondary-container border border-secondary-container/40 inline-flex items-center gap-1">
+              ${cleanGenre}
+              <button type="button" class="hover:text-white cursor-pointer ml-1" onclick="window.clearGenreFilter()" title="Clear genre filter">&times;</button>
+            </span>
+          `;
+          } else if (currentFilters.search) {
+            catalogSectionTitle.innerHTML = `Search: "<span class="text-secondary-container">${currentFilters.search}</span>"`;
+          } else if (currentTab === 'popular') {
+            catalogSectionTitle.innerHTML = `Popular This Season`;
+          } else if (currentTab === 'top-rated') {
+            catalogSectionTitle.innerHTML = `Top Rated of All Time`;
+          } else if (currentTab === 'upcoming') {
+            catalogSectionTitle.innerHTML = `Upcoming Next Season`;
+          } else if (currentTab === 'movies') {
+            catalogSectionTitle.innerHTML = `Anime Theatrical Masters`;
+          } else {
+            catalogSectionTitle.innerHTML = `Transmission Vault`;
+          }
+        }
+
+        const res = await fetch(`${API_BASE}/lunarx/browse?${params.toString()}`, { signal });
         if (!res.ok) throw new Error(`API error ${res.status}`);
         const data = await res.json();
+
+        if (requestId && requestId !== catalogRequestId) return;
 
         const media = data.media || [];
         const pageInfo = data.pageInfo || {};
@@ -2169,68 +2398,267 @@
 
         renderAnimeCards(media);
         updatePagination(pageInfo);
-      } catch (err) {
-        console.error('Catalog load error:', err);
-        if (currentPage === 1) {
-          animeGrid.innerHTML = `
-            <div class="col-span-full py-16 text-center text-error font-body-md text-sm">
-              <i class="fas fa-exclamation-triangle text-2xl mb-2 block"></i>
-              Transmission stream error. Please check your network connection.
-            </div>
-          `;
-        }
-      } finally {
-        isLoadingCatalog = false;
-        if (mobileSyncingIndicator) mobileSyncingIndicator.style.display = 'none';
       }
-    }
 
-    // Render Anime Cards (Matching Stitch 2-column mobile + 6-column desktop spec)
-    function renderAnimeCards(list) {
-      if (!list || list.length === 0) {
-        animeGrid.innerHTML = `
+      // Category Catalog Loader (South Hindi Dubbed, Hollywood, Bollywood, Web Series, Korean Drama, etc.)
+      async function loadCategoryCatalog(categorySlug, requestId, signal) {
+        const slugNorm = (categorySlug || '').toLowerCase().trim();
+        const catName = CATEGORY_NAMES[slugNorm] || categorySlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+        if (catalogSectionTitle) {
+          catalogSectionTitle.innerHTML = `
+          <span class="text-secondary-container">${catName}</span> Vault
+          <span class="ml-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary-container/20 text-secondary-container border border-secondary-container/40 inline-flex items-center gap-1">
+            ${catName}
+            <button type="button" class="hover:text-white cursor-pointer ml-1" onclick="window.clearCategoryFilter()" title="Clear category filter">&times;</button>
+          </span>
+        `;
+        }
+
+        let shows = [];
+        try {
+          const res = await fetch(`${API_BASE}/shows/categories`, { signal });
+          if (res.ok) {
+            const categories = await res.json();
+            const cat = categories.find(c =>
+              (c.slug && c.slug.toLowerCase() === slugNorm) ||
+              (c.name && c.name.toLowerCase() === slugNorm) ||
+              (c.slug && c.slug.toLowerCase().includes(slugNorm)) ||
+              (slugNorm.includes(c.slug && c.slug.toLowerCase()))
+            );
+            if (cat && Array.isArray(cat.shows)) {
+              shows = cat.shows;
+            }
+          }
+        } catch (e) {
+          if (e.name === 'AbortError') throw e;
+          console.warn('Failed to load shows from /categories:', e);
+        }
+
+        if (requestId && requestId !== catalogRequestId) return;
+
+        if (shows.length === 0) {
+          try {
+            const res = await fetch(`${API_BASE}/shows`, { signal });
+            if (res.ok) {
+              const allShows = await res.json();
+              shows = allShows.filter(s => {
+                return (s.categories || []).some(sc => {
+                  const cObj = sc.category || sc;
+                  const cSlug = (cObj.slug || '').toLowerCase();
+                  const cName = (cObj.name || '').toLowerCase();
+                  return cSlug === slugNorm || cName === slugNorm || cSlug.includes(slugNorm) || slugNorm.includes(cSlug);
+                });
+              });
+            }
+          } catch (e) {
+            if (e.name === 'AbortError') throw e;
+          }
+        }
+
+        if (requestId && requestId !== catalogRequestId) return;
+
+        // If category is anime or has 0 local shows and is recognized as an AniList genre, fall back to Lunar
+        if (shows.length === 0 && (slugNorm === 'anime' || ANILIST_GENRE_MAP[slugNorm])) {
+          currentFilters.genre = ANILIST_GENRE_MAP[slugNorm] || slugNorm;
+          currentFilters.category = '';
+          return loadLunarCatalog(requestId, signal);
+        }
+
+        // Filter search
+        if (currentFilters.search) {
+          const q = currentFilters.search.toLowerCase().trim();
+          shows = shows.filter(s => (s.title && s.title.toLowerCase().includes(q)) || (s.description && s.description.toLowerCase().includes(q)));
+        }
+
+        // Filter format
+        if (currentFilters.format && currentFilters.format !== 'all') {
+          if (currentFilters.format === 'MOVIE') {
+            shows = shows.filter(s => !s.episodes || s.episodes.length <= 1);
+          } else if (currentFilters.format === 'TV') {
+            shows = shows.filter(s => s.episodes && s.episodes.length > 1);
+          }
+        }
+
+        // Sort
+        if (currentFilters.sort === 'SCORE_DESC') {
+          shows.sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0));
+        } else if (currentFilters.sort === 'START_DATE_DESC') {
+          shows.sort((a, b) => (parseInt(b.year) || 0) - (parseInt(a.year) || 0));
+        } else if (currentFilters.sort === 'POPULARITY_DESC' || currentFilters.sort === 'TRENDING_DESC') {
+          shows.sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0));
+        }
+
+        if (resultsCountBadge) {
+          resultsCountBadge.textContent = `${shows.length} TITLES`;
+        }
+
+        totalPages = Math.max(1, Math.ceil(shows.length / 24));
+        const startIdx = (currentPage - 1) * 24;
+        const pageShows = shows.slice(startIdx, startIdx + 24);
+
+        renderCategoryShowCards(pageShows, catName);
+        updatePagination({
+          total: shows.length,
+          hasNextPage: startIdx + 24 < shows.length,
+          lastPage: totalPages
+        });
+      }
+
+      // Render Local Show Cards for Categories
+      function renderCategoryShowCards(list, catName) {
+        if (!list || list.length === 0) {
+          animeGrid.innerHTML = `
+          <div class="col-span-full py-20 text-center text-outline font-body-md text-sm">
+            <span class="material-symbols-outlined text-4xl mb-2 block text-outline-variant">movie_filter</span>
+            No titles currently available in the ${catName || 'category'} vault.
+            <div class="mt-3">
+              <button onclick="window.clearCategoryFilter()" class="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-bold shadow-md hover:brightness-110 cursor-pointer">
+                Return to Master Catalog
+              </button>
+            </div>
+          </div>
+        `;
+          return;
+        }
+
+        animeGrid.innerHTML = list.map((item, idx) => {
+          const hasEpisodes = item.episodes && item.episodes.length > 0;
+          const playUrl = hasEpisodes ? `/watch?id=${item.episodes[0].id}` : '#';
+          const rawPoster = item.poster || 'Postes/spyfamS3p.jpg';
+          const posterUrl = window.formatMediaUrl ? window.formatMediaUrl(rawPoster) : rawPoster;
+          const safeTitle = (item.title || '').replace(/'/g, "\\'");
+          const safePoster = (posterUrl || '').replace(/'/g, "\\'");
+          const safeBanner = (item.banner ? window.formatMediaUrl(item.banner) : '').replace(/'/g, "\\'");
+          const rating = item.rating || '9.8';
+          const year = item.year || 2024;
+          const audioTag = item.dubsub ? 'SUB / DUB' : 'SUB';
+
+          let qualityBadge = 'DOLBY';
+          const numRating = parseFloat(rating) || 8.0;
+          if (numRating >= 9.0) qualityBadge = '4K OLED';
+          else if (numRating >= 8.5) qualityBadge = 'HDR10+';
+
+          const inWatchlist = userWatchlist.some(w => String(w.id || w.showId) === String(item.id));
+          const bookmarkIcon = inWatchlist ? 'bookmark' : 'bookmark_add';
+          const bookmarkColor = inWatchlist ? 'text-secondary-container' : 'text-on-surface-variant';
+          const staggerDelay = Math.min(idx * 22, 380);
+
+          return `
+          <article class="card-animate-in group flex flex-col rounded-xl overflow-hidden bg-surface-container-low border border-white/[0.06] hover:border-secondary-container/40 transition-all duration-300" style="animation-delay: ${staggerDelay}ms">
+            <div class="relative w-full aspect-[2/3] overflow-hidden bg-surface-container-highest cursor-pointer" onclick="window.openShowDetails(${item.id})">
+              <img src="${posterUrl}" alt="${safeTitle}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='Postes/spyfamS3p.jpg';">
+              <div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-transparent to-black/60 pointer-events-none"></div>
+
+              <!-- Top Left Badges: Rating & Quality -->
+              <div class="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+                <div class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-surface-container-lowest/90 text-primary-fixed font-label-sm text-label-sm font-bold backdrop-blur-md">
+                  <span class="material-symbols-outlined text-[12px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+                  <span>${rating}</span>
+                </div>
+                <div class="px-1.5 py-0.5 rounded-md bg-secondary-container/90 text-on-secondary-fixed font-label-sm text-label-sm font-bold backdrop-blur-md uppercase tracking-wider">
+                  ${qualityBadge}
+                </div>
+              </div>
+
+              <!-- Bottom Left Tag: Audio -->
+              <div class="absolute bottom-2 left-2 pointer-events-none">
+                <span class="px-1.5 py-0.5 rounded bg-primary-container text-on-primary-container font-label-sm text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                  ${audioTag}
+                </span>
+              </div>
+
+              <!-- Desktop Hover Action Overlay -->
+              <div class="hidden sm:flex absolute inset-0 bg-black/85 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-col items-center justify-center p-3 gap-2">
+                <button
+                  class="w-full py-2 rounded-lg bg-primary-container text-white font-label-md text-xs uppercase tracking-wider font-bold shadow-[0_0_18px_rgba(255,0,85,0.6)] hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  onclick="event.stopPropagation(); return window.requireAuthPlay(event, '${playUrl}')" type="button">
+                  <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                  Play Stream
+                </button>
+                <div class="flex items-center gap-1.5 w-full">
+                  <button
+                    class="flex-1 py-1.5 rounded bg-surface-container-high text-on-surface hover:text-secondary-container hover:bg-surface-container font-label-sm text-[11px] uppercase tracking-wider font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer"
+                    onclick="event.stopPropagation(); window.toggleAnimeWatchlist('${item.id}', '${safeTitle}', '${safePoster}', this)"
+                    title="Queue Show" type="button">
+                    <span class="material-symbols-outlined text-[14px]">${bookmarkIcon}</span> Queue
+                  </button>
+                  <button
+                    class="p-1.5 rounded bg-surface-container-high text-on-surface hover:text-primary transition-colors cursor-pointer"
+                    title="Details & Episodes"
+                    onclick="event.stopPropagation(); window.openShowDetails(${item.id})" type="button">
+                    <span class="material-symbols-outlined text-[14px]">info</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Body Info -->
+            <div class="p-2 sm:p-2.5 flex flex-col gap-0.5 flex-1 justify-between">
+              <div class="cursor-pointer" onclick="window.openShowDetails(${item.id})">
+                <span class="font-label-sm text-[11px] text-on-surface-variant truncate block">${catName || 'Series'} • ${year}</span>
+                <h3 class="font-headline-sm text-xs sm:text-headline-sm text-on-surface font-bold line-clamp-1 group-hover:text-secondary-container transition-colors" title="${item.title}">
+                  ${item.title}
+                </h3>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="font-label-sm text-[10px] sm:text-label-sm text-secondary-fixed font-semibold uppercase tracking-wider truncate mr-1">${hasEpisodes ? `${item.episodes.length} EPS` : 'MOVIE'}</span>
+                <button aria-label="Bookmark" class="${bookmarkColor} hover:text-primary active:scale-90 transition-transform p-1 cursor-pointer shrink-0" onclick="event.stopPropagation(); window.toggleAnimeWatchlist('${item.id}', '${safeTitle}', '${safePoster}', this)" type="button">
+                  <span class="material-symbols-outlined text-[18px]">${bookmarkIcon}</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+        }).join('');
+      }
+
+      // Render Anime Cards (Matching Stitch 2-column mobile + 6-column desktop spec)
+      function renderAnimeCards(list) {
+        if (!list || list.length === 0) {
+          animeGrid.innerHTML = `
           <div class="col-span-full py-20 text-center text-outline font-body-md text-sm">
             <span class="material-symbols-outlined text-4xl mb-2 block text-outline-variant">cloud_off</span>
             No anime records matched the specified filters. Try resetting search parameters.
           </div>
         `;
-        return;
-      }
-
-      animeGrid.innerHTML = list.map((item, idx) => {
-        const playUrl = `/watch?id=${item.anilistId}&ep=1`;
-        const posterUrl = item.poster || 'Postes/spyfamS3p.jpg';
-        const safeTitle = (item.title || '').replace(/'/g, "\\'");
-        const safePoster = (item.poster || '').replace(/'/g, "\\'");
-        const safeBanner = (item.banner || '').replace(/'/g, "\\'");
-        const primaryGenre = (item.genres && item.genres.length) ? item.genres[0] : (item.format || 'Anime');
-        const rating = item.rating || '8.8';
-
-        // Quality badge derived from score & format
-        const numRating = parseFloat(rating) || 8.0;
-        let qualityBadge = 'DOLBY';
-        if (numRating >= 9.0) qualityBadge = '4K OLED';
-        else if (numRating >= 8.5) qualityBadge = 'HDR10+';
-
-        // Airing Status Tag
-        let statusTag = 'SIMULCAST';
-        if (item.status === 'RELEASING') {
-          statusTag = item.episodes ? `EP ${item.episodes} AVAILABLE` : 'SIMULCAST';
-        } else if (item.format === 'MOVIE') {
-          statusTag = 'THEATRICAL';
-        } else if (item.status === 'FINISHED') {
-          statusTag = 'SERIES MASTER';
-        } else if (item.status === 'NOT_YET_RELEASED') {
-          statusTag = 'UPCOMING';
+          return;
         }
 
-        // Watchlist state check
-        const inWatchlist = userWatchlist.some(w => String(w.id || w.showId) === `lunar-${item.anilistId}` || String(w.anilistId) === String(item.anilistId));
-        const bookmarkIcon = inWatchlist ? 'bookmark' : 'bookmark_add';
-        const bookmarkColor = inWatchlist ? 'text-secondary-container' : 'text-on-surface-variant';
-        const staggerDelay = Math.min(idx * 22, 380);
+        animeGrid.innerHTML = list.map((item, idx) => {
+          const playUrl = `/watch?id=${item.anilistId}&ep=1`;
+          const posterUrl = item.poster || 'Postes/spyfamS3p.jpg';
+          const safeTitle = (item.title || '').replace(/'/g, "\\'");
+          const safePoster = (item.poster || '').replace(/'/g, "\\'");
+          const safeBanner = (item.banner || '').replace(/'/g, "\\'");
+          const primaryGenre = (item.genres && item.genres.length) ? item.genres[0] : (item.format || 'Anime');
+          const rating = item.rating || '8.8';
 
-        return `
+          // Quality badge derived from score & format
+          const numRating = parseFloat(rating) || 8.0;
+          let qualityBadge = 'DOLBY';
+          if (numRating >= 9.0) qualityBadge = '4K OLED';
+          else if (numRating >= 8.5) qualityBadge = 'HDR10+';
+
+          // Airing Status Tag
+          let statusTag = 'SIMULCAST';
+          if (item.status === 'RELEASING') {
+            statusTag = item.episodes ? `EP ${item.episodes} AVAILABLE` : 'SIMULCAST';
+          } else if (item.format === 'MOVIE') {
+            statusTag = 'THEATRICAL';
+          } else if (item.status === 'FINISHED') {
+            statusTag = 'SERIES MASTER';
+          } else if (item.status === 'NOT_YET_RELEASED') {
+            statusTag = 'UPCOMING';
+          }
+
+          // Watchlist state check
+          const inWatchlist = userWatchlist.some(w => String(w.id || w.showId) === `lunar-${item.anilistId}` || String(w.anilistId) === String(item.anilistId));
+          const bookmarkIcon = inWatchlist ? 'bookmark' : 'bookmark_add';
+          const bookmarkColor = inWatchlist ? 'text-secondary-container' : 'text-on-surface-variant';
+          const staggerDelay = Math.min(idx * 22, 380);
+
+          return `
           <article class="card-animate-in group flex flex-col rounded-xl overflow-hidden bg-surface-container-low border border-white/[0.06] hover:border-secondary-container/40 transition-all duration-300" style="animation-delay: ${staggerDelay}ms">
             <div class="relative w-full aspect-[2/3] overflow-hidden bg-surface-container-highest cursor-pointer" onclick="window.openShowDetails({ id: 'lunar-${item.anilistId}', anilistId: ${item.anilistId}, title: '${safeTitle}', poster: '${safePoster}', banner: '${safeBanner}', isLunar: true })">
               <img src="${posterUrl}" alt="${safeTitle}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='Postes/spyfamS3p.jpg';">
@@ -2296,431 +2724,431 @@
             </div>
           </article>
         `;
-      }).join('');
-    }
-
-    // Quick Watchlist Toggle from Card (Local + Backend sync)
-    window.toggleAnimeWatchlist = async function (anilistId, title, poster, btnEl) {
-      const showId = `lunar-${anilistId}`;
-      let watchlist = [];
-      try {
-        watchlist = JSON.parse(localStorage.getItem('infinx_watchlist') || '[]');
-      } catch (e) { watchlist = []; }
-
-      const existingIdx = watchlist.findIndex(w => String(w.id || w.showId) === String(showId) || String(w.anilistId) === String(anilistId));
-      let isAdded = false;
-
-      if (existingIdx >= 0) {
-        watchlist.splice(existingIdx, 1);
-        isAdded = false;
-      } else {
-        watchlist.unshift({
-          id: showId,
-          showId: showId,
-          anilistId: anilistId,
-          title: title,
-          poster: poster,
-          isLunar: true,
-          addedAt: new Date().toISOString()
-        });
-        isAdded = true;
+        }).join('');
       }
 
-      userWatchlist = watchlist;
-      localStorage.setItem('infinx_watchlist', JSON.stringify(watchlist));
-
-      // Visual button update
-      if (btnEl) {
-        const icon = btnEl.querySelector('.material-symbols-outlined') || btnEl;
-        btnEl.classList.add('bookmark-active');
-        setTimeout(() => btnEl.classList.remove('bookmark-active'), 400);
-        if (isAdded) {
-          icon.textContent = 'bookmark';
-          btnEl.classList.add('text-secondary-container');
-          btnEl.classList.remove('text-on-surface-variant');
-        } else {
-          icon.textContent = 'bookmark_add';
-          btnEl.classList.remove('text-secondary-container');
-          btnEl.classList.add('text-on-surface-variant');
-        }
-      }
-
-      showToastNotification(isAdded ? 'Added to Watchlist' : 'Removed from Watchlist');
-
-      // Server synchronization if authenticated
-      const token = localStorage.getItem('infinx_token');
-      if (token) {
+      // Quick Watchlist Toggle from Card (Local + Backend sync)
+      window.toggleAnimeWatchlist = async function (anilistId, title, poster, btnEl) {
+        const showId = `lunar-${anilistId}`;
+        let watchlist = [];
         try {
-          await fetch(`${API_BASE}/user/watchlist`, {
-            method: isAdded ? 'POST' : 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ showId, title, poster })
+          watchlist = JSON.parse(localStorage.getItem('infinx_watchlist') || '[]');
+        } catch (e) { watchlist = []; }
+
+        const existingIdx = watchlist.findIndex(w => String(w.id || w.showId) === String(showId) || String(w.anilistId) === String(anilistId));
+        let isAdded = false;
+
+        if (existingIdx >= 0) {
+          watchlist.splice(existingIdx, 1);
+          isAdded = false;
+        } else {
+          watchlist.unshift({
+            id: showId,
+            showId: showId,
+            anilistId: anilistId,
+            title: title,
+            poster: poster,
+            isLunar: true,
+            addedAt: new Date().toISOString()
           });
-        } catch (e) {
-          console.warn('Watchlist server sync err:', e);
+          isAdded = true;
         }
-      }
-    };
 
-    // Update Pagination UI
-    function updatePagination(pageInfo) {
-      if (pageIndicator) pageIndicator.textContent = `Page ${currentPage} of ${totalPages || 1}`;
-      if (prevPageBtn) prevPageBtn.disabled = currentPage <= 1;
-      if (nextPageBtn) nextPageBtn.disabled = !pageInfo.hasNextPage && currentPage >= totalPages;
+        userWatchlist = watchlist;
+        localStorage.setItem('infinx_watchlist', JSON.stringify(watchlist));
 
-      const telemetryEl = document.getElementById('paginationTelemetry');
-      if (telemetryEl) {
-        const start = ((currentPage - 1) * 24) + 1;
-        const total = pageInfo.total || 0;
-        const end = Math.min(currentPage * 24, total || (currentPage * 24));
-        telemetryEl.textContent = `Displaying records ${start}–${end} of ${total.toLocaleString()}`;
-      }
-
-      if (jumpInput) {
-        jumpInput.max = totalPages || 1;
-      }
-    }
-
-    // Pagination Click Handlers
-    if (prevPageBtn) {
-      prevPageBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-          currentPage--;
-          loadCatalog();
-          window.scrollTo({ top: 380, behavior: 'smooth' });
-        }
-      });
-    }
-
-    if (nextPageBtn) {
-      nextPageBtn.addEventListener('click', () => {
-        if (currentPage < totalPages) {
-          currentPage++;
-          loadCatalog();
-          window.scrollTo({ top: 380, behavior: 'smooth' });
-        }
-      });
-    }
-
-    if (jumpBtn && jumpInput) {
-      jumpBtn.addEventListener('click', () => {
-        const val = parseInt(jumpInput.value);
-        if (val && val >= 1 && val <= totalPages) {
-          currentPage = val;
-          loadCatalog();
-          window.scrollTo({ top: 380, behavior: 'smooth' });
-        }
-      });
-    }
-
-    // Filter Listeners Setup & Synchronization
-    function setupFilterListeners() {
-      let searchTimeout = null;
-      const desktopSearch = document.getElementById('catalogSearchInput');
-      const mobileSearch = document.getElementById('mobileCatalogSearch');
-      const desktopExecute = document.getElementById('catalogExecuteBtn');
-      const mobileExecute = document.getElementById('mobileCatalogExecuteBtn');
-
-      function syncSearch(query) {
-        clearTimeout(searchTimeout);
-        currentFilters.search = query.trim();
-        if (desktopSearch && desktopSearch.value !== query) desktopSearch.value = query;
-        if (mobileSearch && mobileSearch.value !== query) mobileSearch.value = query;
-
-        searchTimeout = setTimeout(() => {
-          currentPage = 1;
-          loadCatalog();
-        }, 280);
-      }
-
-      if (desktopSearch) {
-        desktopSearch.addEventListener('input', (e) => syncSearch(e.target.value));
-        desktopSearch.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') {
-            desktopSearch.value = '';
-            syncSearch('');
-            desktopSearch.blur();
-          } else if (e.key === 'Enter') {
-            currentPage = 1;
-            loadCatalog();
-          }
-        });
-      }
-
-      if (mobileSearch) {
-        mobileSearch.addEventListener('input', (e) => syncSearch(e.target.value));
-        mobileSearch.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            currentPage = 1;
-            loadCatalog();
-          }
-        });
-      }
-
-      if (desktopExecute) desktopExecute.addEventListener('click', () => { currentPage = 1; loadCatalog(); });
-      if (mobileExecute) mobileExecute.addEventListener('click', () => { currentPage = 1; loadCatalog(); });
-
-      // Rapid Vector Tags (Clicking a tag filters by genre)
-      document.querySelectorAll('.rapid-tag').forEach(tagBtn => {
-        tagBtn.addEventListener('click', () => {
-          const tag = tagBtn.getAttribute('data-tag');
-          if (tag) {
-            currentFilters.genre = tag;
-            currentPage = 1;
-            highlightGenrePill(tag);
-            loadCatalog();
-          }
-        });
-      });
-
-      // Genre Pills (Both mobile and desktop)
-      document.querySelectorAll('.genre-pill').forEach(pill => {
-        pill.addEventListener('click', () => {
-          const genre = pill.getAttribute('data-genre') || 'all';
-          currentFilters.genre = genre;
-          currentPage = 1;
-          highlightGenrePill(genre);
-          loadCatalog();
-        });
-      });
-
-      function highlightGenrePill(genreName) {
-        document.querySelectorAll('.genre-pill').forEach(p => {
-          const g = p.getAttribute('data-genre');
-          if (g.toLowerCase() === genreName.toLowerCase()) {
-            p.className = 'genre-pill shrink-0 h-8 px-4 rounded-full bg-secondary-container text-on-secondary-fixed font-label-md text-label-md font-bold flex items-center gap-1.5 shadow-md active:scale-95 transition-all';
+        // Visual button update
+        if (btnEl) {
+          const icon = btnEl.querySelector('.material-symbols-outlined') || btnEl;
+          btnEl.classList.add('bookmark-active');
+          setTimeout(() => btnEl.classList.remove('bookmark-active'), 400);
+          if (isAdded) {
+            icon.textContent = 'bookmark';
+            btnEl.classList.add('text-secondary-container');
+            btnEl.classList.remove('text-on-surface-variant');
           } else {
-            p.className = 'genre-pill shrink-0 h-8 px-3.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md hover:bg-surface-container active:scale-95 transition-all';
+            icon.textContent = 'bookmark_add';
+            btnEl.classList.remove('text-secondary-container');
+            btnEl.classList.add('text-on-surface-variant');
+          }
+        }
+
+        showToastNotification(isAdded ? 'Added to Watchlist' : 'Removed from Watchlist');
+
+        // Server synchronization if authenticated
+        const token = localStorage.getItem('infinx_token');
+        if (token) {
+          try {
+            await fetch(`${API_BASE}/user/watchlist`, {
+              method: isAdded ? 'POST' : 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ showId, title, poster })
+            });
+          } catch (e) {
+            console.warn('Watchlist server sync err:', e);
+          }
+        }
+      };
+
+      // Update Pagination UI
+      function updatePagination(pageInfo) {
+        if (pageIndicator) pageIndicator.textContent = `Page ${currentPage} of ${totalPages || 1}`;
+        if (prevPageBtn) prevPageBtn.disabled = currentPage <= 1;
+        if (nextPageBtn) nextPageBtn.disabled = !pageInfo.hasNextPage && currentPage >= totalPages;
+
+        const telemetryEl = document.getElementById('paginationTelemetry');
+        if (telemetryEl) {
+          const start = ((currentPage - 1) * 24) + 1;
+          const total = pageInfo.total || 0;
+          const end = Math.min(currentPage * 24, total || (currentPage * 24));
+          telemetryEl.textContent = `Displaying records ${start}–${end} of ${total.toLocaleString()}`;
+        }
+
+        if (jumpInput) {
+          jumpInput.max = totalPages || 1;
+        }
+      }
+
+      // Pagination Click Handlers
+      if (prevPageBtn) {
+        prevPageBtn.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            loadCatalog();
+            window.scrollTo({ top: 380, behavior: 'smooth' });
           }
         });
       }
 
-      // Season Selector Dropdowns & Pills
-      document.querySelectorAll('.season-filter-select').forEach(sel => {
-        sel.addEventListener('change', function () {
-          currentFilters.season = this.value;
-          document.querySelectorAll('.season-filter-select').forEach(s => s.value = currentFilters.season);
-          currentPage = 1;
-          loadCatalog();
+      if (nextPageBtn) {
+        nextPageBtn.addEventListener('click', () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            loadCatalog();
+            window.scrollTo({ top: 380, behavior: 'smooth' });
+          }
         });
-      });
+      }
 
-      document.querySelectorAll('.season-pill').forEach(pill => {
-        pill.addEventListener('click', () => {
-          const s = pill.getAttribute('data-season') || 'all';
-          const y = pill.getAttribute('data-year') || 'all';
-          currentFilters.season = s;
-          currentFilters.year = y;
-          currentPage = 1;
-
-          document.querySelectorAll('.season-pill').forEach(p => {
-            p.className = 'season-pill px-2.5 py-1 rounded font-label-sm text-[11px] tracking-wider uppercase text-outline hover:text-white hover:bg-surface-container transition-all cursor-pointer';
-          });
-          pill.className = 'season-pill px-2.5 py-1 rounded font-label-sm text-[11px] tracking-wider uppercase bg-secondary-container/20 text-secondary-container shadow-[0_0_10px_rgba(0,240,255,0.3)] font-bold cursor-pointer';
-
-          document.querySelectorAll('.season-filter-select').forEach(sel => sel.value = s);
-          loadCatalog();
+      if (jumpBtn && jumpInput) {
+        jumpBtn.addEventListener('click', () => {
+          const val = parseInt(jumpInput.value);
+          if (val && val >= 1 && val <= totalPages) {
+            currentPage = val;
+            loadCatalog();
+            window.scrollTo({ top: 380, behavior: 'smooth' });
+          }
         });
-      });
+      }
 
-      // A-Z Bar (Mobile and Desktop)
-      document.querySelectorAll('.az-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const letter = btn.getAttribute('data-letter') || 'all';
-          document.querySelectorAll('.az-btn').forEach(b => {
-            b.className = 'az-btn px-1.5 py-0.5 rounded text-outline hover:text-secondary-container hover:bg-surface-container transition-all cursor-pointer';
+      // Filter Listeners Setup & Synchronization
+      function setupFilterListeners() {
+        let searchTimeout = null;
+        const desktopSearch = document.getElementById('catalogSearchInput');
+        const mobileSearch = document.getElementById('mobileCatalogSearch');
+        const desktopExecute = document.getElementById('catalogExecuteBtn');
+        const mobileExecute = document.getElementById('mobileCatalogExecuteBtn');
+
+        function syncSearch(query) {
+          clearTimeout(searchTimeout);
+          currentFilters.search = query.trim();
+          if (desktopSearch && desktopSearch.value !== query) desktopSearch.value = query;
+          if (mobileSearch && mobileSearch.value !== query) mobileSearch.value = query;
+
+          searchTimeout = setTimeout(() => {
+            currentPage = 1;
+            loadCatalog();
+          }, 280);
+        }
+
+        if (desktopSearch) {
+          desktopSearch.addEventListener('input', (e) => syncSearch(e.target.value));
+          desktopSearch.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              desktopSearch.value = '';
+              syncSearch('');
+              desktopSearch.blur();
+            } else if (e.key === 'Enter') {
+              currentPage = 1;
+              loadCatalog();
+            }
           });
-          btn.className = 'az-btn px-2 py-0.5 rounded bg-secondary-container text-black font-bold shadow-[0_0_8px_rgba(0,240,255,0.4)] cursor-pointer';
+        }
 
-          if (letter === 'all') {
-            currentFilters.search = '';
+        if (mobileSearch) {
+          mobileSearch.addEventListener('input', (e) => syncSearch(e.target.value));
+          mobileSearch.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              currentPage = 1;
+              loadCatalog();
+            }
+          });
+        }
+
+        if (desktopExecute) desktopExecute.addEventListener('click', () => { currentPage = 1; loadCatalog(); });
+        if (mobileExecute) mobileExecute.addEventListener('click', () => { currentPage = 1; loadCatalog(); });
+
+        // Rapid Vector Tags (Clicking a tag filters by genre)
+        document.querySelectorAll('.rapid-tag').forEach(tagBtn => {
+          tagBtn.addEventListener('click', () => {
+            const tag = tagBtn.getAttribute('data-tag');
+            if (tag) {
+              currentFilters.category = '';
+              currentFilters.genre = tag;
+              currentPage = 1;
+              highlightGenrePill(tag);
+              window.history.pushState({}, '', `anime.html?genre=${encodeURIComponent(tag)}`);
+              loadCatalog();
+            }
+          });
+        });
+
+        // Genre Pills (Both mobile and desktop)
+        document.querySelectorAll('.genre-pill').forEach(pill => {
+          pill.addEventListener('click', () => {
+            const genre = pill.getAttribute('data-genre') || 'all';
+            currentFilters.category = '';
+            currentFilters.genre = genre;
+            currentPage = 1;
+            highlightGenrePill(genre);
+            if (genre === 'all') {
+              window.history.pushState({}, '', 'anime.html');
+            } else {
+              window.history.pushState({}, '', `anime.html?genre=${encodeURIComponent(genre)}`);
+            }
+            loadCatalog();
+          });
+        });
+
+        // Season Selector Dropdowns & Pills
+        document.querySelectorAll('.season-filter-select').forEach(sel => {
+          sel.addEventListener('change', function () {
+            currentFilters.season = this.value;
+            document.querySelectorAll('.season-filter-select').forEach(s => s.value = currentFilters.season);
+            currentPage = 1;
+            loadCatalog();
+          });
+        });
+
+        document.querySelectorAll('.season-pill').forEach(pill => {
+          pill.addEventListener('click', () => {
+            const s = pill.getAttribute('data-season') || 'all';
+            const y = pill.getAttribute('data-year') || 'all';
+            currentFilters.season = s;
+            currentFilters.year = y;
+            currentPage = 1;
+
+            document.querySelectorAll('.season-pill').forEach(p => {
+              p.className = 'season-pill px-2.5 py-1 rounded font-label-sm text-[11px] tracking-wider uppercase text-outline hover:text-white hover:bg-surface-container transition-all cursor-pointer';
+            });
+            pill.className = 'season-pill px-2.5 py-1 rounded font-label-sm text-[11px] tracking-wider uppercase bg-secondary-container/20 text-secondary-container shadow-[0_0_10px_rgba(0,240,255,0.3)] font-bold cursor-pointer';
+
+            document.querySelectorAll('.season-filter-select').forEach(sel => sel.value = s);
+            loadCatalog();
+          });
+        });
+
+        // A-Z Bar (Mobile and Desktop)
+        document.querySelectorAll('.az-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const letter = btn.getAttribute('data-letter') || 'all';
+            document.querySelectorAll('.az-btn').forEach(b => {
+              b.className = 'az-btn px-1.5 py-0.5 rounded text-outline hover:text-secondary-container hover:bg-surface-container transition-all cursor-pointer';
+            });
+            btn.className = 'az-btn px-2 py-0.5 rounded bg-secondary-container text-black font-bold shadow-[0_0_8px_rgba(0,240,255,0.4)] cursor-pointer';
+
+            if (letter === 'all') {
+              currentFilters.search = '';
+              if (desktopSearch) desktopSearch.value = '';
+              if (mobileSearch) mobileSearch.value = '';
+            } else {
+              currentFilters.search = letter;
+              if (desktopSearch) desktopSearch.value = letter;
+              if (mobileSearch) mobileSearch.value = letter;
+            }
+            currentPage = 1;
+            loadCatalog();
+          });
+        });
+
+        // Format Filter Dropdown
+        const formatFilter = document.getElementById('formatFilter');
+        if (formatFilter) {
+          formatFilter.addEventListener('change', function () {
+            currentFilters.format = this.value;
+            currentPage = 1;
+            loadCatalog();
+          });
+        }
+
+        // Year Filter Dropdown
+        const yearFilter = document.getElementById('yearFilter');
+        if (yearFilter) {
+          yearFilter.addEventListener('change', function () {
+            currentFilters.year = this.value;
+            currentPage = 1;
+            loadCatalog();
+          });
+        }
+
+        // Status Filter Dropdown
+        const statusFilter = document.getElementById('statusFilter');
+        if (statusFilter) {
+          statusFilter.addEventListener('change', function () {
+            currentFilters.status = this.value;
+            currentPage = 1;
+            loadCatalog();
+          });
+        }
+
+        // Sort Select Dropdowns (Sync mobile and desktop)
+        document.querySelectorAll('.sort-filter-select').forEach(sel => {
+          sel.addEventListener('change', function () {
+            currentFilters.sort = this.value;
+            document.querySelectorAll('.sort-filter-select').forEach(s => s.value = currentFilters.sort);
+            currentPage = 1;
+            loadCatalog();
+          });
+        });
+
+        // Reset Button
+        const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+        if (resetFiltersBtn) {
+          resetFiltersBtn.addEventListener('click', () => {
+            currentFilters = {
+              search: '',
+              category: '',
+              genre: 'all',
+              format: 'all',
+              season: 'all',
+              year: 'all',
+              status: 'all',
+              sort: 'TRENDING_DESC'
+            };
+            window.history.pushState({}, '', 'anime.html');
+
             if (desktopSearch) desktopSearch.value = '';
             if (mobileSearch) mobileSearch.value = '';
-          } else {
-            currentFilters.search = letter;
-            if (desktopSearch) desktopSearch.value = letter;
-            if (mobileSearch) mobileSearch.value = letter;
-          }
-          currentPage = 1;
-          loadCatalog();
-        });
-      });
+            if (formatFilter) formatFilter.value = 'all';
+            if (yearFilter) yearFilter.value = 'all';
+            if (statusFilter) statusFilter.value = 'all';
+            document.querySelectorAll('.season-filter-select').forEach(s => s.value = 'all');
+            document.querySelectorAll('.sort-filter-select').forEach(s => s.value = 'TRENDING_DESC');
 
-      // Format Filter Dropdown
-      const formatFilter = document.getElementById('formatFilter');
-      if (formatFilter) {
-        formatFilter.addEventListener('change', function () {
-          currentFilters.format = this.value;
-          currentPage = 1;
-          loadCatalog();
-        });
-      }
-
-      // Year Filter Dropdown
-      const yearFilter = document.getElementById('yearFilter');
-      if (yearFilter) {
-        yearFilter.addEventListener('change', function () {
-          currentFilters.year = this.value;
-          currentPage = 1;
-          loadCatalog();
-        });
-      }
-
-      // Status Filter Dropdown
-      const statusFilter = document.getElementById('statusFilter');
-      if (statusFilter) {
-        statusFilter.addEventListener('change', function () {
-          currentFilters.status = this.value;
-          currentPage = 1;
-          loadCatalog();
-        });
-      }
-
-      // Sort Select Dropdowns (Sync mobile and desktop)
-      document.querySelectorAll('.sort-filter-select').forEach(sel => {
-        sel.addEventListener('change', function () {
-          currentFilters.sort = this.value;
-          document.querySelectorAll('.sort-filter-select').forEach(s => s.value = currentFilters.sort);
-          currentPage = 1;
-          loadCatalog();
-        });
-      });
-
-      // Reset Button
-      const resetFiltersBtn = document.getElementById('resetFiltersBtn');
-      if (resetFiltersBtn) {
-        resetFiltersBtn.addEventListener('click', () => {
-          currentFilters = {
-            search: '',
-            genre: 'all',
-            format: 'all',
-            season: 'all',
-            year: 'all',
-            status: 'all',
-            sort: 'TRENDING_DESC'
-          };
-
-          if (desktopSearch) desktopSearch.value = '';
-          if (mobileSearch) mobileSearch.value = '';
-          if (formatFilter) formatFilter.value = 'all';
-          if (yearFilter) yearFilter.value = 'all';
-          if (statusFilter) statusFilter.value = 'all';
-          document.querySelectorAll('.season-filter-select').forEach(s => s.value = 'all');
-          document.querySelectorAll('.sort-filter-select').forEach(s => s.value = 'TRENDING_DESC');
-
-          highlightGenrePill('all');
-          currentPage = 1;
-          loadCatalog();
-          showToastNotification('Filters reset to master catalog');
-        });
-      }
-
-      // Quick Tab Pills (Trending, Popular, Top Rated, Upcoming, Movies)
-      document.querySelectorAll('.tab-pill').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.tab-pill').forEach(b => {
-            b.className = 'tab-pill flex-shrink-0 px-3.5 py-1.5 rounded-full font-label-md text-xs uppercase tracking-wider bg-surface-container-high/80 text-outline hover:text-white hover:bg-surface-container transition-all cursor-pointer';
+            highlightGenrePill('all');
+            currentPage = 1;
+            loadCatalog();
+            showToastNotification('Filters reset to master catalog');
           });
-          btn.className = 'tab-pill active flex-shrink-0 px-4 py-1.5 rounded-full font-label-md text-xs uppercase tracking-wider bg-primary-container text-white shadow-[0_0_18px_rgba(255,0,85,0.6)] font-bold transition-all cursor-pointer';
-
-          const tab = btn.getAttribute('data-tab');
-          currentTab = tab;
-          currentPage = 1;
-
-          if (tab === 'trending') {
-            currentFilters.sort = 'TRENDING_DESC';
-            currentFilters.format = 'all';
-            currentFilters.status = 'all';
-            if (catalogSectionTitle) catalogSectionTitle.innerHTML = `Trending Anime`;
-          } else if (tab === 'popular') {
-            currentFilters.sort = 'POPULARITY_DESC';
-            currentFilters.format = 'all';
-            currentFilters.status = 'all';
-            if (catalogSectionTitle) catalogSectionTitle.innerHTML = `Popular This Season`;
-          } else if (tab === 'top-rated') {
-            currentFilters.sort = 'SCORE_DESC';
-            currentFilters.format = 'all';
-            currentFilters.status = 'all';
-            if (catalogSectionTitle) catalogSectionTitle.innerHTML = `Top Rated of All Time`;
-          } else if (tab === 'upcoming') {
-            currentFilters.sort = 'POPULARITY_DESC';
-            currentFilters.status = 'NOT_YET_RELEASED';
-            if (catalogSectionTitle) catalogSectionTitle.innerHTML = `Upcoming Next Season`;
-          } else if (tab === 'movies') {
-            currentFilters.sort = 'POPULARITY_DESC';
-            currentFilters.format = 'MOVIE';
-            currentFilters.status = 'all';
-            if (catalogSectionTitle) catalogSectionTitle.innerHTML = `Anime Theatrical Masters`;
-          }
-
-          document.querySelectorAll('.sort-filter-select').forEach(s => s.value = currentFilters.sort);
-          if (formatFilter) formatFilter.value = currentFilters.format;
-          loadCatalog();
-        });
-      });
-    }
-
-    // View Switcher (Grid vs List Layout)
-    function setupLayoutSwitcher() {
-      const gridBtn = document.getElementById('viewGridBtn');
-      const listBtn = document.getElementById('viewListBtn');
-
-      if (gridBtn && listBtn && animeGrid) {
-        gridBtn.addEventListener('click', () => {
-          gridBtn.className = 'p-1.5 rounded bg-secondary-container/20 text-secondary-container shadow-[0_0_8px_rgba(0,240,255,0.3)] transition-all cursor-pointer';
-          listBtn.className = 'p-1.5 rounded text-outline hover:text-white hover:bg-surface-container-high transition-all cursor-pointer';
-          animeGrid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 sm:gap-space-sm';
-        });
-
-        listBtn.addEventListener('click', () => {
-          listBtn.className = 'p-1.5 rounded bg-secondary-container/20 text-secondary-container shadow-[0_0_8px_rgba(0,240,255,0.3)] transition-all cursor-pointer';
-          gridBtn.className = 'p-1.5 rounded text-outline hover:text-white hover:bg-surface-container-high transition-all cursor-pointer';
-          animeGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3';
-        });
-      }
-    }
-
-    // Live Auto-Suggest Header Search & Mobile Search Overlay
-    function setupSearchListeners() {
-      let searchDebounce = null;
-
-      async function performLiveSearch(query, targetContainer) {
-        if (!query || query.length < 2) {
-          targetContainer.innerHTML = '';
-          targetContainer.style.display = 'none';
-          return;
         }
 
-        try {
-          const res = await fetch(`${API_BASE}/shows/search?q=${encodeURIComponent(query)}`);
-          if (!res.ok) return;
-          const results = await res.json();
+        // Quick Tab Pills (Trending, Popular, Top Rated, Upcoming, Movies)
+        document.querySelectorAll('.tab-pill').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-pill').forEach(b => {
+              b.className = 'tab-pill flex-shrink-0 px-3.5 py-1.5 rounded-full font-label-md text-xs uppercase tracking-wider bg-surface-container-high/80 text-outline hover:text-white hover:bg-surface-container transition-all cursor-pointer';
+            });
+            btn.className = 'tab-pill active flex-shrink-0 px-4 py-1.5 rounded-full font-label-md text-xs uppercase tracking-wider bg-primary-container text-white shadow-[0_0_18px_rgba(255,0,85,0.6)] font-bold transition-all cursor-pointer';
 
-          if (!results || results.length === 0) {
-            targetContainer.innerHTML = `
+            const tab = btn.getAttribute('data-tab');
+            currentTab = tab;
+            currentFilters.category = '';
+            currentPage = 1;
+
+            if (tab === 'trending') {
+              currentFilters.sort = 'TRENDING_DESC';
+              currentFilters.format = 'all';
+              currentFilters.status = 'all';
+              if (catalogSectionTitle) catalogSectionTitle.innerHTML = `Trending Anime`;
+            } else if (tab === 'popular') {
+              currentFilters.sort = 'POPULARITY_DESC';
+              currentFilters.format = 'all';
+              currentFilters.status = 'all';
+              if (catalogSectionTitle) catalogSectionTitle.innerHTML = `Popular This Season`;
+            } else if (tab === 'top-rated') {
+              currentFilters.sort = 'SCORE_DESC';
+              currentFilters.format = 'all';
+              currentFilters.status = 'all';
+              if (catalogSectionTitle) catalogSectionTitle.innerHTML = `Top Rated of All Time`;
+            } else if (tab === 'upcoming') {
+              currentFilters.sort = 'POPULARITY_DESC';
+              currentFilters.status = 'NOT_YET_RELEASED';
+              if (catalogSectionTitle) catalogSectionTitle.innerHTML = `Upcoming Next Season`;
+            } else if (tab === 'movies') {
+              currentFilters.sort = 'POPULARITY_DESC';
+              currentFilters.format = 'MOVIE';
+              currentFilters.status = 'all';
+              if (catalogSectionTitle) catalogSectionTitle.innerHTML = `Anime Theatrical Masters`;
+            }
+
+            document.querySelectorAll('.sort-filter-select').forEach(s => s.value = currentFilters.sort);
+            if (formatFilter) formatFilter.value = currentFilters.format;
+            loadCatalog();
+          });
+        });
+      }
+
+      // View Switcher (Grid vs List Layout)
+      function setupLayoutSwitcher() {
+        const gridBtn = document.getElementById('viewGridBtn');
+        const listBtn = document.getElementById('viewListBtn');
+
+        if (gridBtn && listBtn && animeGrid) {
+          gridBtn.addEventListener('click', () => {
+            gridBtn.className = 'p-1.5 rounded bg-secondary-container/20 text-secondary-container shadow-[0_0_8px_rgba(0,240,255,0.3)] transition-all cursor-pointer';
+            listBtn.className = 'p-1.5 rounded text-outline hover:text-white hover:bg-surface-container-high transition-all cursor-pointer';
+            animeGrid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 sm:gap-space-sm';
+          });
+
+          listBtn.addEventListener('click', () => {
+            listBtn.className = 'p-1.5 rounded bg-secondary-container/20 text-secondary-container shadow-[0_0_8px_rgba(0,240,255,0.3)] transition-all cursor-pointer';
+            gridBtn.className = 'p-1.5 rounded text-outline hover:text-white hover:bg-surface-container-high transition-all cursor-pointer';
+            animeGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3';
+          });
+        }
+      }
+
+      // Live Auto-Suggest Header Search & Mobile Search Overlay
+      function setupSearchListeners() {
+        let searchDebounce = null;
+
+        async function performLiveSearch(query, targetContainer) {
+          if (!query || query.length < 2) {
+            targetContainer.innerHTML = '';
+            targetContainer.style.display = 'none';
+            return;
+          }
+
+          try {
+            const res = await fetch(`${API_BASE}/shows/search?q=${encodeURIComponent(query)}`);
+            if (!res.ok) return;
+            const results = await res.json();
+
+            if (!results || results.length === 0) {
+              targetContainer.innerHTML = `
               <div class="p-4 text-center text-outline text-xs">
                 No anime records found for "${query}"
               </div>
             `;
-            targetContainer.style.display = 'block';
-            return;
-          }
+              targetContainer.style.display = 'block';
+              return;
+            }
 
-          const itemsHtml = results.slice(0, 7).map(item => {
-            const posterUrl = (item.poster && (item.poster.startsWith('http://') || item.poster.startsWith('https://')))
-              ? item.poster
-              : window.formatMediaUrl(item.poster);
-            const isAnime = item.isLunar || (typeof item.id === 'string' && item.id.startsWith('lunar-')) || item.anilistId;
-            const badge = isAnime ? 'Anime' : (item.badge || 'HD');
-            const anilistId = item.anilistId || (typeof item.id === 'string' ? item.id.replace('lunar-', '') : item.id);
-            const safeTitle = (item.title || '').replace(/'/g, "\\'");
-            const safePoster = (item.poster || '').replace(/'/g, "\\'");
-            const safeBanner = (item.banner || '').replace(/'/g, "\\'");
+            const itemsHtml = results.slice(0, 7).map(item => {
+              const posterUrl = (item.poster && (item.poster.startsWith('http://') || item.poster.startsWith('https://')))
+                ? item.poster
+                : window.formatMediaUrl(item.poster);
+              const isAnime = item.isLunar || (typeof item.id === 'string' && item.id.startsWith('lunar-')) || item.anilistId;
+              const badge = isAnime ? 'Anime' : (item.badge || 'HD');
+              const anilistId = item.anilistId || (typeof item.id === 'string' ? item.id.replace('lunar-', '') : item.id);
+              const safeTitle = (item.title || '').replace(/'/g, "\\'");
+              const safePoster = (item.poster || '').replace(/'/g, "\\'");
+              const safeBanner = (item.banner || '').replace(/'/g, "\\'");
 
-            return `
+              return `
               <div class="live-search-item" onclick="if(window.openShowDetails) window.openShowDetails({ id: '${item.id}', anilistId: ${anilistId || 'null'}, title: '${safeTitle}', poster: '${safePoster}', banner: '${safeBanner}', isLunar: ${isAnime ? 'true' : 'false'} })">
                 <img src="${posterUrl}" alt="${item.title}" class="live-search-thumb" onerror="this.src='Postes/spyfamS3p.jpg';">
                 <div class="live-search-info">
@@ -2734,110 +3162,112 @@
                 </div>
               </div>
             `;
-          }).join('');
+            }).join('');
 
-          targetContainer.innerHTML = `
+            targetContainer.innerHTML = `
             ${itemsHtml}
             <div class="live-search-footer" onclick="window.location.href='view.html#search?q=${encodeURIComponent(query)}'">
+            <div class="live-search-footer" onclick="window.location.href='anime.html?search=${encodeURIComponent(query)}'">
               View all results for "${query}" <i class="fas fa-arrow-right ml-1"></i>
             </div>
           `;
-          targetContainer.style.display = 'block';
-        } catch (err) {
-          console.warn('Live search error:', err);
-        }
-      }
-
-      // Delegate search listeners for dynamic header elements
-      document.addEventListener('input', function (e) {
-        if (e.target && e.target.id === 'searchInput') {
-          clearTimeout(searchDebounce);
-          const liveDropdown = document.getElementById('liveSearchDropdown');
-          const term = e.target.value.trim();
-          if (liveDropdown) {
-            searchDebounce = setTimeout(() => {
-              performLiveSearch(term, liveDropdown);
-            }, 220);
+            targetContainer.style.display = 'block';
+          } catch (err) {
+            console.warn('Live search error:', err);
           }
         }
-      });
 
-      document.addEventListener('click', function (e) {
-        const liveDropdown = document.getElementById('liveSearchDropdown');
-        const searchInput = document.getElementById('searchInput');
-        if (liveDropdown && searchInput && !searchInput.contains(e.target) && !liveDropdown.contains(e.target)) {
-          liveDropdown.style.display = 'none';
-        }
-      });
-
-      // Mobile search overlay handlers
-      const mobileSearchOverlay = document.getElementById('mobileSearchOverlay');
-      const closeSearchOverlay = document.getElementById('closeSearchOverlay');
-      const mobileSearchInput = document.getElementById('mobileSearchInput');
-      const mobileSearchResults = document.getElementById('mobileSearchResults');
-      const clearMobileSearch = document.getElementById('clearMobileSearch');
-
-      const openMobileSearch = (e) => {
-        if (e) e.preventDefault();
-        if (mobileSearchOverlay) {
-          mobileSearchOverlay.classList.add('active');
-          if (mobileSearchInput) {
-            setTimeout(() => mobileSearchInput.focus(), 80);
-          }
-        }
-      };
-
-      document.addEventListener('click', function (e) {
-        if (e.target.closest('#mobileHeaderSearchBtn') || e.target.closest('#tabSearch')) {
-          openMobileSearch(e);
-        }
-      });
-
-      if (closeSearchOverlay && mobileSearchOverlay) {
-        closeSearchOverlay.addEventListener('click', () => {
-          mobileSearchOverlay.classList.remove('active');
-        });
-      }
-
-      if (clearMobileSearch && mobileSearchInput) {
-        clearMobileSearch.addEventListener('click', () => {
-          mobileSearchInput.value = '';
-          clearMobileSearch.style.display = 'none';
-          if (mobileSearchResults) mobileSearchResults.innerHTML = '';
-          mobileSearchInput.focus();
-        });
-      }
-
-      if (mobileSearchInput && mobileSearchResults) {
-        mobileSearchInput.addEventListener('input', function () {
-          clearTimeout(searchDebounce);
-          const q = this.value.trim();
-          if (clearMobileSearch) {
-            clearMobileSearch.style.display = q ? 'block' : 'none';
-          }
-          searchDebounce = setTimeout(() => {
-            performLiveSearch(q, mobileSearchResults);
-          }, 220);
-        });
-
-        mobileSearchInput.addEventListener('keyup', function (e) {
-          if (e.key === 'Enter') {
-            const term = this.value.trim();
-            if (term) {
-              if (mobileSearchOverlay) mobileSearchOverlay.classList.remove('active');
-              window.location.href = `view.html#search?q=${encodeURIComponent(term)}`;
+        // Delegate search listeners for dynamic header elements
+        document.addEventListener('input', function (e) {
+          if (e.target && e.target.id === 'searchInput') {
+            clearTimeout(searchDebounce);
+            const liveDropdown = document.getElementById('liveSearchDropdown');
+            const term = e.target.value.trim();
+            if (liveDropdown) {
+              searchDebounce = setTimeout(() => {
+                performLiveSearch(term, liveDropdown);
+              }, 220);
             }
           }
         });
+
+        document.addEventListener('click', function (e) {
+          const liveDropdown = document.getElementById('liveSearchDropdown');
+          const searchInput = document.getElementById('searchInput');
+          if (liveDropdown && searchInput && !searchInput.contains(e.target) && !liveDropdown.contains(e.target)) {
+            liveDropdown.style.display = 'none';
+          }
+        });
+
+        // Mobile search overlay handlers
+        const mobileSearchOverlay = document.getElementById('mobileSearchOverlay');
+        const closeSearchOverlay = document.getElementById('closeSearchOverlay');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+        const mobileSearchResults = document.getElementById('mobileSearchResults');
+        const clearMobileSearch = document.getElementById('clearMobileSearch');
+
+        const openMobileSearch = (e) => {
+          if (e) e.preventDefault();
+          if (mobileSearchOverlay) {
+            mobileSearchOverlay.classList.add('active');
+            if (mobileSearchInput) {
+              setTimeout(() => mobileSearchInput.focus(), 80);
+            }
+          }
+        };
+
+        document.addEventListener('click', function (e) {
+          if (e.target.closest('#mobileHeaderSearchBtn') || e.target.closest('#tabSearch')) {
+            openMobileSearch(e);
+          }
+        });
+
+        if (closeSearchOverlay && mobileSearchOverlay) {
+          closeSearchOverlay.addEventListener('click', () => {
+            mobileSearchOverlay.classList.remove('active');
+          });
+        }
+
+        if (clearMobileSearch && mobileSearchInput) {
+          clearMobileSearch.addEventListener('click', () => {
+            mobileSearchInput.value = '';
+            clearMobileSearch.style.display = 'none';
+            if (mobileSearchResults) mobileSearchResults.innerHTML = '';
+            mobileSearchInput.focus();
+          });
+        }
+
+        if (mobileSearchInput && mobileSearchResults) {
+          mobileSearchInput.addEventListener('input', function () {
+            clearTimeout(searchDebounce);
+            const q = this.value.trim();
+            if (clearMobileSearch) {
+              clearMobileSearch.style.display = q ? 'block' : 'none';
+            }
+            searchDebounce = setTimeout(() => {
+              performLiveSearch(q, mobileSearchResults);
+            }, 220);
+          });
+
+          mobileSearchInput.addEventListener('keyup', function (e) {
+            if (e.key === 'Enter') {
+              const term = this.value.trim();
+              if (term) {
+                if (mobileSearchOverlay) mobileSearchOverlay.classList.remove('active');
+                window.location.href = `view.html#search?q=${encodeURIComponent(term)}`;
+                window.location.href = `anime.html?search=${encodeURIComponent(term)}`;
+              }
+            }
+          });
+        }
       }
-    }
   </script>
 
   <!-- Swiper JS Engine for Touch Sliders -->
   <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 
   <!-- External Engine Scripts -->
-  <script src="navbar.js"></script>
+  <script src="navbar.js?v=2.6"></script>
   <script src="show-details-modal.js"></script>
   <script src="welcome.js"></script>
 

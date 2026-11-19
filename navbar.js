@@ -255,7 +255,7 @@
 
     // Genres grid items HTML
     const genresItemsHtml = GENRES_LIST.map(g => `
-      <a href="${prefix}view.html#${g.slug}" class="dropdown-item">
+      <a href="${prefix}anime.html?genre=${g.slug}" class="dropdown-item">
         <i class="fas ${g.icon}"></i>
         <span>${g.name}</span>
       </a>
@@ -263,7 +263,7 @@
 
     // Categories items HTML
     const categoriesItemsHtml = CATEGORIES_LIST.map(c => `
-      <a href="${c.isAnimeHub ? `${prefix}anime.html` : `${prefix}view.html#${c.slug}`}" class="dropdown-item">
+      <a href="${c.isAnimeHub ? `${prefix}anime.html` : `${prefix}anime.html?category=${c.slug}`}" class="dropdown-item">
         <i class="fas ${c.icon}"></i>
         <span>${c.name}</span>
       </a>
@@ -382,7 +382,7 @@
 
         <!-- Dynamic Auth Cluster -->
         <div class="auth-buttons flex items-center gap-1.5 sm:gap-2 shrink-0" id="authHeader">
-          <button class="px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-xs sm:text-label-sm font-semibold transition-all cursor-pointer shrink-0" id="masterSignInBtn" type="button">Sign In</button>
+          <button class="px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-xs sm:text-label-sm font-semibold transition-all cursor-pointer shrink-0" id="masterSignInBtn" onclick="window.location.href='${prefix}login.html'" type="button">Sign In</button>
         </div>
 
         <!-- Mobile Hamburger Trigger (Visible on all screens < 1280px / xl) -->
@@ -399,14 +399,14 @@
     const prefix = getPathPrefix();
 
     const genresDrawerItems = GENRES_LIST.map(g => `
-      <a href="${prefix}view.html#${g.slug}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-white hover:bg-secondary-container/15 transition-all">
+      <a href="${prefix}anime.html?genre=${g.slug}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-white hover:bg-secondary-container/15 transition-all">
         <i class="fas ${g.icon} text-primary-container text-xs w-4"></i>
         <span>${g.name}</span>
       </a>
     `).join('');
 
     const categoriesDrawerItems = CATEGORIES_LIST.map(c => `
-      <a href="${c.isAnimeHub ? `${prefix}anime.html` : `${prefix}view.html#${c.slug}`}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-white hover:bg-primary-container/15 transition-all">
+      <a href="${c.isAnimeHub ? `${prefix}anime.html` : `${prefix}anime.html?category=${c.slug}`}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-white hover:bg-primary-container/15 transition-all">
         <i class="fas ${c.icon} text-primary-container text-xs w-4"></i>
         <span>${c.name}</span>
       </a>
@@ -504,10 +504,10 @@
 
       <!-- Drawer Auth Footer -->
       <div id="drawerAuthHeader" class="pt-4 border-t border-white/[0.08] flex flex-col gap-2.5">
-        <button class="w-full py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md font-bold shadow-[0_0_16px_rgba(0,238,252,0.35)] cursor-pointer" onclick="if(typeof openModal === 'function'){openModal('login'); if(typeof closeMobileMenu === 'function') closeMobileMenu();}else{window.location.href='${prefix}login.html';}" type="button">
+        <button class="w-full py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md font-bold shadow-[0_0_16px_rgba(0,238,252,0.35)] cursor-pointer" onclick="if(typeof closeMobileMenu === 'function') closeMobileMenu(); window.location.href='${prefix}login.html';" type="button">
           Sign In
         </button>
-        <button class="w-full py-2 rounded-xl bg-surface-container-high text-on-surface font-label-md font-medium cursor-pointer" onclick="if(typeof openModal === 'function'){openModal('register'); if(typeof closeMobileMenu === 'function') closeMobileMenu();}else{window.location.href='${prefix}login.html#register';}" type="button">
+        <button class="w-full py-2 rounded-xl bg-surface-container-high text-on-surface font-label-md font-medium cursor-pointer" onclick="if(typeof closeMobileMenu === 'function') closeMobileMenu(); window.location.href='${prefix}login.html#register';" type="button">
           Create Account
         </button>
       </div>
@@ -650,30 +650,22 @@
         const registerBtn = document.getElementById('masterRegisterBtn');
         if (signInBtn) {
           signInBtn.onclick = function () {
-            if (typeof window.openModal === 'function') {
-              window.openModal('login');
-            } else {
-              window.location.href = prefix + 'login.html';
-            }
+            window.location.href = prefix + 'login.html';
           };
         }
         if (registerBtn) {
           registerBtn.onclick = function () {
-            if (typeof window.openModal === 'function') {
-              window.openModal('register');
-            } else {
-              window.location.href = prefix + 'login.html#register';
-            }
+            window.location.href = prefix + 'login.html#register';
           };
         }
       }
 
       if (drawerAuthHeader) {
         drawerAuthHeader.innerHTML = `
-          <button class="w-full py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md font-bold shadow-[0_0_16px_rgba(0,238,252,0.35)] cursor-pointer" onclick="if(typeof openModal === 'function'){openModal('login'); if(typeof closeMobileMenu === 'function') closeMobileMenu();}else{window.location.href='${prefix}login.html';}" type="button">
+          <button class="w-full py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-label-md font-bold shadow-[0_0_16px_rgba(0,238,252,0.35)] cursor-pointer" onclick="if(typeof closeMobileMenu === 'function') closeMobileMenu(); window.location.href='${prefix}login.html';" type="button">
             Sign In
           </button>
-          <button class="w-full py-2 rounded-xl bg-surface-container-high text-on-surface font-label-md font-medium cursor-pointer" onclick="if(typeof openModal === 'function'){openModal('register'); if(typeof closeMobileMenu === 'function') closeMobileMenu();}else{window.location.href='${prefix}login.html#register';}" type="button">
+          <button class="w-full py-2 rounded-xl bg-surface-container-high text-on-surface font-label-md font-medium cursor-pointer" onclick="if(typeof closeMobileMenu === 'function') closeMobileMenu(); window.location.href='${prefix}login.html#register';" type="button">
             Create Account
           </button>
         `;
@@ -782,6 +774,10 @@
     });
 
     document.addEventListener('click', function (e) {
+      if (e.target.closest('.dropdown-item')) {
+        document.querySelectorAll('.nav-item-dropdown').forEach(d => d.classList.remove('active'));
+        return;
+      }
       if (!e.target.closest('.nav-item-dropdown')) {
         document.querySelectorAll('.nav-item-dropdown').forEach(d => d.classList.remove('active'));
       }

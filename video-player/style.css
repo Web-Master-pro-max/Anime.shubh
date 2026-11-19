@@ -6880,27 +6880,38 @@ video::-webkit-media-text-track-background {
     display: none !important;
   }
 
-  /* In non-fullscreen portrait mobile, hide fit-screen to keep the compact 16:9 bar clean */
-  .video-player:not(.is-fullscreen):not(:fullscreen):not(:-webkit-full-screen) .custom-controls .fit-screen-btn {
-    display: none !important;
+  /* Always show Aspect Ratio / Screen Fit Button on Mobile */
+  .custom-controls .fit-screen-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
   }
 
-  /* Always show Aspect Ratio / Screen Fit button in Fullscreen on mobile & desktop */
-  :fullscreen .custom-controls .fit-screen-btn,
-  :-webkit-full-screen .custom-controls .fit-screen-btn,
-  :-moz-full-screen .custom-controls .fit-screen-btn,
-  :-ms-fullscreen .custom-controls .fit-screen-btn,
-  .video-player:fullscreen .custom-controls .fit-screen-btn,
-  .video-player:-webkit-full-screen .custom-controls .fit-screen-btn,
+  /* Fullscreen guaranteed display across standard and vendor engines */
   .video-player.is-fullscreen .custom-controls .fit-screen-btn,
+  .video-player.portrait-fullscreen .custom-controls .fit-screen-btn,
   body.is-player-fullscreen .custom-controls .fit-screen-btn,
-  .video-player.portrait-fullscreen .custom-controls .fit-screen-btn {
+  :fullscreen .custom-controls .fit-screen-btn,
+  .video-player:fullscreen .custom-controls .fit-screen-btn {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
   }
 
-  /* Also show Aspect Ratio / Screen Fit in landscape orientation on mobile */
+  /* Isolated WebKit fullscreen rule to avoid selector invalidation */
+  :-webkit-full-screen .custom-controls .fit-screen-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .video-player:-webkit-full-screen .custom-controls .fit-screen-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Landscape orientation on mobile */
   @media (orientation: landscape) {
     .custom-controls .fit-screen-btn {
       display: flex !important;

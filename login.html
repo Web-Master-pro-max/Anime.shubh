@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta
+    content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, interactive-widget=resizes-content"
+    name="viewport" />
+  <meta name="theme-color" content="#0e0e0e" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Cinema Pass & Terminal Login · Infinx Anime</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+  <!-- Google Fonts: Outfit & Inter + Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    @layer base {
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #000000;
+        color: #e2e2e2;
+        overflow-x: hidden;
+        max-width: 100%;
+        -webkit-text-size-adjust: 100%;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        overscroll-behavior-y: contain;
+        min-height: 100dvh;
+      }
+
+      /* Prevent Android Chrome auto-zoom on inputs */
+      input,
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Safe-area helpers for Android cutouts & gesture nav */
+    .safe-top {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    .safe-bottom {
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+    }
+
+    .main-safe-pt {
+      padding-top: calc(4.5rem + env(safe-area-inset-top, 0px));
+    }
+
+    @media (min-width: 640px) {
+      .main-safe-pt {
+        padding-top: calc(5.5rem + env(safe-area-inset-top, 0px));
+      }
+    }
+
+    .glow-cyan {
+      box-shadow: 0 0 20px rgba(0, 238, 252, 0.4);
+    }
+
+    .glow-crimson {
+      box-shadow: 0 0 24px rgba(255, 80, 110, 0.5);
+    }
+
+    .shimmer-anim {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2.5s infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0;
+      }
+
+      100% {
+        background-position: 200% 0;
+      }
+    }
+  </style>
+
+  <!-- Tailwind CSS CDN for Cyberpunk Cinema Glass tokens -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#131313",
+            "surface-dim": "#131313",
+            "surface-bright": "#393939",
+            "surface-container-lowest": "#0e0e0e",
+            "surface-container-low": "#1b1b1b",
+            "surface-container": "#1f1f1f",
+            "surface-container-high": "#2a2a2a",
+            "surface-container-highest": "#353535",
+            "on-surface": "#e2e2e2",
+            "on-surface-variant": "#e8bcbe",
+            "inverse-surface": "#e2e2e2",
+            "inverse-on-surface": "#303030",
+            "outline": "#ae8789",
+            "outline-variant": "#5e3e41",
+            "surface-tint": "#ffb2b8",
+            "primary": "#ffb2b8",
+            "on-primary": "#67001d",
+            "primary-container": "#ff506e",
+            "on-primary-container": "#5b0018",
+            "inverse-primary": "#be003d",
+            "secondary": "#d3fbff",
+            "on-secondary": "#00363a",
+            "secondary-container": "#00eefc",
+            "on-secondary-container": "#00686f",
+            "tertiary": "#d0bcff",
+            "on-tertiary": "#3c0091",
+            "tertiary-container": "#a078ff",
+            "on-tertiary-container": "#340080",
+            "error": "#ffb4ab",
+            "on-error": "#690005",
+            "error-container": "#93000a",
+            "on-error-container": "#ffdad6",
+            "primary-fixed": "#ffdadb",
+            "primary-fixed-dim": "#ffb2b8",
+            "on-primary-fixed": "#40000f",
+            "on-primary-fixed-variant": "#91002d",
+            "secondary-fixed": "#7df4ff",
+            "secondary-fixed-dim": "#00dbe9",
+            "on-secondary-fixed": "#002022",
+            "on-secondary-fixed-variant": "#004f54",
+            "tertiary-fixed": "#e9ddff",
+            "tertiary-fixed-dim": "#d0bcff",
+            "on-tertiary-fixed": "#23005c",
+            "on-tertiary-fixed-variant": "#5516be",
+            "background": "#131313",
+            "on-background": "#e2e2e2",
+            "surface-variant": "#353535"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem",
+            "gutter": "1.5rem",
+            "gutter-mobile": "0.75rem",
+            "margin": "3rem",
+            "margin-mobile": "1rem"
+          },
+          fontFamily: {
+            "display-hero": ["Outfit", "sans-serif"],
+            "headline-lg": ["Outfit", "sans-serif"],
+            "headline-md": ["Outfit", "sans-serif"],
+            "headline-sm": ["Outfit", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "label-lg": ["Inter", "sans-serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+
+<body
+  class="bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-[100dvh] flex flex-col justify-between">
+
+  <!-- ================= TOP FROSTED CYBERPUNK HEADER ================= -->
+  <header
+    class="fixed top-0 left-0 right-0 z-50 w-full safe-top bg-surface-container-lowest/90 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.85)] border-b border-surface-container-high/40"
+    id="siteHeader">
+    <div class="h-16 sm:h-20 w-full px-3.5 sm:px-gutter flex items-center justify-between gap-2 sm:gap-space-md">
+      <!-- Left: Mobile Menu Button, Logo & Nav -->
+      <div class="flex items-center gap-2.5 sm:gap-space-lg min-w-0">
+        <!-- Mobile Drawer Toggle (< xl) -->
+        <button type="button" id="mobileMenuBtn" aria-label="Open navigation menu" aria-expanded="false"
+          class="xl:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container-low border border-white/10 text-on-surface active:scale-95 transition-transform touch-manipulation flex-shrink-0">
+          <span class="material-symbols-outlined text-[22px]" id="mobileMenuIcon">menu</span>
+        </button>
+
+        <a class="flex items-center gap-2 sm:gap-space-sm group min-w-0" href="index.html">
+          <div
+            class="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-container-high/80 shadow-[0_0_18px_rgba(0,238,252,0.4)] group-hover:shadow-[0_0_24px_rgba(0,238,252,0.6)] transition-all duration-300 flex-shrink-0">
+            <svg
+              class="w-5 h-5 sm:w-6 sm:h-6 transform -rotate-12 group-hover:scale-110 transition-transform duration-300"
+              fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18.178 8c-1.38 0-2.61.644-3.414 1.645C13.606 8.167 11.758 7 9.5 7 5.91 7 3 9.91 3 13.5S5.91 20 9.5 20c2.258 0 4.106-1.167 5.264-2.645C15.568 18.356 16.798 19 18.178 19 20.84 19 23 16.84 23 14.178c0-2.662-2.16-4.178-4.822-4.178zm-8.678 9.5c-2.206 0-4-1.794-4-4s1.794-4 4-4c1.862 0 3.398 1.282 3.824 3.013a5.55 5.55 0 0 1 0 1.974c-.426 1.731-1.962 3.013-3.824 3.013zm8.678-1c-1.396 0-2.533-.946-2.85-2.23a4.015 4.015 0 0 1 0-1.54c.317-1.284 1.454-2.23 2.85-2.23 1.556 0 2.822 1.266 2.822 2.822 0 1.556-1.266 2.822-2.822 2.822z"
+                fill="#00eefc"></path>
+              <circle cx="9.5" cy="13.5" fill="#ff506e" r="1.5"></circle>
+            </svg>
+          </div>
+          <div class="flex flex-col truncate">
+            <span
+              class="font-headline-sm text-sm xs:text-base sm:text-headline-sm tracking-wider font-extrabold text-secondary-container drop-shadow-[0_0_12px_rgba(0,238,252,0.6)] truncate">
+              INFINX<span class="text-primary-container drop-shadow-[0_0_12px_rgba(255,80,110,0.6)] ml-1">ANIME</span>
+            </span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Bar -->
+        <nav
+          class="hidden xl:flex items-center gap-space-xs p-1 rounded-full bg-surface-container-lowest/60 backdrop-blur-md">
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="index.html">Home</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="anime.html">Catalog / Browse</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="view.html">Watchlist & Hub</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="download.html">Get App</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="profile.html">Otaku Passport</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="admin.html">Admin Studio</a>
+        </nav>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2 sm:gap-space-md flex-shrink-0">
+        <a class="relative inline-flex items-center gap-1 sm:gap-space-xs px-2.5 sm:px-3.5 min-h-[38px] sm:min-h-[40px] rounded-full bg-surface-container-low text-primary border border-primary/20 shadow-[0_0_14px_rgba(255,80,110,0.25)] hover:bg-primary-container hover:text-on-primary-container active:scale-95 transition-all duration-200 group touch-manipulation"
+          href="view.html#vip">
+          <span
+            class="material-symbols-outlined text-[16px] text-primary group-hover:text-on-primary-container">local_fire_department</span>
+          <span class="font-label-sm tracking-wider uppercase font-bold text-[11px] sm:text-label-sm">VIP<span
+              class="hidden sm:inline"> PASS</span></span>
+        </a>
+
+        <a class="relative p-0.5 rounded-full shadow-[0_0_12px_rgba(0,238,252,0.4)] bg-secondary-container active:scale-95 transition-transform touch-manipulation"
+          href="profile.html" title="Otaku Profile" aria-label="Otaku Profile">
+          <div
+            class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-secondary-container"
+            id="headerProfileAvatar">
+            <span class="material-symbols-outlined text-[19px]">person</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <nav id="mobileNavDrawer"
+      class="hidden xl:hidden border-t border-white/10 bg-surface-container-lowest/95 backdrop-blur-2xl px-4 py-3 shadow-2xl">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <a class="flex items-center gap-2 px-3 py-3 rounded-xl bg-surface-container-low border border-white/5 font-label-md text-sm text-on-surface active:bg-surface-container-high touch-manipulation"
+          href="index.html">
+          <span class="material-symbols-outlined text-[18px] text-secondary-container">home</span>
+          <span>Home</span>
+        </a>
+        <a class="flex items-center gap-2 px-3 py-3 rounded-xl bg-surface-container-low border border-white/5 font-label-md text-sm text-on-surface active:bg-surface-container-high touch-manipulation"
+          href="anime.html">
+          <span class="material-symbols-outlined text-[18px] text-secondary-container">movie_filter</span>
+          <span>Catalog</span>
+        </a>
+        <a class="flex items-center gap-2 px-3 py-3 rounded-xl bg-surface-container-low border border-white/5 font-label-md text-sm text-on-surface active:bg-surface-container-high touch-manipulation"
+          href="view.html">
+          <span class="material-symbols-outlined text-[18px] text-primary">bookmarks</span>
+          <span>Watchlist</span>
+        </a>
+        <a class="flex items-center gap-2 px-3 py-3 rounded-xl bg-surface-container-low border border-white/5 font-label-md text-sm text-on-surface active:bg-surface-container-high touch-manipulation"
+          href="download.html">
+          <span class="material-symbols-outlined text-[18px] text-secondary-container">android</span>
+          <span>Get App</span>
+        </a>
+        <a class="flex items-center gap-2 px-3 py-3 rounded-xl bg-surface-container-low border border-white/5 font-label-md text-sm text-on-surface active:bg-surface-container-high touch-manipulation"
+          href="profile.html">
+          <span class="material-symbols-outlined text-[18px] text-tertiary">badge</span>
+          <span>Passport</span>
+        </a>
+        <a class="flex items-center gap-2 px-3 py-3 rounded-xl bg-surface-container-low border border-white/5 font-label-md text-sm text-on-surface active:bg-surface-container-high touch-manipulation"
+          href="admin.html">
+          <span class="material-symbols-outlined text-[18px] text-outline">admin_panel_settings</span>
+          <span>Admin</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ================= MAIN AUTH CANVAS ================= -->
+  <main class="w-full main-safe-pt bg-surface-container-lowest flex-grow flex items-center">
+    <div
+      class="relative w-full overflow-hidden px-3.5 sm:px-gutter py-5 sm:py-space-xl flex flex-col justify-center items-center">
+
+      <!-- Ambient Neon Background Flares -->
+      <div
+        class="absolute -top-40 -left-40 w-[300px] sm:w-[550px] h-[300px] sm:h-[550px] bg-secondary-container/10 rounded-full blur-[120px] sm:blur-[140px] pointer-events-none">
+      </div>
+      <div
+        class="absolute -bottom-40 -right-40 w-[320px] sm:w-[600px] h-[320px] sm:h-[600px] bg-primary-container/15 rounded-full blur-[130px] sm:blur-[160px] pointer-events-none">
+      </div>
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[360px] sm:w-[700px] h-[320px] sm:h-[400px] bg-tertiary-container/5 rounded-full blur-[140px] sm:blur-[180px] pointer-events-none">
+      </div>
+
+      <!-- Main Auth Card Container -->
+      <div class="w-full max-w-xl mx-auto relative z-10">
+        <div class="w-full flex flex-col justify-center">
+          <div
+            class="w-full p-4 sm:p-space-xl rounded-2xl bg-surface-container-low/90 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col gap-4 sm:gap-space-md relative overflow-hidden">
+
+            <!-- Terminal Glow Accents -->
+            <div
+              class="absolute top-0 right-0 w-36 h-36 bg-primary-container/10 rounded-full blur-3xl pointer-events-none">
+            </div>
+            <div
+              class="absolute bottom-0 left-0 w-36 h-36 bg-secondary-container/10 rounded-full blur-3xl pointer-events-none">
+            </div>
+
+            <!-- Segmented Tab Switcher (Sign In vs Create Pass) -->
+            <div
+              class="p-1 rounded-xl bg-surface-container-lowest/80 border border-white/5 flex items-center gap-1 shadow-inner">
+              <button
+                class="flex-1 min-h-[44px] px-2 py-2.5 rounded-lg font-label-lg text-xs sm:text-sm font-semibold bg-surface-container-high shadow-[0_0_16px_rgba(0,238,252,0.25)] text-secondary-container transition-all duration-200 cursor-pointer touch-manipulation"
+                id="tabSignIn" type="button">
+                Sign In Terminal
+              </button>
+              <button
+                class="flex-1 min-h-[44px] px-2 py-2.5 rounded-lg font-label-lg text-xs sm:text-sm font-semibold text-outline hover:text-on-surface hover:bg-surface-container transition-all duration-200 cursor-pointer touch-manipulation"
+                id="tabCreatePass" type="button">
+                Create Otaku Pass
+              </button>
+            </div>
+
+            <!-- Alert / Status Notification Banner (Cyberpunk Styled) -->
+            <div id="authAlertBanner"
+              class="hidden p-3 rounded-xl border text-sm flex items-start gap-2.5 transition-all duration-300">
+              <span class="material-symbols-outlined text-[20px] flex-shrink-0 mt-0.5" id="alertIcon">warning</span>
+              <div class="flex-1 font-body-sm break-words" id="alertMessage">Alert details here</div>
+              <button type="button" onclick="hideAlert()" aria-label="Dismiss alert"
+                class="min-w-[32px] min-h-[32px] flex items-center justify-center text-outline hover:text-white transition-colors touch-manipulation">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+
+            <!-- Already Logged-In Notice (If Token Exists) -->
+            <div id="alreadyLoggedInBanner"
+              class="hidden p-3.5 rounded-xl bg-secondary-container/10 border border-secondary-container/30 text-secondary text-sm flex flex-col gap-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2 font-semibold min-w-0">
+                  <span class="material-symbols-outlined text-[18px] flex-shrink-0">verified</span>
+                  <span class="truncate">Active: <span id="activeUserEmail" class="font-mono text-white"></span></span>
+                </div>
+                <button type="button" onclick="handleLogout()"
+                  class="min-h-[32px] px-2 text-xs uppercase underline tracking-wider text-outline hover:text-primary transition-colors touch-manipulation">
+                  Disconnect
+                </button>
+              </div>
+              <div class="flex gap-2">
+                <button type="button" onclick="resumeRedirect()"
+                  class="flex-1 min-h-[42px] py-2 px-3 rounded-lg bg-secondary-container text-on-secondary font-label-sm font-bold hover:shadow-[0_0_12px_#00eefc] active:scale-[0.99] transition-all touch-manipulation">
+                  Proceed to Stream
+                </button>
+              </div>
+            </div>
+
+            <!-- Authentication Form -->
+            <form class="flex flex-col gap-4 sm:gap-space-md" id="authForm" novalidate>
+
+              <!-- Cyber ID / Email Field -->
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between gap-2">
+                  <label
+                    class="font-label-md text-xs sm:text-sm text-on-surface-variant font-semibold uppercase tracking-wider"
+                    for="cyberIdInput">
+                    Cyber ID / Email
+                  </label>
+                  <span class="font-label-sm text-[10px] sm:text-xs font-mono text-outline">ENCRYPTED ID</span>
+                </div>
+                <div class="relative flex items-center group">
+                  <span
+                    class="material-symbols-outlined absolute left-3.5 text-outline group-focus-within:text-secondary-container transition-colors text-[20px] pointer-events-none">
+                    alternate_email
+                  </span>
+                  <input
+                    class="w-full min-h-[48px] pl-11 pr-4 py-3 bg-surface-container-lowest/90 border border-white/10 rounded-xl font-body-md text-base text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-secondary-container focus:bg-surface-container-low shadow-[0_0_16px_rgba(0,238,252,0.15)] transition-all"
+                    id="cyberIdInput" placeholder="e.g. kenshiro@infinx.io" required type="email" inputmode="email"
+                    autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" />
+                </div>
+              </div>
+
+              <!-- Passcode / Master Key Field -->
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between gap-2">
+                  <label
+                    class="font-label-md text-xs sm:text-sm text-on-surface-variant font-semibold uppercase tracking-wider"
+                    for="passcodeInput">
+                    Master Passkey / Token
+                  </label>
+                  <button type="button" id="forgotKeyBtn"
+                    class="min-h-[32px] px-1 font-label-sm text-xs sm:text-sm text-secondary-container hover:underline drop-shadow-[0_0_8px_rgba(0,238,252,0.4)] cursor-pointer touch-manipulation">
+                    Forgot Key?
+                  </button>
+                </div>
+                <div class="relative flex items-center group">
+                  <span
+                    class="material-symbols-outlined absolute left-3.5 text-outline group-focus-within:text-secondary-container transition-colors text-[20px] pointer-events-none">
+                    key
+                  </span>
+                  <input
+                    class="w-full min-h-[48px] pl-11 pr-14 py-3 bg-surface-container-lowest/90 border border-white/10 rounded-xl font-body-md text-base text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-secondary-container focus:bg-surface-container-low shadow-[0_0_16px_rgba(0,238,252,0.15)] transition-all font-mono"
+                    id="passcodeInput" placeholder="••••••••••••••••" required type="password"
+                    autocomplete="current-password" />
+                  <button
+                    class="absolute right-1.5 min-w-[42px] min-h-[42px] flex items-center justify-center rounded-lg hover:bg-surface-container-high text-outline hover:text-on-surface transition-colors cursor-pointer touch-manipulation"
+                    id="togglePasswordBtn" title="Toggle visibility" aria-label="Toggle password visibility"
+                    type="button">
+                    <span class="material-symbols-outlined text-[20px]" id="eyeIcon">visibility</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Options Strip: Remember Node & Passkey prompt -->
+              <div class="flex items-center justify-between flex-wrap gap-2 pt-0.5" id="rememberStrip">
+                <label
+                  class="flex items-center gap-2.5 min-h-[36px] cursor-pointer select-none group touch-manipulation">
+                  <div
+                    class="relative flex items-center justify-center w-5 h-5 rounded bg-surface-container-lowest border border-white/20 group-hover:bg-surface-container-high transition-colors flex-shrink-0">
+                    <input checked class="peer sr-only" id="rememberCheck" type="checkbox" />
+                    <div
+                      class="w-3.5 h-3.5 rounded-xs bg-secondary-container opacity-0 peer-checked:opacity-100 shadow-[0_0_8px_#00eefc] transition-opacity flex items-center justify-center">
+                      <span class="material-symbols-outlined text-black text-[12px] font-black">check</span>
+                    </div>
+                  </div>
+                  <span
+                    class="font-body-sm text-xs sm:text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">
+                    Cache token on Tokyo Edge Node (30d)
+                  </span>
+                </label>
+                <div class="flex items-center gap-1 font-label-sm text-xs text-outline font-mono">
+                  <span class="material-symbols-outlined text-[14px] text-secondary">wifi_protected_setup</span>
+                  <span>Auto-Reauth</span>
+                </div>
+              </div>
+
+              <!-- Primary Action Button: Glowing Cyberpunk CTA -->
+              <button id="submitBtn"
+                class="group relative w-full min-h-[50px] mt-1 py-3.5 px-4 rounded-xl font-label-lg text-sm sm:text-base font-bold text-on-primary uppercase tracking-wider bg-gradient-to-r from-primary-container via-primary-container to-tertiary-container shadow-[0_0_24px_rgba(255,80,110,0.5)] hover:shadow-[0_0_36px_rgba(255,80,110,0.8)] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden cursor-pointer touch-manipulation"
+                type="submit">
+                <!-- Shimmer sheen effect -->
+                <div
+                  class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent">
+                </div>
+                <span id="submitBtnText" class="truncate">Initiate Transmission / Sign In</span>
+                <span
+                  class="material-symbols-outlined text-[20px] flex-shrink-0 transform group-hover:translate-x-1 transition-transform"
+                  id="submitBtnIcon">bolt</span>
+              </button>
+            </form>
+
+            <!-- Guest Access -->
+            <div class="pt-1 flex flex-col items-center justify-center text-center">
+              <a class="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-2 font-body-sm text-xs sm:text-sm text-outline hover:text-primary transition-colors group touch-manipulation"
+                href="index.html">
+                <span>Unregistered? Explore guest stream with 720p 10-minute trial</span>
+                <span
+                  class="material-symbols-outlined text-[16px] flex-shrink-0 group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Micro Floating Ambient Status Strip -->
+        <div
+          class="mt-5 sm:mt-space-lg flex items-center justify-center gap-2 sm:gap-space-md text-center flex-wrap z-10">
+          <div
+            class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-surface-container-low/60 backdrop-blur-md border border-white/5">
+            <span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
+            <span class="font-label-sm text-on-surface-variant font-mono text-[10px] sm:text-xs">HEVC MAIN 10</span>
+          </div>
+          <div
+            class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-surface-container-low/60 backdrop-blur-md border border-white/5">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+            <span class="font-label-sm text-on-surface-variant font-mono text-[10px] sm:text-xs">BT.2020 HDR</span>
+          </div>
+          <div
+            class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-surface-container-low/60 backdrop-blur-md border border-white/5">
+            <span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+            <span class="font-label-sm text-on-surface-variant font-mono text-[10px] sm:text-xs">LATENCY <12ms< /span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= FORGOT KEY CYBERPUNK MODAL ================= -->
+  <div id="forgotKeyModal"
+    class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-3 sm:p-4 safe-bottom hidden">
+    <div
+      class="w-full max-w-md p-5 sm:p-6 rounded-2xl bg-surface-container-low border border-secondary-container/40 shadow-[0_0_30px_rgba(0,238,252,0.3)] flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-secondary-container">
+          <span class="material-symbols-outlined text-[24px]">vpn_key_alert</span>
+          <h3 class="font-headline-sm font-bold text-white">Master Key Recovery</h3>
+        </div>
+        <button type="button" onclick="closeForgotModal()" aria-label="Close modal"
+          class="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg text-outline hover:text-white transition-colors touch-manipulation">
+          <span class="material-symbols-outlined text-[22px]">close</span>
+        </button>
+      </div>
+      <p class="font-body-sm text-on-surface-variant leading-relaxed">
+        Infinx Anime operates in a secure private node network. To reset your access token:
+      </p>
+      <div
+        class="p-3 rounded-lg bg-surface-container-lowest border border-white/5 font-mono text-xs text-secondary-fixed flex flex-col gap-1.5">
+        <div>1. Contact the local Infinx Admin / Server Host.</div>
+        <div>2. Admins can reset credentials via the <strong class="text-primary">Admin Studio</strong> user ledger.
+        </div>
+        <div>3. Or re-register with an updated Cyber ID.</div>
+      </div>
+      <button type="button" onclick="closeForgotModal()"
+        class="w-full min-h-[46px] py-2.5 rounded-xl bg-surface-container-high hover:bg-secondary-container hover:text-black font-label-md font-bold active:scale-[0.99] transition-all touch-manipulation">
+        Acknowledge Protocol
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer
+    class="w-full bg-surface-container-lowest border-t border-white/5 shadow-[0_-8px_32px_rgba(0,0,0,0.9)] safe-bottom">
+    <div class="w-full px-4 sm:px-gutter pt-7 sm:py-space-xl">
+      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-space-xl">
+        <div class="col-span-2 lg:col-span-2 flex flex-col gap-3 sm:gap-space-md">
+          <div class="flex items-center gap-space-sm">
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container border border-secondary-container/30 shadow-[0_0_12px_rgba(0,238,252,0.3)]">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M18.178 8c-1.38 0-2.61.644-3.414 1.645C13.606 8.167 11.758 7 9.5 7 5.91 7 3 9.91 3 13.5S5.91 20 9.5 20c2.258 0 4.106-1.167 5.264-2.645C15.568 18.356 16.798 19 18.178 19 20.84 19 23 16.84 23 14.178c0-2.662-2.16-4.178-4.822-4.178z"
+                  fill="#00eefc"></path>
+              </svg>
+            </div>
+            <span class="font-headline-sm font-extrabold tracking-wide text-secondary-container">
+              INFINX<span class="text-primary-container ml-1">ANIME</span>
+            </span>
+          </div>
+          <p class="font-body-md text-outline max-w-sm text-xs sm:text-sm leading-relaxed">
+            Theatre Grade OLED Anime Streaming. Pure AMOLED zero-floor masterings, uncompressed audio bitrate, and
+            simultaneous Tokyo transmissions.
+          </p>
+          <div class="flex items-center flex-wrap gap-2 mt-1">
+            <div
+              class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-[11px] text-secondary tracking-widest uppercase border border-secondary-container/30 shadow-[0_0_8px_rgba(0,238,252,0.2)]">
+              4K UHD</div>
+            <div
+              class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-[11px] text-primary-fixed tracking-widest uppercase border border-primary-container/30 shadow-[0_0_8px_rgba(255,80,110,0.2)]">
+              HDR10+</div>
+            <div
+              class="px-2.5 py-1 rounded bg-surface-container-low font-label-sm text-[11px] text-tertiary tracking-widest uppercase border border-tertiary-container/30 shadow-[0_0_8px_rgba(160,120,255,0.2)]">
+              ATMOS</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span
+            class="font-label-lg text-on-surface tracking-wider uppercase font-bold text-xs sm:text-sm">Browse</span>
+          <ul class="flex flex-col gap-1.5 font-body-sm text-outline text-xs sm:text-sm">
+            <li class="hover:text-secondary-container transition-colors"><a class="inline-block py-1"
+                href="anime.html">Top Airing Masterpieces</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a class="inline-block py-1"
+                href="anime.html">New Spring Releases</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a class="inline-block py-1"
+                href="anime.html">Dual-Audio Dubbed</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a class="inline-block py-1"
+                href="anime.html">Dolby Vision Features</a></li>
+          </ul>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span
+            class="font-label-lg text-on-surface tracking-wider uppercase font-bold text-xs sm:text-sm">Community</span>
+          <ul class="flex flex-col gap-1.5 font-body-sm text-outline text-xs sm:text-sm">
+            <li class="hover:text-secondary-container transition-colors"><a class="inline-block py-1"
+                href="view.html">Infinx Discord Core</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a class="inline-block py-1"
+                href="view.html">Watch Parties</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a class="inline-block py-1"
+                href="view.html">Soundtrack Lounge</a></li>
+          </ul>
+        </div>
+
+        <div class="col-span-2 sm:col-span-1 flex flex-col gap-2">
+          <span class="font-label-lg text-on-surface tracking-wider uppercase font-bold text-xs sm:text-sm">Legal &
+            System</span>
+          <ul class="flex flex-col gap-1.5 font-body-sm text-outline text-xs sm:text-sm">
+            <li class="hover:text-secondary-container transition-colors"><a class="inline-block py-1"
+                href="download.html">Device Compatibility</a></li>
+            <li class="hover:text-secondary-container transition-colors"><a class="inline-block py-1"
+                href="admin.html">DRM Calibration</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        class="mt-6 sm:mt-space-xl pt-5 sm:pt-space-lg border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-3">
+        <span class="font-body-sm text-outline text-[11px] sm:text-sm text-center md:text-left">
+          © 2026 INFINX ANIME BROADCAST CORP. ALL RIGHTS RESERVED.
+        </span>
+        <div class="flex items-center gap-2">
+          <span
+            class="w-2 h-2 rounded-full bg-secondary-container animate-pulse shadow-[0_0_8px_#00eefc] flex-shrink-0"></span>
+          <span class="font-label-sm text-on-surface-variant uppercase tracking-wider text-[11px] sm:text-xs">Tokyo
+            Ingestion: Operational (9.8ms)</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= CORE AUTHENTICATION LOGIC ================= -->
+  <script>
+    // Mobile Menu Drawer Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileNavDrawer = document.getElementById('mobileNavDrawer');
+    const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+
+    if (mobileMenuBtn && mobileNavDrawer && mobileMenuIcon) {
+      mobileMenuBtn.addEventListener('click', () => {
+        const isOpen = !mobileNavDrawer.classList.contains('hidden');
+        mobileNavDrawer.classList.toggle('hidden');
+        mobileMenuBtn.setAttribute('aria-expanded', String(!isOpen));
+        mobileMenuIcon.textContent = isOpen ? 'menu' : 'close';
+      });
+    }
+
+    // 1. Dynamic API Base resolution (identical to index.html and view.html)
+    const getLocalBackend = () => {
+      const saved = localStorage.getItem('infinx_server_url');
+      if (saved && !saved.startsWith('file:')) return saved.replace(/\/$/, '');
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:8000';
+      }
+      return '';
+    };
+
+    const DEFAULT_BACKEND = getLocalBackend();
+    const isHttps = window.location.protocol === 'https:';
+    const hasCustomServer = !!localStorage.getItem('infinx_server_url');
+    const SERVER_ORIGIN = (isHttps && !hasCustomServer)
+      ? ''
+      : ((window.location.protocol === 'file:' || window.location.origin === 'null' || (!window.location.origin.includes(':8000') && !isHttps))
+        ? DEFAULT_BACKEND
+        : '');
+    const API_BASE = `${SERVER_ORIGIN}/api`;
+
+    // 2. State & Element references
+    let currentMode = 'signin'; // 'signin' | 'register'
+    const tabSignIn = document.getElementById('tabSignIn');
+    const tabCreatePass = document.getElementById('tabCreatePass');
+    const authForm = document.getElementById('authForm');
+    const cyberIdInput = document.getElementById('cyberIdInput');
+    const passcodeInput = document.getElementById('passcodeInput');
+    const toggleBtn = document.getElementById('togglePasswordBtn');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const rememberCheck = document.getElementById('rememberCheck');
+    const rememberStrip = document.getElementById('rememberStrip');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitBtnText = document.getElementById('submitBtnText');
+    const submitBtnIcon = document.getElementById('submitBtnIcon');
+    const authAlertBanner = document.getElementById('authAlertBanner');
+    const alertMessage = document.getElementById('alertMessage');
+    const alertIcon = document.getElementById('alertIcon');
+    const alreadyLoggedInBanner = document.getElementById('alreadyLoggedInBanner');
+    const activeUserEmail = document.getElementById('activeUserEmail');
+    const forgotKeyBtn = document.getElementById('forgotKeyBtn');
+    const forgotKeyModal = document.getElementById('forgotKeyModal');
+
+    // 3. Notification system (Cyberpunk styled)
+    function showAlert(msg, type = 'error') {
+      authAlertBanner.classList.remove('hidden', 'bg-error-container/20', 'border-error/40', 'text-error', 'bg-secondary-container/20', 'border-secondary-container/40', 'text-secondary');
+      if (type === 'error') {
+        authAlertBanner.classList.add('bg-error-container/20', 'border-error/40', 'text-error');
+        alertIcon.textContent = 'error';
+        alertIcon.className = 'material-symbols-outlined text-[20px] flex-shrink-0 text-error';
+      } else {
+        authAlertBanner.classList.add('bg-secondary-container/20', 'border-secondary-container/40', 'text-secondary');
+        alertIcon.textContent = 'check_circle';
+        alertIcon.className = 'material-symbols-outlined text-[20px] flex-shrink-0 text-secondary-container';
+      }
+      alertMessage.textContent = msg;
+    }
+
+    function hideAlert() {
+      authAlertBanner.classList.add('hidden');
+    }
+
+    // 4. Tab Mode Switching
+    function setMode(mode) {
+      currentMode = mode;
+      hideAlert();
+      if (mode === 'signin') {
+        tabSignIn.className = 'flex-1 min-h-[44px] px-2 py-2.5 rounded-lg font-label-lg text-xs sm:text-sm font-semibold bg-surface-container-high shadow-[0_0_16px_rgba(0,238,252,0.25)] text-secondary-container transition-all duration-200 cursor-pointer touch-manipulation';
+        tabCreatePass.className = 'flex-1 min-h-[44px] px-2 py-2.5 rounded-lg font-label-lg text-xs sm:text-sm font-semibold text-outline hover:text-on-surface hover:bg-surface-container transition-all duration-200 cursor-pointer touch-manipulation';
+        submitBtnText.textContent = 'Initiate Transmission / Sign In';
+        submitBtnIcon.textContent = 'bolt';
+        submitBtn.className = 'group relative w-full min-h-[50px] mt-1 py-3.5 px-4 rounded-xl font-label-lg text-sm sm:text-base font-bold text-on-primary uppercase tracking-wider bg-gradient-to-r from-primary-container via-primary-container to-tertiary-container shadow-[0_0_24px_rgba(255,80,110,0.5)] hover:shadow-[0_0_36px_rgba(255,80,110,0.8)] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden cursor-pointer touch-manipulation';
+        rememberStrip.classList.remove('hidden');
+        passcodeInput.setAttribute('autocomplete', 'current-password');
+      } else {
+        tabCreatePass.className = 'flex-1 min-h-[44px] px-2 py-2.5 rounded-lg font-label-lg text-xs sm:text-sm font-semibold bg-surface-container-high shadow-[0_0_16px_rgba(255,80,110,0.3)] text-primary transition-all duration-200 cursor-pointer touch-manipulation';
+        tabSignIn.className = 'flex-1 min-h-[44px] px-2 py-2.5 rounded-lg font-label-lg text-xs sm:text-sm font-semibold text-outline hover:text-on-surface hover:bg-surface-container transition-all duration-200 cursor-pointer touch-manipulation';
+        submitBtnText.textContent = 'Register Otaku Pass / Join Stream';
+        submitBtnIcon.textContent = 'badge';
+        submitBtn.className = 'group relative w-full min-h-[50px] mt-1 py-3.5 px-4 rounded-xl font-label-lg text-sm sm:text-base font-bold text-black uppercase tracking-wider bg-gradient-to-r from-secondary-container via-secondary-container to-tertiary shadow-[0_0_24px_rgba(0,238,252,0.5)] hover:shadow-[0_0_36px_rgba(0,238,252,0.8)] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden cursor-pointer touch-manipulation';
+        rememberStrip.classList.add('hidden');
+        passcodeInput.setAttribute('autocomplete', 'new-password');
+      }
+    }
+
+    tabSignIn.addEventListener('click', () => setMode('signin'));
+    tabCreatePass.addEventListener('click', () => setMode('register'));
+
+    // 5. Password toggle
+    if (toggleBtn && passcodeInput && eyeIcon) {
+      toggleBtn.addEventListener('click', () => {
+        const isPassword = passcodeInput.type === 'password';
+        passcodeInput.type = isPassword ? 'text' : 'password';
+        eyeIcon.textContent = isPassword ? 'visibility_off' : 'visibility';
+      });
+    }
+
+    // 6. Pre-fill Remembered Email
+    const rememberedEmail = localStorage.getItem('infinx_remember_email');
+    if (rememberedEmail) {
+      cyberIdInput.value = rememberedEmail;
+      rememberCheck.checked = true;
+    }
+
+    // 7. Check for already logged-in session
+    const existingToken = localStorage.getItem('infinx_token');
+    const existingEmail = localStorage.getItem('infinx_user_email');
+    if (existingToken && existingEmail) {
+      alreadyLoggedInBanner.classList.remove('hidden');
+      activeUserEmail.textContent = existingEmail;
+    }
+
+    function resumeRedirect() {
+      const target = sessionStorage.getItem('infinx_redirect_after_auth');
+      if (target) {
+        sessionStorage.removeItem('infinx_redirect_after_auth');
+        window.location.href = target;
+      } else {
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect') || urlParams.get('returnTo');
+        window.location.href = redirect || 'index.html';
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('infinx_token');
+      localStorage.removeItem('infinx_user');
+      localStorage.removeItem('infinx_user_email');
+      localStorage.removeItem('infinx_user_role');
+      localStorage.removeItem('infinx_username');
+      localStorage.removeItem('infinx_avatar');
+      localStorage.removeItem('infinx_avatar_frame');
+      localStorage.removeItem('infinx_vip_rank');
+      localStorage.removeItem('infinx_level');
+      alreadyLoggedInBanner.classList.add('hidden');
+      showAlert('Session cleared. You may now authenticate with another pass.', 'info');
+    }
+
+    // 8. Forgot Password Modal Triggers (including backdrop tap close for mobile)
+    if (forgotKeyBtn) {
+      forgotKeyBtn.addEventListener('click', () => {
+        forgotKeyModal.classList.remove('hidden');
+      });
+    }
+    if (forgotKeyModal) {
+      forgotKeyModal.addEventListener('click', (e) => {
+        if (e.target === forgotKeyModal) closeForgotModal();
+      });
+    }
+    function closeForgotModal() {
+      forgotKeyModal.classList.add('hidden');
+    }
+
+    // 9. Form Submission (Login & Register APIs)
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      // Dismiss mobile keyboard on submit
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+
+      const email = cyberIdInput.value.trim();
+      const password = passcodeInput.value;
+
+      if (!email || !password) {
+        showAlert('Cyber ID and Master Passkey are required.', 'error');
+        return;
+      }
+
+      // Loading state
+      submitBtn.disabled = true;
+      const initialText = submitBtnText.textContent;
+      const initialIcon = submitBtnIcon.textContent;
+      submitBtnText.textContent = currentMode === 'signin'
+        ? 'Negotiating Session...'
+        : 'Registering Otaku Pass...';
+      submitBtnIcon.textContent = 'sync';
+      submitBtnIcon.classList.add('animate-spin');
+
+      const endpoint = currentMode === 'signin' ? '/auth/login' : '/auth/register';
+
+      try {
+        const res = await fetch(`${API_BASE}${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.token) {
+          // Save JWT token and profile data identically to index.html
+          localStorage.setItem('infinx_token', data.token);
+          localStorage.setItem('infinx_user_email', data.user.email);
+          localStorage.setItem('infinx_user_role', data.user.role);
+
+          if (data.user) {
+            localStorage.setItem('infinx_user', JSON.stringify(data.user));
+            if (data.user.username) localStorage.setItem('infinx_username', data.user.username);
+            if (data.user.avatarUrl) localStorage.setItem('infinx_avatar', data.user.avatarUrl);
+            if (data.user.avatarFrame) localStorage.setItem('infinx_avatar_frame', data.user.avatarFrame);
+            if (data.user.vipRank) localStorage.setItem('infinx_vip_rank', data.user.vipRank);
+            if (data.user.level) localStorage.setItem('infinx_level', String(data.user.level));
+            if (data.user.accentColor) localStorage.setItem('infinx_accent_color', data.user.accentColor);
+          }
+
+          // Handle Remember Me
+          if (rememberCheck.checked) {
+            localStorage.setItem('infinx_remember_email', email);
+          } else {
+            localStorage.removeItem('infinx_remember_email');
+          }
+
+          // Success feedback
+          submitBtnIcon.classList.remove('animate-spin');
+          submitBtnIcon.textContent = 'check_circle';
+          submitBtnText.textContent = currentMode === 'signin'
+            ? 'Transmission Granted // Synced'
+            : 'Pass Activated // Redirecting...';
+          showAlert(`Authentication Verified: Welcome back, ${data.user.username || email}!`, 'success');
+
+          // Redirect handling
+          setTimeout(() => {
+            resumeRedirect();
+          }, 900);
+
+        } else {
+          submitBtn.disabled = false;
+          submitBtnIcon.classList.remove('animate-spin');
+          submitBtnText.textContent = initialText;
+          submitBtnIcon.textContent = initialIcon;
+          showAlert(data.error || 'Authentication rejected by security node.', 'error');
+        }
+      } catch (err) {
+        console.error('Auth network failure:', err);
+        submitBtn.disabled = false;
+        submitBtnIcon.classList.remove('animate-spin');
+        submitBtnText.textContent = initialText;
+        submitBtnIcon.textContent = initialIcon;
+        showAlert('Unable to establish transmission with Infinx API Server. Please check network/server status.', 'error');
+      }
+    });
+
+    // 10. Initial Mode check from URL hash or query params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (window.location.hash === '#register' || urlParams.get('mode') === 'register') {
+      setMode('register');
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+
+</html>
