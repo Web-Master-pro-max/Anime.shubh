@@ -1683,10 +1683,26 @@
             <div id="bannerPanel" class="content-panel">
                 <div class="panel-header">
                     <h2 class="panel-title">Customize Homepage Banner Slideshow</h2>
-                    <p class="panel-desc">Manage featured homepage slider entries, customize layout backdrops, and write
-                        synapse overrides</p>
+                    <p class="panel-desc">Curate and manage featured anime and shows for the homepage carousel. The first slide (#1) is permanently reserved for the Spotlight Banner.</p>
                 </div>
 
+                <!-- Spotlight Banner Architecture Info Banner -->
+                <div style="margin-bottom: 25px; padding: 18px 22px; background: linear-gradient(135deg, rgba(255, 80, 110, 0.12) 0%, rgba(0, 238, 252, 0.08) 100%); border: 1px solid rgba(255, 80, 110, 0.35); border-radius: var(--radius-sm); display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 80, 110, 0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #ff506e; flex-shrink: 0; box-shadow: 0 0 15px rgba(255, 80, 110, 0.4);">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0 0 4px 0; font-size: 1.45rem; font-weight: 800; color: #fff; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
+                            <span>HOMEPAGE SPOTLIGHT BANNER ARCHITECTURE</span>
+                            <span style="font-size: 1.1rem; padding: 2px 8px; border-radius: 9999px; background: rgba(255, 80, 110, 0.25); color: #ff506e; border: 1px solid rgba(255, 80, 110, 0.4); font-weight: 800;">SLIDE #1 RESERVED</span>
+                        </h4>
+                        <p style="margin: 0; font-size: 1.25rem; color: #c4c4c4; line-height: 1.4;">
+                            The <strong>first banner (Slide #1)</strong> on the homepage is permanently reserved for your primary <strong>Spotlight Banner</strong>. You can feature anime directly from the live Anime Catalog or Local Shows, and set any slide as the Spotlight banner with 1 click.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Global Slide Timing Settings -->
                 <div class="card" style="margin-bottom: 30px; padding: 25px;">
                     <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--success);"><i
                             class="fas fa-cog"></i> Global Banner Settings</h3>
@@ -1701,67 +1717,166 @@
                     </form>
                 </div>
 
+                <!-- Feature & Override Banner Form -->
                 <div class="card" style="margin-bottom: 30px; padding: 25px;">
-                    <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--primary);"><i
-                            class="fas fa-edit"></i> Feature & Override Anime Show</h3>
+                    <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 16px; color: var(--primary);"><i
+                            class="fas fa-edit"></i> Add & Customize Banner Slide</h3>
+                    <p style="color: var(--gray-text); font-size: 1.25rem; margin-bottom: 20px;">
+                        Select whether to feature an anime from the Anime Catalog (AniList / LunarX) or a show from your local library.
+                    </p>
+
+                    <!-- Source Selector Mode Switch -->
+                    <div style="display: flex; gap: 12px; margin-bottom: 22px;">
+                        <button type="button" id="tabBannerAnime" class="banner-mode-tab active" onclick="switchBannerSource('anime')" style="flex: 1; padding: 12px 20px; border-radius: var(--radius-sm); border: 1px solid var(--primary); background: rgba(255, 80, 110, 0.15); color: #fff; font-weight: 700; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: all 0.2s;">
+                            <i class="fas fa-tv" style="color: var(--primary);"></i> Feature Anime (LunarX / AniList Catalog)
+                        </button>
+                        <button type="button" id="tabBannerShow" class="banner-mode-tab" onclick="switchBannerSource('show')" style="flex: 1; padding: 12px 20px; border-radius: var(--radius-sm); border: 1px solid var(--gray-border); background: var(--surface-bright); color: var(--gray-text); font-weight: 700; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: all 0.2s;">
+                            <i class="fas fa-film"></i> Feature Local Show (Database Library)
+                        </button>
+                    </div>
+
                     <form id="customizeBannerForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="bannerShowSelect">Select Anime / Show</label>
-                                <select id="bannerShowSelect" required>
-                                    <option value="">-- Choose Anime --</option>
-                                </select>
+                        <!-- Mode 1: Anime Catalog Search Section -->
+                        <div id="animeSourceSection">
+                            <div class="form-group" style="position: relative;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <label for="bannerAnimeSearch" style="margin-bottom: 0;">Search Anime by Title or AniList ID</label>
+                                    <button type="button" id="btnQuickTrending" onclick="loadTrendingAnimeForBanner()" style="background: rgba(0, 238, 252, 0.12); border: 1px solid rgba(0, 238, 252, 0.35); color: #00eefc; border-radius: 4px; padding: 4px 10px; font-size: 1.15rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-fire"></i> Quick Pick from Trending
+                                    </button>
+                                </div>
+                                <div style="position: relative;">
+                                    <input type="text" id="bannerAnimeSearch" placeholder="Type anime name (e.g. Solo Leveling, Demon Slayer, Jujutsu Kaisen)..." autocomplete="off" style="width: 100%; padding-right: 40px;">
+                                    <span id="bannerAnimeSearchSpinner" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); display: none; color: var(--primary);">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                    </span>
+                                </div>
+                                <!-- Dropdown autocomplete list -->
+                                <div id="bannerAnimeSearchResults" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #161616; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; max-height: 320px; overflow-y: auto; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.85); margin-top: 4px;"></div>
                             </div>
 
+                            <!-- Selected Anime Preview Card -->
+                            <div id="selectedAnimeCard" style="display: none; margin-bottom: 20px; padding: 15px; border-radius: 8px; background: rgba(0, 238, 252, 0.06); border: 1px solid rgba(0, 238, 252, 0.35); align-items: center; gap: 15px;">
+                                <img id="selectedAnimeCover" src="" style="width: 52px; height: 75px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0;" onerror="this.src='Postes/spyfamS3p.jpg';">
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <span id="selectedAnimeTitle" style="font-size: 1.45rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px;"></span>
+                                        <span id="selectedAnimeIdBadge" style="font-size: 1.1rem; padding: 2px 7px; border-radius: 4px; background: rgba(0, 238, 252, 0.2); color: #00eefc; font-family: monospace; font-weight: 700;"></span>
+                                    </div>
+                                    <div id="selectedAnimeSubtitle" style="font-size: 1.2rem; color: var(--gray-text); margin-top: 3px;"></div>
+                                    <div id="selectedAnimeMeta" style="font-size: 1.15rem; color: #00eefc; margin-top: 4px; display: flex; gap: 12px;"></div>
+                                </div>
+                                <button type="button" id="btnClearSelectedAnime" onclick="clearSelectedAnime()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--gray-text); padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-times"></i> Change
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Mode 2: Local Shows Selection Section -->
+                        <div id="showSourceSection" style="display: none;">
                             <div class="form-group">
-                                <label for="bannerTitleOverride">Custom Title Override (Optional)</label>
+                                <label for="bannerShowSelect">Select Anime / Show from Database Library</label>
+                                <select id="bannerShowSelect">
+                                    <option value="">-- Choose Anime / Show --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Common Metadata & Custom Overrides -->
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="bannerTitleOverride">Custom Title Display (Optional)</label>
                                 <input type="text" id="bannerTitleOverride"
                                     placeholder="Leave blank to use original title">
                             </div>
 
-                            <div class="form-group full-width">
-                                <label for="bannerDescOverride">Custom Synopsis / Description Override
-                                    (Optional)</label>
-                                <textarea id="bannerDescOverride"
-                                    placeholder="Enter brief synopsis overlay that renders beautifully on the banner slide..."
-                                    style="height: 100px;"></textarea>
+                            <div class="form-group">
+                                <label for="bannerBadgeOverride">Custom Badge / Tag (Optional)</label>
+                                <input type="text" id="bannerBadgeOverride"
+                                    placeholder="e.g. 4K UHD, SIMULCAST, EXCLUSIVE">
                             </div>
 
                             <div class="form-group full-width">
-                                <label>Upload Custom Banner Backdrop (Large Landscape Image or Video - Stored to
-                                    S3)</label>
+                                <label for="bannerDescOverride">Custom Synopsis / Description Override (Optional)</label>
+                                <textarea id="bannerDescOverride"
+                                    placeholder="Enter brief synopsis overlay that renders beautifully on the banner slide..."
+                                    style="height: 85px;"></textarea>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Custom Banner Backdrop Image / Video (Optional - Stored to S3)</label>
                                 <div class="file-upload-wrapper">
                                     <i class="fas fa-photo-film"></i>
-                                    <p id="bannerCustomLabel">Drag & drop landscape backdrop image/video or click to
-                                        select</p>
+                                    <p id="bannerCustomLabel">Drag &amp; drop landscape backdrop image/video or click to select</p>
                                     <input type="file" id="bannerCustomFile" accept="image/*,video/*">
                                 </div>
+                                <small style="color: var(--gray-text); display: block; margin-top: 6px;">
+                                    For anime, the official high-resolution banner image from the catalog is used automatically if no custom file is uploaded.
+                                </small>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn-submit" id="btnFeatureSubmit" style="margin-top: 15px;"><i
-                                class="fas fa-save"></i> Save & Feature Show</button>
+                        <!-- Spotlight Banner Reservation Option -->
+                        <div style="margin: 20px 0; padding: 18px 20px; background: rgba(255, 80, 110, 0.08); border: 1px solid rgba(255, 80, 110, 0.35); border-radius: var(--radius-sm);">
+                            <label style="display: flex; align-items: flex-start; gap: 14px; cursor: pointer; user-select: none;">
+                                <input type="checkbox" id="bannerIsSpotlight" style="width: 20px; height: 20px; margin-top: 3px; accent-color: var(--primary);">
+                                <div>
+                                    <div style="font-size: 1.4rem; font-weight: 800; color: #ff506e; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-crown"></i> Reserve as Spotlight Banner (Slide #1 on Homepage)
+                                    </div>
+                                    <p style="margin: 4px 0 0 0; font-size: 1.2rem; color: #b8b8b8; line-height: 1.4;">
+                                        Checking this permanently assigns this banner to <strong>Slide #1</strong> on the homepage as the primary Spotlight presentation, followed by your other featured slideshow entries.
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Hidden fields to hold anime metadata -->
+                        <input type="hidden" id="bannerAnimeAnilistId" value="">
+                        <input type="hidden" id="bannerAnimePosterUrl" value="">
+                        <input type="hidden" id="bannerAnimeBannerUrl" value="">
+                        <input type="hidden" id="bannerAnimeRating" value="">
+                        <input type="hidden" id="bannerAnimeYear" value="">
+
+                        <button type="submit" class="btn-submit" id="btnFeatureSubmit" style="margin-top: 15px; padding: 14px 28px; font-size: 1.35rem; width: 100%;">
+                            <i class="fas fa-plus-circle"></i> Add to Homepage Slideshow
+                        </button>
                     </form>
                 </div>
 
+                <!-- Active Carousel Slides Table -->
                 <div class="card" style="padding: 25px;">
-                    <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--secondary);"><i
-                            class="fas fa-images"></i> Active Homepage Carousel Slides</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="font-size: 1.6rem; font-weight: 700; color: var(--secondary); margin-bottom: 4px;">
+                                <i class="fas fa-images"></i> Active Homepage Carousel Slides
+                            </h3>
+                            <p style="font-size: 1.2rem; color: var(--gray-text); margin: 0;">
+                                Slide #1 is permanently the <strong>Spotlight Banner</strong>. You can reorder slides or click "Set as Spotlight" on any slide.
+                            </p>
+                        </div>
+                        <button type="button" onclick="loadBannerCustomizer()" style="background: var(--surface-bright); border: 1px solid var(--gray-border); color: #fff; padding: 7px 15px; border-radius: 4px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-sync-alt"></i> Refresh List
+                        </button>
+                    </div>
+
                     <div class="table-responsive">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Show Title</th>
-                                    <th>Rating / Year</th>
-                                    <th>Poster Backdrop</th>
-                                    <th>Banner Backdrop</th>
-                                    <th>Actions</th>
+                                    <th style="width: 140px;">Position</th>
+                                    <th style="width: 100px;">Type</th>
+                                    <th>Title &amp; Meta</th>
+                                    <th style="width: 70px;">Poster</th>
+                                    <th style="width: 130px;">Banner Backdrop</th>
+                                    <th style="width: 150px;">Spotlight Status</th>
+                                    <th style="width: 160px;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="featuredBannerList">
                                 <tr>
-                                    <td colspan="5" style="text-align: center; color: var(--gray-text);">No active
-                                        banner slideshow entries. Use the form above to feature shows!</td>
+                                    <td colspan="7" style="text-align: center; color: var(--gray-text);">No active
+                                        banner slideshow entries. Use the form above to feature anime or shows!</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1976,10 +2091,6 @@
     </div>
 
     <!-- ====== SCRIPTS ====== -->
-
-
-    </div>
-    </main>
 
     <!-- =========================================================================
        EXISTING MODALS (100% Intact with Restyled Glassmorphism)
