@@ -37,7 +37,8 @@
   bottom: 80px;
   right: 24px;
   z-index: 45;
-  display: none; /* Only shown when user is in watch party AND is the host */
+  display: none;
+  /* Only shown when user is in watch party AND is the host */
   align-items: center;
   gap: 6px;
   background: rgba(14, 14, 28, 0.75);
@@ -219,13 +220,16 @@
     transform: translateY(0) scale(0.4) rotate(0deg);
     opacity: 0;
   }
+
   15% {
     transform: translateY(-40px) scale(1.25) rotate(var(--rot, 0deg));
     opacity: 1;
   }
+
   75% {
     opacity: 0.9;
   }
+
   100% {
     transform: translateY(-380px) scale(0.95) rotate(calc(var(--rot, 0deg) * 2));
     opacity: 0;
@@ -939,7 +943,8 @@
 }
 
 /* 2. Small Screen & Mobile Landscape: Right-docked scrollable panel (Matches Screenshot) */
-@media (max-height: 600px), (orientation: landscape) and (max-height: 650px) {
+@media (max-height: 600px),
+(orientation: landscape) and (max-height: 650px) {
   .watch-party-drawer {
     position: absolute !important;
     top: 0 !important;
@@ -1220,4 +1225,3 @@
 .player-wrapper.pseudo-fullscreen .watch-party-drawer {
   z-index: 1000000 !important;
 }
-

@@ -26,11 +26,11 @@
       if (AudioContextClass) {
         try {
           audioCtx = new AudioContextClass();
-        } catch (e) {}
+        } catch (e) { }
       }
     }
     if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume().catch(() => {});
+      audioCtx.resume().catch(() => { });
     }
   }
 
@@ -44,11 +44,11 @@
       if (AudioContextClass) {
         try {
           audioCtx = new AudioContextClass();
-        } catch (e) {}
+        } catch (e) { }
       }
     }
     if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume().catch(() => {});
+      audioCtx.resume().catch(() => { });
     }
     return audioCtx;
   }
@@ -205,21 +205,24 @@
           currentUser = rawName.charAt(0).toUpperCase() + rawName.slice(1);
         }
       }
-    } catch (e) {}
+    } catch (e) { }
 
-    // 1. Inject Watch Party Button in Control Bar
-    const fullscreenBtn = controlsButtons.querySelector('.fullscreen-btn');
-    const partyBtn = document.createElement('button');
-    partyBtn.className = 'control-btn party-btn';
-    partyBtn.id = 'watch-party-btn';
-    partyBtn.setAttribute('aria-label', 'Watch Party');
-    partyBtn.setAttribute('title', 'Watch Party (Watch with Friends)');
-    partyBtn.innerHTML = '<i class="fas fa-users"></i>';
+    // 1. Resolve or Inject Watch Party Button in Control Bar
+    let partyBtn = document.getElementById('watch-party-btn');
+    if (!partyBtn) {
+      partyBtn = document.createElement('button');
+      partyBtn.className = 'control-btn party-btn watch-party-btn p-2 rounded-full text-on-surface hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors cursor-pointer';
+      partyBtn.id = 'watch-party-btn';
+      partyBtn.setAttribute('aria-label', 'Watch Party');
+      partyBtn.setAttribute('title', 'Watch Party (Watch with Friends)');
+      partyBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">group</span>';
 
-    if (fullscreenBtn) {
-      controlsButtons.insertBefore(partyBtn, fullscreenBtn);
-    } else {
-      controlsButtons.appendChild(partyBtn);
+      const fullscreenBtn = controlsButtons.querySelector('.fullscreen-btn');
+      if (fullscreenBtn && fullscreenBtn.parentNode) {
+        fullscreenBtn.parentNode.insertBefore(partyBtn, fullscreenBtn);
+      } else {
+        controlsButtons.appendChild(partyBtn);
+      }
     }
 
     // 2. Inject Floating Reactions Bar & Hype Pin Button into Player
@@ -528,15 +531,23 @@
       drawer.classList.add('open');
       backdrop.classList.add('active');
       document.body.classList.add('party-drawer-active');
+      ensureSocket();
     }
 
-    partyBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
+    function togglePartyDrawer(e) {
+      if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
       if (drawer.classList.contains('open')) {
         closePartyDrawer();
       } else {
         openPartyDrawer();
       }
+    }
+
+    if (partyBtn) {
+      partyBtn.addEventListener('click', togglePartyDrawer);
+    }
+    document.querySelectorAll('#watch-party-btn, .watch-party-btn, .party-btn').forEach(btn => {
+      btn.addEventListener('click', togglePartyDrawer);
     });
 
     document.getElementById('partyCloseDrawer').addEventListener('click', closePartyDrawer);
@@ -952,6 +963,23 @@
 
     // 12. Connect Socket.io
     function ensureSocket() {
+      if (typeof io !== 'function') {
+        if (!window.__socketIoLoading) {
+          window.__socketIoLoading = true;
+          const s = document.createElement('script');
+          s.src = 'https://cdn.socket.io/4.7.5/socket.io.min.js';
+          s.onload = () => {
+            window.__socketIoLoading = false;
+            ensureSocket();
+          };
+          s.onerror = () => {
+            window.__socketIoLoading = false;
+            console.warn('[WatchParty] Socket.IO CDN failed to load.');
+          };
+          document.head.appendChild(s);
+        }
+        return;
+      }
       if (!socket && typeof io === 'function') {
         const isVercel = window.location.hostname.includes('vercel.app') || window.location.protocol === 'https:';
         socket = io(window.location.origin, {
@@ -974,7 +1002,7 @@
           }
 
           if (action === 'play') {
-            video.play().catch(() => {});
+            video.play().catch(() => { });
             showToast(`${sender} played ▶`);
           } else if (action === 'pause') {
             video.pause();
@@ -998,7 +1026,7 @@
             video.currentTime = time;
           }
           if (action === 'play') {
-            video.play().catch(() => {});
+            video.play().catch(() => { });
           } else {
             video.pause();
           }
@@ -1039,7 +1067,7 @@
           }
 
           if (isPlaying && video.paused) {
-            video.play().catch(() => {});
+            video.play().catch(() => { });
           } else if (!isPlaying && !video.paused) {
             video.pause();
           }
@@ -1120,7 +1148,7 @@
             video.currentTime = info.currentTime;
             lastSyncedTime = info.currentTime;
             if (info.isPlaying) {
-              video.play().catch(() => {});
+              video.play().catch(() => { });
             }
           }
         });
@@ -1305,7 +1333,7 @@
       if (!isRemoteSync && socket && currentPartyId) {
         if (currentControlMode === 'host_only' && !isHost && !hasGrantedTemporaryControl) {
           isRevertingAction = true;
-          video.play().catch(() => {}); // Revert local unauthorized pause
+          video.play().catch(() => { }); // Revert local unauthorized pause
           showToast(`Controls locked by Host (${hostUserName}) 🔒`);
           setTimeout(() => { isRevertingAction = false; }, 200);
           return;

@@ -1,793 +1,1289 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Watch Anime | Infinx Anime</title>
-
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/video-player/style.css">
-  <link rel="stylesheet" href="/video-player/watch-party.css">
-
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover"
+    name="viewport" />
+  <meta content="web_standard" name="shell-type" />
+  <meta content="Watch anime episodes in theatre-grade 4K UHD, HDR10+, and uncompressed Dolby audio on Infinx Cinema."
+    name="description" />
+  <title>Cinema Player | Infinx Anime</title>
 
   <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap"
+    rel="stylesheet" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <!-- hls.js library for HLS playback -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
+  <!-- Player Stylesheets -->
+  <link rel="stylesheet" href="/video-player/style.css" />
+  <link rel="stylesheet" href="/video-player/watch-party.css" />
 
-  <!-- Apple Touch Icon -->
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/732/732228.png">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "error-container": "#93000a",
+            "primary-fixed": "#ffdadb",
+            "outline": "#ae8789",
+            "on-tertiary-container": "#340080",
+            "primary-fixed-dim": "#ffb2b8",
+            "tertiary-container": "#a078ff",
+            "secondary": "#d3fbff",
+            "on-surface": "#e2e2e2",
+            "on-background": "#e2e2e2",
+            "tertiary-fixed-dim": "#d0bcff",
+            "on-primary": "#67001d",
+            "primary-container": "#ff506e",
+            "background": "#131313",
+            "on-secondary": "#00363a",
+            "on-tertiary-fixed": "#23005c",
+            "surface": "#131313",
+            "on-primary-fixed-variant": "#91002d",
+            "surface-tint": "#ffb2b8",
+            "surface-container-lowest": "#0e0e0e",
+            "on-secondary-container": "#00686f",
+            "on-primary-fixed": "#40000f",
+            "secondary-fixed-dim": "#00dbe9",
+            "inverse-on-surface": "#303030",
+            "inverse-primary": "#be003d",
+            "on-error": "#690005",
+            "surface-dim": "#131313",
+            "on-surface-variant": "#e8bcbe",
+            "tertiary-fixed": "#e9ddff",
+            "error": "#ffb4ab",
+            "surface-variant": "#353535",
+            "primary": "#ffb2b8",
+            "secondary-container": "#00eefc",
+            "surface-container-high": "#2a2a2a",
+            "on-tertiary": "#3c0091",
+            "surface-container-low": "#1b1b1b",
+            "inverse-surface": "#e2e2e2",
+            "outline-variant": "#5e3e41",
+            "surface-container-highest": "#353535",
+            "on-error-container": "#ffdad6",
+            "surface-container": "#1f1f1f",
+            "on-primary-container": "#5b0018",
+            "on-secondary-fixed-variant": "#004f54",
+            "surface-bright": "#393939",
+            "tertiary": "#d0bcff",
+            "on-secondary-fixed": "#002022",
+            "secondary-fixed": "#7df4ff",
+            "on-tertiary-fixed-variant": "#5516be"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xl": "2.5rem",
+            "space-md": "1rem",
+            "margin-mobile": "1rem",
+            "margin": "3rem",
+            "gutter": "1.5rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem"
+          },
+          fontFamily: {
+            "label-md": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "headline-lg": ["Outfit", "sans-serif"],
+            "headline-sm": ["Outfit", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"],
+            "label-lg": ["Inter", "sans-serif"],
+            "display-hero": ["Outfit", "sans-serif"],
+            "display-hero-mobile": ["Outfit", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "headline-lg-mobile": ["Outfit", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "headline-md": ["Outfit", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
 
-  <!-- Android Theme Color -->
-  <meta name="theme-color" content="#e50914">
+  <style>
+    @layer base {
 
-  <!-- Mobile & iOS Meta Tags -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #0e0e0e;
+        color: #e2e2e2;
+        font-family: 'Inter', sans-serif;
+      }
+
+      body {
+        overscroll-behavior: none;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0e0e0e;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00eefc;
+    }
+
+    /* Player Container Layout */
+    .cinema-layout-container {
+      width: 100%;
+      max-width: 1680px;
+      margin: 0 auto;
+      padding: 0 24px 80px 24px;
+    }
+
+    /* Ensure video-player styling is seamless */
+    .video-player-wrapper {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 238, 252, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .video-player {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #main-video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+      display: block;
+    }
+
+    /* Glass Panels */
+    .glass-card {
+      background: rgba(25, 25, 30, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+    }
+  </style>
 </head>
 
-<body>
-  <!-- Header -->
-  <header class="site-header">
-    <div class="header-container">
-      <a href="/index.html" class="logo">
-        <i class="fas fa-infinity"></i>
-        <span class="logo-text">Infinx <span class="logo-pro">Anime</span></span>
-      </a>
+<body
+  class="bg-surface-container-lowest font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen">
 
-      <!-- Mobile Menu Button -->
-      <button class="mobile-menu-btn" aria-label="Toggle menu">
-        <i class="fas fa-bars"></i>
-      </button>
+  <!-- =========================================================================
+       FIXED CYBERPUNK CINEMA HEADER
+       ========================================================================= -->
+  <header
+    class="fixed top-0 left-0 right-0 z-50 w-full bg-surface-container-lowest/80 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.85)] border-b border-surface-container-high/40"
+    id="siteHeader">
+    <div class="h-20 w-full px-gutter flex items-center justify-between gap-space-md">
+      <!-- Brand Logo & Navigation -->
+      <div class="flex items-center gap-space-lg flex-shrink-0">
+        <a class="flex items-center gap-space-sm group" href="/index.html">
+          <div
+            class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container-high/80 shadow-[0_0_18px_rgba(0,238,252,0.4)] group-hover:shadow-[0_0_24px_rgba(0,238,252,0.6)] transition-all duration-300">
+            <svg class="w-6 h-6 transform -rotate-12 group-hover:scale-110 transition-transform duration-300"
+              fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18.178 8c-1.38 0-2.61.644-3.414 1.645C13.606 8.167 11.758 7 9.5 7 5.91 7 3 9.91 3 13.5S5.91 20 9.5 20c2.258 0 4.106-1.167 5.264-2.645C15.568 18.356 16.798 19 18.178 19 20.84 19 23 16.84 23 14.178c0-2.662-2.16-4.178-4.822-4.178zm-8.678 9.5c-2.206 0-4-1.794-4-4s1.794-4 4-4c1.862 0 3.398 1.282 3.824 3.013a5.55 5.55 0 0 1 0 1.974c-.426 1.731-1.962 3.013-3.824 3.013zm8.678-1c-1.396 0-2.533-.946-2.85-2.23a4.015 4.015 0 0 1 0-1.54c.317-1.284 1.454-2.23 2.85-2.23 1.556 0 2.822 1.266 2.822 2.822 0 1.556-1.266 2.822-2.822 2.822z"
+                fill="#00eefc"></path>
+              <circle cx="9.5" cy="13.5" fill="#ff506e" r="1.5"></circle>
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span
+              class="font-headline-sm text-headline-sm tracking-wider font-extrabold text-secondary-container drop-shadow-[0_0_12px_rgba(0,238,252,0.6)]">
+              INFINX<span class="text-primary-container drop-shadow-[0_0_12px_rgba(255,80,110,0.6)] ml-1">ANIME</span>
+            </span>
+            <span class="font-label-sm text-label-sm tracking-widest uppercase text-outline">Samosa Labs</span>
+          </div>
+        </a>
 
-      <nav class="header-nav">
-        <a href="/index.html"><i class="fas fa-home"></i> <span class="nav-text">Home</span></a>
-        <a href="/view.html#watchlist"><i class="fas fa-heart"></i> <span class="nav-text">Watchlist</span></a>
-        <a href="/view.html#history"><i class="fas fa-history"></i> <span class="nav-text">History</span></a>
-        <a href="/profile.html"><i class="fas fa-user-ninja"></i> <span class="nav-text">Profile</span></a>
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Search anime..." aria-label="Search anime">
-          <i class="fas fa-search" id="searchIcon"></i>
+        <!-- Desktop Navigation Bar -->
+        <nav
+          class="hidden xl:flex items-center gap-space-xs p-1 rounded-full bg-surface-container-lowest/60 backdrop-blur-md">
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="/index.html">Home</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="/anime.html">Catalog / Browse</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="/view.html">Watchlist &amp; Hub</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="/download.html">Get App</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="/profile.html">Otaku Passport</a>
+          <a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-200"
+            href="/admin.html">Admin Studio</a>
+        </nav>
+      </div>
+
+      <!-- Live Search Box with Key Shortcut -->
+      <div class="flex-1 max-w-md mx-space-md hidden md:block relative">
+        <div class="relative flex items-center w-full">
+          <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none"
+            id="searchIcon">search</span>
+          <input id="searchInput"
+            class="w-full pl-11 pr-14 py-2 bg-surface-container-low/90 backdrop-blur-xl rounded-full font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-secondary-container focus:shadow-[0_0_20px_rgba(0,238,252,0.3)] transition-all"
+            placeholder="Search anime, studios, 4K releases..." type="text" />
+          <div
+            class="absolute right-3 px-2 py-0.5 rounded bg-surface-container-highest/80 font-label-sm text-label-sm text-on-surface-variant shadow-inner pointer-events-none">
+            ⌘K</div>
         </div>
-      </nav>
+      </div>
+
+      <!-- Hidden hook for mobile search input to protect existing JS -->
+      <input type="hidden" id="mobileSearchInput" />
+      <span id="mobileSearchIcon" style="display: none;"></span>
+
+      <!-- Right Action Cluster -->
+      <div class="flex items-center gap-space-md flex-shrink-0">
+        <a class="relative hidden sm:inline-flex items-center gap-space-xs px-3.5 py-1.5 rounded-full bg-surface-container-low text-primary shadow-[0_0_14px_rgba(255,80,110,0.35)] hover:bg-primary-container hover:text-on-primary-container transition-all duration-200 group"
+          href="/view.html#vip">
+          <span
+            class="material-symbols-outlined text-[16px] text-primary group-hover:text-on-primary-container">local_fire_department</span>
+          <span class="font-label-sm text-label-sm tracking-wider uppercase font-bold">VIP PASS</span>
+        </a>
+
+        <button
+          class="relative hidden p-2 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all"
+          title="Notifications" style="display: none !important;">
+          <span class="material-symbols-outlined text-[22px]">notifications</span>
+          <span
+            class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_#ff506e]"></span>
+        </button>
+
+        <a class="relative p-0.5 rounded-full shadow-[0_0_12px_rgba(0,238,252,0.5)] bg-secondary-container hover:scale-105 transition-transform"
+          href="/profile.html">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+        </a>
+      </div>
     </div>
   </header>
 
-  <!-- Mobile Navigation Menu -->
-  <div class="mobile-nav-overlay"></div>
-  <div class="mobile-nav">
-    <div class="mobile-nav-header">
-      <h3>Menu</h3>
-      <button class="mobile-nav-close" aria-label="Close menu">
-        <i class="fas fa-times"></i>
-      </button>
+  <!-- =========================================================================
+       MAIN CINEMA STAGE (70 / 30 LAYOUT)
+       ========================================================================= -->
+  <main class="w-full pt-24 bg-surface-container-lowest min-h-screen">
+    <!-- Subtle Ambient Glow Fields -->
+    <div
+      class="pointer-events-none fixed -top-10 left-10 w-[720px] h-[520px] rounded-full bg-primary-container/15 blur-[140px] -z-10">
     </div>
-    <div class="mobile-nav-items">
-      <div class="search-box" style="margin-bottom: 20px; width: 100%;">
-        <input type="text" id="mobileSearchInput" placeholder="Search anime..." aria-label="Search anime">
-        <i class="fas fa-search" id="mobileSearchIcon"></i>
-      </div>
-      <a href="/index.html"><i class="fas fa-home"></i> Home</a>
-      <a href="/view.html#watchlist"><i class="fas fa-heart"></i> Watchlist</a>
-      <a href="/view.html#history"><i class="fas fa-history"></i> History</a>
-      <a href="/profile.html"><i class="fas fa-user-ninja"></i> Profile</a>
-    </div>
-  </div>
-
-  <!-- Main Container -->
-  <div class="container">
-    <!-- Main Video Player -->
-    <div class="main-video-container">
-      <div class="video-player-wrapper">
-        <!-- Video Player -->
-        <div class="video-player">
-          <!-- Video element WITHOUT native controls -->
-          <video id="main-video" playsinline webkit-playsinline></video>
-
-          <!-- Animated Anime Video Player Loader Overlay -->
-          <div id="playerLoadingOverlay" class="player-loading-overlay active">
-            <div class="player-loader-content">
-              <div class="player-loader-spinner-wrapper">
-                <div class="loader-ring loader-ring-outer"></div>
-                <div class="loader-ring loader-ring-inner"></div>
-                <div class="loader-core-pulse">
-                  <i class="fas fa-play loader-core-icon"></i>
-                </div>
-              </div>
-              <div class="player-loader-text-group">
-                <h4 id="playerLoadingTitle" class="player-loader-title">Loading Episode...</h4>
-                <p id="playerLoadingSubtitle" class="player-loader-subtitle">Connecting to high-speed stream</p>
-                <div class="player-loader-bar">
-                  <div class="player-loader-bar-fill"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Autoplay Muted Recovery Banner -->
-          <div id="playerUnmuteBanner" class="player-unmute-banner hidden">
-            <button id="playerUnmuteBtn" class="player-unmute-btn" type="button" aria-label="Unmute audio">
-              <i class="fas fa-volume-mute"></i>
-              <span>Click to Unmute Audio 🔊</span>
-            </button>
-          </div>
-
-          <!-- Strict Autoplay Click-to-Play Overlay Fallback -->
-          <div id="playerClickToPlayOverlay" class="player-click-to-play-overlay hidden">
-            <button id="playerClickToPlayBtn" class="player-click-play-btn" type="button" aria-label="Play Episode">
-              <div class="player-click-play-icon">
-                <i class="fas fa-play"></i>
-              </div>
-              <span class="player-click-play-text">Click to Play</span>
-            </button>
-          </div>
-
-          <!-- Custom Video Controls -->
-          <div class="custom-controls">
-            <div class="progress-bar-container">
-              <div class="progress-bar">
-                <div class="progress-buffered"></div>
-                <!-- Timeline Skip Zone Markers (Opening & Ending Theme Highlights) -->
-                <div class="timeline-zone-marker intro-zone-marker" id="timeline-intro-marker" style="display: none;">
-                </div>
-                <div class="timeline-zone-marker outro-zone-marker" id="timeline-outro-marker" style="display: none;">
-                </div>
-                <div class="progress">
-                  <div class="progress-knob"></div>
-                </div>
-                <div class="progress-hover-time">0:00</div>
-              </div>
-            </div>
-            <div class="control-buttons">
-              <!-- Previous Button -->
-              <button class="control-btn prev-btn" aria-label="Previous episode">
-                <i class="fas fa-step-backward"></i>
-              </button>
-              <!-- Rewind 10s -->
-              <button class="control-btn rewind-10" aria-label="Rewind 10s">
-                <i class="fas fa-undo"></i>
-              </button>
-
-              <button class="control-btn play-pause" aria-label="Play/Pause">
-                <i class="fas fa-play"></i>
-              </button>
-
-              <!-- Forward 10s -->
-              <button class="control-btn forward-10" aria-label="Forward 10s">
-                <i class="fas fa-redo"></i>
-              </button>
-
-              <!-- Next Button -->
-              <button class="control-btn next-btn" aria-label="Next episode">
-                <i class="fas fa-step-forward"></i>
-              </button>
-
-              <div class="time-display">
-                <span class="current-time">0:00</span> / <span class="duration">0:00</span>
-              </div>
-
-              <div class="volume-container">
-                <button class="control-btn volume-btn" aria-label="Volume">
-                  <i class="fas fa-volume-up"></i>
-                </button>
-                <div class="volume-slider">
-                  <input type="range" min="0" max="100" value="100" class="volume-range" aria-label="Volume slider">
-                </div>
-              </div>
-
-              <!-- Auto Next Checkbox -->
-              <div class="auto-next-container">
-                <input type="checkbox" id="auto-next" class="auto-next-checkbox" checked>
-                <label for="auto-next" class="auto-next-label" title="Auto play next episode">
-                  <i class="fas fa-forward"></i>
-                </label>
-              </div>
-
-              <div class="settings-menu" id="player-settings-menu">
-                <button class="control-btn settings-btn" id="player-settings-btn" aria-label="Settings"
-                  title="Playback Settings">
-                  <i class="fas fa-cog"></i>
-                </button>
-              </div>
-
-              <button class="control-btn subtitle-btn" id="player-subtitle-btn" aria-label="Toggle Subtitles"
-                title="Subtitles (CC)">
-                <i class="far fa-closed-captioning"></i>
-              </button>
-
-              <button class="control-btn fit-screen-btn" id="aspect-ratio-toggle-btn"
-                aria-label="Toggle Screen Fit/Fill" title="Screen Fit: Contain / Cover / Stretch">
-                <i class="fas fa-expand-arrows-alt"></i>
-              </button>
-
-              <button class="control-btn episode-drawer-btn" id="episode-drawer-btn" aria-label="Episodes Drawer"
-                title="Episode Playlist Drawer">
-                <i class="fas fa-list-ul"></i>
-              </button>
-
-              <button class="control-btn fullscreen-btn" aria-label="Fullscreen">
-                <i class="fas fa-expand"></i>
-              </button>
-
-            </div>
-          </div>
-
-          <!-- Video Overlay Information -->
-          <div class="video-overlay">
-            <div class="video-info" style="width: 100%;">
-              <h2 class="video-title" id="current-video-title" style="width: 100%;">
-                <span class="skeleton" style="width: 40%; height: 24px; border-radius: 4px;"></span>
-              </h2>
-              <div class="video-meta">
-                <span class="episode"><span class="skeleton"
-                    style="width: 80px; height: 16px; border-radius: 2px;"></span></span>
-                <span class="views"><span class="skeleton"
-                    style="width: 60px; height: 16px; border-radius: 2px;"></span></span>
-                <span class="current-audio-display"><span class="skeleton"
-                    style="width: 100px; height: 16px; border-radius: 2px;"></span></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Mobile Touch Controls -->
-          <div class="mobile-touch-controls">
-            <div class="touch-left" data-action="rewind"></div>
-            <div class="touch-center" data-action="play-pause"></div>
-            <div class="touch-right" data-action="forward"></div>
-          </div>
-
-          <!-- YouTube-Style Double-Tap Seek Ripples -->
-          <div class="seek-ripple-container left-ripple" id="left-seek-ripple">
-            <div class="ripple-circle">
-              <i class="fas fa-undo-alt ripple-icon"></i>
-              <span class="ripple-text" id="left-ripple-text">10 seconds</span>
-              <div class="ripple-chevrons">
-                <i class="fas fa-chevron-left"></i>
-                <i class="fas fa-chevron-left"></i>
-              </div>
-            </div>
-          </div>
-          <div class="seek-ripple-container right-ripple" id="right-seek-ripple">
-            <div class="ripple-circle">
-              <i class="fas fa-redo-alt ripple-icon"></i>
-              <span class="ripple-text" id="right-ripple-text">10 seconds</span>
-              <div class="ripple-chevrons">
-                <i class="fas fa-chevron-right"></i>
-                <i class="fas fa-chevron-right"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- Skip Intro Floating Button -->
-          <button id="skip-intro-btn" class="skip-intro-btn hidden" aria-label="Skip Intro">
-            <i class="fas fa-forward"></i>
-            <span>Skip Intro</span>
-          </button>
-
-          <!-- Undo Skip Toast -->
-          <div id="undo-skip-toast" class="undo-skip-toast hidden" role="status">
-            <span>Skipped Intro</span>
-            <button id="undo-skip-btn" class="undo-skip-btn">Undo</button>
-          </div>
-
-          <!-- Next Episode Outro Countdown Card -->
-          <div id="outro-countdown-card" class="outro-countdown-card hidden">
-            <div class="outro-card-content">
-              <div class="outro-header">
-                <span class="outro-badge"><i class="fas fa-bolt"></i> Up Next</span>
-                <span class="outro-countdown-text" id="outro-countdown-text">in 5s</span>
-              </div>
-              <div class="outro-progress-bar">
-                <div class="outro-progress-fill" id="outro-progress-fill"></div>
-              </div>
-              <div class="outro-ep-info">
-                <img id="outro-next-thumbnail" src="" alt="Next Episode" class="outro-thumbnail"
-                  onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
-                <div class="outro-ep-details">
-                  <h4 id="outro-next-title">Episode 2</h4>
-                  <span id="outro-next-sub">Starting automatically...</span>
-                </div>
-              </div>
-              <div class="outro-actions">
-                <button id="outro-play-btn" class="outro-play-btn"><i class="fas fa-play"></i> Watch Now</button>
-                <button id="outro-cancel-btn" class="outro-cancel-btn"><i class="fas fa-times"></i> Cancel</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Custom caption overlay (JS-rendered for consistent styling across PC & Mobile) -->
-          <div id="caption-overlay" class="caption-overlay" aria-hidden="true"></div>
-
-          <!-- In-Player All-In-One Settings Panel - PC & Mobile Fullscreen Compatible -->
-          <div class="settings-mobile-backdrop" id="settings-mobile-backdrop"></div>
-          <div class="settings-dropdown" id="player-settings-dropdown" aria-label="Playback Settings">
-            <div class="settings-drag-handle"></div>
-
-            <!-- Panel Header -->
-            <div class="settings-all-header">
-              <div class="settings-all-title">
-                <i class="fas fa-sliders-h" style="color: var(--primary);"></i>
-                <span>Playback Settings</span>
-              </div>
-              <button class="settings-panel-close-btn" id="settings-panel-close-btn" aria-label="Close Settings">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-
-            <!-- All-In-One Unified Controls Body -->
-            <div class="settings-all-body custom-scrollbar">
-
-              <!-- 1. Audio Language (Sub / Dub) -->
-              <div class="settings-section" id="settings-section-audio">
-                <div class="settings-section-header">
-                  <span class="settings-section-title"><i class="fas fa-volume-up"></i> Audio Language</span>
-                  <span class="settings-badge" id="settings-audio-badge">Sub</span>
-                </div>
-                <div class="settings-pills-row" id="settings-audio-pills">
-                  <button class="settings-pill active" data-audio-type="sub" id="pill-audio-sub">
-                    <i class="fas fa-closed-captioning"></i> Japanese (Sub)
-                  </button>
-                  <button class="settings-pill" data-audio-type="dub" id="pill-audio-dub">
-                    <i class="fas fa-microphone"></i> English (Dub)
-                  </button>
-                </div>
-              </div>
-
-              <!-- 2. Streaming Server -->
-              <div class="settings-section" id="settings-section-server">
-                <div class="settings-section-header">
-                  <span class="settings-section-title"><i class="fas fa-server"></i> Server</span>
-                  <span class="settings-badge" id="settings-server-badge">Server 1</span>
-                </div>
-                <div class="settings-pills-row" id="settings-server-pills">
-                  <button class="settings-pill active" data-server-id="server-1">Server 1 (HD)</button>
-                  <button class="settings-pill" data-server-id="server-2">Server 2 (Dub/Sub)</button>
-                  <button class="settings-pill" data-server-id="server-3">Server 3 (Backup)</button>
-                  <button class="settings-pill" data-server-id="server-4">Server 4 (Direct)</button>
-                </div>
-              </div>
-
-              <!-- 3. Quality -->
-              <div class="settings-section" id="settings-section-quality">
-                <div class="settings-section-header">
-                  <span class="settings-section-title"><i class="fas fa-layer-group"></i> Quality</span>
-                  <span class="settings-badge" id="settings-quality-badge">Auto</span>
-                </div>
-                <div class="settings-pills-row" id="settings-quality-pills">
-                  <button class="settings-pill active" data-quality="auto">Auto</button>
-                  <button class="settings-pill" data-quality="1080">1080p</button>
-                  <button class="settings-pill" data-quality="720">720p</button>
-                  <button class="settings-pill" data-quality="480">480p</button>
-                  <button class="settings-pill" data-quality="360">360p</button>
-                </div>
-              </div>
-
-              <!-- 4. Playback Speed -->
-              <div class="settings-section" id="settings-section-speed">
-                <div class="settings-section-header">
-                  <span class="settings-section-title"><i class="fas fa-tachometer-alt"></i> Speed</span>
-                  <span class="settings-badge" id="settings-speed-badge">1x</span>
-                </div>
-                <div class="settings-pills-row" id="settings-speed-pills">
-                  <button class="settings-pill" data-speed="0.5">0.5x</button>
-                  <button class="settings-pill" data-speed="0.75">0.75x</button>
-                  <button class="settings-pill active" data-speed="1">1x Normal</button>
-                  <button class="settings-pill" data-speed="1.25">1.25x</button>
-                  <button class="settings-pill" data-speed="1.5">1.5x</button>
-                  <button class="settings-pill" data-speed="2">2x</button>
-                </div>
-              </div>
-
-              <!-- 5. Subtitles -->
-              <div class="settings-section" id="settings-section-subtitles">
-                <div class="settings-section-header">
-                  <span class="settings-section-title"><i class="fas fa-closed-captioning"></i> Subtitles</span>
-                  <button class="settings-inline-btn" id="open-caption-settings" title="Customize Font, Color & Shadow">
-                    <i class="fas fa-palette"></i> Style
-                  </button>
-                </div>
-                <div class="settings-pills-row" id="settings-subtitle-pills">
-                  <button class="settings-pill active" data-subtitle="off">Off</button>
-                </div>
-              </div>
-
-              <!-- 6. Automation & Smart Timeline Skipping -->
-              <div class="settings-section" id="settings-section-automation">
-                <div class="settings-section-header">
-                  <span class="settings-section-title"><i class="fas fa-magic"></i> Automation</span>
-                </div>
-                <div class="settings-toggles-list">
-                  <div class="settings-toggle-row">
-                    <div class="settings-toggle-label-group">
-                      <span class="settings-toggle-name">Auto-Skip Intro (OP)</span>
-                      <span class="settings-toggle-sub">Skip anime opening automatically</span>
-                    </div>
-                    <label class="switch">
-                      <input type="checkbox" id="setting-auto-skip-intro" checked>
-                      <span class="slider round"></span>
-                    </label>
-                  </div>
-
-                  <div class="settings-toggle-row">
-                    <div class="settings-toggle-label-group">
-                      <span class="settings-toggle-name">Auto-Skip Outro (ED)</span>
-                      <span class="settings-toggle-sub">Skip closing credits automatically</span>
-                    </div>
-                    <label class="switch">
-                      <input type="checkbox" id="setting-auto-skip-outro" checked>
-                      <span class="slider round"></span>
-                    </label>
-                  </div>
-
-                  <div class="settings-toggle-row">
-                    <div class="settings-toggle-label-group">
-                      <span class="settings-toggle-name">Auto-Play Next Episode</span>
-                      <span class="settings-toggle-sub">Play next episode when current ends</span>
-                    </div>
-                    <label class="switch">
-                      <input type="checkbox" id="setting-auto-next-episode" checked>
-                      <span class="slider round"></span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- In-Player Episode Drawer -->
-          <div id="in-player-episode-drawer" class="in-player-drawer" aria-hidden="true">
-            <div class="in-player-drawer-backdrop" id="in-player-drawer-backdrop"></div>
-            <div class="in-player-drawer-panel">
-              <div class="drawer-header">
-                <div class="drawer-title-group" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                  <i class="fas fa-list-ol drawer-icon"></i>
-                  <h3>Episodes</h3>
-                  <span class="drawer-count" id="drawer-episode-count">(0)</span>
-                  <div class="drawer-season-selector-wrapper" id="drawerSeasonSelectorWrapper"
-                    style="display: none; margin-left: 6px;">
-                    <select id="drawerSeasonSelect" class="player-season-select" aria-label="Select Season"></select>
-                  </div>
-                </div>
-                <button class="drawer-close-btn" id="drawer-close-btn" aria-label="Close drawer">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-              <div class="drawer-series-progress" id="drawer-series-progress"></div>
-              <div class="drawer-episodes-list" id="drawer-episodes-list"></div>
-            </div>
-          </div>
-
-          <!-- Caption Settings Modal (Inside video-player for full-screen support) -->
-          <div class="caption-settings-modal" id="caption-settings-modal" aria-hidden="true">
-            <div class="caption-settings-panel" role="dialog" aria-modal="true" aria-label="Caption settings">
-              <div class="caption-settings-header">
-                <div class="caption-header-title">
-                  <i class="fas fa-closed-captioning"></i>
-                  <h3>Subtitle & Caption Appearance</h3>
-                </div>
-                <button class="modal-close-icon" id="caption-close-x" aria-label="Close caption settings">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-
-              <!-- Live Subtitle Preview Box -->
-              <div class="caption-live-preview-box">
-                <div class="caption-preview-label">Live Preview</div>
-                <div class="caption-preview-stage" id="caption-preview-stage">
-                  <span class="caption-text style-shadow" id="caption-preview-sample">[Denji] <i>This is how subtitles
-                      will look on screen.</i></span>
-                </div>
-              </div>
-
-              <div class="caption-settings-grid">
-                <div>
-                  <!-- Font Size Preset -->
-                  <div class="caption-settings-row">
-                    <div class="caption-settings-label"><i class="fas fa-text-height"></i> Subtitle Size</div>
-                    <div class="caption-settings-controls">
-                      <select id="caption-font-size-preset">
-                        <option value="small">Small (16px)</option>
-                        <option value="medium" selected>Medium (20px - Default)</option>
-                        <option value="large">Large (25px)</option>
-                        <option value="huge">Huge (30px)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <!-- Text Color Preset -->
-                  <div class="caption-settings-row">
-                    <div class="caption-settings-label"><i class="fas fa-palette"></i> Text Color</div>
-                    <div class="caption-settings-controls">
-                      <select id="caption-text-color-preset">
-                        <option value="#ffffff" selected>White (#ffffff)</option>
-                        <option value="#ffcc00">Yellow (#ffcc00)</option>
-                        <option value="#00f0ff">Cyan (#00f0ff)</option>
-                        <option value="#00ff88">Neon Green (#00ff88)</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <!-- Backdrop & Shadow Style Preset -->
-                  <div class="caption-settings-row">
-                    <div class="caption-settings-label"><i class="fas fa-adjust"></i> Shadow & Outline</div>
-                    <div class="caption-settings-controls">
-                      <select id="caption-backdrop-style-preset">
-                        <option value="shadow" selected>Cinematic Outline (Drop Shadow)</option>
-                        <option value="box">Semi-Translucent Box (75%)</option>
-                        <option value="solid">High-Contrast Solid Box</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <!-- Position Preset -->
-                  <div class="caption-settings-row">
-                    <div class="caption-settings-label"><i class="fas fa-arrows-alt-v"></i> Screen Placement</div>
-                    <div class="caption-settings-controls">
-                      <select id="caption-position-preset">
-                        <option value="bottom" selected>Bottom (Standard)</option>
-                        <option value="raised">Raised (Avoid Video Controls)</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="caption-settings-actions">
-                <button class="reset-btn" id="caption-reset"><i class="fas fa-undo"></i> Reset</button>
-                <button class="done-btn" id="caption-done"><i class="fas fa-check"></i> Apply & Done</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Video Settings Bar -->
-        <div class="video-settings-bar">
-          <div class="settings-left">
-            <div class="server-selector" id="server-selector">
-              <button class="settings-btn server-btn" id="server-btn" title="Choose Streaming Server">
-                <i class="fas fa-server"></i> <span class="btn-text">Server</span> <span class="current-server"
-                  id="current-server-display">Server 1</span> <i class="fas fa-chevron-down"></i>
-              </button>
-              <div class="server-dropdown" id="server-dropdown">
-                <!-- Populated dynamically: Server 1: AWS and Server 2: Laptop -->
-              </div>
-            </div>
-
-            <div class="quality-selector">
-              <button class="settings-btn quality-btn">
-                <i class="fas fa-hd"></i> <span class="btn-text">Quality</span> <span
-                  class="current-quality">Auto</span> <i class="fas fa-chevron-down"></i>
-              </button>
-              <div class="quality-dropdown" id="quality-dropdown">
-                <div class="quality-option active" data-quality="auto">Auto</div>
-              </div>
-            </div>
-
-            <div class="audio-selector">
-              <button class="settings-btn audio-btn" title="Audio Language / Dubbing">
-                <i class="fas fa-volume-up"></i> <span class="btn-text">Audio</span> <span
-                  class="current-audio">Japanese</span> <i class="fas fa-chevron-down"></i>
-              </button>
-              <div class="audio-dropdown" id="audio-dropdown">
-                <!-- Dynamically populated -->
-              </div>
-            </div>
-
-            <div class="subtitle-selector">
-              <button class="settings-btn subtitle-btn" id="footer-subtitle-btn">
-                <i class="fas fa-closed-captioning"></i> <span class="btn-text">Subtitles</span> <span
-                  class="current-subtitle">Off</span> <i class="fas fa-chevron-down"></i>
-              </button>
-              <div class="subtitle-dropdown" id="subtitle-dropdown">
-                <div class="subtitle-option active" data-subtitle="off">
-                  <i class="fas fa-ban"></i> Off
-                </div>
-                <div class="subtitle-option subtitle-style-trigger" id="footer-caption-style-trigger" role="button"
-                  tabindex="0">
-                  <i class="fas fa-palette"></i> Customize Subtitle Style...
-                </div>
-              </div>
-            </div>
-
-            <div class="playback-speed-selector">
-              <button class="settings-btn speed-btn">
-                <i class="fas fa-tachometer-alt"></i> <span class="btn-text">Speed</span> <span
-                  class="current-speed">1x</span> <i class="fas fa-chevron-down"></i>
-              </button>
-              <div class="speed-dropdown">
-                <div class="speed-option" data-speed="0.5">0.5x</div>
-                <div class="speed-option" data-speed="0.75">0.75x</div>
-                <div class="speed-option active" data-speed="1">Normal</div>
-                <div class="speed-option" data-speed="1.25">1.25x</div>
-                <div class="speed-option" data-speed="1.5">1.5x</div>
-                <div class="speed-option" data-speed="2">2x</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="settings-right">
-            <button class="action-btn download-btn">
-              <i class="fas fa-download"></i> <span class="btn-text">Download</span>
-            </button>
-            <button class="action-btn share-btn">
-              <i class="fas fa-share-alt"></i> <span class="btn-text">Share</span>
-            </button>
-            <button class="action-btn favorite-btn">
-              <i class="far fa-heart"></i> <span class="btn-text">Favorite</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Video Description -->
-        <div class="video-description">
-          <h3 class="description-title">Description</h3>
-          <p class="description-text">
-            <span class="skeleton" style="width: 100%; height: 16px; border-radius: 4px; margin-bottom: 6px;"></span>
-            <span class="skeleton" style="width: 70%; height: 16px; border-radius: 4px;"></span>
-          </p>
-
-          <div class="video-tags">
-            <span class="skeleton" style="width: 60px; height: 24px; border-radius: 12px; margin-right: 6px;"></span>
-            <span class="skeleton" style="width: 80px; height: 24px; border-radius: 12px; margin-right: 6px;"></span>
-            <span class="skeleton" style="width: 70px; height: 24px; border-radius: 12px;"></span>
-          </div>
-        </div>
-
-      </div>
+    <div
+      class="pointer-events-none fixed top-40 right-20 w-[480px] h-[480px] rounded-full bg-secondary-container/10 blur-[130px] -z-10">
     </div>
 
-    <!-- Video Playlist -->
-    <div class="video-playlist">
-      <div class="playlist-header">
-        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-          <h3><i class="fas fa-list-ol"></i> Playlist <span class="episode-count">(16 episodes)</span></h3>
-          <div class="player-season-selector-wrapper" id="playerSeasonSelectorWrapper" style="display: none;">
-            <select id="playerSeasonSelect" class="player-season-select" aria-label="Select Season"></select>
-          </div>
-        </div>
-        <div class="playlist-actions">
-          <button class="playlist-btn shuffle-btn" title="Shuffle">
-            <i class="fas fa-random"></i>
-          </button>
-          <button class="playlist-btn autoplay-btn active" title="Autoplay">
-            <i class="fas fa-play-circle"></i>
-          </button>
-        </div>
-      </div>
+    <div class="cinema-layout-container relative z-10">
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
 
-      <!-- Series Progress Card (matching mobile app ShowDetailScreen) -->
-      <div class="series-progress-card" id="series-progress-card" style="display: none;">
-        <div class="series-progress-header">
-          <div class="series-progress-title">
-            <i class="fas fa-chart-line"></i>
-            <span>Watch Progress</span>
-          </div>
-          <span class="series-progress-percent" id="series-progress-percent">0%</span>
-        </div>
-        <div class="series-progress-track">
-          <div class="series-progress-fill" id="series-progress-fill" style="width: 0%;"></div>
-        </div>
-        <div class="series-progress-stats">
-          <div class="stat-chip">
-            <i class="fas fa-layer-group stat-icon stat-total"></i>
-            <div class="stat-content">
-              <span class="stat-label">Total</span>
-              <span class="stat-value" id="stat-total-episodes">0</span>
+        <!-- =====================================================================
+             LEFT COLUMN: VIDEO PLAYER VIEWPORT & METADATA (Col-span-8 approx 70%)
+             ===================================================================== -->
+        <section class="xl:col-span-8 flex flex-col gap-space-md min-w-0">
+
+          <!-- 1. Video Player Viewport Container -->
+          <div class="video-player-wrapper">
+            <!-- Video Player -->
+            <div class="video-player">
+              <!-- Video element WITHOUT native controls -->
+              <video id="main-video" playsinline webkit-playsinline></video>
+
+              <!-- Animated Anime Video Player Loader Overlay -->
+              <div id="playerLoadingOverlay" class="player-loading-overlay active">
+                <div class="player-loader-content">
+                  <div class="player-loader-spinner-wrapper">
+                    <div class="loader-ring loader-ring-outer"></div>
+                    <div class="loader-ring loader-ring-inner"></div>
+                    <div class="loader-core-pulse">
+                      <i class="fas fa-play loader-core-icon"></i>
+                    </div>
+                  </div>
+                  <div class="player-loader-text-group">
+                    <h4 id="playerLoadingTitle" class="player-loader-title">Loading Episode...</h4>
+                    <p id="playerLoadingSubtitle" class="player-loader-subtitle">Connecting to high-speed stream</p>
+                    <div class="player-loader-bar">
+                      <div class="player-loader-bar-fill"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Autoplay Muted Recovery Banner -->
+              <div id="playerUnmuteBanner" class="player-unmute-banner hidden">
+                <button id="playerUnmuteBtn" class="player-unmute-btn" type="button" aria-label="Unmute audio">
+                  <i class="fas fa-volume-mute"></i>
+                  <span>Click to Unmute Audio 🔊</span>
+                </button>
+              </div>
+
+              <!-- Strict Autoplay Click-to-Play Overlay Fallback -->
+              <div id="playerClickToPlayOverlay" class="player-click-to-play-overlay hidden">
+                <button id="playerClickToPlayBtn" class="player-click-play-btn" type="button" aria-label="Play Episode">
+                  <div class="player-click-play-icon">
+                    <i class="fas fa-play"></i>
+                  </div>
+                  <span class="player-click-play-text">Click to Play</span>
+                </button>
+              </div>
+
+              <!-- Top Overlay HUD (Cinema Desktop Animated Redesign) -->
+              <div class="video-top-hud">
+                <div class="flex items-center gap-1.5 sm:gap-space-sm min-w-0">
+                  <button type="button" id="top-hud-back-btn"
+                    class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-on-surface hover:text-secondary-container hover:bg-surface-container-high transition-all cursor-pointer"
+                    onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/anime.html'; }"
+                    title="Go Back">
+                    <span class="material-symbols-outlined text-[18px] sm:text-[20px]">arrow_back</span>
+                  </button>
+                  <div class="flex items-center gap-1 text-body-sm font-body-sm min-w-0">
+                    <span
+                      class="text-on-surface-variant/80 font-label-md text-label-md uppercase tracking-wider hidden sm:inline"
+                      id="top-hud-show-title">Infinx Cinema</span>
+                    <span class="text-outline hidden sm:inline">/</span>
+                    <span
+                      class="text-secondary-container font-headline-sm text-sm sm:text-base font-bold truncate max-w-[150px] sm:max-w-xs"
+                      id="top-hud-ep-title">Episode 1</span>
+                    <span
+                      class="px-2 py-0.5 rounded-full bg-surface-container-highest/80 text-primary font-label-sm text-[10px] sm:text-xs tracking-wider uppercase ml-1">MASTER
+                      4K</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Center Play/Pause Micro Interaction Overlay HUD -->
+              <div class="center-play-overlay" id="center-play-overlay">
+                <div class="center-play-disc">
+                  <span class="material-symbols-outlined text-[36px] translate-x-0.5"
+                    id="center-play-icon">play_arrow</span>
+                </div>
+              </div>
+
+              <!-- Custom Video Controls HUD (Glassphane Bottom Bar) -->
+              <div class="custom-controls">
+                <!-- Time Indicator & Segment Badges Row -->
+                <div class="flex items-center justify-between font-label-sm text-label-sm px-0.5 pb-1">
+                  <div class="flex items-center gap-1.5 font-mono text-xs sm:text-sm">
+                    <span
+                      class="inline-block w-1.5 h-1.5 rounded-full bg-primary-container shadow-[0_0_6px_#ff506e] animate-ping"></span>
+                    <span class="current-time text-on-surface font-semibold tracking-wider">0:00</span>
+                    <span class="text-on-surface-variant/60">/</span>
+                    <span class="duration text-on-surface-variant/60">0:00</span>
+                  </div>
+                  <!-- Segment Badges (OP / ED markers) -->
+                  <div class="flex items-center gap-2">
+                    <span class="intro-badge-pill" id="badge-op-marker" style="display: none;"
+                      title="Seek to Opening">OP</span>
+                    <span class="outro-badge-pill" id="badge-ed-marker" style="display: none;"
+                      title="Seek to Ending">ED</span>
+                  </div>
+                </div>
+
+                <!-- Interactive Scrubber Track -->
+                <div class="progress-bar-container group/scrub">
+                  <div class="progress-bar">
+                    <div class="progress-buffered"></div>
+                    <!-- Timeline Skip Zone Markers (Opening & Ending Theme Highlights) -->
+                    <div class="timeline-zone-marker intro-zone-marker" id="timeline-intro-marker"
+                      style="display: none;" title="Intro Opening"></div>
+                    <div class="timeline-zone-marker outro-zone-marker" id="timeline-outro-marker"
+                      style="display: none;" title="Outro Ending Theme"></div>
+                    <div class="progress">
+                      <div class="progress-knob"></div>
+                    </div>
+                    <div class="progress-hover-time">0:00</div>
+                  </div>
+                </div>
+
+                <!-- Lower Action Transport Controls Row -->
+                <div class="control-buttons flex items-center justify-between gap-1 sm:gap-space-md py-0.5">
+                  <!-- Left Transport Cluster -->
+                  <div class="flex items-center gap-1 sm:gap-2">
+                    <!-- Hero Play/Pause Button -->
+                    <button
+                      class="control-btn play-pause w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-[0_0_20px_rgba(255,80,110,0.7)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                      aria-label="Play / Pause" title="Play / Pause (Space / K)">
+                      <span class="material-symbols-outlined text-[24px]"
+                        style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                    </button>
+                    <!-- Previous Button -->
+                    <button
+                      class="control-btn prev-btn p-1.5 sm:p-2 rounded-full text-on-surface-variant hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors cursor-pointer"
+                      aria-label="Previous episode" title="Previous Episode (P)">
+                      <span class="material-symbols-outlined text-[20px]">skip_previous</span>
+                    </button>
+                    <!-- Rewind 10s -->
+                    <button
+                      class="control-btn rewind-10 p-1.5 sm:p-2 rounded-full text-on-surface-variant hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors cursor-pointer"
+                      aria-label="Rewind 10s" title="Rewind 10s (←)">
+                      <span class="material-symbols-outlined text-[20px]">replay_10</span>
+                    </button>
+                    <!-- Forward 10s -->
+                    <button
+                      class="control-btn forward-10 p-1.5 sm:p-2 rounded-full text-on-surface-variant hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors cursor-pointer"
+                      aria-label="Forward 10s" title="Forward 10s (→)">
+                      <span class="material-symbols-outlined text-[20px]">forward_10</span>
+                    </button>
+                    <!-- Next Button -->
+                    <button
+                      class="control-btn next-btn p-1.5 sm:p-2 rounded-full text-on-surface-variant hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors cursor-pointer"
+                      aria-label="Next episode" title="Next Episode (N)">
+                      <span class="material-symbols-outlined text-[20px]">skip_next</span>
+                    </button>
+
+                    <!-- Audio / Volume Module with decibel readout -->
+                    <div class="volume-container flex items-center gap-1.5 sm:gap-2 group/vol">
+                      <button
+                        class="control-btn volume-btn p-1.5 sm:p-2 rounded-full text-on-surface-variant hover:text-on-surface cursor-pointer"
+                        aria-label="Volume / Mute" title="Mute / Unmute (M)">
+                        <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                      </button>
+                      <div class="volume-slider hidden sm:flex items-center w-14 md:w-20">
+                        <input type="range" min="0" max="100" value="100"
+                          class="volume-range w-full h-1 bg-surface-container-highest rounded-full accent-secondary-container cursor-pointer"
+                          aria-label="Volume slider">
+                      </div>
+                      <span class="hidden md:inline font-label-sm text-label-sm text-outline font-mono text-[11px]"
+                        id="volume-db-readout">-3.2 dB</span>
+                    </div>
+                  </div>
+
+                  <!-- Right Transport Cluster (Quality, Subs, View modes, Settings, Fullscreen) -->
+                  <!-- Right Transport Cluster (Quality, Subs, View modes, Settings & Fullscreen) -->
+                  <div class="flex items-center gap-1 sm:gap-1.5 md:gap-space-xs">
+                    <!-- Auto Next Checkbox (Preserved State & Query Hooks Safely) -->
+                    <div class="auto-next-container hidden" aria-hidden="true" style="display: none !important;">
+                      <input type="checkbox" id="auto-next" class="auto-next-checkbox" checked>
+                      <label for="auto-next" class="auto-next-label"></label>
+                    </div>
+
+                    <!-- Subtitles / CC Toggle -->
+                    <button
+                      class="control-btn subtitle-btn px-2.5 py-1 rounded-full bg-surface-container-high/80 text-secondary-container hover:bg-secondary-container hover:text-on-secondary-container transition-all flex items-center gap-1 font-label-sm text-xs cursor-pointer"
+                      id="player-subtitle-btn" title="Toggle Subtitles / CC">
+                      <span class="material-symbols-outlined text-[16px]">closed_caption</span>
+                      <span class="font-bold current-sub-badge text-[11px]">CC</span>
+                    </button>
+
+                    <!-- Quality Selector (Hidden) -->
+                    <button
+                      class="control-btn quality-pill-btn px-2.5 py-1 rounded-full bg-surface-container-high/80 text-primary hover:bg-primary-container hover:text-on-primary-container transition-all hidden items-center gap-1 font-label-sm text-xs cursor-pointer"
+                      id="player-quality-btn" title="Video Quality" style="display: none !important;"
+                      aria-hidden="true">
+                      <span class="material-symbols-outlined text-[16px]">hd</span>
+                      <span class="font-bold current-quality current-quality-pill text-[11px]">Auto</span>
+                    </button>
+
+                    <!-- Watch Party (Sync Room) - Hidden in tight player bar; dedicated button is on page below player -->
+                    <button
+                      class="control-btn watch-party-btn party-btn p-2 rounded-full text-on-surface hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors cursor-pointer hidden"
+                      id="watch-party-btn" aria-label="Watch Party" title="Watch Party (Watch with Friends)" style="display: none !important;">
+                      <span class="material-symbols-outlined text-[20px]">group</span>
+                    </button>
+
+                    <!-- Theater Wide / Fit Screen Mode Toggle (Only on wide desktop, handled in Settings on compact) -->
+                    <button
+                      class="control-btn fit-screen-btn p-2 rounded-full text-on-surface hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors hidden xl:inline-flex cursor-pointer"
+                      id="aspect-ratio-toggle-btn" aria-label="Toggle Screen Fit"
+                      title="Screen Fit: Contain / Cover / Stretch">
+                      <span class="material-symbols-outlined text-[20px]">crop_landscape</span>
+                    </button>
+
+                    <!-- Episode Playlist Drawer (Removed as requested) -->
+
+                    <!-- Settings Button (Cinema Redesign Animated & Safe!) -->
+                    <div class="settings-menu" id="player-settings-menu">
+                      <button
+                        class="control-btn settings-btn p-2 rounded-full text-on-surface hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors cursor-pointer flex items-center justify-center"
+                        id="player-settings-btn" aria-label="Playback Settings" title="Playback Settings">
+                        <span class="material-symbols-outlined text-[20px]">settings</span>
+                      </button>
+                    </div>
+
+                    <!-- Fullscreen Action -->
+                    <button
+                      class="control-btn fullscreen-btn p-2 rounded-full text-on-surface hover:text-secondary-container hover:bg-surface-container-high/60 transition-colors cursor-pointer flex items-center justify-center"
+                      id="player-fullscreen-btn" aria-label="Fullscreen" title="Fullscreen (F)">
+                      <span class="material-symbols-outlined text-[20px]">fullscreen</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Video Overlay Information (Hidden hook container to preserve script queries safely) -->
+              <div class="video-overlay hidden" style="display: none !important;" aria-hidden="true">
+                <div class="video-info" style="width: 100%;">
+                  <h2 class="video-title" id="current-video-title" style="width: 100%;">
+                    <span class="skeleton" style="width: 40%; height: 24px; border-radius: 4px;"></span>
+                  </h2>
+                  <div class="video-meta">
+                    <span class="episode"><span class="skeleton"
+                        style="width: 80px; height: 16px; border-radius: 2px;"></span></span>
+                    <span class="views"><span class="skeleton"
+                        style="width: 60px; height: 16px; border-radius: 2px;"></span></span>
+                    <span class="current-audio-display"><span class="skeleton"
+                        style="width: 100px; height: 16px; border-radius: 2px;"></span></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mobile Touch Controls -->
+              <div class="mobile-touch-controls">
+                <div class="touch-left" data-action="rewind"></div>
+                <div class="touch-center" data-action="play-pause"></div>
+                <div class="touch-right" data-action="forward"></div>
+              </div>
+
+              <!-- YouTube-Style Double-Tap Seek Ripples -->
+              <div class="seek-ripple-container left-ripple" id="left-seek-ripple">
+                <div class="ripple-circle">
+                  <i class="fas fa-undo-alt ripple-icon"></i>
+                  <span class="ripple-text" id="left-ripple-text">10 seconds</span>
+                  <div class="ripple-chevrons">
+                    <i class="fas fa-chevron-left"></i>
+                    <i class="fas fa-chevron-left"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="seek-ripple-container right-ripple" id="right-seek-ripple">
+                <div class="ripple-circle">
+                  <i class="fas fa-redo-alt ripple-icon"></i>
+                  <span class="ripple-text" id="right-ripple-text">10 seconds</span>
+                  <div class="ripple-chevrons">
+                    <i class="fas fa-chevron-right"></i>
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Skip Intro Floating Fast Pill Button -->
+              <div class="skip-intro-container hidden" id="skip-intro-container">
+                <button id="skip-intro-btn" class="skip-intro-fast-btn group cursor-pointer" type="button"
+                  aria-label="Skip Intro">
+                  <span
+                    class="material-symbols-outlined text-[18px] text-secondary-container transition-transform group-hover:translate-x-0.5">fast_forward</span>
+                  <span class="font-label-md text-label-md font-bold tracking-wider uppercase text-on-surface">SKIP
+                    OP</span>
+                </button>
+              </div>
+
+              <!-- Undo Skip Toast -->
+              <div id="undo-skip-toast" class="undo-skip-toast hidden" role="status">
+                <span>Skipped Opening</span>
+                <button id="undo-skip-btn" class="undo-skip-btn">Undo</button>
+              </div>
+
+              <!-- Next Episode Outro Countdown Card -->
+              <div id="outro-countdown-card" class="outro-countdown-card hidden">
+                <div class="outro-card-content">
+                  <div class="outro-header">
+                    <span class="outro-badge"><i class="fas fa-bolt"></i> Up Next</span>
+                    <span class="outro-countdown-text" id="outro-countdown-text">in 5s</span>
+                  </div>
+                  <div class="outro-progress-bar">
+                    <div class="outro-progress-fill" id="outro-progress-fill"></div>
+                  </div>
+                  <div class="outro-ep-info">
+                    <img id="outro-next-thumbnail" src="" alt="Next Episode" class="outro-thumbnail"
+                      onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500';">
+                    <div class="outro-ep-details">
+                      <h4 id="outro-next-title">Episode 2</h4>
+                      <span id="outro-next-sub">Starting automatically...</span>
+                    </div>
+                  </div>
+                  <div class="outro-actions">
+                    <button id="outro-play-btn" class="outro-play-btn"><i class="fas fa-play"></i> Watch Now</button>
+                    <button id="outro-cancel-btn" class="outro-cancel-btn"><i class="fas fa-times"></i> Cancel</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Custom caption overlay (JS-rendered for consistent styling across PC & Mobile) -->
+              <div id="caption-overlay" class="caption-overlay" aria-hidden="true"></div>
+
+              <!-- In-Player Tabbed Micro-Dock Settings Panel (Cinema Redesign Spec) -->
+              <div class="settings-mobile-backdrop" id="settings-mobile-backdrop"></div>
+              <div class="settings-dropdown compact-popover-shell" id="player-settings-dropdown" aria-label="Playback Settings">
+                <!-- Mobile Drag / Dismiss Grabber Handle -->
+                <div class="mobile-grab-handle sm:hidden"></div>
+
+                <!-- 3 Top Tabs: Stream, Subtitles, Smart -->
+                <div class="settings-tab-bar grid grid-cols-3 border-b border-white/10 bg-white/[0.03] p-1 gap-1 flex-shrink-0">
+                  <button type="button" class="settings-tab-btn active min-h-[38px] rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors" data-tab="stream">
+                    <span class="material-symbols-outlined text-[15px]">tune</span> Stream
+                  </button>
+                  <button type="button" class="settings-tab-btn min-h-[38px] rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors" data-tab="subs">
+                    <span class="material-symbols-outlined text-[15px]">closed_caption</span> Subtitles
+                  </button>
+                  <button type="button" class="settings-tab-btn min-h-[38px] rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors" data-tab="smart">
+                    <span class="material-symbols-outlined text-[15px]">bolt</span> Smart
+                  </button>
+                </div>
+
+                <!-- TAB 1: STREAM -->
+                <div class="settings-tab-pane p-3 flex flex-col gap-3 popover-scroll-body custom-scrollbar anim-sub-in" data-tab-pane="stream" id="settings-pane-stream">
+                  <!-- Audio Track & Server Route -->
+                  <div class="settings-group">
+                    <div class="flex items-center justify-between text-[10px] font-mono uppercase text-slate-400 mb-1">
+                      <span>Audio &amp; Server</span>
+                      <span class="text-secondary-container font-semibold" id="settings-server-badge">Server 1</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1.5 mb-1.5" id="settings-audio-pills">
+                      <button type="button" class="micro-chip settings-pill active" data-audio-type="sub" id="pill-audio-sub">
+                        <i class="fas fa-closed-captioning"></i> Japanese (Sub)
+                      </button>
+                      <button type="button" class="micro-chip settings-pill" data-audio-type="dub" id="pill-audio-dub">
+                        <i class="fas fa-microphone"></i> English (Dub)
+                      </button>
+                    </div>
+                    <div class="h-chip-scroll" id="settings-server-pills">
+                      <button type="button" class="micro-chip settings-pill active" data-server-id="s3">S1 HD</button>
+                      <button type="button" class="micro-chip settings-pill" data-server-id="local">S2 Dub</button>
+                      <button type="button" class="micro-chip settings-pill" data-server-id="server-3">S3 CDN</button>
+                      <button type="button" class="micro-chip settings-pill" data-server-id="server-4">S4 Direct</button>
+                    </div>
+                  </div>
+
+                  <!-- Video Quality -->
+                  <div class="settings-group">
+                    <div class="flex items-center justify-between text-[10px] font-mono uppercase text-slate-400 mb-1">
+                      <span>Quality</span>
+                      <span class="text-secondary-container font-semibold" id="settings-quality-badge">Auto</span>
+                    </div>
+                    <div class="h-chip-scroll" id="settings-quality-pills">
+                      <button type="button" class="micro-chip settings-pill active" data-quality="auto">Auto</button>
+                      <button type="button" class="micro-chip settings-pill" data-quality="1080">1080p</button>
+                      <button type="button" class="micro-chip settings-pill" data-quality="720">720p</button>
+                      <button type="button" class="micro-chip settings-pill" data-quality="480">480p</button>
+                      <button type="button" class="micro-chip settings-pill" data-quality="360">360p</button>
+                    </div>
+                  </div>
+
+                  <!-- Playback Speed -->
+                  <div class="settings-group">
+                    <div class="flex items-center justify-between text-[10px] font-mono uppercase text-slate-400 mb-1">
+                      <span>Playback Speed</span>
+                      <span class="text-secondary-container font-semibold" id="settings-speed-badge">1x</span>
+                    </div>
+                    <div class="h-chip-scroll" id="settings-speed-pills">
+                      <button type="button" class="micro-chip settings-pill" data-speed="0.5">0.5x</button>
+                      <button type="button" class="micro-chip settings-pill" data-speed="0.75">0.75x</button>
+                      <button type="button" class="micro-chip settings-pill active" data-speed="1">1x</button>
+                      <button type="button" class="micro-chip settings-pill" data-speed="1.25">1.25x</button>
+                      <button type="button" class="micro-chip settings-pill" data-speed="1.5">1.5x</button>
+                      <button type="button" class="micro-chip settings-pill" data-speed="2">2x</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TAB 2: SUBTITLES -->
+                <div class="settings-tab-pane p-3 flex flex-col gap-2.5 popover-scroll-body custom-scrollbar anim-sub-in" data-tab-pane="subs" id="settings-pane-subs" style="display: none;">
+                  <div class="settings-group">
+                    <div class="flex items-center justify-between text-[10px] font-mono uppercase text-slate-400 mb-1">
+                      <span>Caption Track</span>
+                      <span class="text-secondary-container font-semibold current-sub-badge">OFF</span>
+                    </div>
+                    <div class="sub-track-list flex flex-col gap-1 max-h-[125px] overflow-y-auto custom-scrollbar p-1 rounded-xl bg-white/[0.02] border border-white/5" id="settings-subtitle-pills">
+                      <button type="button" class="settings-pill sub-track-pill active" data-subtitle="off">
+                        <span class="flex items-center gap-2 truncate min-w-0">
+                          <i class="fas fa-ban text-[11px] opacity-70 flex-shrink-0"></i>
+                          <span class="truncate">Off</span>
+                        </span>
+                        <span class="material-symbols-outlined check-icon">check</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="settings-group">
+                    <div class="flex items-center justify-between text-[10px] font-mono uppercase text-slate-400 mb-1">
+                      <span>Subtitle Appearance</span>
+                      <button type="button" class="settings-inline-btn text-[10px] text-primary hover:underline flex items-center gap-0.5 cursor-pointer" id="open-caption-settings" title="Full Customizer Modal">
+                        <span class="material-symbols-outlined text-[13px]">tune</span> Customizer
+                      </button>
+                    </div>
+                    <!-- Quick Subtitle appearance controls -->
+                    <div class="flex flex-col gap-2 bg-white/[0.03] p-2.5 rounded-xl border border-white/10">
+                      <div class="flex items-center justify-between min-h-[32px]">
+                        <span class="text-[11px] text-slate-400 font-medium">Text Color</span>
+                        <div class="flex items-center gap-2" id="settings-sub-color-row">
+                          <button type="button" class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform scale-110 ring-2 ring-secondary-container" data-color="#ffffff" title="White" style="background:#ffffff;"></button>
+                          <button type="button" class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform opacity-75 hover:opacity-100" data-color="#00eefc" title="Cyan" style="background:#00eefc;"></button>
+                          <button type="button" class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform opacity-75 hover:opacity-100" data-color="#fde047" title="Yellow" style="background:#fde047;"></button>
+                          <button type="button" class="sub-color-pill w-6 h-6 rounded-full cursor-pointer transition-transform opacity-75 hover:opacity-100" data-color="#ff506e" title="Pink" style="background:#ff506e;"></button>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between min-h-[32px]">
+                        <span class="text-[11px] text-slate-400 font-medium">Font Size</span>
+                        <div class="flex items-center gap-1" id="settings-sub-size-row">
+                          <button type="button" class="micro-chip sub-size-pill !min-h-[28px] !px-2.5 !text-[10px]" data-size="14px">S</button>
+                          <button type="button" class="micro-chip sub-size-pill active !min-h-[28px] !px-2.5 !text-[10px]" data-size="18px">M</button>
+                          <button type="button" class="micro-chip sub-size-pill !min-h-[28px] !px-2.5 !text-[10px]" data-size="24px">L</button>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between min-h-[32px]">
+                        <span class="text-[11px] text-slate-400 font-medium">Backdrop</span>
+                        <div class="flex items-center gap-1" id="settings-sub-bg-row">
+                          <button type="button" class="micro-chip sub-bg-pill !min-h-[28px] !px-2 !text-[10px]" data-bg="0">0%</button>
+                          <button type="button" class="micro-chip sub-bg-pill active !min-h-[28px] !px-2 !text-[10px]" data-bg="0.5">50%</button>
+                          <button type="button" class="micro-chip sub-bg-pill !min-h-[28px] !px-2 !text-[10px]" data-bg="0.8">80%</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TAB 3: SMART -->
+                <div class="settings-tab-pane p-3 flex flex-col gap-1.5 popover-scroll-body custom-scrollbar anim-sub-in" data-tab-pane="smart" id="settings-pane-smart" style="display: none;">
+                  <div class="flex items-center justify-between min-h-[42px] text-xs">
+                    <div>
+                      <div class="font-semibold text-white">Auto-Skip Intro (OP)</div>
+                      <div class="text-[10px] text-slate-400">Skip opening theme automatically</div>
+                    </div>
+                    <label class="mini-switch-hit">
+                      <span class="mini-switch">
+                        <input type="checkbox" id="setting-auto-skip-intro" checked>
+                        <span class="mini-slider"></span>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="h-px bg-white/10"></div>
+                  <div class="flex items-center justify-between min-h-[42px] text-xs">
+                    <div>
+                      <div class="font-semibold text-white">Auto-Skip Outro (ED)</div>
+                      <div class="text-[10px] text-slate-400">Skip closing credits automatically</div>
+                    </div>
+                    <label class="mini-switch-hit">
+                      <span class="mini-switch">
+                        <input type="checkbox" id="setting-auto-skip-outro" checked>
+                        <span class="mini-slider"></span>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="h-px bg-white/10"></div>
+                  <div class="flex items-center justify-between min-h-[42px] text-xs">
+                    <div>
+                      <div class="font-semibold text-white">Auto-Play Next Ep</div>
+                      <div class="text-[10px] text-slate-400">Seamless binge mode</div>
+                    </div>
+                    <label class="mini-switch-hit">
+                      <span class="mini-switch">
+                        <input type="checkbox" id="setting-auto-next-episode" checked>
+                        <span class="mini-slider"></span>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- In-Player Episode Drawer -->
+              <div id="in-player-episode-drawer" class="in-player-drawer" aria-hidden="true">
+                <div class="in-player-drawer-backdrop" id="in-player-drawer-backdrop"></div>
+                <div class="in-player-drawer-panel">
+                  <div class="drawer-header">
+                    <div class="drawer-title-group"
+                      style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <i class="fas fa-list-ol drawer-icon"></i>
+                      <h3>Episodes</h3>
+                      <span class="drawer-count" id="drawer-episode-count">(0)</span>
+                      <div class="drawer-season-selector-wrapper" id="drawerSeasonSelectorWrapper"
+                        style="display: none; margin-left: 6px;">
+                        <select id="drawerSeasonSelect" class="player-season-select"
+                          aria-label="Select Season"></select>
+                      </div>
+                    </div>
+                    <button class="drawer-close-btn" id="drawer-close-btn" aria-label="Close drawer">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                  <div class="drawer-series-progress" id="drawer-series-progress"></div>
+                  <div class="drawer-episodes-list" id="drawer-episodes-list"></div>
+                </div>
+              </div>
+
+              <!-- Caption Settings Modal (Inside video-player for full-screen support) -->
+              <div class="caption-settings-modal" id="caption-settings-modal" aria-hidden="true">
+                <div class="caption-settings-panel" role="dialog" aria-modal="true" aria-label="Caption settings">
+                  <div class="caption-settings-header">
+                    <div class="caption-header-title">
+                      <i class="fas fa-closed-captioning"></i>
+                      <h3>Subtitle & Caption Appearance</h3>
+                    </div>
+                    <button class="modal-close-icon" id="caption-close-x" aria-label="Close caption settings">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+
+                  <!-- Live Subtitle Preview Box -->
+                  <div class="caption-live-preview-box">
+                    <div class="caption-preview-label">Live Preview</div>
+                    <div class="caption-preview-stage" id="caption-preview-stage">
+                      <span class="caption-text style-shadow" id="caption-preview-sample">[Denji] <i>This is how
+                          subtitles
+                          will look on screen.</i></span>
+                    </div>
+                  </div>
+
+                  <div class="caption-settings-grid">
+                    <div>
+                      <!-- Font Size Preset -->
+                      <div class="caption-settings-row">
+                        <div class="caption-settings-label"><i class="fas fa-text-height"></i> Subtitle Size</div>
+                        <div class="caption-settings-controls">
+                          <select id="caption-font-size-preset">
+                            <option value="small">Small (16px)</option>
+                            <option value="medium" selected>Medium (20px - Default)</option>
+                            <option value="large">Large (25px)</option>
+                            <option value="huge">Huge (30px)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Text Color Preset -->
+                      <div class="caption-settings-row">
+                        <div class="caption-settings-label"><i class="fas fa-palette"></i> Text Color</div>
+                        <div class="caption-settings-controls">
+                          <select id="caption-text-color-preset">
+                            <option value="#ffffff" selected>White (#ffffff)</option>
+                            <option value="#ffcc00">Yellow (#ffcc00)</option>
+                            <option value="#00f0ff">Cyan (#00f0ff)</option>
+                            <option value="#00ff88">Neon Green (#00ff88)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <!-- Backdrop & Shadow Style Preset -->
+                      <div class="caption-settings-row">
+                        <div class="caption-settings-label"><i class="fas fa-adjust"></i> Shadow & Outline</div>
+                        <div class="caption-settings-controls">
+                          <select id="caption-backdrop-style-preset">
+                            <option value="shadow" selected>Cinematic Outline (Drop Shadow)</option>
+                            <option value="box">Semi-Translucent Box (75%)</option>
+                            <option value="solid">High-Contrast Solid Box</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Position Preset -->
+                      <div class="caption-settings-row">
+                        <div class="caption-settings-label"><i class="fas fa-arrows-alt-v"></i> Screen Placement</div>
+                        <div class="caption-settings-controls">
+                          <select id="caption-position-preset">
+                            <option value="bottom" selected>Bottom (Standard)</option>
+                            <option value="raised">Raised (Avoid Video Controls)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="caption-settings-actions">
+                    <button class="reset-btn" id="caption-reset"><i class="fas fa-undo"></i> Reset</button>
+                    <button class="done-btn" id="caption-done"><i class="fas fa-check"></i> Apply & Done</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> <!-- Close video-player-wrapper -->
+
+          <!-- 2. Stream Calibration & Quick Switcher Bar (Responsive Cinema Design) -->
+          <div id="stream-calibration-bar"
+            class="w-full p-space-sm rounded-xl bg-surface-container-low/90 backdrop-blur-xl flex flex-wrap items-center justify-between gap-space-md shadow-lg border border-white/5">
+            <!-- Server / CDN Relay Engine -->
+            <div class="flex items-center gap-space-xs flex-wrap">
+              <span class="font-label-sm text-label-sm uppercase tracking-wider text-outline px-1">CDN Relay:</span>
+              <div id="cdn-servers-pill-group" class="flex items-center gap-1.5 flex-wrap">
+                <!-- Dynamically populated with active cdn server pills -->
+              </div>
+              <!-- Legacy dropdown hooks preserved for compatibility -->
+              <div class="server-selector" id="server-selector" style="display: none;">
+                <button type="button" class="server-btn" id="server-btn" style="display: none;">
+                  <span class="current-server" id="current-server-display">Server 1</span>
+                </button>
+                <div class="server-dropdown" id="server-dropdown" style="display: none;"></div>
+              </div>
+            </div>
+
+            <!-- Audio, Quality & Playback Speed Controls -->
+            <div class="flex items-center gap-space-sm flex-wrap">
+              <!-- Audio Track Selector (Pills) -->
+              <div class="flex items-center gap-1">
+                <span
+                  class="font-label-sm text-label-sm uppercase tracking-wider text-outline px-1 hidden sm:inline-block">Audio:</span>
+                <div id="audio-pill-group"
+                  class="flex items-center bg-surface-container-highest/60 rounded-full p-0.5 border border-white/5">
+                  <button type="button" id="btn-audio-sub" data-audio-type="sub"
+                    class="audio-pill-btn active px-3 py-1 rounded-full bg-secondary-container/20 text-secondary-container font-label-sm text-label-sm font-bold shadow-[0_0_10px_rgba(0,238,252,0.25)] transition-all cursor-pointer">
+                    JA Original (Sub)
+                  </button>
+                  <button type="button" id="btn-audio-dub" data-audio-type="dub"
+                    class="audio-pill-btn px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-all cursor-pointer">
+                    EN Dub (Multi)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Hidden audio dropdown hook for JS backwards compatibility -->
+              <div class="audio-selector" style="display: none;">
+                <span class="current-audio">Japanese</span>
+                <div class="audio-dropdown" id="audio-dropdown"></div>
+              </div>
+
+              <!-- Playback Rate Pill Group -->
+              <div class="flex items-center gap-1">
+                <span
+                  class="font-label-sm text-label-sm uppercase tracking-wider text-outline px-1 hidden md:inline-block">Speed:</span>
+                <div id="speed-pill-group"
+                  class="flex items-center bg-surface-container-highest/60 rounded-full p-0.5 border border-white/5">
+                  <button type="button"
+                    class="speed-pill-btn px-2 py-1 rounded-full text-outline hover:text-on-surface font-label-sm text-label-sm transition-all cursor-pointer"
+                    data-speed="0.75">0.75x</button>
+                  <button type="button"
+                    class="speed-pill-btn active px-2.5 py-1 rounded-full bg-surface-bright text-on-surface font-label-sm text-label-sm font-bold transition-all cursor-pointer"
+                    data-speed="1">1.0x</button>
+                  <button type="button"
+                    class="speed-pill-btn px-2 py-1 rounded-full text-outline hover:text-on-surface font-label-sm text-label-sm transition-all cursor-pointer"
+                    data-speed="1.25">1.25x</button>
+                  <button type="button"
+                    class="speed-pill-btn px-2 py-1 rounded-full text-outline hover:text-on-surface font-label-sm text-label-sm transition-all cursor-pointer"
+                    data-speed="1.5">1.5x</button>
+                </div>
+              </div>
+
+              <!-- Hidden hooks for speed & quality dropdowns so all legacy querySelectors remain safe -->
+              <div class="playback-speed-selector" style="display: none;">
+                <span class="current-speed">1x</span>
+                <div class="speed-dropdown">
+                  <div class="speed-option" data-speed="0.75">0.75x</div>
+                  <div class="speed-option active" data-speed="1">Normal</div>
+                  <div class="speed-option" data-speed="1.25">1.25x</div>
+                  <div class="speed-option" data-speed="1.5">1.5x</div>
+                </div>
+              </div>
+              <div class="quality-selector" style="display: none;">
+                <span class="current-quality">Auto</span>
+                <div class="quality-dropdown" id="quality-dropdown"></div>
+              </div>
+              <div class="subtitle-selector" style="display: none;">
+                <span class="current-subtitle">Off</span>
+                <div class="subtitle-dropdown" id="subtitle-dropdown"></div>
+              </div>
             </div>
           </div>
-          <div class="stat-chip">
-            <i class="fas fa-check-circle stat-icon stat-watched"></i>
-            <div class="stat-content">
-              <span class="stat-label">Watched</span>
-              <span class="stat-value" id="stat-watched-episodes">0</span>
+
+          <!-- 3. Episode Metadata & Social Stream Toolbar -->
+          <div
+            class="w-full p-space-lg rounded-xl bg-surface-container-low/70 backdrop-blur-xl flex flex-col gap-space-md shadow-lg border border-white/5">
+            <!-- Badges & Studio Meta Row -->
+            <div class="flex items-center gap-space-xs flex-wrap">
+              <span
+                class="px-2.5 py-1 rounded bg-primary-container/15 text-primary font-label-sm text-label-sm uppercase tracking-widest font-bold flex items-center gap-1.5 shadow-[0_0_10px_rgba(255,80,110,0.25)]">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></span>
+                SIMULCAST STREAM • S1
+              </span>
+              <span
+                class="px-2 py-0.5 rounded bg-surface-container-high text-secondary-container font-label-sm text-label-sm uppercase font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-[13px]"
+                  style="font-variation-settings: 'FILL' 1;">star</span> 9.8 RATING
+              </span>
+              <span
+                class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase font-semibold">TV-MA</span>
+              <span
+                class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">24
+                MIN</span>
+              <span
+                class="px-2 py-0.5 rounded bg-surface-container-high text-secondary font-label-sm text-label-sm uppercase font-semibold">STUDIO
+                MASTER</span>
+              <span
+                class="px-2 py-0.5 rounded bg-surface-container-high text-tertiary font-label-sm text-label-sm uppercase font-semibold">HDR10+
+                / ATMOS</span>
+            </div>
+
+            <!-- Title and Description Header -->
+            <div class="video-description flex flex-col gap-space-xs">
+              <h1 class="video-title font-headline-lg text-headline-lg font-extrabold text-on-surface tracking-tight"
+                id="cinema-video-title">
+                <span class="skeleton"
+                  style="width: 40%; height: 28px; border-radius: 4px; display: inline-block;"></span>
+              </h1>
+              <p class="description-text font-body-md text-body-md text-outline max-w-4xl leading-relaxed">
+                <span class="skeleton"
+                  style="width: 100%; height: 16px; border-radius: 4px; margin-bottom: 6px; display: block;"></span>
+                <span class="skeleton" style="width: 70%; height: 16px; border-radius: 4px; display: block;"></span>
+              </p>
+              <div class="video-tags flex items-center gap-2 mt-2">
+                <span class="skeleton"
+                  style="width: 60px; height: 24px; border-radius: 12px; display: inline-block;"></span>
+                <span class="skeleton"
+                  style="width: 80px; height: 24px; border-radius: 12px; display: inline-block;"></span>
+              </div>
+            </div>
+
+            <!-- Interactive Action Buttons Bar -->
+            <div class="flex items-center justify-between flex-wrap gap-space-md pt-space-xs border-t border-white/5">
+              <div class="flex items-center gap-space-xs flex-wrap">
+                <!-- Watch Party Trigger -->
+                <button type="button"
+                  class="watch-party-btn flex items-center gap-2 px-4 py-2 rounded-full bg-secondary-container text-on-secondary-container shadow-[0_0_18px_rgba(0,238,252,0.4)] hover:brightness-110 active:scale-95 transition-all font-label-md text-label-md font-bold cursor-pointer">
+                  <span class="material-symbols-outlined text-[18px]">group</span>
+                  <span>Watch Party (Sync Room)</span>
+                </button>
+                <!-- Download -->
+                <button type="button"
+                  class="action-btn download-btn flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-all font-label-md text-label-md cursor-pointer">
+                  <span class="material-symbols-outlined text-[18px]">download</span>
+                  <span class="btn-text">Download 1080p</span>
+                </button>
+                <!-- Danmaku Comments Toggle -->
+                <button type="button"
+                  class="flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-all font-label-md text-label-md cursor-pointer"
+                  onclick="document.getElementById('commentsSection')?.scrollIntoView({behavior: 'smooth'});">
+                  <span class="material-symbols-outlined text-[18px]">chat</span>
+                  <span>Tokyo Danmaku Stream</span>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-space-xs">
+                <!-- Favorite -->
+                <button type="button"
+                  class="action-btn favorite-btn p-2.5 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface-variant transition-all shadow-sm cursor-pointer"
+                  title="Add to Favorites">
+                  <span class="material-symbols-outlined text-[20px]">favorite</span>
+                </button>
+                <!-- Share -->
+                <button type="button"
+                  class="action-btn share-btn p-2.5 rounded-full bg-surface-container-high hover:bg-secondary-container hover:text-on-secondary-container text-on-surface-variant transition-all shadow-sm cursor-pointer"
+                  title="Share Timestamped Link">
+                  <span class="material-symbols-outlined text-[20px]">share</span>
+                </button>
+              </div>
             </div>
           </div>
-          <div class="stat-chip">
-            <i class="fas fa-clock stat-icon stat-left"></i>
-            <div class="stat-content">
-              <span class="stat-label">Left</span>
-              <span class="stat-value" id="stat-remaining-episodes">0</span>
+
+          <!-- 4. Comments & Danmaku Section -->
+          <div
+            class="comments-section w-full p-space-lg rounded-xl bg-surface-container-low/70 backdrop-blur-xl flex flex-col gap-space-md shadow-lg border border-white/5"
+            id="commentsSection">
+            <div class="comments-header flex items-center justify-between pb-3 border-b border-white/5">
+              <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface flex items-center gap-2">
+                <i class="fas fa-comments text-secondary-container"></i>
+                <span>Tokyo Danmaku Comments</span>
+                <span id="comments-count-badge" class="comments-count-badge text-outline font-mono text-sm">(0)</span>
+              </h3>
+              <div class="comments-sort flex items-center gap-2">
+                <button type="button"
+                  class="sort-tab active px-3 py-1 rounded-full text-xs font-bold bg-secondary-container/20 text-secondary-container"
+                  id="sort-top">Top Comments</button>
+                <button type="button"
+                  class="sort-tab px-3 py-1 rounded-full text-xs font-bold text-outline hover:text-white"
+                  id="sort-newest">Newest First</button>
+              </div>
+            </div>
+
+            <!-- Add Comment Form Container -->
+            <div class="add-comment-box" id="addCommentBox">
+              <!-- Loaded dynamically by script.js -->
+            </div>
+
+            <!-- Comments List -->
+            <div class="comments-list flex flex-col gap-3" id="comments-list">
+              <!-- Loaded dynamically by script.js -->
             </div>
           </div>
-        </div>
+
+        </section>
+
+        <!-- =====================================================================
+             RIGHT COLUMN: BINGE ARC, PLAYLIST & WATCH PARTY (Col-span-4 approx 30%)
+             ===================================================================== -->
+        <aside class="xl:col-span-4 flex flex-col gap-space-md w-full">
+
+          <!-- 1. Binge Arc Completion Card (matching Stitch & mobile app) -->
+          <div
+            class="series-progress-card p-space-md rounded-xl bg-surface-container-low/80 backdrop-blur-xl flex flex-col gap-space-sm shadow-xl relative overflow-hidden border border-white/5"
+            id="series-progress-card" style="display: none;">
+            <div
+              class="pointer-events-none absolute -top-8 -right-8 w-28 h-28 bg-secondary-container/20 rounded-full blur-2xl">
+            </div>
+            <div class="flex items-center justify-between">
+              <span
+                class="font-label-sm text-label-sm uppercase tracking-widest text-secondary-container font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">track_changes</span>
+                Binge Progression Arc
+              </span>
+              <span class="series-progress-percent font-label-md text-label-md font-bold text-on-surface font-mono"
+                id="series-progress-percent">0%</span>
+            </div>
+
+            <div
+              class="series-progress-track w-full h-2 rounded-full bg-surface-container-highest overflow-hidden p-0.5">
+              <div
+                class="series-progress-fill h-full rounded-full bg-gradient-to-r from-secondary-container via-tertiary-container to-primary-container shadow-[0_0_12px_rgba(0,238,252,0.5)]"
+                id="series-progress-fill" style="width: 0%;"></div>
+            </div>
+
+            <!-- 3 Stat Counters Bar -->
+            <div class="series-progress-stats grid grid-cols-3 gap-space-xs pt-1 text-center">
+              <div class="stat-chip p-2 rounded bg-surface-container/70 flex flex-col">
+                <span class="stat-label font-label-sm text-label-sm text-outline uppercase tracking-wider">Total</span>
+                <span class="stat-value font-headline-sm text-headline-sm font-extrabold text-on-surface"
+                  id="stat-total-episodes">0</span>
+              </div>
+              <div class="stat-chip p-2 rounded bg-surface-container/70 flex flex-col">
+                <span
+                  class="stat-label font-label-sm text-label-sm text-secondary tracking-wider uppercase">Watched</span>
+                <span class="stat-value font-headline-sm text-headline-sm font-extrabold text-secondary-container"
+                  id="stat-watched-episodes">0</span>
+              </div>
+              <div class="stat-chip p-2 rounded bg-surface-container/70 flex flex-col">
+                <span class="stat-label font-label-sm text-label-sm text-primary tracking-wider uppercase">Left</span>
+                <span class="stat-value font-headline-sm text-headline-sm font-extrabold text-primary"
+                  id="stat-remaining-episodes">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Episode Playlist Column -->
+          <div
+            class="video-playlist w-full p-space-md rounded-xl bg-surface-container-low/80 backdrop-blur-xl flex flex-col gap-space-md shadow-xl border border-white/5">
+            <!-- Playlist Header & Season Selector -->
+            <div class="playlist-header flex flex-col gap-2.5">
+              <div class="flex items-center justify-between w-full">
+                <span class="font-headline-sm text-headline-sm font-bold text-on-surface flex items-center gap-1.5">
+                  <i class="fas fa-list-ol text-secondary-container text-sm"></i>
+                  <span>Episodes</span>
+                  <span class="episode-count text-xs text-outline font-normal"></span>
+                </span>
+                <!-- Action buttons -->
+                <div class="playlist-actions flex items-center gap-1">
+                  <button type="button" class="playlist-btn shuffle-btn p-1.5 rounded-lg text-outline hover:text-white"
+                    title="Shuffle">
+                    <i class="fas fa-random text-sm"></i>
+                  </button>
+                  <button type="button"
+                    class="playlist-btn autoplay-btn active p-1.5 rounded-lg text-secondary-container" title="Autoplay">
+                    <i class="fas fa-play-circle text-sm"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="player-season-selector-wrapper w-full" id="playerSeasonSelectorWrapper"
+                style="display: none;">
+                <select id="playerSeasonSelect"
+                  class="player-season-select w-full px-3 py-2 rounded-xl bg-surface-container-highest font-label-sm text-label-sm text-on-surface border border-white/10 outline-none"
+                  aria-label="Select Season"></select>
+              </div>
+            </div>
+
+            <!-- Scrollable Episode List Container -->
+            <div class="playlist-items flex flex-col gap-space-xs max-h-[580px] overflow-y-auto pr-1"
+              id="playlist-items-container">
+              <!-- Populated dynamically by script.js -->
+              <div class="playlist-item skeleton-playlist-item flex gap-3 p-2.5 rounded-lg bg-surface-container/40">
+                <div class="skeleton w-24 h-16 rounded bg-surface-container-high flex-shrink-0"></div>
+                <div class="flex-grow flex flex-col gap-2 justify-center">
+                  <div class="skeleton w-4/5 h-3 rounded bg-surface-container-high"></div>
+                  <div class="skeleton w-1/2 h-2.5 rounded bg-surface-container-high"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Playlist Footer -->
+            <div class="playlist-footer text-center pt-2 border-t border-white/5">
+              <button type="button"
+                class="load-more-btn hidden px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-outline hover:text-white text-xs font-bold transition-all">
+                <i class="fas fa-chevron-down"></i> Load More Episodes
+              </button>
+            </div>
+          </div>
+
+        </aside>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       EXISTING AUTH MODAL (Preserved for in-player authentication)
+       ========================================================================= -->
+  <div id="playerAuthModal" class="player-auth-overlay" style="display: none;" role="dialog" aria-modal="true"
+    aria-labelledby="playerAuthTitle">
+    <div class="player-auth-card">
+      <div class="player-auth-badge">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h2 class="player-auth-title" id="playerAuthTitle">Sign Up to Start Watching</h2>
+      <p class="player-auth-subtitle">Full access to 1080p anime streaming, multiple audio tracks, and watch history
+        requires an account.</p>
+
+      <div class="player-auth-tabs">
+        <button type="button" class="player-auth-tab active" id="playerTabRegister"
+          onclick="switchPlayerAuthTab('register')">Create Account</button>
+        <button type="button" class="player-auth-tab" id="playerTabLogin" onclick="switchPlayerAuthTab('login')">Sign
+          In</button>
       </div>
 
-      <div class="playlist-items" id="playlist-items-container">
-        <!-- Playlist items will be populated by JavaScript -->
-        <div class="playlist-item skeleton-playlist-item"
-          style="display:flex; gap:10px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.03);">
-          <div class="skeleton" style="width: 80px; height: 50px; border-radius: 4px; flex-shrink: 0;"></div>
-          <div style="flex-grow: 1; display:flex; flex-direction:column; gap:6px;">
-            <div class="skeleton" style="width: 80%; height: 14px; border-radius: 2px;"></div>
-            <div class="skeleton" style="width: 40%; height: 10px; border-radius: 2px;"></div>
-          </div>
-        </div>
-        <div class="playlist-item skeleton-playlist-item"
-          style="display:flex; gap:10px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.03);">
-          <div class="skeleton" style="width: 80px; height: 50px; border-radius: 4px; flex-shrink: 0;"></div>
-          <div style="flex-grow: 1; display:flex; flex-direction:column; gap:6px;">
-            <div class="skeleton" style="width: 80%; height: 14px; border-radius: 2px;"></div>
-            <div class="skeleton" style="width: 40%; height: 10px; border-radius: 2px;"></div>
-          </div>
-        </div>
-        <div class="playlist-item skeleton-playlist-item"
-          style="display:flex; gap:10px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.03);">
-          <div class="skeleton" style="width: 80px; height: 50px; border-radius: 4px; flex-shrink: 0;"></div>
-          <div style="flex-grow: 1; display:flex; flex-direction:column; gap:6px;">
-            <div class="skeleton" style="width: 80%; height: 14px; border-radius: 2px;"></div>
-            <div class="skeleton" style="width: 40%; height: 10px; border-radius: 2px;"></div>
-          </div>
-        </div>
-      </div>
+      <div id="playerAuthError" class="player-auth-error" style="display: none;"></div>
 
-      <!-- Playlist Footer -->
-      <div class="playlist-footer">
-        <button class="load-more-btn hidden">
-          <i class="fas fa-chevron-down"></i> Load More Episodes
+      <form id="playerAuthForm" onsubmit="handlePlayerAuthSubmit(event)">
+        <div class="player-auth-input-group">
+          <label for="playerAuthEmail"><i class="fas fa-envelope"></i> Email Address</label>
+          <input type="email" id="playerAuthEmail" placeholder="name@example.com" required autocomplete="email">
+        </div>
+
+        <div class="player-auth-input-group">
+          <label for="playerAuthPassword"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="playerAuthPassword" placeholder="••••••••" required
+            autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="playerAuthSubmitBtn" class="player-auth-submit-btn">
+          <i class="fas fa-play-circle"></i> <span id="playerAuthSubmitText">Sign Up & Watch Now</span>
         </button>
-      </div>
-    </div>
+      </form>
 
-    <!-- ====== COMMENTS SECTION ====== -->
-    <div class="comments-section" id="commentsSection">
-      <div class="comments-header">
-        <h3><i class="fas fa-comments"></i> Comments <span id="comments-count-badge"
-            class="comments-count-badge">(0)</span></h3>
-        <div class="comments-sort">
-          <button class="sort-tab active" id="sort-top">Top Comments</button>
-          <button class="sort-tab" id="sort-newest">Newest First</button>
-        </div>
-      </div>
-
-      <!-- Add Comment Form -->
-      <div class="add-comment-box" id="addCommentBox">
-        <!-- Loaded dynamically depending on auth state -->
-      </div>
-
-      <!-- Comments List -->
-      <div class="comments-list" id="comments-list">
-        <!-- Loaded dynamically -->
-        <div
-          style="display:flex; gap:15px; padding:16px; margin-bottom:15px; background:rgba(255,255,255,0.01); border-radius:12px;">
-          <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;"></div>
-          <div style="flex-grow:1; display:flex; flex-direction:column; gap:8px;">
-            <div style="display:flex; gap:10px;">
-              <div class="skeleton" style="width: 100px; height: 14px; border-radius: 2px;"></div>
-              <div class="skeleton" style="width: 50px; height: 12px; border-radius: 2px;"></div>
-            </div>
-            <div class="skeleton" style="width: 100%; height: 16px; border-radius: 2px;"></div>
-            <div class="skeleton" style="width: 90%; height: 16px; border-radius: 2px;"></div>
-          </div>
-        </div>
-        <div
-          style="display:flex; gap:15px; padding:16px; margin-bottom:15px; background:rgba(255,255,255,0.01); border-radius:12px;">
-          <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;"></div>
-          <div style="flex-grow:1; display:flex; flex-direction:column; gap:8px;">
-            <div style="display:flex; gap:10px;">
-              <div class="skeleton" style="width: 100px; height: 14px; border-radius: 2px;"></div>
-              <div class="skeleton" style="width: 50px; height: 12px; border-radius: 2px;"></div>
-            </div>
-            <div class="skeleton" style="width: 100%; height: 16px; border-radius: 2px;"></div>
-            <div class="skeleton" style="width: 90%; height: 16px; border-radius: 2px;"></div>
-          </div>
-        </div>
+      <div class="player-auth-footer">
+        <a href="/index.html" class="player-auth-back-link"><i class="fas fa-arrow-left"></i> Back to Homepage</a>
       </div>
     </div>
   </div>
 
-  <!-- Keyboard Shortcuts Help -->
+
+  <!-- =========================================================================
+       KEYBOARD SHORTCUTS HELP MODAL
+       ========================================================================= -->
   <div class="shortcuts-help">
     <div class="shortcuts-content">
       <h3><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h3>
@@ -831,87 +1327,40 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <div class="footer-section">
-        <h4><i class="fas fa-infinity"></i> Infinx Anime</h4>
-        <p>The ultimate destination for anime lovers. Stream the latest episodes in high quality with multiple audio and
-          subtitle options.</p>
-      </div>
-      <div class="footer-section">
-        <h4>Quick Links</h4>
-        <a href="https://anime-shubh.vercel.app/">Home</a>
-        <a href="#">Trending</a>
-        <a href="#">Genres</a>
-        <a href="#">Schedule</a>
-      </div>
-      <div class="footer-section">
-        <h4>Legal</h4>
-        <a href="#">Terms of Service</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Cookie Policy</a>
-        <a href="#">DMCA</a>
-      </div>
-      <div class="footer-section">
-        <!-- Social links can be added here -->
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2023 infinx Anime. All rights reserved. This is a demonstration site.</p>
-      <!--<button class="keyboard-shortcuts-btn">
-        <i class="fas fa-keyboard"></i> Keyboard Shortcuts
-      </button> -->
-    </div>
-  </footer>
 
-  <!-- JavaScript -->
+
+  <!-- =========================================================================
+       CORE VIDEO PLAYER SCRIPTS (Exact dependency order preserved)
+       ========================================================================= -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
+  <script src="../navbar.js"></script>
   <script src="/video-player/script.js"></script>
   <script src="/socket.io/socket.io.js"></script>
+  <script>
+    if (typeof io === 'undefined') {
+      document.write('<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"><\/script>');
+    }
+  </script>
   <script src="/video-player/watch-party.js"></script>
 
-  <!-- Player Authentication Lock Modal (Strict Gate) -->
-  <div id="playerAuthModal" class="player-auth-overlay" style="display: none;" role="dialog" aria-modal="true"
-    aria-labelledby="playerAuthTitle">
-    <div class="player-auth-card">
-      <div class="player-auth-badge">
-        <i class="fas fa-lock"></i>
-      </div>
-      <h2 class="player-auth-title" id="playerAuthTitle">Sign Up to Start Watching</h2>
-      <p class="player-auth-subtitle">Full access to 1080p anime streaming, multiple audio tracks, and watch history
-        requires an account.</p>
-
-      <div class="player-auth-tabs">
-        <button type="button" class="player-auth-tab active" id="playerTabRegister"
-          onclick="switchPlayerAuthTab('register')">Create Account</button>
-        <button type="button" class="player-auth-tab" id="playerTabLogin" onclick="switchPlayerAuthTab('login')">Sign
-          In</button>
-      </div>
-
-      <div id="playerAuthError" class="player-auth-error" style="display: none;"></div>
-
-      <form id="playerAuthForm" onsubmit="handlePlayerAuthSubmit(event)">
-        <div class="player-auth-input-group">
-          <label for="playerAuthEmail"><i class="fas fa-envelope"></i> Email Address</label>
-          <input type="email" id="playerAuthEmail" placeholder="name@example.com" required autocomplete="email">
-        </div>
-
-        <div class="player-auth-input-group">
-          <label for="playerAuthPassword"><i class="fas fa-lock"></i> Password</label>
-          <input type="password" id="playerAuthPassword" placeholder="••••••••" required
-            autocomplete="current-password">
-        </div>
-
-        <button type="submit" id="playerAuthSubmitBtn" class="player-auth-submit-btn">
-          <i class="fas fa-play-circle"></i> <span id="playerAuthSubmitText">Sign Up & Watch Now</span>
-        </button>
-      </form>
-
-      <div class="player-auth-footer">
-        <a href="/index.html" class="player-auth-back-link"><i class="fas fa-arrow-left"></i> Back to Homepage</a>
-      </div>
-    </div>
-  </div>
+  <script>
+    // Sync exterior title with internal player title
+    document.addEventListener('DOMContentLoaded', () => {
+      const origTitle = document.getElementById('current-video-title');
+      const cinemaTitle = document.getElementById('cinema-video-title');
+      if (origTitle && cinemaTitle) {
+        const syncTitle = () => {
+          const text = origTitle.textContent?.trim();
+          if (text && !text.includes('Loading')) {
+            cinemaTitle.textContent = text;
+          }
+        };
+        syncTitle();
+        const observer = new MutationObserver(syncTitle);
+        observer.observe(origTitle, { childList: true, characterData: true, subtree: true });
+      }
+    });
+  </script>
 </body>
 
 </html>
