@@ -416,12 +416,70 @@ async function loadLunarTrending() {
 
   try {
     const res = await fetch(`${API_BASE}/lunarx/trending`);
-    if (!res.ok) return;
-    const data = await res.json();
-    globalLunarData = data;
-    renderLunarSection();
+    if (res.ok) {
+      const data = await res.json();
+      if (data && ((data.popularThisSeason && data.popularThisSeason.length > 0) || (data.trendingNow && data.trendingNow.length > 0))) {
+        globalLunarData = data;
+        renderLunarSection();
+        return;
+      }
+    }
   } catch (err) {
-    console.warn('Lunar trending fetch failed:', err);
+    console.warn('Lunar trending backend fetch failed:', err);
+  }
+
+  // Direct client-side AniList fallback if backend endpoint returned empty or is unreachable
+  try {
+    const gql = `
+      query {
+        trending: Page(page: 1, perPage: 10) {
+          media(sort: TRENDING_DESC, type: ANIME, isAdult: false) {
+            id title { english romaji userPreferred }
+            coverImage { extraLarge large } bannerImage averageScore format seasonYear
+          }
+        }
+        popular: Page(page: 1, perPage: 10) {
+          media(sort: POPULARITY_DESC, type: ANIME, isAdult: false) {
+            id title { english romaji userPreferred }
+            coverImage { extraLarge large } bannerImage averageScore format seasonYear
+          }
+        }
+        upcoming: Page(page: 1, perPage: 10) {
+          media(status: NOT_YET_RELEASED, sort: POPULARITY_DESC, type: ANIME, isAdult: false) {
+            id title { english romaji userPreferred }
+            coverImage { extraLarge large } bannerImage averageScore format seasonYear
+          }
+        }
+      }
+    `;
+    const res = await fetch('https://graphql.anilist.co', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ query: gql })
+    });
+    if (res.ok) {
+      const json = await res.json();
+      const mapItem = (m) => ({
+        anilistId: m.id,
+        title: m.title?.english || m.title?.romaji || m.title?.userPreferred || 'Anime Masterpiece',
+        englishTitle: m.title?.english,
+        romajiTitle: m.title?.romaji,
+        poster: m.coverImage?.extraLarge || m.coverImage?.large,
+        banner: m.bannerImage,
+        score: m.averageScore,
+        format: m.format,
+        seasonYear: m.seasonYear,
+        isLunar: true
+      });
+      globalLunarData = {
+        popularThisSeason: (json.data?.popular?.media || []).map(mapItem),
+        trendingNow: (json.data?.trending?.media || []).map(mapItem),
+        upcomingNextSeason: (json.data?.upcoming?.media || []).map(mapItem)
+      };
+      renderLunarSection();
+    }
+  } catch (clientErr) {
+    console.warn('Direct AniList client fallback failed:', clientErr);
   }
 }
 
@@ -895,9 +953,19 @@ async function loadCarousel() {
     if (data && data.length > 0) {
       let html = '';
       data.forEach((show, index) => {
-        const playLink = show.episodes && show.episodes.length > 0
-          ? `/watch?id=${show.episodes[0].id}`
-          : '#';
+        const isSpotlight = (index === 0) || !!show.isSpotlight;
+        const isAnime = show.isLunar || !!show.anilistId || show.type === 'anime';
+        const anilistId = show.anilistId || (typeof show.id === 'string' && show.id.startsWith('anime-') ? show.id.replace('anime-', '') : (typeof show.id === 'string' && show.id.startsWith('lunar-') ? show.id.replace('lunar-', '') : null));
+
+        let playLink = '#';
+        if (isAnime && anilistId) {
+          playLink = `/watch?id=${anilistId}&ep=1`;
+        } else if (show.episodes && show.episodes.length > 0) {
+          playLink = `/watch?id=${show.episodes[0].id}`;
+        } else if (show.playLink) {
+          playLink = show.playLink;
+        }
+
         const rawBanner = show.banner || show.poster;
         const bannerImg = rawBanner ? encodeURI(window.formatMediaUrl(rawBanner)) : '';
         const isVideo = rawBanner && (rawBanner.toLowerCase().endsWith('.mp4') || rawBanner.toLowerCase().endsWith('.webm'));
@@ -905,6 +973,13 @@ async function loadCarousel() {
         const videoOrImg = isVideo
           ? `<video class="absolute inset-0 w-full h-full object-cover" autoplay loop muted playsinline><source src="${bannerImg}" type="video/mp4"></video>`
           : '';
+
+        const safeTitle = (show.title || 'Infinx Feature').replace(/'/g, "\\'");
+        const safePoster = (show.poster || '').replace(/'/g, "\\'");
+        const safeBanner = (show.banner || '').replace(/'/g, "\\'");
+        const detailsOnClick = isAnime && anilistId
+          ? `window.openShowDetails({ id: 'lunar-${anilistId}', anilistId: ${anilistId}, title: '${safeTitle}', poster: '${safePoster}', banner: '${safeBanner}', isLunar: true })`
+          : `window.openShowDetails(${show.showId || show.id})`;
 
         html += `
               <div class="swiper-slide relative w-full min-h-[580px] h-[85vh] max-h-[780px] sm:h-[720px] lg:h-[840px] overflow-hidden">
@@ -922,12 +997,19 @@ async function loadCarousel() {
                   <div class="flex flex-col max-w-2xl gap-2 sm:gap-3 lg:gap-space-md">
                     <!-- Metatags / Master Badges -->
                     <div class="flex flex-wrap items-center gap-1.5 sm:gap-space-xs">
+                      ${isSpotlight ? `
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ff506e]/20 text-[#ff506e] border border-[#ff506e]/50 shadow-[0_0_20px_rgba(255,80,110,0.6)] font-label-sm text-xs sm:text-label-sm uppercase tracking-wider font-extrabold">
+                        <span class="w-2 h-2 rounded-full bg-[#ff506e] animate-pulse"></span>
+                        ★ #1 SPOTLIGHT
+                      </span>
+                      ` : `
                       <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-secondary-container/15 text-secondary-container shadow-[0_0_16px_rgba(0,238,252,0.35)] font-label-sm text-xs sm:text-label-sm uppercase tracking-wider font-bold">
                         <span class="w-1.5 h-1.5 rounded-full bg-secondary-container animate-ping"></span>
                         #${index + 1} Trending
                       </span>
+                      `}
                       <span class="px-2 py-0.5 sm:py-1 rounded bg-surface-container-high/90 text-on-surface font-label-sm text-xs sm:text-label-sm tracking-widest uppercase">
-                        ${show.type === 'movie' ? 'Feature' : 'Simulcast'}
+                        ${show.type === 'movie' ? 'Feature' : (isAnime ? 'Anime' : 'Simulcast')}
                       </span>
                       <span class="hidden sm:inline-block px-2 py-1 rounded bg-surface-container-high/90 text-primary font-label-sm text-label-sm tracking-widest uppercase font-bold">
                         4K HDR
@@ -943,7 +1025,11 @@ async function loadCarousel() {
 
                     <!-- Title Presentation with Editorial Drop Shadow -->
                     <div class="flex flex-col">
+                      ${isSpotlight ? `
+                      <span class="hidden sm:block font-label-md text-label-md text-primary-container tracking-[0.3em] uppercase font-bold">★ INFINX SPOTLIGHT SELECTION • 4K HDR</span>
+                      ` : `
                       <span class="hidden sm:block font-label-md text-label-md text-secondary-container tracking-[0.3em] uppercase">Tokyo Broadcast Master • 60 FPS</span>
+                      `}
                       <h1 class="text-3xl sm:text-5xl lg:text-display-hero font-extrabold text-on-surface drop-shadow-[0_8px_32px_rgba(0,0,0,0.9)] tracking-tight leading-[1.15] sm:leading-tight lg:leading-[72px]">
                         ${show.title}
                       </h1>
@@ -955,7 +1041,7 @@ async function loadCarousel() {
                       <span>•</span>
                       <span>${show.runtime || 'Ultra HD'}</span>
                       <span>•</span>
-                      <span class="text-primary-fixed uppercase font-bold">${show.badge || 'HD'}</span>
+                      <span class="text-primary-fixed uppercase font-bold">${show.badge || (isAnime ? 'SIMULCAST' : 'HD')}</span>
                       ${show.dubsub ? '<span class="hidden xs:inline">•</span><span class="hidden xs:inline text-on-surface font-semibold">SUB/DUB</span>' : ''}
                     </div>
 
@@ -971,11 +1057,11 @@ async function loadCarousel() {
                         <span class="tracking-wider uppercase font-bold">Watch Now</span>
                       </a>
                       <div class="flex items-center gap-2 sm:gap-space-md w-full sm:w-auto">
-                        <button class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-space-xs sm:gap-space-sm px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-full bg-surface-container-high/80 text-on-surface hover:text-secondary-container hover:bg-surface-container-highest active:scale-95 transition-all duration-300 font-label-md sm:font-label-lg text-xs sm:text-label-lg backdrop-blur-xl shadow-lg cursor-pointer" onclick="window.toggleWatchlist(${show.id})">
+                        <button class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-space-xs sm:gap-space-sm px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-full bg-surface-container-high/80 text-on-surface hover:text-secondary-container hover:bg-surface-container-highest active:scale-95 transition-all duration-300 font-label-md sm:font-label-lg text-xs sm:text-label-lg backdrop-blur-xl shadow-lg cursor-pointer" onclick="${isAnime && anilistId ? `window.openShowDetails({ id: 'lunar-${anilistId}', anilistId: ${anilistId}, title: '${safeTitle}', poster: '${safePoster}', banner: '${safeBanner}', isLunar: true })` : `window.toggleWatchlist(${show.showId || show.id})`}">
                           <span class="material-symbols-outlined text-[18px] sm:text-[20px]">bookmark_add</span>
                           <span class="tracking-wide">Add to Watchlist</span>
                         </button>
-                        <button class="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-container-low/90 text-on-surface hover:text-secondary hover:bg-surface-container-high active:scale-95 transition-all duration-200 cursor-pointer shadow-md group shrink-0" onclick="window.openShowDetails(${show.id})" title="Details &amp; Episodes">
+                        <button class="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-container-low/90 text-on-surface hover:text-secondary hover:bg-surface-container-high active:scale-95 transition-all duration-200 cursor-pointer shadow-md group shrink-0" onclick="${detailsOnClick}" title="Details &amp; Episodes">
                           <span class="material-symbols-outlined text-[18px] sm:text-[22px] group-hover:rotate-12 transition-transform">theaters</span>
                         </button>
                       </div>
